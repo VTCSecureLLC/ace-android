@@ -1,0 +1,87 @@
+language: android
+
+# jdk: oraclejdk7
+
+env:
+  global:
+    - MALLOC_ARENA_MAX=2
+  matrix:
+    - ANDROID_SDKS=android-19,sysimg-19 ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a ENABLE_GPL_THIRD_PARTIES=0 BUILD_VIDEO=1 BUILD_OPENH264=1 ENABLE_OPENH264_DECODER=1 BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1 BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1 BUILD_TLS=1 BUILD_WEBRTC_ISAC=1 BUILD_OPUS=1 BUILD_UPNP=1 BUILD_MATROSKA=0 BUILD_ILBC=1
+
+
+before_install:
+  - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
+
+android:
+  components:
+
+    # 0) download the Android sdk with platform-tools and tools updated to latest revision (at least API 16 is needed), then add both 'tools' and 'platform-tools' folders in your path.
+
+    # Uncomment the lines below if you want to
+    # use the latest revision of Android SDK Tools
+    # - platform-tools
+    # - tools
+
+    # The BuildTools version used by your project
+    - build-tools-19.1.0
+
+    # The SDK version used to compile your project
+    - android-19
+
+    # Additional components
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-19
+
+    # Specify at least one system image,
+    # if you need to run emulator(s) during your tests
+    - sys-img-armeabi-v7a-android-19    
+    - sys-img-x86-android-17
+
+before_install:
+  # 1) download the Android ndk (=r10c) from google and add it to your path (no symlink !!!).
+  - if [ `uname -m` = x86_64]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
+  # - chmod a+x ndk.bin
+  # - ./ndk.bin 1> /dev/null 2>&1
+  - 7zr x ndk.bin
+  - export ANDROID_HOME=$(pwd)/android-sdk-linux
+  - sudo apt-get update -qq
+  # 2) install yasm, nasm, curl, ant, rsync and the autotools: autoconf, automake, aclocal, libtoolize, pkgconfig
+  - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake aclocal libtoolize pkgconfig
+  #    On 64 bits linux systems you'll need the ia32-libs package
+  - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch
+  - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch p7zip
+  #    With the latest Debian (multiarch), you need this:
+  - sudo dpkg --add-architecture i386
+  - sudo apt-get install -qq --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
+  - sudo apt-get install -qq --force-yes ccache
+  - export NDK_CCACHE=ccache
+
+# install: ant deps
+
+before_script:
+  - ./ci/wait_for_emulator
+  - adb shell input keyevent 82 &
+
+script:
+  - make                          # 3) run the Makefile script in the top level directory. This will download iLBC source files and convert some assembly files in VP8 project.
+  - make liblinphone-android-sdk  # 5) (Optional) To generate a liblinphone SDK zip containing a full jar and native libraries, run
+  - make mediastreamer2-sdk       # 6) (Optional) To generate a libmediastreamer2 SDK zip containing a full jar and native libraries, run
+  - make liblinphone_tester       # To run the liblinphone test suite on android
+
+#   - PROFILER_VERSION=$(git describe)
+#   - make
+#
+#script: ./gradlew assemble connectedAndroidTest
+#
+#script:
+#    - echo "Travis branch is $TRAVIS_BRANCH"
+#    - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
+#script:
+#    - ./gradlew test
+
+after_script:
+  - date
+
