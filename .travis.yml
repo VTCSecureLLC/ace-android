@@ -45,7 +45,7 @@ before_install:
   - if [ `uname -m` = x86_64]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
   - sudo apt-get update -qq
   # 2) install yasm, nasm, curl, ant, rsync and the autotools: autoconf, automake, aclocal, libtoolize, pkgconfig
-  - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake aclocal libtoolize pkgconfig
+  - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake libtool pkgconf
   #    On 64 bits linux systems you'll need the ia32-libs package
   - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch
   - sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch p7zip
