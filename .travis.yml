@@ -43,9 +43,9 @@ android:
 before_install:
   # 1) download the Android ndk (=r10c) from google and add it to your path (no symlink !!!).
   - if [ `uname -m` = x86_64]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
-  # - chmod a+x ndk.bin
-  # - ./ndk.bin 1> /dev/null 2>&1
-  - 7z x ndk.bin
+  - chmod a+x ndk.bin
+  - ./ndk.bin 1> /dev/null 2>&1
+  # - 7z x ndk.bin
   - export ANDROID_HOME=$(pwd)/android-sdk-linux
   - sudo apt-get update -qq
   # 2) install yasm, nasm, curl, ant, rsync and the autotools: autoconf, automake, aclocal, libtoolize, pkgconfig
