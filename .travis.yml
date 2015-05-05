@@ -85,3 +85,6 @@ script:
 after_script:
   - date
 
+notifications:
+  slack:
+    secure: Bzzg70aXapDSORKck84ZCvQUNCNZtCazhYeqk86/RaHP+5LIbHtqGa8hN3vxImcKYslV5N/N8einPR55wK28sTJIVzqRUERRVu2QxmcfeL2kolQq++VLNnj6+vf4MjXJjT68pI623+Vmj5FK71RJpFNN6aVqHs5kp0nwgQ79aMY=
