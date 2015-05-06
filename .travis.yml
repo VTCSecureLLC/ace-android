@@ -50,7 +50,7 @@ before_install:
   - sudo apt-get install -qq --force-yes p7zip
   # - chmod a+x ndk.bin
   # - ./ndk.bin 1> /dev/null 2>&1
-  - 7z x ndk.bin
+  - 7zr x ndk.bin
   - export ANDROID_HOME=$(pwd)/android-sdk-linux
   #    On 64 bits linux systems you'll need the ia32-libs package
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch ; fi
