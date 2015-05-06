@@ -51,7 +51,7 @@ before_install:
   - 7zr x ndk.bin 2>&1 | grep -v Extracting
   - export ANDROID_HOME=$(pwd)/android-sdk-linux
   #    On 64 bits linux systems you'll need the ia32-libs package
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch ; fi
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
   #    With the latest Debian (multiarch), you need this:
   - sudo dpkg --add-architecture i386
   - sudo apt-get install -qq --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
