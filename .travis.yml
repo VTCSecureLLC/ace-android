@@ -60,9 +60,9 @@ before_install:
 
 # install: ant deps
 
-before_script:
-  - ./ci/wait_for_emulator
-  - adb shell input keyevent 82 &
+#before_script:
+#  - ./ci/wait_for_emulator
+#  - adb shell input keyevent 82 &
 
 script:
   - make                          # 3) run the Makefile script in the top level directory. This will download iLBC source files and convert some assembly files in VP8 project.
