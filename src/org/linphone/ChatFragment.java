@@ -22,8 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import android.graphics.Matrix;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 
@@ -42,6 +42,8 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.BubbleChat;
+
+import android.media.ExifInterface;
 import android.support.v4.content.CursorLoader;
 
 import android.annotation.SuppressLint;
@@ -124,6 +126,9 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		super.onCreate(savedInstanceState);
 		instance = this;
 		View view = inflater.inflate(R.layout.chat, container, false);
+		
+		// Retain the fragment across configuration changes
+		setRetainInstance(true);
 
 		//Retrieve parameter from intent
 		sipUri = getArguments().getString("SipUri");
@@ -554,6 +559,26 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 				bm = Bitmap.createScaledBitmap(bm, (SIZE_MAX * bm.getWidth()) / bm.getHeight(), SIZE_MAX, false);
 			}
 
+			// Rotate the bitmap if possible/needed, using EXIF data
+			Log.w(path);
+			try {
+				if (path != null) {
+					ExifInterface exif = new ExifInterface(path);
+					int pictureOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
+					Matrix matrix = new Matrix();
+					if (pictureOrientation == 6) {
+						matrix.postRotate(90);
+					} else if (pictureOrientation == 3) {
+						matrix.postRotate(180);
+					} else if (pictureOrientation == 8) {
+						matrix.postRotate(270);
+					}
+					bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
 			byte[] byteArray = stream.toByteArray();
@@ -562,7 +587,9 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		
 		@Override
 		protected void onPostExecute(byte[] result) {
-			progressDialog.dismiss();
+			if (progressDialog != null && progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
 			
 			mUploadingImageStream = new ByteArrayInputStream(result);
 			
@@ -629,7 +656,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 	private void pickImage() {
 		List<Intent> cameraIntents = new ArrayList<Intent>();
 		Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		File file = new File(Environment.getExternalStorageDirectory(), getString(R.string.temp_photo_name) + Calendar.getInstance().getTime());
+		File file = new File(Environment.getExternalStorageDirectory(), getString(R.string.temp_photo_name_with_date).replace("%s", String.valueOf(System.currentTimeMillis())));
 		imageToUploadUri = Uri.fromFile(file);
 		captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageToUploadUri);
 		cameraIntents.add(captureIntent);

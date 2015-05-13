@@ -965,8 +965,8 @@ public class LinphonePreferences {
 	// Advanced settings
 	public void setDebugEnabled(boolean enabled) {
 		getConfig().setBool("app", "debug", enabled);
-		LinphoneCoreFactory.instance().setDebugMode(enabled, getString(R.string.app_name));
 		LinphoneCoreFactory.instance().enableLogCollection(enabled);
+		LinphoneCoreFactory.instance().setDebugMode(enabled, getString(R.string.app_name));
 	}
 
 	public boolean isDebugEnabled() {
@@ -1150,5 +1150,17 @@ public class LinphonePreferences {
 
 	public boolean isContactsMigrationDone(){
 		return getConfig().getBool("app", "contacts_migration_done",false);
+	}
+
+	public String getDebugPopupAddress(){
+		return getConfig().getString("app", "debug_popup_magic", null);
+	}
+
+	public void enableDebugLogs(Boolean debugMode){
+		getConfig().setBool("app", "debug_logs_enabled", debugMode);
+	}
+
+	public Boolean isDebugLogsEnabled(){
+		return getConfig().getBool("app", "debug_logs_enabled", false);
 	}
 }
