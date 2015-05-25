@@ -210,7 +210,6 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 				LinphoneAddress from = cr.getPeerAddress();
 				if (from.asStringUriOnly().equals(sipUri)) {
 					invalidate();
-					scrollToEnd();
 				}
 			}
 			
@@ -283,7 +282,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 			topBar.setVisibility(View.GONE);
 		}
 		contactPicture.setVisibility(View.GONE);
-		scrollToEnd();
+		//scrollToEnd();
 	}
 
 	public void hideKeyboardVisibleMode() {
@@ -292,7 +291,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		if (isOrientationLandscape && topBar != null) {
 			topBar.setVisibility(View.VISIBLE);
 		}
-		scrollToEnd();
+		//scrollToEnd();
 	}
 
 	class ChatMessageAdapter extends BaseAdapter {
@@ -507,9 +506,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 			}
 
 			invalidate();
-
 			Log.i("Sent message current status: " + message.getStatus());
-			scrollToEnd();
 		} else if (!isNetworkReachable && LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().displayCustomToast(getString(R.string.error_network_unreachable), Toast.LENGTH_LONG);
 		}
@@ -552,10 +549,9 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		protected byte[] doInBackground(Bitmap... params) {
 			Bitmap bm = params[0];
 
-			if (bm.getWidth() > bm.getHeight() && bm.getWidth() > SIZE_MAX) {
+			if (bm.getWidth() >= bm.getHeight() && bm.getWidth() > SIZE_MAX) {
 				bm = Bitmap.createScaledBitmap(bm, SIZE_MAX, (SIZE_MAX * bm.getHeight()) / bm.getWidth(), false);
-			} else if (bm.getHeight() > bm.getWidth() && bm.getHeight() > SIZE_MAX) {
-
+			} else if (bm.getHeight() >= bm.getWidth() && bm.getHeight() > SIZE_MAX) {
 				bm = Bitmap.createScaledBitmap(bm, (SIZE_MAX * bm.getWidth()) / bm.getHeight(), SIZE_MAX, false);
 			}
 
@@ -619,6 +615,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 	private void invalidate() {
 		adapter.refreshHistory();
 		adapter.notifyDataSetChanged();
+		chatRoom.markAsRead();
 	}
 
 	private void resendMessage(int id) {
@@ -634,11 +631,6 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		} else {
 			sendImageMessage(message.getAppData());
 		}
-	}
-
-	private void scrollToEnd() {
-		messagesList.smoothScrollToPosition(messagesList.getCount());
-		chatRoom.markAsRead();
 	}
 
 	private void copyTextMessageToClipboard(int id) {
@@ -762,8 +754,12 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		if (mUploadingImageStream != null && size > 0) {
 			byte[] data = new byte[size];
 			int read = mUploadingImageStream.read(data, 0, size);
-			bufferToFill.setContent(data);
-			bufferToFill.setSize(read);
+			if (read > 0) {
+				bufferToFill.setContent(data);
+				bufferToFill.setSize(read);
+			} else {
+				Log.e("Error, upload task asking for more bytes(" + size + ") than available (" + mUploadingImageStream.available() + ")");
+			}
 		}
 	}
 
