@@ -50,7 +50,7 @@ before_install:
   - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
   - sudo apt-get update -qq
   # 2) install yasm, nasm, curl, ant, rsync and the autotools: autoconf, automake, aclocal, libtoolize, pkgconfig
-  - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake libtool pkg-config
+  - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake libtool pkg-config bc
   #    Install the NDK
   - sudo apt-get install -qq --force-yes p7zip
   - 7zr x ndk.bin 2>&1 | grep -v Extracting
