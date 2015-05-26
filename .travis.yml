@@ -68,7 +68,7 @@ before_install:
 # install: ant deps
 
 before_script:
-#  - git submodule update --init --recursive
+  - git submodule update --init --recursive
 #  - ./ci/wait_for_emulator
 #  - adb shell input keyevent 82 &
 
