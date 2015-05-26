@@ -73,8 +73,9 @@ before_script:
 #  - adb shell input keyevent 82 &
 
 script:
+  - echo "Running make"
   # 3) run the Makefile script in the top level directory. This will download iLBC source files and convert some assembly files in VP8 project.
-  - bash -c 'touch /tmp/make.out; (while true; do sleep 300; echo "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done ) &; MUTED_PID=$!; make > /tmp/make.out 2>&1; MAKE_PID=$!; wait $MAKE_PID; MAKE_RESULT=$@; tail -1000 /tmp/make.out; kill $MUTED_PID; exit $MAKE_RESULT'
+  - bash -xc 'touch /tmp/make.out; (while true; do sleep 300; echo "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done ) &; MUTED_PID=$!; make > /tmp/make.out 2>&1; MAKE_PID=$!; wait $MAKE_PID; MAKE_RESULT=$@; tail -1000 /tmp/make.out; kill $MUTED_PID; exit $MAKE_RESULT'
   # 5) (Optional) To generate a liblinphone SDK zip containing a full jar and native libraries, run
   - make liblinphone-android-sdk
   # 6) (Optional) To generate a libmediastreamer2 SDK zip containing a full jar and native libraries, run
