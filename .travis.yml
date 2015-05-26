@@ -5,6 +5,7 @@ language: android
 env:
   global:
     - MALLOC_ARENA_MAX=2
+    - secure: gDjA3rO/+HdOMuEyjLHN4I6XFe3sNTsFDnwvBT70oOQvTMMnKgVS1IhKy/6aPfT2bf9miS/TxB2tyE9WjHkP3Uhca4COViL+7QldBXXrEEStzBViSj3t2EUHaE+qd6IlH6E9DbOzloJNmnwVxRuOL602t2KCKazU6iZsN5N7pmY=
   matrix:
     - ANDROID_SDKS=android-19,sysimg-19 ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a ENABLE_GPL_THIRD_PARTIES=0 BUILD_VIDEO=1 BUILD_OPENH264=1 ENABLE_OPENH264_DECODER=1 BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1 BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1 BUILD_TLS=1 BUILD_WEBRTC_ISAC=1 BUILD_OPUS=1 BUILD_UPNP=1 BUILD_MATROSKA=0 BUILD_ILBC=1
 
@@ -83,7 +84,7 @@ script:
   # 6) (Optional) To generate a libmediastreamer2 SDK zip containing a full jar and native libraries, run
   - make mediastreamer2-sdk
   # To run the liblinphone test suite on android
-  - make liblinphone_tester
+  #- make liblinphone_tester
 
 #   - PROFILER_VERSION=$(git describe)
 #   - make
@@ -97,7 +98,7 @@ script:
 #    - ./gradlew test
 
 after_script:
-  - date
+  - ./Tools/github_release.sh
 
 notifications:
   slack:
