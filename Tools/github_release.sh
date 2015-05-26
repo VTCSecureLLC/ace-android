@@ -4,6 +4,7 @@ set -x
 curl -sL https://github.com/aktau/github-release/releases/download/v0.5.3/linux-amd64-github-release.tar.bz2 | bunzip2 -cd | tar xf - --strip=3 -C /tmp/
 
 tag=build-$(date +%Y%m%d%H%M%S).$(git rev-parse --short HEAD)
+#tag=$(grep version.name ant.properties | cut -d= -f2-).$TRAVIS_BUILD_NUMBER
 
 /tmp/github-release release \
     --user vatrp \
