@@ -73,10 +73,14 @@ before_script:
 #  - adb shell input keyevent 82 &
 
 script:
-  - make                          # 3) run the Makefile script in the top level directory. This will download iLBC source files and convert some assembly files in VP8 project.
-  - make liblinphone-android-sdk  # 5) (Optional) To generate a liblinphone SDK zip containing a full jar and native libraries, run
-  - make mediastreamer2-sdk       # 6) (Optional) To generate a libmediastreamer2 SDK zip containing a full jar and native libraries, run
-  - make liblinphone_tester       # To run the liblinphone test suite on android
+  # 3) run the Makefile script in the top level directory. This will download iLBC source files and convert some assembly files in VP8 project.
+  - make > /tmp/make.out 2>&1 || ( lasterr=$@; cat /tmp/make.out; exit $lasterr )
+  # 5) (Optional) To generate a liblinphone SDK zip containing a full jar and native libraries, run
+  - make liblinphone-android-sdk
+  # 6) (Optional) To generate a libmediastreamer2 SDK zip containing a full jar and native libraries, run
+  - make mediastreamer2-sdk
+  # To run the liblinphone test suite on android
+  - make liblinphone_tester
 
 #   - PROFILER_VERSION=$(git describe)
 #   - make
