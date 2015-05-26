@@ -62,8 +62,8 @@ before_install:
   #    With the latest Debian (multiarch), you need this:
   - sudo dpkg --add-architecture i386 || true
   - sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
-  - DEBIAN_FRONTEND=noninteractive sudo -E apt-get install -y --force-yes ccache || true
-  - export NDK_CCACHE=ccache || true
+  #- DEBIAN_FRONTEND=noninteractive sudo -E apt-get install -y --verbose --force-yes ccache || true
+  #- export NDK_CCACHE=ccache || true
 
 # install: ant deps
 
