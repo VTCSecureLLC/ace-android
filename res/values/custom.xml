@@ -6,7 +6,7 @@
 	<string name="today_date_format">HH:mm</string>
 	<string name="picture_name_format">linphone-mms-%s.jpg</string>
 
-	<string name="app_name">Linphone</string>
+	<string name="app_name">VTCSecure</string>
 	<string name="service_name">Linphone Service</string>
 	<string name="addressbook_label">Linphone</string>
 	<string name="sync_account_type">org.linphone</string>
