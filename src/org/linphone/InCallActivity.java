@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
@@ -39,6 +41,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.hardware.Camera.Parameters;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -101,6 +104,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private boolean isConferenceRunning = false;
 	private boolean showCallListInVideo = false;
 	private LinphoneCoreListenerBase mListener;
+	private Timer outgoingRingCountTimer = null;
+
 	
 	public static InCallActivity instance() {
 		return instance;
@@ -1356,6 +1361,34 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 	
+	private void startOutgoingRingCount(LinearLayout callView) {
+		outgoingRingCountTimer = new Timer();
+		float outGoingRingDuration = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "outgoing_ring_duration", 2.0f);
+		final TextView outgoingRingCountTextView = (TextView)callView.findViewById(R.id.outboundRingCount);
+		outgoingRingCountTextView.setVisibility(View.VISIBLE);
+		outgoingRingCountTimer.schedule(new TimerTask() {
+			int ringCount = 0;
+			@Override
+			public void run() {
+				InCallActivity.this.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						ringCount++;
+						outgoingRingCountTextView.setText(ringCount+"");
+					}
+				});
+			}
+		}, 0, (long)(outGoingRingDuration*1000));
+	}	
+	
+	private void stopOutgoingRingCount() {
+		if (outgoingRingCountTimer != null) {
+			outgoingRingCountTimer.cancel();
+			outgoingRingCountTimer = null;
+			findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
+		}
+	}
+	
 	private boolean displayCallStatusIconAndReturnCallPaused(LinearLayout callView, LinphoneCall call) {
 		boolean isCallPaused, isInConference;
 		ImageView callState = (ImageView) callView.findViewById(R.id.callStatus);
@@ -1366,11 +1399,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			callState.setImageResource(R.drawable.pause);
 			isCallPaused = true;
 			isInConference = false;
+			stopOutgoingRingCount();
 		} else if (call.getState() == State.OutgoingInit || call.getState() == State.OutgoingProgress || call.getState() == State.OutgoingRinging) {
 			callState.setImageResource(R.drawable.call_state_ringing_default);
 			isCallPaused = false;
 			isInConference = false;
+			if (call.getState() == State.OutgoingRinging) startOutgoingRingCount(callView);
+		    else stopOutgoingRingCount();
 		} else {
+			stopOutgoingRingCount();
 			if (isConferenceRunning && call.isInConference()) {
 				callState.setImageResource(R.drawable.remove);
 				isInConference = true;
