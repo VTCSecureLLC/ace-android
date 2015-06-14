@@ -16,7 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.AddressAware;
@@ -32,7 +36,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Spinner;
 
 /**
  * @author Sylvain Berfini
@@ -40,26 +49,62 @@ import android.widget.ImageView;
 public class DialerFragment extends Fragment {
 	private static DialerFragment instance;
 	private static boolean isCallTransferOngoing = false;
-	
+
 	public boolean mVisible;
 	private AddressText mAddress;
 	private CallButton mCall;
 	private ImageView mAddContact;
 	private OnClickListener addContactListener, cancelListener, transferListener;
 	private boolean shouldEmptyAddressField = true;
+	private boolean userInteraction = false;
+
+
+	
 	
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-        Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
+			Bundle savedInstanceState) {
 		instance = this;
-        View view = inflater.inflate(R.layout.dialer, container, false);
-		
+		final View view = inflater.inflate(R.layout.dialer, container, false);
+
+
+
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
 		mAddress.setDialerFragment(this);
 		
+
+		// VTCSecure SIP Domain selection 
+		Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
+		final TextView sipDomainTextView = (TextView)view.findViewById(R.id.sipDomainTextView);
+		sipDomainTextView.setText("");
+		String externalDomains = LinphonePreferences.instance().getConfig().getString("vtcsecure", "external_domains", "");
+		if (externalDomains.length()>0) {
+			externalDomains =getActivity().getString(R.string.leave_empty)+","+externalDomains;
+			String sipDomains[] = externalDomains.split(",");
+			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
+			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
+					if (spinnerView != null) ((TextView) spinnerView).setText("");
+					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
+					else sipDomainTextView.setText("");
+					mAddress.setTag(sipDomainTextView.getText());
+				}  
+				public void onNothingSelected(AdapterView<?> arg0) {}  
+			});
+			sipDomainSpinner.setAdapter(adapter);
+
+		} else {
+			sipDomainSpinner.setVisibility(View.GONE);
+		}
+
+
+
 		EraseButton erase = (EraseButton) view.findViewById(R.id.Erase);
 		erase.setAddressWidget(mAddress);
-		
+
 		mCall = (CallButton) view.findViewById(R.id.Call);
 		mCall.setAddressWidget(mAddress);
 		if (LinphoneActivity.isInstanciated() && LinphoneManager.getLc().getCallsNb() > 0) {
@@ -71,14 +116,14 @@ public class DialerFragment extends Fragment {
 		} else {
 			mCall.setImageResource(R.drawable.call);
 		}
-		
+
 		AddressAware numpad = (AddressAware) view.findViewById(R.id.Dialer);
 		if (numpad != null) {
 			numpad.setAddressWidget(mAddress);
 		}
-		
+
 		mAddContact = (ImageView) view.findViewById(R.id.addContact);
-		
+
 		addContactListener = new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -103,10 +148,10 @@ public class DialerFragment extends Fragment {
 				LinphoneActivity.instance().resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
 			}
 		};
-		
+
 		mAddContact.setEnabled(!(LinphoneActivity.isInstanciated() && LinphoneManager.getLc().getCallsNb() > 0));
 		resetLayout(isCallTransferOngoing);
-		
+
 		if (getArguments() != null) {
 			shouldEmptyAddressField = false;
 			String number = getArguments().getString("SipUri");
@@ -120,9 +165,9 @@ public class DialerFragment extends Fragment {
 				mAddress.setPictureUri(Uri.parse(photo));
 			}
 		}
-		
+
 		return view;
-    }
+	}
 
 	/**
 	 * @return null if not ready yet
@@ -130,17 +175,17 @@ public class DialerFragment extends Fragment {
 	public static DialerFragment instance() { 
 		return instance;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
 			LinphoneActivity.instance().updateDialerFragment(this);
 			LinphoneActivity.instance().showStatusBar();
 		}
-		
+
 		if (shouldEmptyAddressField) {
 			mAddress.setText("");
 		} else {
@@ -148,14 +193,14 @@ public class DialerFragment extends Fragment {
 		}
 		resetLayout(isCallTransferOngoing);
 	}
-	
+
 	public void resetLayout(boolean callTransfer) {
 		isCallTransferOngoing = callTransfer;
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc == null) {
 			return;
 		}
-		
+
 		if (lc.getCallsNb() > 0) {
 			if (isCallTransferOngoing) {
 				mCall.setImageResource(R.drawable.transfer_call);
@@ -175,21 +220,21 @@ public class DialerFragment extends Fragment {
 			enableDisableAddContact();
 		}
 	}
-	
+
 	public void enableDisableAddContact() {
 		mAddContact.setEnabled(LinphoneManager.getLc().getCallsNb() > 0 || !mAddress.getText().toString().equals(""));	
 	}
-	
+
 	public void displayTextInAddressBar(String numberOrSipAddress) {
 		shouldEmptyAddressField = false;
 		mAddress.setText(numberOrSipAddress);
 	}
-	
+
 	public void newOutgoingCall(String numberOrSipAddress) {
 		displayTextInAddressBar(numberOrSipAddress);
 		LinphoneManager.getInstance().newOutgoingCall(mAddress);
 	}
-	
+
 	public void newOutgoingCall(Intent intent) {
 		if (intent != null && intent.getData() != null) {
 			String scheme = intent.getData().getScheme();
@@ -207,10 +252,10 @@ public class DialerFragment extends Fragment {
 					mAddress.setText(intent.getData().getSchemeSpecificPart());
 				}
 			}
-	
+
 			mAddress.clearDisplayedName();
 			intent.setData(null);
-	
+
 			LinphoneManager.getInstance().newOutgoingCall(mAddress);
 		}
 	}

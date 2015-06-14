@@ -8,15 +8,33 @@
         android:id="@+id/Adress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
         android:background="@drawable/dialer_address_background"
-        android:inputType="textEmailAddress"
+        android:gravity="top"
         android:hint="@string/addressHint"
+        android:inputType="textEmailAddress"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-       	android:layout_gravity="center" 
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"/>
+        android:textColor="@android:color/white" />
+
+    <Spinner
+        android:id="@+id/sipDomainSpinner"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignRight="@id/Adress"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/atbutton" />
+
+    <TextView
+        android:id="@+id/sipDomainTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/Adress"
+        android:layout_marginBottom="11dp"
+        android:ems="10"
+        android:gravity="center"
+        android:text="domain" >
+
+    </TextView>
     
     <LinearLayout
         android:id="@+id/controls"
