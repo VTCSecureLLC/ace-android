@@ -407,5 +407,9 @@
   <string name="remote_provisioning_again_title">Remote provisioning</string>
   <string name="remote_provisioning_again_message">Do you want to change the provisioning URI ?</string>
   <string name="processing_image">Processing image, can take up to a few seconds depending on the size of the file</string>
-  <string name="leave_empty">Leave empty</string>  
+  
+  
+ <string name="gpsdenied">not authorized by user</string> 
+ <string name="gpsnolocation">user location could not be established</string> 
+ <string name="leave_empty">Leave empty</string>  
   </resources>

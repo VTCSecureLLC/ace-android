@@ -1107,6 +1107,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	protected void onResume() {
 		super.onResume();
 
+		// Attempt to update user location
+		LinphoneLocationManager.instance(this).updateLocation();
+		
 		if (!LinphoneService.isReady())  {
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}

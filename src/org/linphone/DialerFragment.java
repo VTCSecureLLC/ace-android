@@ -180,6 +180,9 @@ public class DialerFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 
+		
+		
+		
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
 			LinphoneActivity.instance().updateDialerFragment(this);

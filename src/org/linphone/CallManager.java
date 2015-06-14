@@ -54,6 +54,12 @@ public class CallManager {
 		
 		LinphoneCallParams params = lc.createDefaultCallParameters();
 		bm().updateWithProfileSettings(lc, params);
+		
+		String emergencyNumber = LinphonePreferences.instance().getConfig().getString("vtcsecure", "emergency_username", "911");
+		if (lAddress.getUserName().startsWith(emergencyNumber) && LinphoneActivity.isInstanciated()) {
+			params.addCustomHeader("userLocation", LinphoneLocationManager.instance(LinphoneActivity.instance()).userLocation());
+		}
+		
 
 		if (videoEnabled && params.getVideoEnabled()) {
 			params.setVideoEnabled(true);
