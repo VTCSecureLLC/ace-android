@@ -33,7 +33,7 @@
 
     <instrumentation
         android:name="com.zutubi.android.junitreport.JUnitReportTestRunner"
-        android:targetPackage="org.linphone" />
+        android:targetPackage="org.linphone.vtcsecure" />
 
     <application
         android:label="@string/app_name" >
