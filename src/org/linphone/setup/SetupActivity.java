@@ -328,11 +328,11 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		
 		if (isMainAccountLinphoneDotOrg && useLinphoneDotOrgCustomPorts) {
 			if (getResources().getBoolean(R.bool.disable_all_security_features_for_markets)) {
-				builder.setProxy(domain + ":5228")
+				builder.setProxy(domain + ":5060")
 				.setTransport(TransportType.LinphoneTransportTcp);
 			}
 			else {
-				builder.setProxy(domain + ":5223")
+				builder.setProxy(domain + ":5061")
 				.setTransport(TransportType.LinphoneTransportTls);
 			}
 			

@@ -7,7 +7,7 @@
 	<bool name="enable_push_id">true</bool>
 	<string name="push_sender_id">101236867627</string>
 
-	<string name="default_domain">bc1.vatrp.net </string>
+	<string name="default_domain">bc1.vatrp.net</string>
 	<string name="default_stun">stun.linphone.org</string>
 	<bool name="override_domain_using_default_one">false</bool> <!-- Replace the domain for outgoing calls by the one above -->
 	<string name="wizard_url">https://www.linphone.org/wizard.php</string>
@@ -32,7 +32,7 @@
     <bool name="allow_cancel_remote_provisioning_login_activity">true</bool>
     <bool name="hide_accounts">false</bool>
 	<bool name="display_account_wizard_at_first_start">true</bool>
-	<bool name="use_linphone_server_ports">false</bool>
+	<bool name="use_linphone_server_ports">true</bool>
 	<bool name="allow_only_phone_numbers_in_wizard">false</bool>
 
 	<bool name="use_android_native_contact_edit_interface">false</bool>
