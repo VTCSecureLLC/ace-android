@@ -336,14 +336,14 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				.setTransport(TransportType.LinphoneTransportTls);
 			}
 			
-			builder.setExpires("604800")
+			builder.setExpires("31536000")
 			.setOutboundProxyEnabled(true)
 			.setAvpfEnabled(true)
 			.setAvpfRRInterval(3)
-			.setQualityReportingCollector("sip:voip-metrics@sip.linphone.org")
+			.setQualityReportingCollector("sip:voip-metrics@bc1.vatrp.net")
 			.setQualityReportingEnabled(true)
 			.setQualityReportingInterval(180)
-			.setRealm("sip.linphone.org");
+			.setRealm("bc1.vatrp.net");
 			
 			
 			mPrefs.setStunServer(getString(R.string.default_stun));

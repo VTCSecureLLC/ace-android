@@ -25,15 +25,17 @@
 		    android:layout_height="match_parent"
 		    android:layout_weight="0.7"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+            android:visibility="gone">
             
 	        <ImageView
 	            android:id="@+id/setup_create_account"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
+	            android:layout_centerInParent="true"
+	            android:contentDescription="@string/setup_create_account"
 	            android:src="@drawable/button"
-                android:contentDescription="@string/setup_create_account"
-		    	android:layout_centerInParent="true" />
+	             />
 	        
 	        <TextView 
 		    	android:layout_centerInParent="true"
@@ -100,15 +102,17 @@
 		    android:layout_height="match_parent"
 		    android:layout_weight="0.7"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:paddingRight="10dp"
+            android:visibility="gone">
             
 	        <ImageView
 	            android:id="@+id/setup_remote_provisioning"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
+	            android:layout_centerInParent="true"
+	            android:contentDescription="@string/setup_remote_provisioning"
 	            android:src="@drawable/button"
-                android:contentDescription="@string/setup_remote_provisioning"
-		    	android:layout_centerInParent="true" />
+	             />
 	        
 	         <TextView 
 		    	android:layout_centerInParent="true"
