@@ -29,5 +29,9 @@
 	<string name="button_sip_contacts">SIP</string>
 
     <string name="tunnel_host"></string>
-</resources>
+    
+    <string name="location_for_911_disabled_message_do_not_show_again">Do not show again</string>
+    <string name="location_for_911_disabled_title">Location services disabled</string>
+    <string name="location_for_911_disabled_message">It looks like your location services are disabled. In order to have your location sent whilst calling emergency number you need to activate your location services.</string>
+ </resources>
  
