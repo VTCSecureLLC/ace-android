@@ -32,6 +32,7 @@ import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
+import org.linphone.vtcsecure.LinphoneTorchFlashingTimer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -69,7 +70,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	private Boolean torhcIsOn = false;
 	private Timer flashRedBackgroundTimer;
 	private Timer vibrateTimer;
-	private Timer flashTorchTimer;
+	private LinphoneTorchFlashingTimer flashTorchTimer;
 	private boolean terminated = false;
 
 
@@ -165,6 +166,8 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	@Override
 	protected void onPause() {
 		terminated = true;
+		flashTorchTimer.cancel();
+		flashTorchTimer = null;
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
@@ -174,7 +177,6 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	@Override
 	protected void onDestroy() {
-		terminated = true;
 		super.onDestroy();
 		instance = null;
 	}
@@ -232,47 +234,14 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	}
 
-
 	private void flashTorch() {
-		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
-		final Camera cam;
-		final Parameters p;
-		try {
-			cam = Camera.open();
-			p = cam.getParameters();
-			p.setFlashMode(Parameters.FLASH_MODE_TORCH);
-			cam.setParameters(p);
-			cam.startPreview();
-		} catch (Exception e) {
-			Log.e("Failed tunrning torch on");
-			return;
-		}
-
-		flashTorchTimer = new Timer();
+		if (flashTorchTimer != null || !getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
 		float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashlight_frequency", 0.3f);
-		flashTorchTimer.schedule(new TimerTask() {          
-			@Override
-			public void run() {
-				IncomingCallActivity.this.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if (terminated) {
-							p.setFlashMode(Parameters.FLASH_MODE_OFF);
-							cam.stopPreview();
-							//cam.release();
-							flashTorchTimer.cancel();
-						} else {
-							if (torhcIsOn) p.setFlashMode(Parameters.FLASH_MODE_OFF);
-							else p.setFlashMode(Parameters.FLASH_MODE_TORCH);
-							cam.setParameters(p);
-							torhcIsOn = !torhcIsOn;	
-						}
-					}
-				});
-			}
-		}, 0, (long)(flashFrequencyInSeconds*1000));
+		flashTorchTimer = new LinphoneTorchFlashingTimer();
+		flashTorchTimer.scheduleAtIntervalInSeconds(this, flashFrequencyInSeconds);
 	}
 
+	
 	private void decline() {
 		LinphoneManager.getLc().terminateCall(mCall);
 	}

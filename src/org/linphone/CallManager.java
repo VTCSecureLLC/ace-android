@@ -24,6 +24,7 @@ import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.LinphoneLocationManager;
 
 
 /**

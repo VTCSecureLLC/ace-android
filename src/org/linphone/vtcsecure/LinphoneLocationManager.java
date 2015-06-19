@@ -1,6 +1,9 @@
-package org.linphone;
+package org.linphone.vtcsecure;
 
 import java.util.Calendar;
+
+import org.linphone.R;
+import org.linphone.R.string;
 
 import android.app.Activity;
 import android.content.Context;

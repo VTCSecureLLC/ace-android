@@ -48,6 +48,7 @@ import org.linphone.setup.RemoteProvisioningActivity;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
+import org.linphone.vtcsecure.LinphoneLocationManager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -83,8 +84,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.linphone.LinphoneLocationManager;
 
 /**
  * @author Sylvain Berfini
