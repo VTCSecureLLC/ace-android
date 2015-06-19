@@ -164,9 +164,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	@Override
 	protected void onPause() {
-		
 		terminated = true;
-
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
@@ -176,6 +174,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	@Override
 	protected void onDestroy() {
+		terminated = true;
 		super.onDestroy();
 		instance = null;
 	}
