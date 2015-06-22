@@ -67,7 +67,7 @@ import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
-import org.linphone.vtcsecure.LinphoneTorchFlashingTimer;
+import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -358,7 +358,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 
 	public void enableCamera(LinphoneCall call, boolean enable) {
 		if (call != null) {
-			if (LinphoneTorchFlashingTimer.instance != null) LinphoneTorchFlashingTimer.instance.cancel();
+			LinphoneTorchFlasher.instance().stopFlashTorch();
 			call.enableCamera(enable);
 			if (mServiceContext.getResources().getBoolean(R.bool.enable_call_notification))
 				LinphoneService.instance().refreshIncallIcon(mLc.getCurrentCall());

@@ -32,15 +32,12 @@ import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
-import org.linphone.vtcsecure.LinphoneTorchFlashingTimer;
+import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.hardware.Camera;
-import android.hardware.Camera.Parameters;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.KeyEvent;
@@ -70,7 +67,6 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	private Boolean torhcIsOn = false;
 	private Timer flashRedBackgroundTimer;
 	private Timer vibrateTimer;
-	private LinphoneTorchFlashingTimer flashTorchTimer;
 	private boolean terminated = false;
 
 
@@ -166,8 +162,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	@Override
 	protected void onPause() {
 		terminated = true;
-		if (flashTorchTimer != null) flashTorchTimer.cancel();
-		flashTorchTimer = null;
+		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
@@ -235,23 +230,19 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	}
 
 	private void flashTorch() {
-		if (flashTorchTimer != null || !getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
-		float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashlight_frequency", 0.3f);
-		flashTorchTimer = new LinphoneTorchFlashingTimer();
-		flashTorchTimer.scheduleAtIntervalInSeconds(this, flashFrequencyInSeconds);
+		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
+		LinphoneTorchFlasher.instance().startFlashTorch();
 	}
 
 	
 	private void decline() {
-		if (flashTorchTimer != null) flashTorchTimer.cancel();
-		flashTorchTimer = null;
+		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneManager.getLc().terminateCall(mCall);
 	}
 
 	private void answer() {
 		
-		if (flashTorchTimer != null) flashTorchTimer.cancel();
-		flashTorchTimer = null;
+		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneCallParams params = LinphoneManager.getLc().createDefaultCallParameters();
 
 		boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(this);
