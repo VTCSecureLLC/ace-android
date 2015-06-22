@@ -29,6 +29,7 @@ import org.linphone.ui.CallButton;
 import org.linphone.ui.EraseButton;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -79,7 +80,7 @@ public class DialerFragment extends Fragment {
 		sipDomainTextView.setText("");
 		String externalDomains = LinphonePreferences.instance().getConfig().getString("vtcsecure", "external_domains", "");
 		if (externalDomains.length()>0) {
-			externalDomains =getActivity().getString(R.string.leave_empty)+","+externalDomains;
+			externalDomains =","+externalDomains;
 			String sipDomains[] = externalDomains.split(",");
 			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
 			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
@@ -87,7 +88,10 @@ public class DialerFragment extends Fragment {
 
 			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
-					if (spinnerView != null) ((TextView) spinnerView).setText("");
+					if (spinnerView != null) {
+						((TextView) spinnerView).setText("");
+						((TextView) spinnerView).setTextColor(Color.TRANSPARENT);
+					}
 					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
 					else sipDomainTextView.setText("");
 					mAddress.setTag(sipDomainTextView.getText());
@@ -95,12 +99,13 @@ public class DialerFragment extends Fragment {
 				public void onNothingSelected(AdapterView<?> arg0) {}  
 			});
 			sipDomainSpinner.setAdapter(adapter);
-
+			sipDomainSpinner.setOn
+			
 		} else {
 			sipDomainSpinner.setVisibility(View.GONE);
 		}
 
-
+		
 
 		EraseButton erase = (EraseButton) view.findViewById(R.id.Erase);
 		erase.setAddressWidget(mAddress);

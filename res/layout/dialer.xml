@@ -32,7 +32,8 @@
         android:layout_marginBottom="11dp"
         android:ems="10"
         android:gravity="center"
-        android:text="domain" >
+        android:text="domain"
+        android:textColor="@color/main_app_color" >
 
     </TextView>
     
