@@ -4,19 +4,49 @@
     android:layout_height="match_parent"
   	android:background="@drawable/background"
     android:orientation="vertical">
-    
-    <org.linphone.ui.AddressText
-        android:id="@+id/Adress"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.35"
-        android:textColor="@android:color/white"
-        android:background="@drawable/dialer_address_background"
-        android:inputType="textEmailAddress"
-        android:hint="@string/addressHint"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-       	android:layout_gravity="center" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0.35" >
+
+        <org.linphone.ui.AddressText
+            android:id="@+id/Adress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.35"
+            android:background="@drawable/dialer_address_background"
+            android:ems="10"
+            android:gravity="top"
+            android:hint="@string/addressHint"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:textColor="@android:color/white" >
+
+            <requestFocus />
+        </org.linphone.ui.AddressText>
+
+        <Spinner
+            android:id="@+id/sipDomainSpinner"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignRight="@id/Adress"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/atbutton" />
+
+        <TextView
+            android:id="@+id/sipDomainTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/Adress"
+            android:layout_marginBottom="15dp"
+            android:ems="10"
+            android:gravity="center"
+            android:text="domain"
+            android:textColor="@color/main_app_color" />
+
+    </RelativeLayout><AbsoluteLayout ></AbsoluteLayout>
 	
     <org.linphone.ui.Numpad 
 	    android:id="@+id/Dialer"

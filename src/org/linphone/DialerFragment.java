@@ -99,8 +99,7 @@ public class DialerFragment extends Fragment {
 				public void onNothingSelected(AdapterView<?> arg0) {}  
 			});
 			sipDomainSpinner.setAdapter(adapter);
-			sipDomainSpinner.setOn
-			
+
 		} else {
 			sipDomainSpinner.setVisibility(View.GONE);
 		}
