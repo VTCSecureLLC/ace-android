@@ -166,7 +166,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	@Override
 	protected void onPause() {
 		terminated = true;
-		flashTorchTimer.cancel();
+		if (flashTorchTimer != null) flashTorchTimer.cancel();
 		flashTorchTimer = null;
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
@@ -243,10 +243,15 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	
 	private void decline() {
+		if (flashTorchTimer != null) flashTorchTimer.cancel();
+		flashTorchTimer = null;
 		LinphoneManager.getLc().terminateCall(mCall);
 	}
 
 	private void answer() {
+		
+		if (flashTorchTimer != null) flashTorchTimer.cancel();
+		flashTorchTimer = null;
 		LinphoneCallParams params = LinphoneManager.getLc().createDefaultCallParameters();
 
 		boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(this);
