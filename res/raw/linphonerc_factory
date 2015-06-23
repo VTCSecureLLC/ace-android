@@ -32,11 +32,3 @@ max_calls=10
 log_collection_upload_server_url=https://www.linphone.org:444/lft.php
 user_certificates_path=/data/data/org.linphone.vtcsecure/files
 
-
-[vtcsecure]
-incoming_flashlight_frequency=0.3
-incoming_flashred_frequency=0.3
-incoming_vibrate_frequency=2.0
-outgoing_ring_duration=2.8
-emergency_username=911
-external_domains=domain1.com,domain2.com,domain3.com
