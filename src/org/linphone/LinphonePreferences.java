@@ -790,8 +790,10 @@ public class LinphonePreferences {
 				bandwidth = 1024 + 128;
 			} else if (preferredVideoSize.equals("vga")) {
 				bandwidth = 660;
+			} else if (preferredVideoSize.equals("cif")) {
+				bandwidth = 460;
 			} else if (preferredVideoSize.equals("qvga")) {
-				bandwidth = 380;
+				bandwidth = 410;
 			} else if (preferredVideoSize.equals("qcif")) {
 				bandwidth = 256;
 			}
