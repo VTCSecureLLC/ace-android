@@ -1311,17 +1311,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			lAddress= LinphoneCoreFactory.instance().createLinphoneAddress("uknown","unknown","unkonown");
 		}
 
-        // Control Row
+        // Control Row and Image Row
     	LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
-    	callView.setId(index+1);
+        LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
+		callView.setId(index+1);
 		setContactName(callView, lAddress, sipUri, resources);
-		displayCallStatusIconAndReturnCallPaused(callView, call);
+		displayCallStatusIconAndReturnCallPaused(callView, imageView, call);
 		setRowBackground(callView, index);
 		registerCallDurationTimer(callView, call);
     	callsList.addView(callView);
-    	
-		// Image Row
-    	LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
+
         Contact contact  = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
 		if(contact != null) {
 			displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
@@ -1389,7 +1388,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 	
-	private boolean displayCallStatusIconAndReturnCallPaused(LinearLayout callView, LinphoneCall call) {
+	private boolean displayCallStatusIconAndReturnCallPaused(LinearLayout callView, LinearLayout  imageView,  LinphoneCall call) {
 		boolean isCallPaused, isInConference;
 		ImageView callState = (ImageView) callView.findViewById(R.id.callStatus);
 		callState.setTag(call);
@@ -1404,7 +1403,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			callState.setImageResource(R.drawable.call_state_ringing_default);
 			isCallPaused = false;
 			isInConference = false;
-			if (call.getState() == State.OutgoingRinging) startOutgoingRingCount(callView);
+			if (call.getState() == State.OutgoingRinging) startOutgoingRingCount(imageView);
 		    else stopOutgoingRingCount();
 		} else {
 			stopOutgoingRingCount();
