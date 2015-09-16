@@ -19,7 +19,7 @@ before_install:
   -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin
   -O ndk.bin; fi
 - sudo apt-get update -qq
-- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
+- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake aclocal
   libtool pkg-config bc libwww-perl
 - sudo apt-get install -qq --force-yes p7zip
 - 7zr x ndk.bin 2>&1 | grep -v Extracting
