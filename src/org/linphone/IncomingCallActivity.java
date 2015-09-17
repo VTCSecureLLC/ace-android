@@ -41,7 +41,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,7 +70,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	private Timer flashRedBackgroundTimer;
 	private Timer vibrateTimer;
 	private boolean terminated = false;
-
+    private int ringCount = 0;
 
 	public static IncomingCallActivity instance() {
 		return instance;
@@ -115,7 +117,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	@Override
 	protected void onResume() {
-		super.onResume();
+        super.onResume();
 		instance = this;
 
 		// VTCSecure
@@ -123,6 +125,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		flashRedBackground();
 		flashTorch();
 		vibrate();
+        stopRingCount();
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
@@ -148,7 +151,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		// May be greatly sped up using a drawable cache
 		Contact contact = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), address);
 		LinphoneUtils.setImagePictureFromUri(this, mPictureView.getView(), contact != null ? contact.getPhotoUri() : null,
-				contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
+                contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
 
 		// To be done after findUriPictureOfContactAndSetDisplayName called
 		mNameView.setText(contact != null ? contact.getName() : "");
@@ -167,6 +170,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		if (lc != null) {
 			lc.removeListener(mListener);
 		}
+        stopRingCount();
 		super.onPause();
 	}
 
@@ -189,7 +193,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	private void flashRedBackground () {
 		flashRedBackgroundTimer = new Timer();
 		float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashred_frequency", 0.3f);
-		flashRedBackgroundTimer.schedule(new TimerTask() {          
+		flashRedBackgroundTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
@@ -200,7 +204,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 						} else {
 							if (backgroundIsRed) topLayout.setBackgroundColor(Color.TRANSPARENT);
 							else topLayout.setBackgroundColor(Color.RED);
-							backgroundIsRed = !backgroundIsRed;		
+							backgroundIsRed = !backgroundIsRed;
 						}
 					}
 				});
@@ -214,14 +218,18 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		float vibrateFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_vibrate_frequency", 0.3f);
 		final Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 
-		vibrateTimer.schedule(new TimerTask() {          
+		vibrateTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (terminated) vibrateTimer.cancel();
-						else v.vibrate(500);				
+						if (terminated){
+                            vibrateTimer.cancel();
+                        } else {
+                            incrementRingCount();
+                            v.vibrate(500);
+                        }
 					}
 				});
 			}
@@ -278,4 +286,20 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		decline();
 		finish();
 	}
+
+    private void incrementRingCount() {
+        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
+        outgoingRingCountTextView.setVisibility(View.VISIBLE);
+        ringCount++;
+        outgoingRingCountTextView.setText(ringCount + "");
+
+    }
+
+    private void stopRingCount() {
+        ringCount = 0;
+        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
+        outgoingRingCountTextView.setVisibility(View.GONE);
+        outgoingRingCountTextView.setText(ringCount + "");
+
+    }
 }
