@@ -272,16 +272,6 @@
 			</PreferenceScreen>
 
 		</PreferenceScreen>
-		<PreferenceScreen
-			android:title="Resources">
-			<PreferenceCategory
-				android:title="Deaf/HoH Resource Page">
-				<Preference android:key="emailace" android:title="Email ACE Team"/>
-				<Preference android:key="websiteace" android:title="Website: VTCSecure"/>
-			</PreferenceCategory>
-		</PreferenceScreen>
-
-
 
 	</PreferenceCategory>
 
