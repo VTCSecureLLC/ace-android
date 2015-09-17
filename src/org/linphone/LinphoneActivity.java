@@ -408,8 +408,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			newFragment = new AboutFragment();
 			break;
 		case CHATLIST:
-			newFragment = new ChatListFragment();
-			messageListFragment = new Fragment();
+			newFragment = new HelpFragment();
+			//messageListFragment = new Fragment();
 			break;
 		case CHAT:
 			newFragment = new ChatFragment();
