@@ -42,9 +42,10 @@ android:
   #- sys-img-armeabi-v7a-android-19
   #- sys-img-x86-android-17
 before_script:
-- echo “Removing any linphone sdks to download fresh”
+#- echo “Removing any linphone sdks to download fresh”
 - cd submodules
--  rm -R linphone
+#-  rm -R linphone
+- git fetch —-all
 - cd ..
 - echo "Starting to update submodules"
 - git submodule update --init --recursive
