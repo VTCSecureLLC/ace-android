@@ -18,8 +18,8 @@ before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin
   -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin
   -O ndk.bin; fi
-- sudo apt-get update -qq
-- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
+- sudo apt-get update 
+- sudo apt-get install --force-yes yasm nasm curl ant rsync autoconf automake
   libtool pkg-config bc libwww-perl
 - sudo apt-get install -qq --force-yes p7zip
 - 7zr x ndk.bin 2>&1 | grep -v Extracting
@@ -39,8 +39,8 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - addon-google_apis-google-19
-  - sys-img-armeabi-v7a-android-19
-  - sys-img-x86-android-17
+  #- sys-img-armeabi-v7a-android-19
+  #- sys-img-x86-android-17
 before_script:
 - echo "Starting to update submodules"
 - git submodule update --init --recursive
