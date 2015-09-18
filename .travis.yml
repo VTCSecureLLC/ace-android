@@ -171,6 +171,7 @@ script:
 - bash -xc '
   echo "Running make" ;
   find . -name 'ndk-build' -print ;
+  ls -lsR $HOME/android-ndk-r10d/
   touch /tmp/make.out ;
   ( COUNTER=0; 
   while [  $COUNTER -lt 30 ]; do 
