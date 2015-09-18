@@ -1,4 +1,5 @@
 language: android
+sudo: false
 env:
   global:
   - MALLOC_ARENA_MAX=2
@@ -12,6 +13,8 @@ env:
 addons:
   apt:
     packages:
+    - ia32-libs
+    - ia32-libs-multiarch
     - yasm
     - nasm
     - curl
@@ -49,9 +52,9 @@ before_install:
 - export ANDROID_NDK=$(pwd)/android-ndk-r10d
 - export ANDROID_HOME=$(pwd)/android-sdk-linux
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
-- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
-- sudo dpkg --add-architecture i386 || true
-- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
+#- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
+#- sudo dpkg --add-architecture i386 || true
+#- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
 android:
   components:
   - build-tools-19.1.0
