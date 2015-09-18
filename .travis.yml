@@ -47,8 +47,8 @@ before_install:
 - sudo apt-get install --force-yes yasm nasm curl ant rsync autoconf automake
   libtool pkg-config bc libwww-perl
 - sudo apt-get install -qq --force-yes p7zip
-- export ANDROID_NDK=$(pwd)/android-ndk-r10d
-- export ANDROID_HOME=$(pwd)/android-sdk-linux
+- export ANDROID_NDK=$HOME/android-ndk-r10d
+- export ANDROID_HOME=$HOME/android-sdk-linux
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
 - sudo dpkg --add-architecture i386 || true
@@ -170,17 +170,19 @@ before_script:
 script:
 - bash -xc '
   echo "Running make" ;
-  echo Before - ANDROID_NDK=$ANDROID_NDK ANDROID_HOME=$ANDROID_HOME PATH=$PATH ;
-  export ANDROID_NDK=$HOME/android-ndk-r10d ;
-  export ANDROID_HOME=$HOME/android-sdk-linux ;
-  export PATH=$ANDROID_NDK:$ANDROID_NDK/ndk-build:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH ;
-  echo After - ANDROID_NDK=$ANDROID_NDK ANDROID_HOME=$ANDROID_HOME PATH=$PATH ;
+  find . -name 'ndk-build' -print ;
   touch /tmp/make.out ;
-  (while true; do sleep 60; echo "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done ) &
+  ( COUNTER=0; 
+  while [  $COUNTER -lt 30 ]; do 
+    echo The counter is $COUNTER ;
+    let COUNTER=COUNTER+1 ;
+    sleep 60;
+    echo "Muted, but still building. Last 100 lines:";
+    tail -100 /tmp/make.out;
+  done;
+  echo Timing out after 30 minutes. ) &
   MUTED_PID=$! ;
   make > /tmp/make.out 2>&1 ;
-  MAKE_PID=$! ;
-  wait $MAKE_PID ;
   MAKE_RESULT=$@ ;
   tail -1000 /tmp/make.out ;
   kill $MUTED_PID ;
