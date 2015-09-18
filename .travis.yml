@@ -87,12 +87,12 @@ before_script:
 - if [ ! -e "submodules/linphone/.git" ]; then
     git clone git://github.com/VTCSecureLLC/linphone.git "submodules/linphone" ;
   fi
-- if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
-    git clone git://git.linphone.org/mediastreamer2.git "submodules/linphone/mediastreamer2" ;
-  fi
-- if [ ! -e "submodules/linphone/oRTP/.git" ]; then
-    git clone git://git.linphone.org/ortp.git "submodules/linphone/oRTP" ;
-  fi
+#- if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
+#    git clone git://git.linphone.org/mediastreamer2.git "submodules/linphone/mediastreamer2" ;
+#  fi
+#- if [ ! -e "submodules/linphone/oRTP/.git" ]; then
+#    git clone git://git.linphone.org/ortp.git "submodules/linphone/oRTP" ;
+#  fi
 - if [ ! -e "submodules/externals/gsm/.git" ]; then
     git clone git://git.linphone.org/gsm.git "submodules/externals/gsm" ;
   fi
@@ -177,13 +177,13 @@ before_script:
 - if [ ! -e "submodules/externals/webrtc/.git"]; then
     git clone git://git.linphone.org/webrtc.git "submodules/externals/webrtc" ;
   fi
-- git submodule update --init --recursive
-- echo "Finished updating submodules"
+#- git submodule update --init --recursive
+#- echo "Finished updating submodules"
 script:
 - bash -xc '
   echo "Running make" ;
   find . -name 'ndk-build' -print ;
-  ls -lsR $HOME/android-ndk-r10d/
+  ls -lsR $HOME/android-ndk-r10d/ ;
   touch /tmp/make.out ;
   ( COUNTER=0; 
   while [  $COUNTER -lt 30 ]; do 
