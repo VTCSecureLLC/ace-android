@@ -32,7 +32,7 @@ cache:
   bundler: true
   ccache: true
   directories:
-  - $CACHE_DIR
+  - $HOME/.ccache
   - $HOME/ndk.bin
   - $HOME/android-ndk-r10d
   - $HOME/android-sdk-linux
@@ -40,13 +40,18 @@ cache:
   - $HOME/libs
   - $HOME/submodules
 before_install:
-- if [ -e ndk.bin -o `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; fi
-- if [ -e ndk.bin -o `uname -m` = i386 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
-- if [ ! -d android-ndk-r10d ] ; then 7zr x ndk.bin 2>&1 | grep -v Extracting ; fi
 - sudo apt-get update 
-- sudo apt-get install --force-yes yasm nasm curl ant rsync autoconf automake
+- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
   libtool pkg-config bc libwww-perl
 - sudo apt-get install -qq --force-yes p7zip
+- if [ ! -e ndk.bin ]; then
+    if [ `uname -m` = x86_64 ]; then
+      wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin ;
+    else
+      wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin ;
+    fi ;
+  fi
+- if [ ! -d android-ndk-r10d ] ; then 7zr x ndk.bin 2>&1 | grep -v Extracting ; fi
 - export ANDROID_NDK=$HOME/android-ndk-r10d
 - export ANDROID_HOME=$HOME/android-sdk-linux
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
