@@ -44,6 +44,12 @@ android:
 before_script:
 #- echo “Removing any linphone sdks to download fresh”
 - echo "Starting to update submodules"
+- git config --global pack.windowMemory 60m
+- git config --global pack.packSizeLimit 60m
+- git config --global pack.deltacachesize 60m
+- git config --global core.packedgitwindowsize 50m
+- git config --global core.packedgitlimit 50m
+- git config --global core.deltacachesize 50m
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
 - echo "Extracting pre-build binary sdk"
