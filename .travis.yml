@@ -1,0 +1,62 @@
+language: android
+env:
+  global:
+  - MALLOC_ARENA_MAX=2
+  - secure: gDjA3rO/+HdOMuEyjLHN4I6XFe3sNTsFDnwvBT70oOQvTMMnKgVS1IhKy/6aPfT2bf9miS/TxB2tyE9WjHkP3Uhca4COViL+7QldBXXrEEStzBViSj3t2EUHaE+qd6IlH6E9DbOzloJNmnwVxRuOL602t2KCKazU6iZsN5N7pmY=
+  matrix:
+  - ANDROID_SDKS=android-19,sysimg-19 ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a
+    ENABLE_GPL_THIRD_PARTIES=0 BUILD_VIDEO=1 BUILD_OPENH264=1 ENABLE_OPENH264_DECODER=1
+    BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1
+    BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1
+    BUILD_TLS=1 BUILD_WEBRTC_ISAC=1 BUILD_OPUS=1 BUILD_UPNP=1 BUILD_MATROSKA=0 BUILD_ILBC=1
+cache:
+  apt: true
+  ccache: true
+  directories:
+  - $CACHE_DIR
+before_install:
+- if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin
+  -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin
+  -O ndk.bin; fi
+- sudo apt-get update -qq
+- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
+  libtool pkg-config bc libwww-perl
+- sudo apt-get install -qq --force-yes p7zip
+- 7zr x ndk.bin 2>&1 | grep -v Extracting
+- export ANDROID_NDK=$(pwd)/android-ndk-r10d
+- export ANDROID_HOME=$(pwd)/android-sdk-linux
+- export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
+- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs
+  ia32-libs-multiarch ; fi || true
+- sudo dpkg --add-architecture i386 || true
+- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
+  || true
+android:
+  components:
+  - build-tools-19.1.0
+  - android-19
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - addon-google_apis-google-19
+  - sys-img-armeabi-v7a-android-19
+  - sys-img-x86-android-17
+before_script:
+- echo "Starting to update submodules"
+- git submodule update --init --recursive
+- echo "Finished updating submodules"
+script:
+- echo "Running make"
+- bash -xc 'touch /tmp/make.out; (while true; do sleep 300; echo "Muted, but still
+  building. Last 100 lines:"; tail -100 /tmp/make.out; done ) &; MUTED_PID=$!; make
+  > /tmp/make.out 2>&1; MAKE_PID=$!; wait $MAKE_PID; MAKE_RESULT=$@; tail -1000 /tmp/make.out;
+  kill $MUTED_PID; exit $MAKE_RESULT'
+- make liblinphone-android-sdk
+- make mediastreamer2-sdk
+after_script:
+- ./Tools/github_release.sh
+notifications:
+  slack:
+    secure: PbV38W/sM4KC9zan3fNkMhqOl9uISNkqtmqrKruuNXMM0uOXEmAP57cyHP3k8B2UEAECXVRRmD3VtVJmQt+y9abaR1YUIRdMlRgkSoXmy4vAVh9tveZvNkohFzlfNCLS4oGiT/bodCuLpVP7AwT97l0eRZXABCx1+x0Ju7sHyXA=
+  flowdock:
+    secure: RGcyuffpq84c1ku6htGkmDnnwvcI/xQreEDowCGVzYPa2ih5birV3GayMMaZoxG+Xpc9Qjkq5wm5wwsqzMQMryg2SesqHZ22tdDLT8oKEmNdZRoUKr6PjJPbcy+YCrNXcqP3fWUNd0FfApiDOMM7q+CI7yl49auJigE0wOKG4Z4=
