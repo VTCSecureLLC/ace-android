@@ -15,14 +15,13 @@ dependencies {
 android {
     compileSdkVersion 22
     buildToolsVersion "20.0.0"
-
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
-            resources.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
-            aidl.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
-            renderscript.srcDirs = ['submodules/linphone/mediastreamer2/java/src','submodules/linphone/java/j2se','submodules/linphone/java/common','submodules/linphone/java/impl','submodules/externals/axmlrpc/src/main/java','submodules/linphone/coreapi/help/java','src']
+            java.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
+            resources.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
+            aidl.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
+            renderscript.srcDirs = ['submodules/linphone/mediastreamer2/java/src', 'submodules/linphone/java/j2se', 'submodules/linphone/java/common', 'submodules/linphone/java/impl', 'submodules/externals/axmlrpc/src/main/java', 'submodules/linphone/coreapi/help/java', 'src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
             jniLibs.srcDir 'libs'
@@ -41,5 +40,10 @@ android {
         // by a similar customization.
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
+    }
+    defaultConfig {
+        targetSdkVersion 19
+    }
+    productFlavors {
     }
 }
