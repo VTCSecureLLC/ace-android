@@ -33,12 +33,12 @@ cache:
   ccache: true
   directories:
   - $HOME/.ccache
-  - $HOME/ndk.bin
-  - $HOME/android-ndk-r10d
-  - $HOME/android-sdk-linux
-  - $HOME/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
-  - $HOME/libs
-  - $HOME/submodules
+  - ndk.bin
+  - android-ndk-r10d
+  - android-sdk-linux
+  - liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
+  - libs
+  - submodules
 before_install:
 - sudo apt-get update 
 - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
@@ -52,8 +52,8 @@ before_install:
     fi ;
   fi
 - if [ ! -d android-ndk-r10d ] ; then 7zr x ndk.bin 2>&1 | grep -v Extracting ; fi
-- export ANDROID_NDK=$HOME/android-ndk-r10d
-- export ANDROID_HOME=$HOME/android-sdk-linux
+- export ANDROID_NDK=$(pwd)/android-ndk-r10d
+- export ANDROID_HOME=$(pwd)/android-sdk-linux
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
 - sudo dpkg --add-architecture i386 || true
@@ -184,8 +184,6 @@ script:
   echo "Running make" ;
   pwd ; \
   find . -name 'ndk-build' -print ;
-  ls -lsR $(pwd)/android-ndk-r10d/ ;
-  ls -lsR $(pwd)/android-ndk-r10d/ndk-build ;
   touch /tmp/make.out ;
   ( COUNTER=0; 
   while [  $COUNTER -lt 30 ]; do 
