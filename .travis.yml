@@ -75,8 +75,65 @@ before_script:
 - git config --global core.packedgitlimit 50m
 - git config --global core.deltacachesize 50m
 - echo "Starting to update submodules"
-- [ -e submodules/belle-sip/.git ] ||
-  git submodule update --init --recursive
+- [ -e "submodules/linphone/.git" ] ||
+  git clone git://github.com/VTCSecureLLC/linphone.git "submodules/linphone"
+- [ -e "submodules/externals/gsm/.git" ] ||
+  git clone git://git.linphone.org/gsm.git "submodules/externals/gsm"
+- [ -e "submodules/externals/speex/.git" ] ||
+  git clone git://git.linphone.org/speex "submodules/externals/speex"
+- [ -e "submodules/msilbc/.git"]
+  git clone git://git.linphone.org/msilbc.git "submodules/msilbc"
+- [ -e "submodules/libilbc-rfc3951/.git"] ||
+  git clone git://git.linphone.org/libilbc-rfc3951.git "submodules/libilbc-rfc3951"
+- [ -e  "submodules/externals/ffmpeg/.git"] ||
+  git clone git://git.linphone.org/ffmpeg.git "submodules/externals/ffmpeg"
+- [ -e  "submodules/externals/x264/.git"] ||
+  git clone git://git.linphone.org/x264.git "submodules/externals/x264"
+- [ -e  "submodules/msx264/.git"] ||
+  git clone git://git.linphone.org/msx264.git "submodules/msx264"
+- [ -e  "submodules/externals/opencore-amr/.git"] ||
+  git clone git://git.linphone.org/opencore-amr.git "submodules/externals/opencore-amr"
+- [ -e  "submodules/msamr/.git"] ||
+  git clone git://git.linphone.org/msamr "submodules/msamr"
+- [ -e  "submodules/externals/libvpx/.git"] ||
+  git clone https://chromium.googlesource.com/webm/libvpx "submodules/externals/libvpx"
+- [ -e  "submodules/bzrtp/.git"] ||
+  git clone git://git.linphone.org/bzrtp.git "submodules/bzrtp"
+- [ -e  "submodules/externals/srtp/.git"] ||
+  git clone git://git.linphone.org/srtp.git "submodules/externals/srtp"
+- [ -e  "submodules/mssilk/.git"] ||
+  git clone git://git.linphone.org/mssilk.git "submodules/mssilk"
+- [ -e  "submodules/externals/vo-amrwbenc/.git"] ||
+  git clone git://git.linphone.org/vo-amrwbenc.git "submodules/externals/vo-amrwbenc"
+- [ -e  "submodules/bcg729/.git"] ||
+  git clone git://git.linphone.org/bcg729.git "submodules/bcg729"
+- [ -e  "submodules/belle-sip/.git"] ||
+  git clone git://git.linphone.org/belle-sip "submodules/belle-sip"
+- [ -e  "submodules/externals/antlr3/.git"] ||
+  git clone git://git.linphone.org/antlr3.git "submodules/externals/antlr3"
+- [ -e  "submodules/externals/libxml2/.git"] ||
+  git clone git://git.gnome.org/libxml2 "submodules/externals/libxml2"
+- [ -e  "submodules/externals/libupnp/.git"] ||
+  git clone git://git.linphone.org/libupnp.git "submodules/externals/libupnp"
+- [ -e  "submodules/externals/cunit/.git"] ||
+  git clone git://git.linphone.org/cunit.git "submodules/externals/cunit"
+- [ -e  "submodules/externals/axmlrpc/.git"] ||
+  git clone git://git.linphone.org/axmlrpc.git "submodules/externals/axmlrpc"
+- [ -e  "submodules/externals/polarssl/.git"] ||
+  git clone git://git.linphone.org/polarssl.git "submodules/externals/polarssl"
+- [ -e  "submodules/externals/opus/.git"] ||
+  git clone https://github.com/VTCSecureLLC/opus.git "submodules/externals/opus"
+- [ -e  "submodules/mswebrtc/.git"] ||
+  git clone git://git.linphone.org/mswebrtc.git "submodules/mswebrtc"
+- [ -e "submodules/msopenh264/.git"] ||
+  git clone git://git.linphone.org/msopenh264.git "submodules/msopenh264"
+- [ -e  "submodules/externals/openh264/.git"] ||
+  git clone https://github.com/cisco/openh264 "submodules/externals/openh264"
+- [ -e  "submodules/externals/libmatroska/.git"] ||
+  git clone https://github.com/Matroska-Org/foundation-source.git "submodules/externals/libmatroska"
+- [ -e  "submodules/externals/webrtc/.git"] ||
+  git clone git://git.linphone.org/webrtc.git "submodules/externals/webrtc"
+- git submodule update --init --recursive
 - echo "Finished updating submodules"
 script:
 - echo "Running make"
