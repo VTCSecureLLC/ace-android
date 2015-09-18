@@ -9,28 +9,49 @@ env:
     BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1
     BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1
     BUILD_TLS=1 BUILD_WEBRTC_ISAC=1 BUILD_OPUS=1 BUILD_UPNP=1 BUILD_MATROSKA=0 BUILD_ILBC=1
+addons:
+  apt:
+    packages:
+    - yasm
+    - nasm
+    - curl
+    - ant
+    - rsync
+    - autoconf
+    - automake
+    - libtool
+    - pkg-config
+    - bc
+    - libwww-perl
+    - p7zip
 cache:
   apt: true
+  bundler: true
   ccache: true
   directories:
   - $CACHE_DIR
+  - $HOME/ndk.bin
+  - $HOME/android-ndk-r10d
+  - $HOME/android-sdk-linux
+  - $HOME/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
+  - $HOME/libs
+  - $HOME/submodules
 before_install:
-- if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin
-  -O ndk.bin; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin
-  -O ndk.bin; fi
-- sudo apt-get update 
-- sudo apt-get install --force-yes yasm nasm curl ant rsync autoconf automake
-  libtool pkg-config bc libwww-perl
-- sudo apt-get install -qq --force-yes p7zip
-- 7zr x ndk.bin 2>&1 | grep -v Extracting
+- [ -f ndk.bin ] || if [ `uname -m` = x86_64 ];
+  then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; 
+  else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin;
+  fi
+- [ -d android-ndk-r10d ] || 7zr x ndk.bin 2>&1 | grep -v Extracting
+#- sudo apt-get update 
+#- sudo apt-get install --force-yes yasm nasm curl ant rsync autoconf automake
+#  libtool pkg-config bc libwww-perl
+#- sudo apt-get install -qq --force-yes p7zip
 - export ANDROID_NDK=$(pwd)/android-ndk-r10d
 - export ANDROID_HOME=$(pwd)/android-sdk-linux
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
-- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs
-  ia32-libs-multiarch ; fi || true
+- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
 - sudo dpkg --add-architecture i386 || true
-- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
-  || true
+- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
 android:
   components:
   - build-tools-19.1.0
@@ -42,18 +63,21 @@ android:
 #  - sys-img-armeabi-v7a-android-19
 #  - sys-img-x86-android-17
 before_script:
-#- echo "Starting to update submodules"
-#- git config --global pack.windowMemory 60m
-#- git config --global pack.packSizeLimit 60m
-#- git config --global pack.deltacachesize 60m
-#- git config --global core.packedgitwindowsize 50m
-#- git config --global core.packedgitlimit 50m
-#- git config --global core.deltacachesize 50m
-#- git submodule update --init --recursive
-#- echo "Finished updating submodules"
 - echo "Extracting pre-build binary sdk"
-- wget https://vtcsecurellc.github.io/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
-- unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
+- [ -f liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ] || 
+  wget https://vtcsecurellc.github.io/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
+- [ -f libs/armeabi-v7a/liblinphone-armeabi-v7a.so ] ||
+  unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
+- git config --global pack.windowMemory 60m
+- git config --global pack.packSizeLimit 60m
+- git config --global pack.deltacachesize 60m
+- git config --global core.packedgitwindowsize 50m
+- git config --global core.packedgitlimit 50m
+- git config --global core.deltacachesize 50m
+- echo "Starting to update submodules"
+- [ -e submodules/belle-sip/.git ] ||
+  git submodule update --init --recursive
+- echo "Finished updating submodules"
 script:
 - echo "Running make"
 - bash -xc 'touch /tmp/make.out; (while true; do sleep 300; echo "Muted, but still
