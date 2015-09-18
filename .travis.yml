@@ -182,8 +182,10 @@ before_script:
 script:
 - bash -xc '
   echo "Running make" ;
+  pwd ; \
   find . -name 'ndk-build' -print ;
-  ls -lsR $HOME/android-ndk-r10d/ ;
+  ls -lsR $(pwd)/android-ndk-r10d/ ;
+  ls -lsR $(pwd)/android-ndk-r10d/ndk-build ;
   touch /tmp/make.out ;
   ( COUNTER=0; 
   while [  $COUNTER -lt 30 ]; do 
