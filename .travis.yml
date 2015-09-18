@@ -42,6 +42,10 @@ android:
   #- sys-img-armeabi-v7a-android-19
   #- sys-img-x86-android-17
 before_script:
+- echo “pulling fresh linphone”
+- cd submodules
+- git clone git://github.com/VTCSecureLLC/linphone.git
+- cd ..
 - echo "Starting to update submodules"
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
