@@ -174,7 +174,7 @@ script:
   export ANDROID_NDK=$HOME/android-ndk-r10d ;
   export ANDROID_HOME=$HOME/android-sdk-linux ;
   export PATH=$ANDROID_NDK:$ANDROID_NDK/ndk-build:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH ;
-  echo AFTER: ANDROID_NDK=$ANDROID_NDK ANDROID_HOME=$ANDROID_HOME PATH=$PATH ;
+  echo After - ANDROID_NDK=$ANDROID_NDK ANDROID_HOME=$ANDROID_HOME PATH=$PATH ;
   touch /tmp/make.out ;
   (while true; do sleep 60; echo "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done ) &
   MUTED_PID=$! ;
