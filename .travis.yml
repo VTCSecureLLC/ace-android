@@ -87,7 +87,7 @@ before_script:
 - if [ ! -e "submodules/externals/speex/.git" ]; then
     git clone git://git.linphone.org/speex "submodules/externals/speex" ;
   fi
-- if [ ! -e "submodules/msilbc/.git"]
+- if [ ! -e "submodules/msilbc/.git"]; then
     git clone git://git.linphone.org/msilbc.git "submodules/msilbc" ;
   fi
 - if [ ! -e "submodules/libilbc-rfc3951/.git"]; then
