@@ -17,6 +17,6 @@
 	    android:layout_weight="0.7"
 	    android:text="@string/setup_welcome"
 	    android:gravity="center"
-	    android:textColor="@android:color/black" />
+	    android:textColor="@android:color/white" />
 
 </LinearLayout>
