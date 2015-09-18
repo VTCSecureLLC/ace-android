@@ -52,7 +52,7 @@ before_script:
 #- git submodule update --init --recursive
 #- echo "Finished updating submodules"
 - echo "Extracting pre-build binary sdk"
-- wget https://vtcsecurellc.github.com/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
+- wget https://vtcsecurellc.github.io/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
 - unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip
 script:
 - echo "Running make"
