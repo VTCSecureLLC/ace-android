@@ -76,6 +76,7 @@ before_script:
 - if [ ! -f libs/armeabi-v7a/liblinphone-armeabi-v7a.so ]; then
     unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
   fi
+- git config --global gc.auto 0
 - git config --global pack.windowMemory 60m
 - git config --global pack.packSizeLimit 60m
 - git config --global pack.deltacachesize 60m
@@ -85,6 +86,12 @@ before_script:
 - echo "Starting to update submodules"
 - if [ ! -e "submodules/linphone/.git" ]; then
     git clone git://github.com/VTCSecureLLC/linphone.git "submodules/linphone" ;
+  fi
+- if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
+    git clone git://git.linphone.org/mediastreamer2.git "submodules/linphone/mediastreamer2" ;
+  fi
+- if [ ! -e "submodules/linphone/oRTP/.git" ]; then
+    git clone git://git.linphone.org/ortp.git "submodules/linphone/oRTP" ;
   fi
 - if [ ! -e "submodules/externals/gsm/.git" ]; then
     git clone git://git.linphone.org/gsm.git "submodules/externals/gsm" ;
