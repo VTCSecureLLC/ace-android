@@ -52,8 +52,9 @@ script:
   building. Last 100 lines:"; tail -100 /tmp/make.out; done ) &; MUTED_PID=$!; make
   > /tmp/make.out 2>&1; MAKE_PID=$!; wait $MAKE_PID; MAKE_RESULT=$@; tail -1000 /tmp/make.out;
   kill $MUTED_PID; exit $MAKE_RESULT'
-- make liblinphone-android-sdk
-- make mediastreamer2-sdk
+#- make liblinphone-android-sdk
+#- make mediastreamer2-sdk
+- make
 after_script:
 - ./Tools/github_release.sh
 notifications:
