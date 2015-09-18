@@ -93,76 +93,76 @@ before_script:
 - if [ ! -e "submodules/libilbc-rfc3951/.git"]; then
     git clone git://git.linphone.org/libilbc-rfc3951.git "submodules/libilbc-rfc3951" ;
   fi
-- if [ ! -e  "submodules/externals/ffmpeg/.git"]; then
+- if [ ! -e "submodules/externals/ffmpeg/.git"]; then
     git clone git://git.linphone.org/ffmpeg.git "submodules/externals/ffmpeg" ;
   fi
-- if [ ! -e  "submodules/externals/x264/.git"]; then
+- if [ ! -e "submodules/externals/x264/.git"]; then
     git clone git://git.linphone.org/x264.git "submodules/externals/x264" ;
   fi
-- if [ ! -e  "submodules/msx264/.git"]; then
+- if [ ! -e "submodules/msx264/.git"]; then
     git clone git://git.linphone.org/msx264.git "submodules/msx264" ;
   fi
-- if [ ! -e  "submodules/externals/opencore-amr/.git"]; then
+- if [ ! -e "submodules/externals/opencore-amr/.git"]; then
     git clone git://git.linphone.org/opencore-amr.git "submodules/externals/opencore-amr" ;
   fi
-- if [ ! -e  "submodules/msamr/.git"]; then
+- if [ ! -e "submodules/msamr/.git"]; then
     git clone git://git.linphone.org/msamr "submodules/msamr" ;
   fi
-- if [ ! -e  "submodules/externals/libvpx/.git"]; then
+- if [ ! -e "submodules/externals/libvpx/.git"]; then
     git clone https://chromium.googlesource.com/webm/libvpx "submodules/externals/libvpx" ;
   fi
-- if [ ! -e  "submodules/bzrtp/.git"]; then
+- if [ ! -e "submodules/bzrtp/.git"]; then
     git clone git://git.linphone.org/bzrtp.git "submodules/bzrtp" ;
   fi
-- if [ ! -e  "submodules/externals/srtp/.git"]; then
+- if [ ! -e "submodules/externals/srtp/.git"]; then
     git clone git://git.linphone.org/srtp.git "submodules/externals/srtp" ;
   fi
-- if [ ! -e  "submodules/mssilk/.git"]; then
+- if [ ! -e "submodules/mssilk/.git"]; then
     git clone git://git.linphone.org/mssilk.git "submodules/mssilk" ;
   fi
-- if [ ! -e  "submodules/externals/vo-amrwbenc/.git"]; then
+- if [ ! -e "submodules/externals/vo-amrwbenc/.git"]; then
     git clone git://git.linphone.org/vo-amrwbenc.git "submodules/externals/vo-amrwbenc" ;
   fi
-- if [ ! -e  "submodules/bcg729/.git"]; then
+- if [ ! -e "submodules/bcg729/.git"]; then
     git clone git://git.linphone.org/bcg729.git "submodules/bcg729" ;
   fi
-- if [ ! -e  "submodules/belle-sip/.git"]; then
+- if [ ! -e "submodules/belle-sip/.git"]; then
     git clone git://git.linphone.org/belle-sip "submodules/belle-sip" ;
   fi
-- if [ ! -e  "submodules/externals/antlr3/.git"]; then
+- if [ ! -e "submodules/externals/antlr3/.git"]; then
     git clone git://git.linphone.org/antlr3.git "submodules/externals/antlr3" ;
   fi
-- if [ ! -e  "submodules/externals/libxml2/.git"]; then
+- if [ ! -e "submodules/externals/libxml2/.git"]; then
     git clone git://git.gnome.org/libxml2 "submodules/externals/libxml2" ;
   fi
-- if [ ! -e  "submodules/externals/libupnp/.git"]; then
+- if [ ! -e "submodules/externals/libupnp/.git"]; then
     git clone git://git.linphone.org/libupnp.git "submodules/externals/libupnp" ;
   fi
-- if [ ! -e  "submodules/externals/cunit/.git"]; then
+- if [ ! -e "submodules/externals/cunit/.git"]; then
     git clone git://git.linphone.org/cunit.git "submodules/externals/cunit" ;
   fi
-- if [ ! -e  "submodules/externals/axmlrpc/.git"]; then
+- if [ ! -e "submodules/externals/axmlrpc/.git"]; then
     git clone git://git.linphone.org/axmlrpc.git "submodules/externals/axmlrpc" ;
   fi
-- if [ ! -e  "submodules/externals/polarssl/.git"]; then
+- if [ ! -e "submodules/externals/polarssl/.git"]; then
     git clone git://git.linphone.org/polarssl.git "submodules/externals/polarssl" ;
   fi
-- if [ ! -e  "submodules/externals/opus/.git"]; then
+- if [ ! -e "submodules/externals/opus/.git"]; then
     git clone https://github.com/VTCSecureLLC/opus.git "submodules/externals/opus" ;
   fi
-- if [ ! -e  "submodules/mswebrtc/.git"]; then
+- if [ ! -e "submodules/mswebrtc/.git"]; then
     git clone git://git.linphone.org/mswebrtc.git "submodules/mswebrtc" ;
   fi
 - if [ ! -e "submodules/msopenh264/.git"]; then
     git clone git://git.linphone.org/msopenh264.git "submodules/msopenh264" ;
   fi
-- if [ ! -e  "submodules/externals/openh264/.git"]; then
+- if [ ! -e "submodules/externals/openh264/.git"]; then
     git clone https://github.com/cisco/openh264 "submodules/externals/openh264" ;
   fi
-- if [ ! -e  "submodules/externals/libmatroska/.git"]; then
+- if [ ! -e "submodules/externals/libmatroska/.git"]; then
     git clone https://github.com/Matroska-Org/foundation-source.git "submodules/externals/libmatroska" ;
   fi
-- if [ ! -e  "submodules/externals/webrtc/.git"]; then
+- if [ ! -e "submodules/externals/webrtc/.git"]; then
     git clone git://git.linphone.org/webrtc.git "submodules/externals/webrtc" ;
   fi
 - git submodule update --init --recursive
