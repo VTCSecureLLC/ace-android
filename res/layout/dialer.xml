@@ -83,6 +83,6 @@
         android:layout_height="match_parent"
         android:layout_above="@id/controls"
         android:layout_below="@id/Adress"
-        android:background="@drawable/background" />
+        android:background="@drawable/dialer_alt_background" />
 	
 </RelativeLayout>
