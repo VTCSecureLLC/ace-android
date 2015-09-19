@@ -181,8 +181,8 @@ before_script:
 - if [ ! -e "submodules/externals/webrtc/.git"]; then
     git clone git://git.linphone.org/webrtc.git "submodules/externals/webrtc" ;
   fi
-#- git submodule update --init --recursive
-#- echo "Finished updating submodules"
+- git submodule update --init --recursive
+- echo "Finished updating submodules"
 script:
 - android list target -c
 - bash -xc '
