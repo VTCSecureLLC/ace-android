@@ -63,9 +63,11 @@ before_script:
 - echo "Starting to update submodules"
 - if [ ! -e "submodules/linphone/.git" ]; then git clone git://github.com/VTCSecureLLC/linphone.git
   "submodules/linphone" ; fi
+- free ; df -k
 - if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
+    set -x ;
     git clone --depth 1 git://github.com/VTCSecureLLC/mediastreamer2.git "submodules/linphone/mediastreamer2" &&
-    ( cd submodules/linphone/mediastreamer2 && git fetch --unshallow && git pull --all ) ;
+    ( set -x; cd submodules/linphone/mediastreamer2 && git fetch --unshallow && git pull --all ) ;
   fi
 - if [ ! -e "submodules/linphone/oRTP/.git" ]; then git clone git://github.com/VTCSecureLLC/ortp.git
   "submodules/linphone/oRTP" ; fi
