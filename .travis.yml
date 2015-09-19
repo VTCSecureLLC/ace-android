@@ -71,13 +71,13 @@ android:
 #  - sys-img-armeabi-v7a-android-19
   #- sys-img-x86-android-17
 before_script:
-- echo "Extracting pre-build binary sdk"
-- if [ ! -f liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ]; then
-    wget https://vtcsecurellc.github.io/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
-  fi
-- if [ ! -f libs/armeabi-v7a/liblinphone-armeabi-v7a.so ]; then
-    unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
-  fi
+#- echo "Extracting pre-build binary sdk"
+#- if [ ! -f liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ]; then
+#    wget https://vtcsecurellc.github.io/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
+#  fi
+#- if [ ! -f libs/armeabi-v7a/liblinphone-armeabi-v7a.so ]; then
+#    unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
+#  fi
 - git config --global gc.auto 0
 - git config --global pack.windowMemory 60m
 - git config --global pack.packSizeLimit 60m
@@ -206,6 +206,12 @@ script:
 #- make liblinphone-android-sdk
 #- make mediastreamer2-sdk
 - make
+before_cache:
+- echo "before_cache"
+after_success:
+- echo "after_success"
+after_failure:
+- echo "after_failure"
 after_script:
 - find . -name '*.apk' -print
 - ./Tools/github_release.sh
