@@ -23,7 +23,7 @@ import static android.content.Intent.ACTION_MAIN;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.LinphoneService;
-import org.linphone.R;
+import com.vatrp.R;
 import org.linphone.UIThreadDispatcher;
 import org.linphone.mediastream.Log;
 

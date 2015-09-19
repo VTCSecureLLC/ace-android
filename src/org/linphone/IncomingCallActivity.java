@@ -34,6 +34,8 @@ import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
+import com.vatrp.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;

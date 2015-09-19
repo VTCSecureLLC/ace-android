@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import org.linphone.R;
+import com.vatrp.R;
 
 import android.content.Context;
 import android.preference.Preference;

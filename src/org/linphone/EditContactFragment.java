@@ -3,10 +3,12 @@ package org.linphone;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Version;
 import org.linphone.ui.AvatarWithShadow;
+
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -27,6 +29,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+
+import com.vatrp.R;
 
 public class EditContactFragment extends Fragment {
 	private View view;

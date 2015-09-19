@@ -44,6 +44,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Spinner;
 
+import com.vatrp.R;
+
 /**
  * @author Sylvain Berfini
  */

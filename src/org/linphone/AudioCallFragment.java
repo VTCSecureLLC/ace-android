@@ -26,6 +26,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 
+import com.vatrp.R;
+
 /**
  * @author Sylvain Berfini
  */

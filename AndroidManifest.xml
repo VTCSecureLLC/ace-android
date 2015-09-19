@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.linphone"
+      package="com.vatrp"
       android:versionCode="2411" android:installLocation="auto">
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="22"/>
     

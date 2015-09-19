@@ -1,6 +1,6 @@
 package org.linphone.compatibility;
 
-import org.linphone.R;
+import com.vatrp.R;
 
 import android.annotation.TargetApi;
 import android.app.Notification;

@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import org.linphone.R;
+import com.vatrp.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -49,13 +49,5 @@ public class TutorialLauncherActivity extends Activity {
 	
 	public void startBuddyStatusTutorial(View v) {
 		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialBuddyStatusActivity.class));
-	}
-	
-	public void startRttSenderTutorial(View v) {
-		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialRttSender.class));
-	}
-	
-	public void startRttReceiverTutorial(View v) {
-		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialRttReceiver.class));
 	}
 }

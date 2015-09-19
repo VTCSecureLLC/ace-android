@@ -22,7 +22,6 @@ import java.util.List;
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.PresenceActivityType;
-import org.linphone.mediastream.Log;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -46,6 +45,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
+
+import com.vatrp.R;
 
 /**
  * @author Sylvain Berfini

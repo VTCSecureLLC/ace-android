@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
-import org.linphone.R;
+import com.vatrp.R;
 import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;

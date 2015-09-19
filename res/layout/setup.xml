@@ -3,7 +3,7 @@
 	android:layout_width="match_parent"
   	android:background="@drawable/background"
 	android:layout_height="match_parent">
-     
+     <!-- 
     <LinearLayout
 		android:id="@+id/mark"
 		android:layout_width="match_parent"
@@ -33,13 +33,7 @@
 	  
 	</LinearLayout>
 	
-	<LinearLayout
-		android:id="@+id/fragmentContainer"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:padding="20dp"
-		android:layout_above="@id/mark"
-		android:orientation="horizontal" />
+	
 	  
 	<LinearLayout
 		android:id="@+id/menu"
@@ -55,5 +49,13 @@
 		<include layout="@layout/setup_back_button" />    
 	  
 	</LinearLayout>
+	 -->
+	<LinearLayout
+		android:id="@+id/fragmentContainer"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		
+		android:layout_above="@id/mark"
+		android:orientation="horizontal" />
  
 </RelativeLayout>
