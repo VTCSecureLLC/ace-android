@@ -55,14 +55,17 @@ before_script:
 - git config --global pack.windowMemory 60m
 - git config --global pack.packSizeLimit 60m
 - git config --global pack.deltacachesize 60m
+- git config --global core.compression 0
 - git config --global core.packedgitwindowsize 50m
 - git config --global core.packedgitlimit 50m
 - git config --global core.deltacachesize 50m
 - echo "Starting to update submodules"
 - if [ ! -e "submodules/linphone/.git" ]; then git clone git://github.com/VTCSecureLLC/linphone.git
   "submodules/linphone" ; fi
-- if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then git clone git://github.com/VTCSecureLLC/mediastreamer2.git
-  "submodules/linphone/mediastreamer2" ; fi
+- if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
+    git clone --depth 1 git://github.com/VTCSecureLLC/mediastreamer2.git "submodules/linphone/mediastreamer2" &&
+    ( cd submodules/linphone/mediastreamer2 && git fetch --unshallow && git pull --all ) ;
+  fi
 - if [ ! -e "submodules/linphone/oRTP/.git" ]; then git clone git://github.com/VTCSecureLLC/ortp.git
   "submodules/linphone/oRTP" ; fi
 - if [ ! -e "submodules/externals/gsm/.git" ]; then git clone git://git.linphone.org/gsm.git
