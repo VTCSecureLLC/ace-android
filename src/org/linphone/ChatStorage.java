@@ -39,6 +39,8 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
+import com.vatrp.R;
+
 /**
  * @author Sylvain Berfini
  */

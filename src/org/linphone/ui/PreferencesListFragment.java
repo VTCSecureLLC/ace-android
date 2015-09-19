@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.linphone.R;
+import com.vatrp.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

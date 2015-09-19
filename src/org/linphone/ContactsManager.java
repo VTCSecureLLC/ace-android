@@ -18,14 +18,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.ContentProviderOperation;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneAddress;
@@ -36,8 +30,16 @@ import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.ContactsContract;
+
+import com.vatrp.R;
 
 public class ContactsManager {
 	private static ContactsManager instance;

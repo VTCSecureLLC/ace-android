@@ -3,7 +3,7 @@ package org.linphone.setup;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneLauncherActivity;
 import org.linphone.LinphonePreferences;
-import org.linphone.R;
+import com.vatrp.R;
 
 import android.content.Intent;
 import android.os.Bundle;

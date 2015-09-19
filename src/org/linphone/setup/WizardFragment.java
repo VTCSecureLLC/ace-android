@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 import org.linphone.LinphoneManager;
 import org.linphone.LinphoneService;
-import org.linphone.R;
 import org.linphone.core.LinphoneProxyConfig;
 
 import android.accounts.Account;
@@ -46,6 +45,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.vatrp.R;
+
 import de.timroes.axmlrpc.XMLRPCCallback;
 import de.timroes.axmlrpc.XMLRPCClient;
 import de.timroes.axmlrpc.XMLRPCException;

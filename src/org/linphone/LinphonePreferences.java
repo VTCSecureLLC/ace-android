@@ -36,6 +36,8 @@ import org.linphone.mediastream.Log;
 
 import android.content.Context;
 
+import com.vatrp.R;
+
 /**
  * @author Sylvain Berfini
  */

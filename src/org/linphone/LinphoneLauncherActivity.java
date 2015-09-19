@@ -30,6 +30,8 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.vatrp.R;
+
 /**
  * 
  * Launch Linphone main activity when Service is ready.
@@ -55,7 +57,7 @@ public class LinphoneLauncherActivity extends Activity {
         } else {
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-		setContentView(R.layout.launcher);
+		setContentView(R.layout.splash_screen);
         
 		mHandler = new Handler();
 		
@@ -63,6 +65,7 @@ public class LinphoneLauncherActivity extends Activity {
 			onServiceReady();
 		} else {
 			// start linphone as background  
+			
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 			mThread = new ServiceWaitThread();
 			mThread.start();
@@ -72,13 +75,12 @@ public class LinphoneLauncherActivity extends Activity {
 	protected void onServiceReady() {
 		final Class<? extends Activity> classToStart;
 		if (getResources().getBoolean(R.bool.show_tutorials_instead_of_app)) {
-			classToStart = TutorialLauncherActivity.class;
+			classToStart = /*LoginMainActivity.class;//*/TutorialLauncherActivity.class;
 		} else if (getResources().getBoolean(R.bool.display_sms_remote_provisioning_activity) && LinphonePreferences.instance().isFirstRemoteProvisioning()) {
-			classToStart = RemoteProvisioningActivity.class;
+			classToStart = /*LoginMainActivity.class;//*/RemoteProvisioningActivity.class;
 		} else {
-			classToStart = LinphoneActivity.class;
+			classToStart = /*LoginMainActivity.class;//*/LinphoneActivity.class;
 		}
-		
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(classToStart);
 		mHandler.postDelayed(new Runnable() {
 			@Override

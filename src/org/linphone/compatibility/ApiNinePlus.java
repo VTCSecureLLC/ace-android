@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.linphone.Contact;
 import org.linphone.LinphoneUtils;
-import org.linphone.R;
+import com.vatrp.R;
 import org.linphone.core.LinphoneAddress;
 
 import android.annotation.TargetApi;

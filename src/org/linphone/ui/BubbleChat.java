@@ -25,7 +25,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.linphone.R;
+import com.vatrp.R;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneContent;

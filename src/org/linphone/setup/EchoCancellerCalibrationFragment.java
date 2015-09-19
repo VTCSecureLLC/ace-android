@@ -23,12 +23,13 @@ import java.net.URL;
 
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
-import org.linphone.R;
 import org.linphone.core.LinphoneCore.EcCalibratorStatus;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
+
+import com.vatrp.R;
 
 import android.os.Build;
 import android.os.Bundle;

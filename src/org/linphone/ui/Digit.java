@@ -22,7 +22,7 @@ import org.linphone.InCallActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.LinphoneService;
-import org.linphone.R;
+import com.vatrp.R;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.mediastream.Log;

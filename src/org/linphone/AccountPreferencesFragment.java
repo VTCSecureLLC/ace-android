@@ -36,6 +36,8 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
 
+import com.vatrp.R;
+
 /**
  * @author Sylvain Berfini
  */

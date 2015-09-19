@@ -31,6 +31,8 @@ import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
 
+import com.vatrp.R;
+
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;

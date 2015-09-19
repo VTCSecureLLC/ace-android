@@ -42,6 +42,8 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.vatrp.R;
+
 /**
  * @author Sylvain Berfini
  */

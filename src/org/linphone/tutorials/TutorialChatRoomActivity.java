@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone.tutorials;
 
-import org.linphone.R;
+import com.vatrp.R;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.tutorials.TutorialChatRoom;
 import org.linphone.core.tutorials.TutorialNotifier;
