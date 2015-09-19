@@ -128,7 +128,7 @@ before_script:
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
 script:
-- env | grep -i travis
+- android list target -c
 - bash -xc ' echo "Running make" ; touch /tmp/make.out ; ( COUNTER=0; while [  $COUNTER
   -lt 30 ]; do echo The counter is $COUNTER ; let COUNTER=COUNTER+1 ; sleep 60; echo
   "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done; echo
@@ -142,8 +142,9 @@ after_failure:
 - echo "after_failure"
 after_script:
 - find . -name '*.apk' -print
-- "./Tools/prepare_crashlytics.sh"
-- "./Tools/github_release.sh"
+#- if [ "$TRAVIS_BRANCH" = "master" ]; then
+- ./Tools/prepare_crashlytics.sh
+- ./Tools/github_release.sh
 notifications:
   slack:
     secure: PbV38W/sM4KC9zan3fNkMhqOl9uISNkqtmqrKruuNXMM0uOXEmAP57cyHP3k8B2UEAECXVRRmD3VtVJmQt+y9abaR1YUIRdMlRgkSoXmy4vAVh9tveZvNkohFzlfNCLS4oGiT/bodCuLpVP7AwT97l0eRZXABCx1+x0Ju7sHyXA=
