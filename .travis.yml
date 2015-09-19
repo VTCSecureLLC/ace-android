@@ -9,6 +9,7 @@ env:
     BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1
     BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1
     BUILD_TLS=1 BUILD_WEBRTC_ISAC=1 BUILD_OPUS=1 BUILD_UPNP=1 BUILD_MATROSKA=0 BUILD_ILBC=1
+## For travis docker container based builds - not everything is whitelisted yet.
 #sudo: false
 #addons:
 #  apt:
@@ -27,6 +28,7 @@ env:
 #    - bc
 #    - libwww-perl
 #    - p7zip
+#    - ruby-bundler
 cache:
   apt: true
   bundler: true
@@ -42,8 +44,7 @@ cache:
 before_install:
 - sudo apt-get update 
 - sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
-  libtool pkg-config bc libwww-perl
-- sudo apt-get install -qq --force-yes p7zip
+  libtool pkg-config bc libwww-perl ruby-bundler p7zip
 - if [ ! -e ndk.bin ]; then
     if [ `uname -m` = x86_64 ]; then
       wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin ;
@@ -60,6 +61,7 @@ before_install:
 - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
 - sudo dpkg --add-architecture i386 || true
 - sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
+- bundle install
 android:
   components:
   - build-tools-19.1.0
@@ -68,16 +70,7 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - addon-google_apis-google-19
-#  - sys-img-armeabi-v7a-android-19
-  #- sys-img-x86-android-17
 before_script:
-#- echo "Extracting pre-build binary sdk"
-#- if [ ! -f liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ]; then
-#    wget https://vtcsecurellc.github.io/belledonne_binaries/2015-08-01/liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
-#  fi
-#- if [ ! -f libs/armeabi-v7a/liblinphone-armeabi-v7a.so ]; then
-#    unzip liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ;
-#  fi
 - git config --global gc.auto 0
 - git config --global pack.windowMemory 60m
 - git config --global pack.packSizeLimit 60m
