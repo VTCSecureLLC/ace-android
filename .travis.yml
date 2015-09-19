@@ -138,6 +138,7 @@ after_failure:
 - echo "after_failure"
 after_script:
 - find . -name '*.apk' -print
+- "./Tools/prepare_crashlytics.sh"
 - "./Tools/github_release.sh"
 notifications:
   slack:

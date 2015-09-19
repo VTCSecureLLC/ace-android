@@ -81,11 +81,6 @@
 		        <category android:name="android.intent.category.DEFAULT" />
      		</intent-filter>
 
-            <meta-data
-                android:name="io.fabric.ApiKey"
-                android:value="${fabricApiKey}"
-            />
-
 		</activity>
 
 		<activity android:name="org.linphone.LinphoneActivity"

@@ -48,9 +48,7 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
-    defaultConfig {
-        targetSdkVersion 19
-    }
-    productFlavors {
+    lintOptions {
+        abortOnError false
     }
 }
