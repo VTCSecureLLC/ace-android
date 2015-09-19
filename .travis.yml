@@ -68,8 +68,8 @@ android:
   - extra-google-m2repository
   - extra-android-m2repository
   - addon-google_apis-google-19
-  - sys-img-armeabi-v7a-android-19
-  - sys-img-x86-android-17
+#  - sys-img-armeabi-v7a-android-19
+  #- sys-img-x86-android-17
 before_script:
 - echo "Extracting pre-build binary sdk"
 - if [ ! -f liblinphone-android-sdk-2.4.1-29-g7fbb2e8.zip ]; then
@@ -205,6 +205,7 @@ script:
 #- make mediastreamer2-sdk
 - make
 after_script:
+- find . -name '*.apk' -print
 - ./Tools/github_release.sh
 notifications:
   slack:
