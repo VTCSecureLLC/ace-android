@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#003858"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="13dp"
+        android:layout_marginTop="38dp"
+        android:text="VARP"
+        android:textColor="#fff"
+        android:textSize="32dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="46dp"
+        android:text="Video Access Technology Reference Platform"
+        android:textColor="#66889b"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/vatrp_logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="46dp"
+        android:text="Which service you use the most?"
+        android:textColor="#fff"
+        android:textSize="12dp" />
+
+    <!-- android:background="#efefef" -->
+    <Button
+        android:id="@+id/btn_login_1"
+        android:layout_width="272dp"
+        android:layout_height="53dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/btn_login_main"
+        android:text="Video Relay"
+        
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#003858"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_login_2"
+        android:layout_width="272dp"
+        android:layout_height="53dp"
+        android:layout_marginBottom="20dp"
+        android:text="IP-Relay"
+        android:background="@drawable/btn_login_main"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#003858"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_login_3"
+        android:layout_width="272dp"
+        android:layout_height="53dp"
+        android:text="IP-CTS"
+        android:background="@drawable/btn_login_main"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#003858"
+        android:textStyle="bold" />
+
+</LinearLayout>
