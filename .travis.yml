@@ -128,7 +128,8 @@ before_script:
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
 script:
-- android list target -c
+- free ; df -k
+- android list target -c || true
 - bash -xc ' echo "Running make" ; touch /tmp/make.out ; ( COUNTER=0; while [  $COUNTER
   -lt 30 ]; do echo The counter is $COUNTER ; let COUNTER=COUNTER+1 ; sleep 60; echo
   "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done; echo
