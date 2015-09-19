@@ -90,11 +90,11 @@ before_script:
     git clone git://github.com/VTCSecureLLC/linphone.git "submodules/linphone" ;
   fi
 - if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
-    git clone https://github.com/VTCSecureLLC/mediastreamer2 "submodules/linphone/mediastreamer2" ;
+    git clone git://github.com/VTCSecureLLC/mediastreamer2.git "submodules/linphone/mediastreamer2" ;
   fi
 #   git clone git://git.linphone.org/mediastreamer2.git "submodules/linphone/mediastreamer2" ;
 - if [ ! -e "submodules/linphone/oRTP/.git" ]; then
-    git clone https://github.com/VTCSecureLLC/ortp "submodules/linphone/oRTP" ;
+    git clone git://github.com/VTCSecureLLC/ortp.git "submodules/linphone/oRTP" ;
   fi
 #   git clone git://git.linphone.org/ortp.git "submodules/linphone/oRTP" ;
 - if [ ! -e "submodules/externals/gsm/.git" ]; then
