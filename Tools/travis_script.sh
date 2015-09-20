@@ -19,7 +19,7 @@ touch /tmp/make.out
 MUTED_PID=$!
 
 gradle build >> /tmp/make.out 2>&1
-MAKE_RESULT=$@
+MAKE_RESULT=$?
 
 tail -1000 /tmp/make.out
 kill $MUTED_PID
