@@ -38,3 +38,4 @@ tests/*$py.class
 tests/build.xml
 tests/project.properties
 ant_password.properties
+fabric.properties
