@@ -81,6 +81,10 @@ before_script:
     rm -fr submodules/linphone/mediastreamer2/ ;
     git clone git://git.linphone.org/mediastreamer2.git submodules/linphone/mediastreamer2 ;
   fi
+- if [ ! -d submodules/mswebrtc/webrtc/.git ]; then
+    rm -fr submodules/mswebrtc/webrtc/ ;
+    git clone git://git.linphone.org/webrtc.git submodules/mswebrtc/webrtc ;
+  fi
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
 script:
