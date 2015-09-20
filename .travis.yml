@@ -62,7 +62,8 @@ before_install:
 #- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
 - which bundler || gem install bundler
 - bundle install
-- echo y | android update sdk -u -a -t $(android list sdk --all | grep 22 | grep SDK | head -1 | cut -d- -f1)
+#- echo y | android update sdk -u -a -t $(android list sdk --all | grep 22 | grep SDK | head -1 | cut -d- -f1)
+- ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --all --filter android-22
 android:
   components:
   - build-tools-19.1.0
