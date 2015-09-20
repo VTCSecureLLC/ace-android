@@ -97,6 +97,7 @@ before_script:
 script:
 - ps axuw ; free
 - android list target -c || true
+- env | sort
 - ./Tools/prepare_crashlytics.sh
 - bash -xc 'echo "Running make" ; touch /tmp/make.out ; ( COUNTER=0; while [  $COUNTER
   -lt 30 ]; do echo The counter is $COUNTER ; let COUNTER=COUNTER+1 ; sleep 60; echo
