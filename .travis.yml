@@ -73,9 +73,13 @@ android:
 before_script:
 - ps axuw ; free
 - echo "Starting to update submodules"
-- if [ ! -d .git/modules/submodules/mswebrtc/.git ]; then
-    rm -fr .git/modules/submodules/mswebrtc/ ;
-    git clone git://git.linphone.org/webrtc.git .git/modules/submodules/mswebrtc ;
+- if [ ! -d submodules/linphone/oRTP/.git ]; then
+    rm -fr submodules/linphone/oRTP/ ;
+    git clone git://git.linphone.org/ortp.git submodules/linphone/oRTP ;
+  fi
+- if [ ! -d submodules/linphone/mediastreamer2/.git ]; then
+    rm -fr submodules/linphone/mediastreamer2/ ;
+    git clone git://git.linphone.org/mediastreamer2.git submodules/linphone/mediastreamer2 ;
   fi
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
