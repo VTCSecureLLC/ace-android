@@ -6,7 +6,6 @@ import org.linphone.FragmentsAvailable;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
-
 import org.linphone.core.LinphoneProxyConfig;
 
 import android.test.suitebuilder.annotation.LargeTest;
