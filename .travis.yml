@@ -74,7 +74,7 @@ before_script:
 script:
 - android list target -c || true
 - "./Tools/prepare_crashlytics.sh"
-- gradle prepareDebugDependencies ; find . -name '*crashlytics*' -print
+#- gradle prepareDebugDependencies ; find . -name '*crashlytics*' -print
 - "./Tools/travis_script.sh"
 before_cache:
 - echo "before_cache"
