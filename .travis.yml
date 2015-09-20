@@ -29,7 +29,6 @@ addons:
     - pkg-config
     - bc
     - libwww-perl
-    - p7zip-full
     - ruby
 cache:
   apt: true
@@ -48,7 +47,7 @@ before_install:
 #- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
 #  libtool pkg-config bc libwww-perl ruby-bundler p7zip git-core
 - if [ ! -e ndk.bin ]; then if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin ; fi ; fi
-- 7z x ndk.bin
+- chmod 755 ndk.bin ; ./ndk.bin
 - env | grep WD
 - pwd
 - export ANDROID_NDK=$(pwd)/android-ndk-r10e
