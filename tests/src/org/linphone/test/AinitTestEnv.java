@@ -2,8 +2,6 @@ package org.linphone.test;
 
 import junit.framework.Assert;
 
-import org.linphone.core.LinphoneCore.RegistrationState;
-
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
