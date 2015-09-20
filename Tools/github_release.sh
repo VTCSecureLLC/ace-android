@@ -1,8 +1,18 @@
 #!/bin/bash
 set -x
 
-if [ ! -f bin/Linphone-debug.apk ]; then
-  echo "Could not find a bin/Linphone-debug.apk to publish"
+APK_FILE=""
+
+if [ -f bin/Linphone-debug.apk ]; then
+  APK_FILE=bin/Linphone-debug.apk
+fi
+
+if [ -f build/outputs/apk/linphone-android-debug.apk ]; then
+  APK_FILE=build/outputs/apk/linphone-android-debug.apk
+fi
+
+if [ -z "$APK_FILE" ]; then
+  echo "Could not find an apk file to publish"
   exit 1
 fi
 
@@ -16,17 +26,19 @@ tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-$(git rev-parse --short HE
     --user VTCSecureLLC \
     --repo linphone-android \
     --tag $tag \
-    --name "CI Automated $tag" \
+    --name "Travis-CI Automated $tag" \
     --description "This is an automatically generated tag that will eventually be expired" \
     --pre-release
 
 gradle crashlyticsUploadDistributionDebug
 gradle crashlyticsUploadSymbolsDebug
 
+echo "Uploading $APK_FILE as Ace-$tag-debug.apk to github release $tag"
+
 /tmp/github-release upload \
     --user VTCSecureLLC \
     --repo linphone-android \
     --tag $tag \
-    --name Ace-$(tag)-debug.apk \
-    --file bin/Linphone-debug.apk
+    --name Ace-$tag-debug.apk \
+    --file $APK_FILE
 
