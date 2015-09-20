@@ -36,7 +36,6 @@ cache:
   ccache: true
   directories:
   - "$HOME/.ccache"
-  - ndk.bin
 #  - android-ndk-r10e
 #  - android-sdk-linux
 #  - libs
