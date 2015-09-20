@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ -n "$FABRIC_API_KEY" ]; then
+if [ -z "$FABRIC_API_KEY" ]; then
   echo "FABRIC_API_KEY is empty"
 fi
 
-if [ -n "$FABRIC_API_SECRET" ]; then
+if [ -z "$FABRIC_API_SECRET" ]; then
   echo "FABRIC_API_SECRET is empty"
 fi
 
