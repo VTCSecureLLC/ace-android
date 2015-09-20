@@ -47,15 +47,15 @@ before_install:
 #  libtool pkg-config bc libwww-perl ruby-bundler p7zip git-core
 - if [ ! -e ndk.bin ]; then if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin ; fi ; fi
 - chmod 755 ndk.bin ; ./ndk.bin 2>&1 | grep -v Extracting
-- env | grep WD
+- env | grep ANDROID
+- which android || true
 - pwd
 - export ANDROID_NDK=$(pwd)/android-ndk-r10e
-- export ANDROID_HOME=$(pwd)/android-sdk-linux
+#- export ANDROID_HOME=$(pwd)/android-sdk-linux
 - ls $ANDROID_NDK/
-- ls $ANDROID_HOME/
+#- ls $ANDROID_HOME/
 - env | grep ANDROID
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
-- which ndk-build || true
 - export NDK_CACHE=ccache
 - export ANDROID_MOST_RECENT_TARGET=android-19
 #- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
@@ -63,16 +63,17 @@ before_install:
 #- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
 - which bundler || gem install bundler
 - bundle install
-#- echo y | android update sdk -u -a -t $(android list sdk --all | grep 22 | grep SDK | head -1 | cut -d- -f1)
-- ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --all --filter android-22
 android:
   components:
   - build-tools-19.1.0
+  - build-tools-22.0.1
   - android-19
+  - android-22
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
   - addon-google_apis-google-19
+  - addon-google_apis-google-22
 before_script:
 - ps axuw ; free
 - echo "Starting to update submodules"
