@@ -140,6 +140,8 @@ before_script:
   "submodules/externals/opus" ; fi
 - if [ ! -e "submodules/mswebrtc/.git"]; then git clone git://git.linphone.org/mswebrtc.git
   "submodules/mswebrtc" ; fi
+- if [ ! -e "submodules/mswebrtc/webrtc/.git"]; then git clone git://git.linphone.org/webrtc.git
+  "submodules/mswebrtc/webrtc" ; fi
 - if [ ! -e "submodules/msopenh264/.git"]; then git clone git://git.linphone.org/msopenh264.git
   "submodules/msopenh264" ; fi
 - if [ ! -e "submodules/externals/openh264/.git"]; then git clone https://github.com/cisco/openh264
