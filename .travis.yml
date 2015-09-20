@@ -29,8 +29,8 @@ addons:
     - pkg-config
     - bc
     - libwww-perl
-    - p7zip
-    - ruby-bundler
+    - p7zip-full
+    - ruby
 cache:
   apt: true
   bundler: true
@@ -60,6 +60,7 @@ before_install:
 #- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
 #- sudo dpkg --add-architecture i386 || true
 #- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
+- which bundler || gem install bundler
 - bundle install
 android:
   components:
