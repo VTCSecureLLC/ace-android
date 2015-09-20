@@ -66,13 +66,16 @@ before_install:
 android:
   components:
   - build-tools-19.1.0
+  - build-tools-20.0.0
   - build-tools-22.0.1
   - android-19
+  - android-20
   - android-22
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
   - addon-google_apis-google-19
+  - addon-google_apis-google-20
   - addon-google_apis-google-22
 before_script:
 - ps axuw ; free
