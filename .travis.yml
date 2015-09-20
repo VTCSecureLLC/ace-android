@@ -2,7 +2,7 @@ language: android
 env:
   global:
   - MALLOC_ARENA_MAX=2
-  - secure: v49TqTGv7lGyIxBcltIdOaDMrBF6aqaRRSRB+2zrMyJtZVrHg9sSYBdBmsoyWYXYCQaxFO1ggddXkz7oklaXFT0OxIAv8Xyivd14FtmJR/ho5POIl9Cpxhnq0qcg8tnSoRgxg2Z+iMiRXeMgoyW0wqxNisye17ncoMU9RXR+v2SZVm1oQ6/IRVv2MK9cYLPQ0nauKMBfH6Hvl39s0YuObvlbxm5cKou+CK5JfzisB2wPRf6RcPMmdNxVI1jvIrfQ1IjDNUt3f5izmHMOyekvdOk/LIWKEaaw2ZBhXkUTRrRUjLEIo0B4nUnIF8w8txg8kXviLbXQ2413qLt9askQEUT6xYfUHc/PxMLjycpqr7bbCMnqtILLCy2nAiy8ZeidNd1QgNNNeNtw8msH4B2elRPrDld+cXTrj+66z1T9xiaTh9CUwVpdJrjrkcMzIIdu/x1qAZW5bIevSvK35bxaPmq6Y5HZDDySm2j9KJgaabwGSA1xB75HYU9WMD8mWToI+6ERvvpKB4sfFS/4vGSnD8WaQVJMbxRxfpLeVuC00dFSjz5sS073I9hkdc7LUEcGt13dfxFB841Ddag3QUZ/MweRlkz5zVcePFYzxzhl7yFPlPk8DBMIunMjXKIrDefWznhfO+OG6/W/7j+keukmWJYYndlAfqCKO9TdVVYe39M=
+  - secure: gKWVu6Ub6LKVtt+d+qKWg5TMqmRL5OmyPdEXZBWkc9yEzcb3QGTPAUoZU7Q0/5g94mbqroWyEMnCo/cta1ZSL1laGVNN4RX6FVlk7RyDWpL1KB+jTjaskti0hUvXMWOSEs9/3Q2NFmGcHreNMadAFa+mIH90njWipWCyERx7XUttpYQxKgS3SV62Bci0impfq9E2d6Loj0O4Mo0MujcYo3A6nZ36Xtjwmbqo+/GyQrFo46CxdgOQxmN0aesSF/HY5us3AO2SOM4+6KjdPzROesID++SYTpBcmqf4f3Xt7upz5ljmBdn9D1mKkClAqlQWLZixP9Ctjlh5X0SGGRx5h4xFBg2L297m0aeCX+NrQHLqagugU3OP33uLFh3VejPumLJ7b/rJbxKp/ZrN+GjEhaSEkUgND32LwLa02Fpq/6HxNS+tuKSwtvcjqGJ6BoRE6R6XThyzoGVXhfLtoHqdo6Na0n/TfdC9nczOthFPHnXT7conQWgly3+SuUBsW51WMGZgp12Yn/nT3ke6mlUlPdI56HRy25JDpM6ii9o6cxAt7z4lxuctLfLqId7O/9L78IXPYJPqwxWLbHtxPTb/AaOTiK3qozhHRF7Oqcq8aYcEjoARGylqA+grMXihhCEne9ETUtKSt5yxiWW2gHkanUK5ZfUehk5v68tWD6i7OHA=
   - secure: lrnzhMmgnUzBW9jmcKdSBtdKc1llI1LcUXLeOeAfimzNMJUCQzGtY7unSbxZ28bc9l/qAjYkoDcHqjhhLk55jg4gcxHfkGj6WhxIg0xpTixh/iSjNvg8X59yntUsQt1f4/Xh/f3K9YSnmVbLN+DaBlAuilMr0CQZDfne90HVqK1Vu1RuojGKYMHGCH80Ic1FCvYRb7JMq6vB8l0OI0o9UldQajWJN0icM1826G1V/gFVW4MUhcOEGqpxVchCF9n8ucR5vxgtvv+bRpPxrfVINPQEMTiu7OpadoSCEWuBTg1ZJYF2Et/CRdq2vhp+GtDk3/RdFrKuqv7SqxwCsq258kE7lbAOPi5w81b0LiXq4XknCy2G2qyoU2KMI5tGmtPB4aIyH1mXAu1uykzqJc511ZlLfB2OK2DpJEoxlNJ1VnBFlJLmCSVQjVV9xgaZ35V/0KWo0QCOzTTmg38u5y/jC+2q4PL/qFz+1N8nXMXYxXKgZRWT2lY1rJXBvLo5//nzw06vnqGA1DRMQ+Y1ymHXY5beqj450/R2bKOVtb8312uJ3katdLbp8g9lkuMPCfMR+y8MLjLa2wXx5gp2yebqAzf81fVAhYiIlOpSRpz+uQGEz1y1Pd6okLiEIE7uqO8UuBeIwQlD+ThuylIlTV2G8tBnuq5CDu7Ejhy/hUiWbVU=
   - secure: ZRAQk9vlnXcuD4/964/Vwvx9RinXoIrBzMeZ9vj5dxGIrvTB0gCkHzVxTx/A/O2tHjUC0fhJPfbMUqDE/O9nJZMMknCGuJ6+c84aSqTfcXm8rqZ4Z1jIPbDAxuPNHl5WzO7N6O96CiXvkkLdgZGn85SbrhatOKpoyhHUkosEkxyrDpz2bbM2pYw07ynUWDvm0/lN9gg9iVqmHwLSYghCka3G01CLqXT7fcEqUUnuHnu+jHHHD3MWFH6+nZaZrU5hfh065T5bom45a4ZIK0gsEpar06kc35vRrDfGqIW3TW2hLpT4hC/lpiq/pcWZEdZYOxYKWd/aNKmiMKVu2hUE+BLI1n+AP8Ma1ddgTKXQpnBtWfMJ+0EfY1X9TbKuvC/DZBtmluZ7Px3n5irDl6ABnh9hgjpe0X1d26dXygBIvP4ZrDhIEZrAAuaFMJBJ/zRLjd48nwCDIMj/GG3jpEkNJd5E1erSRACzo5JTT+QSsOIeFdx+nETcmpXUPhbx00jN6R3l2v4AqWJl5vC4tOL545Qt/LxbZIxuq/g9inj8u2BAJ9gagmSwWfwucqHMNc55f2PjlwwXlRZ+6m7Xr+nwr1Kpw4rDLnKuSmLmRY/sIMLsgjaWMGNA9s+hTd+9/rfYbLR9fyY8klyAjDlHG4RwuXFcXEA056r/6oRavABZJv0=
   matrix:
@@ -34,11 +34,9 @@ cache:
   directories:
   - "$HOME/.ccache"
 before_install:
-- if [ `uname -m` = x86_64 ]; then
-    wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin ;
-  else 
-    wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin ;
-  fi
+- if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
+  -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
+  -O ndk.bin ; fi
 - chmod 755 ndk.bin ; ./ndk.bin 2>&1 | grep -v Extracting
 - export ANDROID_NDK=$PWD/android-ndk-r10e
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
