@@ -64,21 +64,6 @@ public class LinphoneLauncherActivity extends Activity {
 		setContentView(R.layout.launcher);
         
 		mHandler = new Handler();
-<<<<<<< HEAD
-=======
-
-		// Starting the push notification service
-		if (getResources().getBoolean(R.bool.enable_push_id)) {
-			GCMRegistrar.checkDevice(this);
-			GCMRegistrar.checkManifest(this);
-			final String regId = GCMRegistrar.getRegistrationId(this);
-			if (regId.equals("")) {
-				GCMRegistrar.register(this, getString(R.string.push_sender_id));
-			} else {
-				Log.e("Already registered");
-			}
-		}
->>>>>>> df071cf... Sending regId to flexisip using proxyconfig contact params
 		
 		if (LinphoneService.isReady()) {
 			onServiceReady();
