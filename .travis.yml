@@ -97,6 +97,7 @@ before_script:
 script:
 - ps axuw ; free
 - android list target -c || true
+- ./Tools/prepare_crashlytics.sh
 - bash -xc 'echo "Running make" ; touch /tmp/make.out ; ( COUNTER=0; while [  $COUNTER
   -lt 30 ]; do echo The counter is $COUNTER ; let COUNTER=COUNTER+1 ; sleep 60; echo
   "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done; echo
@@ -112,7 +113,6 @@ after_failure:
 after_script:
 - find . -name '*.apk' -print
 #- if [ "$TRAVIS_BRANCH" = "master" ]; then
-- ./Tools/prepare_crashlytics.sh
 - ./Tools/github_release.sh
 notifications:
   slack:
