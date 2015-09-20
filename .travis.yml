@@ -17,7 +17,7 @@ addons:
   apt:
     packages:
     - ia32-libs
-    - ia32-libs-multiarch
+#    - ia32-libs-multiarch
     - yasm
     - nasm
     - curl
@@ -54,7 +54,10 @@ before_install:
 - if [ ! -d android-ndk-r10e ] ; then 7z x ndk.bin 2>&1 | grep -v Extracting ; fi
 - export ANDROID_NDK=$(pwd)/android-ndk-r10e
 - export ANDROID_HOME=$(pwd)/android-sdk-linux
+- ls $ANDROID_NDK/
+- ls $ANDROID_HOME/
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
+- which ndk-build || true
 - export NDK_CACHE=ccache
 - export ANDROID_MOST_RECENT_TARGET=android-19
 #- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
