@@ -73,8 +73,9 @@ android:
 before_script:
 - ps axuw ; free
 - echo "Starting to update submodules"
-- if [ ! -e .git/modules/submodules/mswebrtc/modules/webrtc/config ]; then
-    git clone --bare git://git.linphone.org/webrtc.git .git/modules/submodules/mswebrtc/modules/webrtc ;
+- if [ ! -d .git/modules/submodules/mswebrtc/.git ]; then
+    rm -fr .git/modules/submodules/mswebrtc/ ;
+    git clone git://git.linphone.org/webrtc.git .git/modules/submodules/mswebrtc ;
   fi
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
