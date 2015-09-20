@@ -28,7 +28,7 @@ dependencies {
 }
 crashlytics {
   enableNdk true
-  androidNdkOut 'src/main/obj'
+  androidNdkOut 'build/generated'
   androidNdkLibsOut 'libs'
 }
 android {

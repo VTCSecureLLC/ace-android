@@ -16,7 +16,7 @@ if [ -z "$APK_FILE" ]; then
   exit 1
 fi
 
-curl -sL https://github.com/aktau/github-release/releases/download/v0.5.3/darwin-amd64-github-release.tar.bz2 | bunzip2 -cd | tar xf - --strip=3 -C /tmp/
+curl -sL https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2 | bunzip2 -cd | tar xf - --strip=3 -C /tmp/
 
 chmod 755 /tmp/github-release
 

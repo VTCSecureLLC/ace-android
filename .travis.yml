@@ -33,7 +33,6 @@ cache:
   ccache: true
   directories:
   - "$HOME/.ccache"
-  - android-ndk-r10e
 before_install:
 - if [ `uname -m` = x86_64 ]; then
     wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin ;
@@ -81,11 +80,11 @@ before_cache:
 - echo "before_cache"
 after_success:
 - echo "after_success"
+- "./Tools/github_release.sh"
 after_failure:
 - echo "after_failure"
 after_script:
 - find . -name '*.apk' -print
-- "./Tools/github_release.sh"
 notifications:
   slack:
     secure: PbV38W/sM4KC9zan3fNkMhqOl9uISNkqtmqrKruuNXMM0uOXEmAP57cyHP3k8B2UEAECXVRRmD3VtVJmQt+y9abaR1YUIRdMlRgkSoXmy4vAVh9tveZvNkohFzlfNCLS4oGiT/bodCuLpVP7AwT97l0eRZXABCx1+x0Ju7sHyXA=
