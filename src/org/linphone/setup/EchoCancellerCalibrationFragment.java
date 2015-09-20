@@ -29,7 +29,7 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 import android.os.Build;
 import android.os.Bundle;

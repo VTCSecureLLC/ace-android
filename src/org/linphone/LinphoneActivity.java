@@ -83,7 +83,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

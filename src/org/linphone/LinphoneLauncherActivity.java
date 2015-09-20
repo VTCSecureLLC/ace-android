@@ -30,7 +30,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 import io.fabric.sdk.android.Fabric;
 import com.crashlytics.android.Crashlytics;

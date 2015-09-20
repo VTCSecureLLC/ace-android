@@ -43,7 +43,7 @@ import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

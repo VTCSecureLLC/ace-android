@@ -9,7 +9,7 @@ import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /*
 LinphoneSliders.java

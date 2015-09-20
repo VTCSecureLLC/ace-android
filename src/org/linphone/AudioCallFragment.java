@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

@@ -39,7 +39,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 public class ContactsManager {
 	private static ContactsManager instance;

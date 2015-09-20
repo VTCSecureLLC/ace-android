@@ -36,7 +36,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

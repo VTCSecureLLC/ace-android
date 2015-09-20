@@ -36,7 +36,7 @@ import org.linphone.mediastream.Log;
 
 import android.content.Context;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

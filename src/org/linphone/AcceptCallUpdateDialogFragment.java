@@ -30,7 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 
 

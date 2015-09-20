@@ -30,7 +30,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 public class EditContactFragment extends Fragment {
 	private View view;

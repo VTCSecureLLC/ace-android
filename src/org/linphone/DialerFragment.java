@@ -44,7 +44,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Spinner;
 
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

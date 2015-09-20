@@ -20,7 +20,7 @@ package org.linphone.ui;
 
 import org.linphone.DialerFragment;
 import org.linphone.LinphoneManager.AddressType;
-import com.vtcsecure.vatrp.R;
+import org.linphone.R;
 
 import android.content.Context;
 import android.graphics.Paint;
