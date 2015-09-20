@@ -30,8 +30,9 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 
 /**
  * 
@@ -49,7 +50,7 @@ public class LinphoneLauncherActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
 		// Used to change for the lifetime of the app the name used to tag the logs
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));

@@ -20,6 +20,8 @@ tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-$(git rev-parse --short HE
     --description "This is an automatically generated tag that will eventually be expired" \
     --pre-release
 
+./gradlew crashlyticsUploadSymbolsRelease
+
 /tmp/github-release upload \
     --user VTCSecureLLC \
     --repo linphone-android \
