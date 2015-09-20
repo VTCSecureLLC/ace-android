@@ -30,7 +30,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  * 

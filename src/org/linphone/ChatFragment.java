@@ -83,7 +83,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 public class ChatFragment extends Fragment implements OnClickListener, LinphoneChatMessageListener {
 	private static ChatFragment instance;

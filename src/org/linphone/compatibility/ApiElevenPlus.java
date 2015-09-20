@@ -2,7 +2,7 @@ package org.linphone.compatibility;
 
 import java.util.ArrayList;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 import org.linphone.mediastream.Log;
 
 import android.annotation.TargetApi;

@@ -39,7 +39,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  * @author Sylvain Berfini

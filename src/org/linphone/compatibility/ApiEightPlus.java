@@ -7,7 +7,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /*
 ApiEightPlus.java

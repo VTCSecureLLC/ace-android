@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  * @author Guillaume Beraudo

@@ -29,7 +29,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  * @author Sylvain Berfini

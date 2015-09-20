@@ -36,7 +36,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  * @author Sylvain Berfini

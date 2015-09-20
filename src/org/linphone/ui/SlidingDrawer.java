@@ -18,7 +18,7 @@ package org.linphone.ui;
  * Modifications by: Sylvain Berfini
  */
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 import android.content.Context;
 import android.content.res.TypedArray;

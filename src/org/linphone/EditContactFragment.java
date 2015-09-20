@@ -30,7 +30,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 public class EditContactFragment extends Fragment {
 	private View view;

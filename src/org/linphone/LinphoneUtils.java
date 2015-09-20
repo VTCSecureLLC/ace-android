@@ -64,7 +64,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  * Helpers.

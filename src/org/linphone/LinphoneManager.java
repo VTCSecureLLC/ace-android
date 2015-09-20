@@ -102,7 +102,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 
 /**
  *

@@ -20,7 +20,7 @@ package org.linphone.ui;
 
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
-import com.vatrp.R;
+import com.vtcsecure.vatrp.R;
 import org.linphone.core.CallDirection;
 import org.linphone.core.LinphoneCallLog;
 import org.linphone.core.LinphoneCoreException;
