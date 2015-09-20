@@ -63,6 +63,8 @@ before_script:
 - echo "Starting to update submodules"
 - if [ ! -e "submodules/linphone/.git" ]; then git clone git://github.com/VTCSecureLLC/linphone.git
   "submodules/linphone" ; fi
+- sudo service postgresql stop || true
+- sudo pkill postgres || true
 - sudo ps axuw ; free ; df -k ; ls -la /var/ramfs/ || true
 - if [ ! -e "submodules/linphone/mediastreamer2/.git" ]; then
     set -x ;
