@@ -15,7 +15,6 @@ sudo: false
 addons:
   apt:
     packages:
-    - ia32-libs
     - yasm
     - nasm
     - curl
