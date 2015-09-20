@@ -2,22 +2,20 @@ language: android
 env:
   global:
   - MALLOC_ARENA_MAX=2
-  - secure: DTPtpznj7wMOBbwPemqbBnAr/IYo2EHoXCukW5SFdqq/lngHKGogRGDUoxpQi7CpaJSoR+Y8EIuXaTNHjN6AxhGaW8nIyvhZR3zc0hUKYi7JsT6wxIHybqA3AQv8jJjh6w0ut9Nd8FO7b5ko7VoduzhkTpNZ9H1trH1Fu3SvMwmpu1fRobh/BRxUPeg0XfmVbR3WK5wHXjIw+uEKnPOAirFsGB8RCQZ8fSHbgWy8IW3aVVdBSJCxHpTRqPGe8iv/aJ+rcb+cg5F/ZfUQiCKG4hqPQ3ICJisKWRWui08UsI3U6/wcYVNh3ReiKUwXGqd9nI+wdb+fjpwY8IS7n/7IyfFql3cZle3PeI7VyjJ2wO6BnncNT2eZwy2L4Qoamu16k5vlKj7J5XFlLjuFr9TqPsGsYgdyko9bglJooIRzFOeUw8Il9mu19861QeDm0nZ915Z+x1lqMiGsAdGwpylrgKyGCJ0Wfu3A8C2tjrJl5F13g6jy/kAxYcbAJ5DbxGx15moAi6hks8XsVVrgpDXWHKMynf/Q6iWSHRL9ad4M23BjNQhg2kdJVBF6KcFuBoyLaQv5T7NowTRlk/n5XuI+88dpCdfXIV6ufJ6MiWazdhwiXDKJYqaKHmDNxHArCK5bkxlDrlVTV29M6ajfFY9zQdey+dtpHMT3xn1TkcGzJjQ=
-  - secure: NnbWYh1cxU1hKFTMfHA2vH24b+mMolPgQICK8QVoJ4xFBnszBwthE4oYAU7cvBzBzz7mLeAIq+abt/uVc6pKVKxC5rf2OY6toHtzjCrNz47A/K8H8vw5UUYC4G8wFtcFB6u0ioQA5drC0nvIlllWbhSWmJHnu8qcoqj0K14iw4dIXmQWRjxYcMf8ejm3CHQtjnrFdsvLySuIn6zYghstm8EA+3rqKTeBcPpiFpmwIFnicht/lTShP7qjenb91yd5u4A7ODvSkqrLuXOFTTji8KsPovEMiP4dLekcaqAcc8ifaST09SVKljuCHv3ZKUSbk9zUsc4ARYn5x3e0QSlWTFipXUFQR0/b4VWj4Qu4osOTxIZ+io/u816t656BZQE98WSNi34QwmLp3Q3G9PnEtu9cx6QIJaapWSiJmOp+GEQrhg9+V5YGikaE/1OHqpQdlOJ0mxVJ56K+SJ5hY/9/fJx+OS4I5SAtncCHTIN3lAMDeyxsjcZxDmNbTb+ei3A55banYSy28jqoV7W9NgH/AelKLhVP6P8MR+wavbQ+FKMKbvd3Fc7Av5B1k6kNtKb3JwUgh70RoPIj22qps7eNM1QfoVys60ZK89psIZ6NqcCvQ67FvUU2uXWguNnscSf3VdPfPoACdYGvl8LaBeLA1pl3MA0eChBIc31bJMe7Vfo=
-  - secure: RML1/WXM1hcbYTQ4e6NsfibXBpSHL9J80UNyL0wpj8bCidD+Ewb9ImaVQ8BG/rZaYlMzwUAD/jGy7YTQBpYjgwg5P2k/XUOQGiuK53qzcm+R1naxhoxLC3U4NKP2kTo4kGinoMMdmozC5xq68/SPLXYMWRSoUFQM0zk+Y+pjjykOkN4PVMk6ovt4VhMBqxehwfCmwdB5yFz3JwefI274SN5nAG8o9XQQpUSyKcDE0qrVgXp9JllRbfdiAFM+K5msKhVhVBioJUsmDRpq4ESY/Bocz/BGCnmrMaqPm6YwHmkNVcNNAd+FzL35SZ4X7vI48ssHSs3RB910cYWaR8ryjdjQHm1dq+TVRiKllzbNNChU1QiALUnNoHruZeCNL/TL3L67g1n7b6ay0wTr1CH49GxFcqP+CvipcIKFODJ0hllQy5gcr5r09YQO1w5igfVmU83SeVcVaOoaSazvyzo3xUNzvQ7C1eB91PjAdKho4U64LcPzzuzEh14PDsEsyxTZulrL3tvjIr4kSUKfs0Z1vGwPxMiZw3qSaIYBP+CqRJ7MozLO8u2lIQlVpAErHpUlq/jGOo/E3XfAHyoN9IhtvTM2gguEedLw3vPh/hKx+A3AI8LrFa6WHeumhCGannswxi71hUz/uUyP7k900kyAWWGXLFEU3IO3RO93LE4I/Tk=
+  - secure: v49TqTGv7lGyIxBcltIdOaDMrBF6aqaRRSRB+2zrMyJtZVrHg9sSYBdBmsoyWYXYCQaxFO1ggddXkz7oklaXFT0OxIAv8Xyivd14FtmJR/ho5POIl9Cpxhnq0qcg8tnSoRgxg2Z+iMiRXeMgoyW0wqxNisye17ncoMU9RXR+v2SZVm1oQ6/IRVv2MK9cYLPQ0nauKMBfH6Hvl39s0YuObvlbxm5cKou+CK5JfzisB2wPRf6RcPMmdNxVI1jvIrfQ1IjDNUt3f5izmHMOyekvdOk/LIWKEaaw2ZBhXkUTRrRUjLEIo0B4nUnIF8w8txg8kXviLbXQ2413qLt9askQEUT6xYfUHc/PxMLjycpqr7bbCMnqtILLCy2nAiy8ZeidNd1QgNNNeNtw8msH4B2elRPrDld+cXTrj+66z1T9xiaTh9CUwVpdJrjrkcMzIIdu/x1qAZW5bIevSvK35bxaPmq6Y5HZDDySm2j9KJgaabwGSA1xB75HYU9WMD8mWToI+6ERvvpKB4sfFS/4vGSnD8WaQVJMbxRxfpLeVuC00dFSjz5sS073I9hkdc7LUEcGt13dfxFB841Ddag3QUZ/MweRlkz5zVcePFYzxzhl7yFPlPk8DBMIunMjXKIrDefWznhfO+OG6/W/7j+keukmWJYYndlAfqCKO9TdVVYe39M=
+  - secure: lrnzhMmgnUzBW9jmcKdSBtdKc1llI1LcUXLeOeAfimzNMJUCQzGtY7unSbxZ28bc9l/qAjYkoDcHqjhhLk55jg4gcxHfkGj6WhxIg0xpTixh/iSjNvg8X59yntUsQt1f4/Xh/f3K9YSnmVbLN+DaBlAuilMr0CQZDfne90HVqK1Vu1RuojGKYMHGCH80Ic1FCvYRb7JMq6vB8l0OI0o9UldQajWJN0icM1826G1V/gFVW4MUhcOEGqpxVchCF9n8ucR5vxgtvv+bRpPxrfVINPQEMTiu7OpadoSCEWuBTg1ZJYF2Et/CRdq2vhp+GtDk3/RdFrKuqv7SqxwCsq258kE7lbAOPi5w81b0LiXq4XknCy2G2qyoU2KMI5tGmtPB4aIyH1mXAu1uykzqJc511ZlLfB2OK2DpJEoxlNJ1VnBFlJLmCSVQjVV9xgaZ35V/0KWo0QCOzTTmg38u5y/jC+2q4PL/qFz+1N8nXMXYxXKgZRWT2lY1rJXBvLo5//nzw06vnqGA1DRMQ+Y1ymHXY5beqj450/R2bKOVtb8312uJ3katdLbp8g9lkuMPCfMR+y8MLjLa2wXx5gp2yebqAzf81fVAhYiIlOpSRpz+uQGEz1y1Pd6okLiEIE7uqO8UuBeIwQlD+ThuylIlTV2G8tBnuq5CDu7Ejhy/hUiWbVU=
+  - secure: ZRAQk9vlnXcuD4/964/Vwvx9RinXoIrBzMeZ9vj5dxGIrvTB0gCkHzVxTx/A/O2tHjUC0fhJPfbMUqDE/O9nJZMMknCGuJ6+c84aSqTfcXm8rqZ4Z1jIPbDAxuPNHl5WzO7N6O96CiXvkkLdgZGn85SbrhatOKpoyhHUkosEkxyrDpz2bbM2pYw07ynUWDvm0/lN9gg9iVqmHwLSYghCka3G01CLqXT7fcEqUUnuHnu+jHHHD3MWFH6+nZaZrU5hfh065T5bom45a4ZIK0gsEpar06kc35vRrDfGqIW3TW2hLpT4hC/lpiq/pcWZEdZYOxYKWd/aNKmiMKVu2hUE+BLI1n+AP8Ma1ddgTKXQpnBtWfMJ+0EfY1X9TbKuvC/DZBtmluZ7Px3n5irDl6ABnh9hgjpe0X1d26dXygBIvP4ZrDhIEZrAAuaFMJBJ/zRLjd48nwCDIMj/GG3jpEkNJd5E1erSRACzo5JTT+QSsOIeFdx+nETcmpXUPhbx00jN6R3l2v4AqWJl5vC4tOL545Qt/LxbZIxuq/g9inj8u2BAJ9gagmSwWfwucqHMNc55f2PjlwwXlRZ+6m7Xr+nwr1Kpw4rDLnKuSmLmRY/sIMLsgjaWMGNA9s+hTd+9/rfYbLR9fyY8klyAjDlHG4RwuXFcXEA056r/6oRavABZJv0=
   matrix:
   - ANDROID_SDKS=android-19,sysimg-19 ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a
     ENABLE_GPL_THIRD_PARTIES=0 BUILD_VIDEO=1 BUILD_OPENH264=1 ENABLE_OPENH264_DECODER=1
     BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1
     BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1
     BUILD_TLS=1 BUILD_WEBRTC_ISAC=1 BUILD_OPUS=1 BUILD_UPNP=1 BUILD_MATROSKA=0 BUILD_ILBC=1
-## For travis docker container based builds - not everything is whitelisted yet.
 sudo: false
 addons:
   apt:
     packages:
     - ia32-libs
-#    - ia32-libs-multiarch
     - yasm
     - nasm
     - curl
@@ -36,31 +34,17 @@ cache:
   ccache: true
   directories:
   - "$HOME/.ccache"
-#  - android-ndk-r10e
-#  - android-sdk-linux
-#  - libs
-#  - submodules
+  - android-ndk-r10e
 before_install:
-#- sudo add-apt-repository ppa:git-core/ppa -y
-#- sudo apt-get update
-#- sudo apt-get install -qq --force-yes yasm nasm curl ant rsync autoconf automake
-#  libtool pkg-config bc libwww-perl ruby-bundler p7zip git-core
-- if [ ! -e ndk.bin ]; then if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin -O ndk.bin ; fi ; fi
-- chmod 755 ndk.bin ; ./ndk.bin 2>&1 | grep -v Extracting
-- env | grep ANDROID
-- which android || true
-- pwd
-- export ANDROID_NDK=$(pwd)/android-ndk-r10e
-#- export ANDROID_HOME=$(pwd)/android-sdk-linux
-- ls $ANDROID_NDK/
-#- ls $ANDROID_HOME/
-- env | grep ANDROID
+- if [ ! -f android-ndk-r10e/ndk-build ]; then if [ ! -f ndk.bin ]; then if [ `uname
+  -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
+  -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
+  -O ndk.bin ; fi ; fi ; chmod 755 ndk.bin ; ./ndk.bin 2>&1 | grep -v Extracting ;
+  fi
+- export ANDROID_NDK=$PWD/android-ndk-r10e
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - export NDK_CACHE=ccache
 - export ANDROID_MOST_RECENT_TARGET=android-19
-#- if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes ia32-libs ia32-libs-multiarch ; fi || true
-#- sudo dpkg --add-architecture i386 || true
-#- sudo apt-get install -y --force-yes libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386 || true
 - which bundler || gem install bundler
 - bundle install
 android:
@@ -80,31 +64,25 @@ android:
 before_script:
 - ps axuw ; free
 - echo "Starting to update submodules"
-- if [ ! -d submodules/linphone/oRTP/.git ]; then
-    rm -fr submodules/linphone/oRTP/ ;
-    git clone git://git.linphone.org/ortp.git submodules/linphone/oRTP ;
-  fi
-- if [ ! -d submodules/linphone/mediastreamer2/.git ]; then
-    rm -fr submodules/linphone/mediastreamer2/ ;
-    git clone git://git.linphone.org/mediastreamer2.git submodules/linphone/mediastreamer2 ;
-  fi
-- if [ ! -d submodules/mswebrtc/webrtc/.git ]; then
-    rm -fr submodules/mswebrtc/webrtc/ ;
-    git clone git://git.linphone.org/webrtc.git submodules/mswebrtc/webrtc ;
-  fi
+- if [ ! -d submodules/linphone/oRTP/.git ]; then rm -fr submodules/linphone/oRTP/
+  ; git clone git://git.linphone.org/ortp.git submodules/linphone/oRTP ; fi
+- if [ ! -d submodules/linphone/mediastreamer2/.git ]; then rm -fr submodules/linphone/mediastreamer2/
+  ; git clone git://git.linphone.org/mediastreamer2.git submodules/linphone/mediastreamer2
+  ; fi
+- if [ ! -d submodules/mswebrtc/webrtc/.git ]; then rm -fr submodules/mswebrtc/webrtc/
+  ; git clone git://git.linphone.org/webrtc.git submodules/mswebrtc/webrtc ; fi
 - git submodule update --init --recursive
 - echo "Finished updating submodules"
 script:
 - ps axuw ; free
 - android list target -c || true
-- env | sort
-- ./Tools/prepare_crashlytics.sh
+- "./Tools/prepare_crashlytics.sh"
 - bash -xc 'echo "Running make" ; touch /tmp/make.out ; ( COUNTER=0; while [  $COUNTER
   -lt 30 ]; do echo The counter is $COUNTER ; let COUNTER=COUNTER+1 ; sleep 60; echo
   "Muted, but still building. Last 100 lines:"; tail -100 /tmp/make.out; done; echo
-  Timing out after 30 minutes. ) & MUTED_PID=$! ; gradle build > /tmp/make.out 2>&1 || true ;
-  make >> /tmp/make.out 2>&1 ; MAKE_RESULT=$@ ; tail -1000 /tmp/make.out ;
-  kill $MUTED_PID ; echo exit $MAKE_RESULT; exit $MAKE_RESULT'
+  Timing out after 30 minutes. ) & MUTED_PID=$! ; gradle build > /tmp/make.out 2>&1
+  || true ; make >> /tmp/make.out 2>&1 ; MAKE_RESULT=$@ ; tail -1000 /tmp/make.out
+  ; kill $MUTED_PID ; echo exit $MAKE_RESULT; exit $MAKE_RESULT'
 before_cache:
 - echo "before_cache"
 after_success:
@@ -113,8 +91,7 @@ after_failure:
 - echo "after_failure"
 after_script:
 - find . -name '*.apk' -print
-#- if [ "$TRAVIS_BRANCH" = "master" ]; then
-- ./Tools/github_release.sh
+- "./Tools/github_release.sh"
 notifications:
   slack:
     secure: PbV38W/sM4KC9zan3fNkMhqOl9uISNkqtmqrKruuNXMM0uOXEmAP57cyHP3k8B2UEAECXVRRmD3VtVJmQt+y9abaR1YUIRdMlRgkSoXmy4vAVh9tveZvNkohFzlfNCLS4oGiT/bodCuLpVP7AwT97l0eRZXABCx1+x0Ju7sHyXA=
