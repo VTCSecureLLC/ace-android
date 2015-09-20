@@ -23,7 +23,7 @@ chmod 755 /tmp/github-release
 tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-$(git rev-parse --short HEAD)
 
 /tmp/github-release release \
-    --user VTCSecureLLC \
+    --user vtcsecure \
     --repo linphone-android \
     --tag $tag \
     --name "Travis-CI Automated $tag" \
@@ -36,7 +36,7 @@ gradle crashlyticsUploadSymbolsDebug
 echo "Uploading $APK_FILE as Ace-$tag-debug.apk to github release $tag"
 
 /tmp/github-release upload \
-    --user VTCSecureLLC \
+    --user vtcsecure \
     --repo linphone-android \
     --tag $tag \
     --name Ace-$tag-debug.apk \
