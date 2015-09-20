@@ -5,6 +5,7 @@ import junit.framework.Assert;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
+import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import org.linphone.setup.SetupActivity;
@@ -53,7 +54,7 @@ public class AccountAssistant extends SampleTest {
 		Assert.assertEquals(1, proxyConfigs.length);
 		LinphoneProxyConfig proxyConfig = proxyConfigs[0];
 		waitForRegistration(proxyConfig);
-
+		
 		//Check the wizard added sip.linphone.org custom settings
 		LinphonePreferences prefs = LinphonePreferences.instance();
 		String stunServer = prefs.getStunServer();

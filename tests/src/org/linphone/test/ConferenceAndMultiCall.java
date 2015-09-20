@@ -164,6 +164,7 @@ public class ConferenceAndMultiCall extends SampleTest {
 		
 		solo.sleep(2000);
 		waitForCallState(LinphoneTestManager.getLc(1).getCalls()[0],LinphoneCall.State.PausedByRemote);
+		Assert.assertEquals(LinphoneCall.State.PausedByRemote, LinphoneTestManager.getLc(1).getCalls()[0].getState());
 		
 		solo.sleep(1000);
 		solo.clickOnView(solo.getView(org.linphone.R.id.hangUp));

@@ -36,6 +36,7 @@
 				<resourcecontains resource="${output.file}" substring="longMsg=java.lang.RuntimeException:" />
 				<resourcecontains resource="${output.file}" substring="longMsg=java.lang.NullPointerException:" />
 			</or>
+
 		</condition>
 		<exec executable="bash" unless:set="has.crashed">
 			<arg value="-c"/>

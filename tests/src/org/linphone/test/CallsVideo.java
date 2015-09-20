@@ -11,6 +11,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphonePlayer;
 import org.linphone.core.PayloadType;
+import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.mediastream.Log;
 
 import android.test.suitebuilder.annotation.LargeTest;
