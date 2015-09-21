@@ -35,6 +35,7 @@ import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallLog;
 import org.linphone.core.LinphoneCallLog.CallStatus;
+import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
@@ -991,6 +992,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				return;
 			}
 
+
+
 			int degrees = 270;
 			if (o < 45 || o > 315)
 				degrees = 0;
@@ -1008,6 +1011,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			int rotation = (360 - degrees) % 360;
 			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 			if (lc != null) {
+
 				lc.setDeviceRotation(rotation);
 				LinphoneCall currentCall = lc.getCurrentCall();
 				if (currentCall != null && currentCall.cameraEnabled() && currentCall.getCurrentParamsCopy().getVideoEnabled()) {

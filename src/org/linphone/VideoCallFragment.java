@@ -21,6 +21,7 @@ import org.linphone.compatibility.Compatibility;
 import org.linphone.compatibility.CompatibilityScaleGestureDetector;
 import org.linphone.compatibility.CompatibilityScaleGestureListener;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
@@ -43,7 +44,6 @@ import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
 
-import org.linphone.R;
 
 /**
  * @author Sylvain Berfini
@@ -62,8 +62,31 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	@SuppressWarnings("deprecation") // Warning useless because value is ignored and automatically set by new APIs.
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-			Bundle savedInstanceState) {		
-		View view = inflater.inflate(R.layout.video, container, false);
+			Bundle savedInstanceState) {
+
+		int viewId = R.layout.video;
+		LinphoneCallParams params;
+		LinphoneCall call;
+
+		try {
+			call = LinphoneManager.getLc().getCurrentCall();
+			params = call.getCurrentParamsCopy();
+			if (params.getUsedVideoCodec().toString().contains("H263")) {
+
+				LinphoneManager.getLc().setDeviceRotation(90);
+				LinphoneManager.getLc().updateCall(call, null);
+				viewId = R.layout.video_h263;
+
+			}
+		}
+
+		catch(NullPointerException e){
+
+		}
+
+
+
+		View view = inflater.inflate(viewId, container, false);
 
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
@@ -100,6 +123,8 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		});
 
 		fixZOrder(mVideoView, mCaptureView);
+
+
 
 		androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
 			@Override
