@@ -73,7 +73,7 @@ before_script:
 script:
 - "./Tools/prepare_crashlytics.sh"
 - "./Tools/travis_script.sh"
-- find . -name '*.apk' -print
+- find . -name '*.apk' -exec ls -la {} \;
 before_cache:
 - echo "before_cache"
 after_success:
