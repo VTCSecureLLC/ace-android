@@ -22,29 +22,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import android.graphics.Matrix;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneBuffer;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatMessage.LinphoneChatMessageListener;
+import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.BubbleChat;
-
-import android.media.ExifInterface;
-import android.support.v4.content.CursorLoader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -55,7 +50,9 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -63,6 +60,7 @@ import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -84,6 +82,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.linphone.R;
 
 public class ChatFragment extends Fragment implements OnClickListener, LinphoneChatMessageListener {
 	private static ChatFragment instance;

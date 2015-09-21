@@ -20,7 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.LinphonePreferences.AccountBuilder;
+
 import org.linphone.R;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
 import org.linphone.core.LinphoneCore;
@@ -29,6 +31,8 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.custom.LoginMainActivity;
+import org.linphone.custom.LoginProviderActivity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -48,7 +52,7 @@ import android.widget.Toast;
  */
 public class SetupActivity extends FragmentActivity implements OnClickListener {
 	private static SetupActivity instance;
-	private RelativeLayout back, next, cancel;
+	//private RelativeLayout back, next, cancel;
 	private SetupFragmentsEnum currentFragment;
 	private SetupFragmentsEnum firstFragment;
 	private Fragment fragment;
@@ -66,7 +70,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		
 		setContentView(R.layout.setup);
 		firstFragment = getResources().getBoolean(R.bool.setup_use_linphone_as_first_fragment) ?
-				SetupFragmentsEnum.LINPHONE_LOGIN : SetupFragmentsEnum.WELCOME;
+				SetupFragmentsEnum.LINPHONE_LOGIN : SetupFragmentsEnum.MENU;
         if (findViewById(R.id.fragmentContainer) != null) {
             if (savedInstanceState == null) {
             	display(firstFragment);
@@ -129,12 +133,12 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	}
 	
 	private void initUI() {
-		back = (RelativeLayout) findViewById(R.id.setup_back);
+		/*back = (RelativeLayout) findViewById(R.id.setup_back);
 		back.setOnClickListener(this);
 		next = (RelativeLayout) findViewById(R.id.setup_next);
 		next.setOnClickListener(this);
 		cancel = (RelativeLayout) findViewById(R.id.setup_cancel);
-		cancel.setOnClickListener(this);
+		cancel.setOnClickListener(this);*/
 	}
 	
 	private void changeFragment(Fragment newFragment) {
@@ -150,6 +154,20 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	public void onClick(View v) {
 		int id = v.getId();
 		
+		switch (id) {
+		case R.id.btn_login_1:
+			displayLoginGeneric();
+			break;
+		case R.id.btn_login_2:
+			displayLoginGeneric();
+			break;
+		case R.id.btn_login_3:
+			displayLoginGeneric();
+			break;
+		default:
+			break;
+		}
+		
 		if (id == R.id.setup_cancel) {
 			LinphonePreferences.instance().firstLaunchSuccessful();
 			if (getResources().getBoolean(R.bool.setup_cancel_move_to_back)) {
@@ -163,13 +181,14 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				LinphoneLoginFragment linphoneFragment = (LinphoneLoginFragment) fragment;
 				linphoneFragment.linphoneLogIn();
 			} else {
+				
 				if (currentFragment == SetupFragmentsEnum.WELCOME) {
-					MenuFragment fragment = new MenuFragment();
+					LoginMainActivity fragment = new LoginMainActivity();
 					changeFragment(fragment);
 					currentFragment = SetupFragmentsEnum.MENU;
 					
-					next.setVisibility(View.GONE);
-					back.setVisibility(View.VISIBLE);
+					//next.setVisibility(View.GONE);
+					//back.setVisibility(View.VISIBLE);
 				} else if (currentFragment == SetupFragmentsEnum.WIZARD_CONFIRM) {
 					finish();
 				}
@@ -181,6 +200,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	@Override
 	public void onBackPressed() {
+		if(currentFragment == SetupFragmentsEnum.MENU)
+			return;
 		if (currentFragment == firstFragment) {
 			LinphonePreferences.instance().firstLaunchSuccessful();
 			if (getResources().getBoolean(R.bool.setup_cancel_move_to_back)) {
@@ -195,13 +216,13 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			changeFragment(fragment);
 			currentFragment = SetupFragmentsEnum.WELCOME;
 			
-			next.setVisibility(View.VISIBLE);
-			back.setVisibility(View.GONE);
+			//next.setVisibility(View.VISIBLE);
+			//back.setVisibility(View.GONE);
 		} else if (currentFragment == SetupFragmentsEnum.GENERIC_LOGIN 
 				|| currentFragment == SetupFragmentsEnum.LINPHONE_LOGIN 
 				|| currentFragment == SetupFragmentsEnum.WIZARD 
 				|| currentFragment == SetupFragmentsEnum.REMOTE_PROVISIONING) {
-			MenuFragment fragment = new MenuFragment();
+			LoginMainActivity fragment = new LoginMainActivity();
 			changeFragment(fragment);
 			currentFragment = SetupFragmentsEnum.MENU;
 		} else if (currentFragment == SetupFragmentsEnum.WELCOME) {
@@ -217,10 +238,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			fragment.enableEcCalibrationResultSending(sendEcCalibrationResult);
 			changeFragment(fragment);
 			currentFragment = SetupFragmentsEnum.ECHO_CANCELLER_CALIBRATION;
-			back.setVisibility(View.VISIBLE);
+			/*back.setVisibility(View.VISIBLE);
 			next.setVisibility(View.GONE);
 			next.setEnabled(false);
-			cancel.setEnabled(false);
+			cancel.setEnabled(false);*/
 		} else {
 			if (mPrefs.isFirstLaunch()) {
 				mPrefs.setEchoCancellation(LinphoneManager.getLc().needsEchoCanceler());
@@ -266,9 +287,19 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		case LINPHONE_LOGIN:
 			displayLoginLinphone();
 			break;
+		case MENU : 
+			displayMenu();
+			break;
 		default:
 			throw new IllegalStateException("Can't handle " + fragment);
 		}
+	}
+
+	public void displayMenu() {
+		LoginMainActivity fragment = new LoginMainActivity();
+		changeFragment(fragment);
+		currentFragment = SetupFragmentsEnum.MENU;
+		
 	}
 
 	public void displayWelcome() {
@@ -278,6 +309,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	}
 
 	public void displayLoginGeneric() {
+		
+		
 		fragment = new GenericLoginFragment();
 		changeFragment(fragment);
 		currentFragment = SetupFragmentsEnum.GENERIC_LOGIN;
@@ -335,8 +368,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				builder.setProxy(domain + ":5061")
 				.setTransport(TransportType.LinphoneTransportTls);
 			}
-			
-			builder.setExpires("31536000")
+
+			builder.setExpires("604800")
+			.setTransport(TransportType.LinphoneTransportTcp)
 			.setOutboundProxyEnabled(true)
 			.setAvpfEnabled(true)
 			.setAvpfRRInterval(3)
@@ -384,9 +418,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		
 		currentFragment = SetupFragmentsEnum.WIZARD_CONFIRM;
 
-		next.setVisibility(View.VISIBLE);
+		/*next.setVisibility(View.VISIBLE);
 		next.setEnabled(false);
-		back.setVisibility(View.GONE);
+		back.setVisibility(View.GONE);*/
 	}
 	
 	public void isAccountVerified(String username) {

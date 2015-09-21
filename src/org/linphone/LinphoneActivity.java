@@ -58,11 +58,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.Fragment.SavedState;
 import android.support.v4.app.FragmentActivity;
@@ -84,6 +82,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini
@@ -408,8 +408,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			newFragment = new AboutFragment();
 			break;
 		case CHATLIST:
-			newFragment = new ChatListFragment();
-			messageListFragment = new Fragment();
+			newFragment = new HelpFragment();
+			//messageListFragment = new Fragment();
 			break;
 		case CHAT:
 			newFragment = new ChatFragment();

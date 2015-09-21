@@ -27,8 +27,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
-
 import android.preference.PreferenceManager;
+
+import org.linphone.R;
 
 /**
  * @author Sylvain Berfini

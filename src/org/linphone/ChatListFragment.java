@@ -55,6 +55,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.linphone.R;
+
 /**
  * @author Sylvain Berfini
  */

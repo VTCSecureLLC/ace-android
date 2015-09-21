@@ -102,6 +102,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import org.linphone.R;
+
 /**
  *
  * Manager of the low level LibLinphone stuff.<br />

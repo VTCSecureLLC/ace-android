@@ -50,12 +50,4 @@ public class TutorialLauncherActivity extends Activity {
 	public void startBuddyStatusTutorial(View v) {
 		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialBuddyStatusActivity.class));
 	}
-	
-	public void startRttSenderTutorial(View v) {
-		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialRttSender.class));
-	}
-	
-	public void startRttReceiverTutorial(View v) {
-		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialRttReceiver.class));
-	}
 }

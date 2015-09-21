@@ -70,6 +70,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.linphone.R;
+
 /**
  * @author Sylvain Berfini
  */

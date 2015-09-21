@@ -43,6 +43,8 @@ import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
 
+import org.linphone.R;
+
 /**
  * @author Sylvain Berfini
  */
