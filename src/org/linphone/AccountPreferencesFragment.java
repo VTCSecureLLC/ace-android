@@ -455,8 +455,9 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 	private void initializeTransportPreference(ListPreference pref) {
 		List<CharSequence> entries = new ArrayList<CharSequence>();
 		List<CharSequence> values = new ArrayList<CharSequence>();
-		entries.add(getString(R.string.pref_transport_udp));
-		values.add(getString(R.string.pref_transport_udp_key));
+//		removed udp option to disable users from being encouraged to select it.
+//		entries.add(getString(R.string.pref_transport_udp));
+//		values.add(getString(R.string.pref_transport_udp_key));
 		entries.add(getString(R.string.pref_transport_tcp));
 		values.add(getString(R.string.pref_transport_tcp_key));
 		
@@ -471,10 +472,10 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			pref.setDefaultValue(mPrefs.getAccountTransportKey(n));
 			pref.setValueIndex(entries.indexOf(mPrefs.getAccountTransportString(n)));
 		} else {
-
-			pref.setSummary(getString(R.string.pref_transport_udp));
-			pref.setDefaultValue(getString(R.string.pref_transport_udp));
-			pref.setValueIndex(entries.indexOf(getString(R.string.pref_transport_udp)));
+//changed to tcp even in new accounts option to disable users from being encouraged to select it.
+			pref.setSummary(getString(R.string.pref_transport_tcp));
+			pref.setDefaultValue(getString(R.string.pref_transport_tcp));
+			pref.setValueIndex(entries.indexOf(getString(R.string.pref_transport_tcp)));
 		}
 	}
 	
