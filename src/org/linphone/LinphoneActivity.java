@@ -1281,7 +1281,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		return super.onKeyDown(keyCode, event);
 	}
 }
-
 interface ContactPicked {
 	void setAddresGoToDialerAndCall(String number, String name, Uri photo);
 	void goToDialer();
