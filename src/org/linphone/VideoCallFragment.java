@@ -21,12 +21,14 @@ import org.linphone.compatibility.Compatibility;
 import org.linphone.compatibility.CompatibilityScaleGestureDetector;
 import org.linphone.compatibility.CompatibilityScaleGestureListener;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -43,7 +45,6 @@ import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
 
-import org.linphone.R;
 
 /**
  * @author Sylvain Berfini
@@ -58,12 +59,16 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	private CompatibilityScaleGestureDetector mScaleDetector;
 	private InCallActivity inCallActivity;
 	private int dx,dy;
+	private int viewId = R.layout.video;
 
 	@SuppressWarnings("deprecation") // Warning useless because value is ignored and automatically set by new APIs.
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-			Bundle savedInstanceState) {		
-		View view = inflater.inflate(R.layout.video, container, false);
+			Bundle savedInstanceState) {
+
+
+		isH263();
+		View view = inflater.inflate(viewId, container, false);
 
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
@@ -76,16 +81,14 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			@Override
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				switch (motionEvent.getAction()) {
-
 				case MotionEvent.ACTION_DOWN:
 					dx = (int) motionEvent.getX();
 					dy = (int) motionEvent.getY();
-					break;
-
+						break;
 				case MotionEvent.ACTION_MOVE:
 					int x = (int) motionEvent.getX();
 					int y = (int) motionEvent.getY();
-					RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)mCaptureView.getLayoutParams();
+					RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mCaptureView.getLayoutParams();
 					lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); // Clears the rule, as there is no removeRule until API 17.
 					lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
 					int left = lp.leftMargin + (x - dx);
@@ -101,6 +104,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 		fixZOrder(mVideoView, mCaptureView);
 
+		LinphoneManager.getLc().setPreviewWindow(mCaptureView);
 		androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
 			@Override
 			public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
@@ -119,7 +123,11 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			@Override
 			public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
 				mCaptureView = surface;
+			//	isH263();
+
 				LinphoneManager.getLc().setPreviewWindow(mCaptureView);
+
+
 			}
 
 			@Override
@@ -145,6 +153,57 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		});
 
 		return view;
+	}
+
+	//Check to see if current call is using an H263 video codec, if so, adjust the video for portrait
+	private boolean isH263(){
+		LinphoneCallParams params;
+		LinphoneCall call;
+
+		LinphoneCore core = LinphoneManager.getLc();
+
+		if(core != null) {
+			call = core.getCurrentCall();
+			if(call != null) {
+				params = call.getCurrentParamsCopy();
+				if(params.getUsedVideoCodec() != null) {
+					if (params.getUsedVideoCodec().toString().contains("H263")) {
+
+						adjustH263VideoForCall(call);
+
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private void adjustH263VideoForCall(LinphoneCall call){
+
+						Activity parent = getActivity();
+						if(parent != null && parent.getWindowManager() != null) {
+
+							int orientation = parent.getResources().getConfiguration().orientation;
+
+							if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
+								int currentRotation = parent.getWindowManager().getDefaultDisplay().getRotation();
+								int newRotatation = currentRotation;
+
+								if(currentRotation <= 180){
+									newRotatation = 90;
+								}
+
+								else {
+									newRotatation = 270;
+								}
+								LinphoneManager.getLc().setDeviceRotation(newRotatation);
+								LinphoneManager.getLc().updateCall(call, null);
+								viewId = R.layout.video_h263;
+							}
+						}
+
 	}
 
 	private void fixZOrder(SurfaceView video, SurfaceView preview) {
