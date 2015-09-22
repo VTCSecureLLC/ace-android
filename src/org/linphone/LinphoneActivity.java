@@ -992,8 +992,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				return;
 			}
 
-
-
 			int degrees = 270;
 			if (o < 45 || o > 315)
 				degrees = 0;
