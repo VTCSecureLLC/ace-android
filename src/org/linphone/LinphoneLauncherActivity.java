@@ -32,9 +32,9 @@ import android.os.Handler;
 
 import org.linphone.R;
 
-//import io.fabric.sdk.android.Fabric;
-//import com.crashlytics.android.Crashlytics;
-//import com.crashlytics.android.ndk.CrashlyticsNdk;
+/*import io.fabric.sdk.android.Fabric;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;*/
 
 /**
  * 

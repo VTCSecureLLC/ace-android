@@ -86,7 +86,6 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 						dx = (int) motionEvent.getX();
 						dy = (int) motionEvent.getY();
 						break;
-
 					case MotionEvent.ACTION_MOVE:
 						int x = (int) motionEvent.getX();
 						int y = (int) motionEvent.getY();
@@ -105,7 +104,6 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		});
 
 		fixZOrder(mVideoView, mCaptureView);
-
 
 		LinphoneManager.getLc().setPreviewWindow(mCaptureView);
 		androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
