@@ -139,8 +139,12 @@
 		    android:title="@string/call">
 
 			<CheckBoxPreference
-				android:title="@string/pref_sipinfo_dtmf"
-			    android:key="@string/pref_sipinfo_dtmf_key"/>
+			android:title="@string/pref_sipinfo_dtmf"
+			android:key="@string/pref_sipinfo_dtmf_key"/>
+
+			<CheckBoxPreference
+				android:title="@string/pref_auto_answer"
+				android:key="@string/pref_auto_answer_key"/>
 
 			<CheckBoxPreference
 				android:title="@string/pref_rfc2833_dtmf"
