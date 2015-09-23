@@ -22,7 +22,10 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 
 import org.linphone.R;
+import org.w3c.dom.Text;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -50,8 +53,18 @@ public class AboutFragment extends Fragment implements OnClickListener {
 		View view = inflater.inflate(R.layout.about, container, false);
 
 		TextView aboutText = (TextView) view.findViewById(R.id.AboutText);
+
+		TextView buildIdText = (TextView)view.findViewById(R.id.buildId);
+
 		try {
 			aboutText.setText(String.format(getString(R.string.about_text), getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName));
+
+			PackageManager manager = getActivity().getPackageManager();
+			PackageInfo info = manager.getPackageInfo(
+					getActivity().getPackageName(), 0);
+			String version = String.valueOf(info.versionCode);
+			buildIdText.setText("Build: " +version);
+
 		} catch (NameNotFoundException e) {
 			Log.e(e, "cannot get version name");
 		}
