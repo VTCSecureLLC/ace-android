@@ -18,11 +18,11 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:orientation="horizontal">
-	    
+	   <!--
 		<include layout="@layout/setup_cancel_button" />
 		          
 		<include layout="@layout/setup_next_button" />
-		
+		-->
 		<include layout="@layout/setup_back_button" />    
 	  
 	</LinearLayout>
