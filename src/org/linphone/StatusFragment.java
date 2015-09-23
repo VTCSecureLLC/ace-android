@@ -41,6 +41,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -99,7 +101,8 @@ public class StatusFragment extends Fragment {
 		sliderContentAccounts = (ListView) view.findViewById(R.id.accounts);
 
 		voicemailCount = (TextView) view.findViewById(R.id.voicemailCount);
-		
+
+
 		exit = (TextView) view.findViewById(R.id.exit);
 		exit.setOnClickListener(new OnClickListener() {
 			@Override
@@ -661,7 +664,24 @@ public class StatusFragment extends Fragment {
 					status.setImageResource(getStatusIconResource(lpc.getState(), false));
 				}
 			}
-			
+
+			if(position == 0) {
+				try {
+					TextView buildIdTextView = (TextView) view.findViewById(R.id.buildId);
+					PackageManager manager = getActivity().getPackageManager();
+					PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
+					String version = String.valueOf(info.versionCode);
+
+					if (buildIdTextView != null) {
+						buildIdTextView.setText("Build: " + version);
+					}
+
+				} catch (PackageManager.NameNotFoundException e) {
+					Log.e(e, "cannot get version name");
+				}
+
+			}
+
 			isDefault.setOnClickListener(defaultListener);
 			
 			return view;

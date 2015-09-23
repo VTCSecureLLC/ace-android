@@ -23,8 +23,11 @@ import java.util.List;
 
 import org.linphone.LinphonePreferences.AccountBuilder;
 import org.linphone.core.LinphoneCoreException;
+import org.linphone.mediastream.Log;
 import org.linphone.ui.PreferencesListFragment;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -35,6 +38,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
+import android.widget.TextView;
 
 import org.linphone.R;
 
@@ -67,7 +71,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		} else {
 			manageAccountPreferencesFields(screen);
 		}
-		
+
 	}
 	
 	public static boolean isEditTextEmpty(String s){
