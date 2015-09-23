@@ -77,6 +77,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.hardware.Sensor;
@@ -93,6 +94,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
@@ -809,7 +811,11 @@ public class LinphoneManager implements LinphoneCoreListener {
 			}
 		}
 
-		if (state == State.IncomingReceived && mR.getBoolean(R.bool.auto_answer_calls)) {
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
+
+
+		if (state == State.IncomingReceived && auto_answer) {
 			try {
 				mLc.acceptCall(call);
 			} catch (LinphoneCoreException e) {

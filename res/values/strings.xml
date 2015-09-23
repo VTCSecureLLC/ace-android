@@ -366,6 +366,7 @@
   <string name="pref_avpf_rr_interval"> AVPF regular RTCP interval in seconds (between 1 and 5)</string>
   <string name="pref_rfc2833_dtmf">Send RFC2833 DTMFs</string>
   <string name="pref_sipinfo_dtmf">Send SIP INFO DTMFs</string>
+  <string name="pref_auto_answer">Auto Answer</string>
   <string name="pref_voice_mail">Voice mail uri</string>
   <string name="voicemail_unread"> unread messages</string>
   <string name="error_unknown">Unknown error</string>

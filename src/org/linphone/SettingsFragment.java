@@ -40,6 +40,7 @@ import org.linphone.ui.LedPreference;
 import org.linphone.ui.PreferencesListFragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -49,6 +50,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 import org.linphone.R;
@@ -785,6 +787,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	private void initCallSettings() {
 		CheckBoxPreference rfc2833 = (CheckBoxPreference) findPreference(getString(R.string.pref_rfc2833_dtmf_key));
+		CheckBoxPreference autoAnswer = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_answer_key));
 		CheckBoxPreference sipInfo = (CheckBoxPreference) findPreference(getString(R.string.pref_sipinfo_dtmf_key));
 
 		if (mPrefs.useRfc2833Dtmfs()) {
@@ -796,6 +799,23 @@ public class SettingsFragment extends PreferencesListFragment {
 			rfc2833.setChecked(false);
 			rfc2833.setEnabled(false);
 		}
+
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
+		SharedPreferences.Editor editor = prefs.edit();
+
+		if (auto_answer) {
+			autoAnswer.setChecked(true);
+			autoAnswer.setEnabled(true);
+			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
+			editor.commit();
+		} else {
+			autoAnswer.setChecked(false);
+			autoAnswer.setEnabled(true);
+			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
+			editor.commit();
+		}
+
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_voice_mail_key, mPrefs.getVoiceMailUri());
 	}
