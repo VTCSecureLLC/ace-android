@@ -65,7 +65,6 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
-
 		isH263();
 		View view = inflater.inflate(viewId, container, false);
 
