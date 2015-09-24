@@ -65,13 +65,14 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
+
+
 		isH263();
 		View view = inflater.inflate(viewId, container, false);
 
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
 		mCaptureView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // Warning useless because value is ignored and automatically set by new APIs.
-
 
 		// VTCSecure - Make the preview video draggable
 		mCaptureView.setOnTouchListener(new OnTouchListener() {
