@@ -50,7 +50,14 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
 		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
 		
-		sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem, new String[]{ "Provider 1", "Provider 2", "etc"}));
+		sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem, 
+				new String[]{ "Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
+				new int[]{R.drawable.provider_logo_sorenson,
+			R.drawable.provider_logo_zvrs,
+			R.drawable.provider_logo_caag,//caag
+			R.drawable.provider_logo_purplevrs,
+			R.drawable.provider_logo_globalvrs,//global
+			R.drawable.provider_logo_convorelay}));
 		
 		view.findViewById(R.id.ab_back).setOnClickListener(this);
 		
@@ -79,14 +86,17 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	
 	class SpinnerAdapter extends ArrayAdapter<String> {
 
+		int[] drawables;
 		public SpinnerAdapter(Context ctx, int txtViewResourceId,
-				String[] objects) {
+				String[] objects, int [] drawable) {
 			super(ctx, txtViewResourceId, objects);
+			this.drawables = drawable;
+			
 		}
 
 		@Override
 		public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
-			return getCustomView(position, cnvtView, prnt);
+			return getCustomViewSpinner(position, cnvtView, prnt);
 		}
 
 		@Override
@@ -103,9 +113,26 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 			main_text.setText(getItem(position));
 			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			left_icon.setImageResource(R.drawable.provider_logo_sorenson);
+			left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
 
 			return mySpinner;
 		}
+		
+	
+		public View getCustomViewSpinner(int position, View convertView,
+				ViewGroup parent) {
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+			View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
+					false);
+
+			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
+			main_text.setText(getItem(position));
+			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
+			left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
+
+			return mySpinner;
+		}
+		
+		
 	}
 }

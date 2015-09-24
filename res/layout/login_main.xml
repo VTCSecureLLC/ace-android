@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="13dp"
         android:layout_marginTop="38dp"
-        android:text="VARP"
+        android:text="ACE"
         android:textColor="#fff"
         android:textSize="32dp" />
 
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="46dp"
-        android:text="Video Access Technology Reference Platform"
+        android:text="Accessible Communications for Everyone"
         android:textColor="#66889b"
         android:textStyle="bold" />
 
