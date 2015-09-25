@@ -55,7 +55,7 @@
 	url = git://git.linphone.org/belle-sip
 [submodule "submodules/externals/antlr3"]
 	path = submodules/externals/antlr3
-	url = git://git.linphone.org/antlr3.git
+	url = git://github.com/VTCSecureLLC/antlr3.git
 [submodule "submodules/externals/libxml2"]
 	path = submodules/externals/libxml2
 	url = git://git.gnome.org/libxml2
