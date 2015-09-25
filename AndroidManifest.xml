@@ -5,8 +5,8 @@
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
     
     <!-- Permissions for Push Notification -->
-    <permission android:name="org.linphone.vtcsecure.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
-	<uses-permission android:name="org.linphone.vtcsecure.permission.C2D_MESSAGE" />  <!-- Change package ! -->
+    <permission android:name="org.linphone.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
+	<uses-permission android:name="org.linphone.permission.C2D_MESSAGE" />  <!-- Change package ! -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -150,7 +150,7 @@
             <intent-filter>
 	     		<action android:name="android.intent.action.MAIN" />
 		  	</intent-filter>
-			 
+
             <intent-filter>
 		        <data android:scheme="linphone-config" /> <!-- Change if needed -->
 		        <action android:name="android.intent.action.VIEW" />
@@ -186,30 +186,30 @@
         <receiver android:name="org.linphone.NetworkManager">
 			<intent-filter><action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action></intent-filter>
 		</receiver>
-	
+
 	    <receiver android:name="org.linphone.BluetoothManager" android:enabled="false">
 		</receiver>
-	
+
 		<receiver android:name="org.linphone.BootReceiver">
 			<intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"></action></intent-filter>
 		</receiver>
-	
+
 		<receiver android:name="org.linphone.PhoneStateChangedReceiver">
 			<intent-filter><action android:name="android.intent.action.PHONE_STATE" /></intent-filter>
 		</receiver>
-		
+
 		<receiver android:name="KeepAliveHandler" >
         </receiver>
-        
+
 		<!-- Needed for push notification -->
 		<receiver android:name="org.linphone.gcm.GCMReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
 		  <intent-filter>
 		    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 		    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-		    <category android:name="org.linphone.vtcsecure" /> <!-- Change package ! -->
+		    <category android:name="org.linphone" /> <!-- Change package ! -->
 		  </intent-filter>
 		</receiver>
-		
+
 		<service android:name="org.linphone.gcm.GCMService" />
 
         <activity android:name="org.linphone.tutorials.TutorialLauncherActivity"
@@ -218,49 +218,53 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-		
+
 		<activity android:name="org.linphone.tutorials.TutorialBuddyStatusActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        
+
 		<activity android:name="org.linphone.tutorials.TutorialChatRoomActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        
+
 		<activity android:name="org.linphone.tutorials.TutorialHelloWorldActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        
+
 		<activity android:name="org.linphone.tutorials.TutorialRegistrationActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        
+
 		<activity android:name="org.linphone.tutorials.TutorialRttSender"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        
+
 		<activity android:name="org.linphone.tutorials.TutorialRttReceiver"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-	
-	</application>
 
-</manifest> 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="10e2de3aa62df2eb758b9507e550ff47b3ed1d00"
+            />
+
+	</application>
+</manifest>

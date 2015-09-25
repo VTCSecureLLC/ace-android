@@ -20,7 +20,14 @@ package org.linphone;
 
 import static android.content.Intent.ACTION_MAIN;
 
-import org.linphone.mediastream.Log;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+
+import com.crashlytics.android.core.CrashlyticsCore;
+import com.crashlytics.android.core.CrashlyticsListener;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
+
+import io.fabric.sdk.android.Fabric;
 import org.linphone.setup.RemoteProvisioningActivity;
 import org.linphone.tutorials.TutorialLauncherActivity;
 
@@ -32,9 +39,6 @@ import android.os.Handler;
 
 import org.linphone.R;
 
-/*import io.fabric.sdk.android.Fabric;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;*/
 
 /**
  * 
@@ -52,10 +56,15 @@ public class LinphoneLauncherActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-     //   Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
+		Fabric.Builder builder = new Fabric.Builder(this);
+		builder.debuggable(true);
+		builder.kits(new Crashlytics(), new CrashlyticsNdk());
+
+
+		Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 		// Used to change for the lifetime of the app the name used to tag the logs
-		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
+		//new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
 		
 		// Hack to avoid to draw twice LinphoneActivity on tablets
         if (getResources().getBoolean(R.bool.isTablet)) {
@@ -76,6 +85,8 @@ public class LinphoneLauncherActivity extends Activity {
 			mThread = new ServiceWaitThread();
 			mThread.start();
 		}
+
+
 	}
 
 	protected void onServiceReady() {
@@ -95,6 +106,8 @@ public class LinphoneLauncherActivity extends Activity {
 				finish();
 			}
 		}, 1000);
+
+	//	CrashlyticsCore.getInstance().crash();
 	}
 
 

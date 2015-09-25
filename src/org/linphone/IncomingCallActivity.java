@@ -32,7 +32,7 @@ import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
-import org.linphone.vtcsecure.LinphoneTorchFlasher;
+import org.linphone.LinphoneTorchFlasher;
 
 import org.linphone.R;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="custom_rules">
 
-	<property name="linphone.package.name" value="org.linphone.vtcsecure" />
+	<property name="linphone.package.name" value="org.linphone" />
 
     <import file="crashlytics/crashlytics_build_base.xml"/>
 

@@ -1,4 +1,4 @@
-package org.linphone.vtcsecure;
+package org.linphone;
 
 import java.util.Calendar;
 
