@@ -210,6 +210,17 @@
 
 		</PreferenceScreen>
 
+
+		<PreferenceScreen
+			android:title="@string/pref_theme">
+
+			<ListPreference
+				android:title="App Color"
+				android:key="@string/pref_theme_color_key"/>
+
+		</PreferenceScreen>
+
+
 		<PreferenceScreen
 		    android:title="@string/pref_advanced">
 

@@ -19,8 +19,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import java.util.ArrayList;
-import java.util.List;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -39,21 +50,8 @@ import org.linphone.setup.SetupActivity;
 import org.linphone.ui.LedPreference;
 import org.linphone.ui.PreferencesListFragment;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.Handler;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
-
-import org.linphone.R;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -64,6 +62,9 @@ public class SettingsFragment extends PreferencesListFragment {
 	private Handler mHandler = new Handler();
 	private LinphoneCoreListenerBase mListener;
 
+	SharedPreferences prefs;
+	SharedPreferences.Editor editor;
+
 	public SettingsFragment() {
 		super(R.xml.preferences);
 		mPrefs = LinphonePreferences.instance();
@@ -72,6 +73,9 @@ public class SettingsFragment extends PreferencesListFragment {
 	@Override
 	public void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
+
+		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		editor = prefs.edit();
 
 		// Init the settings page interface
 		initSettings();
@@ -107,11 +111,13 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initSettings() {
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
 
+
 		initTunnelSettings();
 		initAudioSettings();
 		initVideoSettings();
 		initCallSettings();
 		initNetworkSettings();
+		initThemeSettings();
 		initAdvancedSettings();
 
 		// Add action on About button
@@ -151,6 +157,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		setVideoPreferencesListener();
 		setCallPreferencesListener();
 		setNetworkPreferencesListener();
+		setThemePreferencesListener();
 		setAdvancedPreferencesListener();
 	}
 
@@ -459,6 +466,21 @@ public class SettingsFragment extends PreferencesListFragment {
 		pref.setValue(value);
 	}
 
+	private void initializeThemeColorPreferences(ListPreference pref) {
+		List<CharSequence> entries = new ArrayList<CharSequence>();
+		List<CharSequence> values = new ArrayList<CharSequence>();
+		entries.add("default");
+		values.add("default");
+		entries.add("red");
+		values.add("red");
+		entries.add("custom");
+		values.add("custom");
+		setListPreferenceValues(pref, entries, values);
+		String value =prefs.getString(getResources().getString(R.string.pref_theme_color_key), "default");
+		pref.setSummary(value);
+		pref.setValue(value);
+	}
+
 	private void initializePreferredVideoSizePreferences(ListPreference pref) {
 		List<CharSequence> entries = new ArrayList<CharSequence>();
 		List<CharSequence> values = new ArrayList<CharSequence>();
@@ -626,6 +648,27 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 	}
+
+	private void initThemeSettings() {
+		initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_color_key)));
+	}
+	private void setThemePreferencesListener() {
+		findPreference(getString(R.string.pref_theme_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+				String color = prefs.getString(getString(R.string.pref_theme_color_key), "default");
+
+				preference.setSummary(newValue.toString());
+				editor.putString(getString(R.string.pref_theme_color_key), newValue.toString());
+				editor.commit();
+				return true;
+			}
+		});
+
+
+	};
+
 
 	private void initVideoSettings() {
 		initializeVideoPresetPreferences((ListPreference) findPreference(getString(R.string.pref_video_preset_key)));
@@ -800,9 +843,8 @@ public class SettingsFragment extends PreferencesListFragment {
 			rfc2833.setEnabled(false);
 		}
 
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+
 		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
-		SharedPreferences.Editor editor = prefs.edit();
 
 		if (auto_answer) {
 			autoAnswer.setChecked(true);
