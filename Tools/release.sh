@@ -1,5 +1,18 @@
 #!/bin/bash
-set -x
+
+# Only deploy master branch builds
+
+if [ -z "$TRAVIS_BRANCH" ] ; then
+  echo "TRAVIS_BRANCH not found. Deploy skipped"
+  exit 0
+fi
+
+if [ "$TRAVIS_BRANCH" != "master" ] ; then
+  echo "TRAVIS_BRANCH is not master. Deploy skipped"
+  exit 0
+fi
+
+set -xe
 
 APK_FILE=""
 
@@ -16,29 +29,44 @@ if [ -z "$APK_FILE" ]; then
   exit 1
 fi
 
-curl -sL https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2 | bunzip2 -cd | tar xf - --strip=3 -C /tmp/
+# Prepare semantic versioning tag
 
-chmod 755 /tmp/github-release
+SHA1=$(git rev-parse --short HEAD)
 
-tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-$(git rev-parse --short HEAD)
+tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-${SHA1}
 
-/tmp/github-release release \
-    --user VTCSecureLLC \
-    --repo linphone-android \
-    --tag $tag \
-    --name "Travis-CI Automated $tag" \
-    --description "This is an automatically generated tag that will eventually be expired" \
-    --pre-release
+# Prepare other variables
 
-gradle crashlyticsUploadDistributionDebug
-gradle crashlyticsUploadSymbolsDebug
+IFS=/ GITHUB_REPO=($TRAVIS_REPO_SLUG)
 
-echo "Uploading $APK_FILE as Ace-$tag-debug.apk to github release $tag"
+# Create a GitHub release if credentials are available, and upload apk files
 
-/tmp/github-release upload \
-    --user VTCSecureLLC \
-    --repo linphone-android \
-    --tag $tag \
-    --name Linphone-$tag-debug.apk \
-    --file $APK_FILE
+set +x
+if [ -z "${GITHUB_TOKEN}" ]; then
+  echo GITHUB_TOKEN is not defined. Neither uploading apk files, nor creating a GitHub release.
+else
+  set -x
+
+  curl -sL https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2 | bunzip2 -cd | tar xf - --strip=3 -C /tmp/
+
+  chmod 755 /tmp/github-release
+
+  /tmp/github-release release \
+      --user ${GITHUB_REPO[0]:-VTCSecureLLC} \
+      --repo ${GITHUB_REPO[1]:-ace-android} \
+      --tag $tag \
+      --name "Travis-CI Automated $tag" \
+      --description "$(git log -1 --pretty=format:%B)" \
+      --pre-release
+
+  echo "Uploading $APK_FILE as ACE-$tag-debug.apk to github release $tag"
+
+  /tmp/github-release upload \
+      --user ${GITHUB_REPO[0]:-VTCSecureLLC} \
+      --repo ${GITHUB_REPO[1]:-ace-android} \
+      --tag $tag \
+      --name ACE-$tag-debug.apk \
+      --file $APK_FILE
+fi
+
 
