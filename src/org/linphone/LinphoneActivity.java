@@ -18,38 +18,6 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import static android.content.Intent.ACTION_MAIN;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-
-import org.linphone.LinphoneManager.AddressType;
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.CallDirection;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneAuthInfo;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCallLog.CallStatus;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatRoom;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCore.RegistrationState;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.mediastream.Log;
-import org.linphone.setup.RemoteProvisioningActivity;
-import org.linphone.setup.RemoteProvisioningLoginActivity;
-import org.linphone.setup.SetupActivity;
-import org.linphone.ui.AddressText;
-import org.linphone.vtcsecure.LinphoneLocationManager;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -57,10 +25,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.Fragment.SavedState;
 import android.support.v4.app.FragmentActivity;
@@ -83,7 +53,36 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.linphone.R;
+import org.linphone.LinphoneManager.AddressType;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneAuthInfo;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCallLog;
+import org.linphone.core.LinphoneCallLog.CallStatus;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.mediastream.Log;
+import org.linphone.setup.RemoteProvisioningLoginActivity;
+import org.linphone.setup.SetupActivity;
+import org.linphone.ui.AddressText;
+import org.linphone.vtcsecure.LinphoneLocationManager;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+
+import static android.content.Intent.ACTION_MAIN;
 
 /**
  * @author Sylvain Berfini
@@ -180,6 +179,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 		setContentView(R.layout.main);
+
+
+
+
+
+
 		instance = this;
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
 		initButtons();
@@ -311,6 +316,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
 		missedChats = (TextView) findViewById(R.id.missedChats);
+
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		String color_theme = prefs.getString(getResources().getString(R.string.pref_theme_color_key), "default");
+
+		if (color_theme.equals("red")) {
+			((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_red);
+			((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_red);
+			dialer.setImageResource(R.drawable.dialer_red);
+			((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_red);
+			((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_red);
+		}
 	}
 
 	private boolean isTablet() {
