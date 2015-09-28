@@ -68,7 +68,7 @@ public class History extends SampleTest {
 	public void testEDeleteAll() {		
 		goToHistory();
 
-		solo.clickOnText(aContext.getString(org.linphone.R.string.button_edit));	
+		solo.clickOnText(aContext.getString(org.linphone.R.string.button_edit));
 		solo.clickOnView(solo.getView(org.linphone.R.id.deleteAll));
 		solo.clickOnText(aContext.getString(org.linphone.R.string.button_ok));
 		Assert.assertTrue(solo.searchText(aContext.getString(org.linphone.R.string.no_call_history)));

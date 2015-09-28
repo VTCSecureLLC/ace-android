@@ -67,7 +67,7 @@ import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
-import org.linphone.vtcsecure.LinphoneTorchFlasher;
+import org.linphone.LinphoneTorchFlasher;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
