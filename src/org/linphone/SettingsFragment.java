@@ -479,6 +479,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		String value =prefs.getString(getResources().getString(R.string.pref_theme_color_key), "default");
 		pref.setSummary(value);
 		pref.setValue(value);
+
 	}
 
 	private void initializePreferredVideoSizePreferences(ListPreference pref) {
@@ -662,6 +663,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				preference.setSummary(newValue.toString());
 				editor.putString(getString(R.string.pref_theme_color_key), newValue.toString());
 				editor.commit();
+				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
 				return true;
 			}
 		});

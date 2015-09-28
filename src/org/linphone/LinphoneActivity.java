@@ -89,6 +89,7 @@ import static android.content.Intent.ACTION_MAIN;
  */
 public class LinphoneActivity extends FragmentActivity implements OnClickListener, ContactPicked {
 	public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
+	public static Context ctx;
 	private static final int SETTINGS_ACTIVITY = 123;
 	private static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
@@ -99,9 +100,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private StatusFragment statusFragment;
 	private TextView missedCalls, missedChats;
-	private ImageView dialer;
+	public static ImageView dialer;
 	private LinearLayout menu, mark;
-	private RelativeLayout contacts, history, settings, chat, aboutChat, aboutSettings;
+	public static RelativeLayout contacts, history, settings, chat, aboutChat, aboutSettings;
 	private FragmentsAvailable currentFragment, nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
@@ -110,6 +111,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private boolean isAnimationDisabled = false, preferLinphoneContacts = false;
 	private OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
+
+	public static View topLayout;
 
 	static final boolean isInstanciated() {
 		return instance != null;
@@ -125,7 +128,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		
+		ctx=this;
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
 		        .setTitle(getString(R.string.location_for_911_disabled_title))
@@ -180,8 +183,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		setContentView(R.layout.main);
 
-
-
+		topLayout=findViewById(R.id.topLayout);
 
 
 
@@ -317,8 +319,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
 		missedChats = (TextView) findViewById(R.id.missedChats);
 
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String color_theme = prefs.getString(getResources().getString(R.string.pref_theme_color_key), "default");
+		setColorTheme(this);
+	}
+
+	public static void setColorTheme(Context context){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String color_theme = prefs.getString(context.getResources().getString(R.string.pref_theme_color_key), "default");
+
+
+		if (color_theme.equals("red")) {
+			topLayout.setBackgroundResource(R.drawable.background_theme_red);
+		}else{
+			topLayout.setBackgroundResource(R.drawable.background);
+		}
 
 		if (color_theme.equals("red")) {
 			((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_red);
@@ -326,6 +339,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			dialer.setImageResource(R.drawable.dialer_red);
 			((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_red);
 			((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_red);
+		}else{
+			((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history);
+			((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts);
+			dialer.setImageResource(R.drawable.dialer);
+			((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings);
+			((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource);
 		}
 	}
 

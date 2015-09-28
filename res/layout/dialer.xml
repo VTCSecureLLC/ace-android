@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/dialer_background"
   	android:background="@drawable/background">
     
     <org.linphone.ui.AddressText
@@ -82,7 +83,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/controls"
-        android:layout_below="@id/Adress"
-        android:background="@drawable/dialer_alt_background" />
+        android:layout_below="@id/Adress"/>
 	
 </RelativeLayout>

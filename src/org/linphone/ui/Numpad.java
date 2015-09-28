@@ -87,6 +87,19 @@ public class Numpad extends LinearLayout implements AddressAware {
 				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_red);
 				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_red);
 				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_red);
+			}else{
+				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one);
+				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two);
+				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three);
+				view.findViewById(R.id.Digit4).setBackgroundResource(R.drawable.numpad_four);
+				view.findViewById(R.id.Digit5).setBackgroundResource(R.drawable.numpad_five);
+				view.findViewById(R.id.Digit6).setBackgroundResource(R.drawable.numpad_six);
+				view.findViewById(R.id.Digit7).setBackgroundResource(R.drawable.numpad_seven);
+				view.findViewById(R.id.Digit8).setBackgroundResource(R.drawable.numpad_eight);
+				view.findViewById(R.id.Digit9).setBackgroundResource(R.drawable.numpad_nine);
+				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star);
+				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero);
+				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp);
 			}
 		}catch(Throwable e){
 
