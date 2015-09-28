@@ -469,14 +469,16 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initializeThemeColorPreferences(ListPreference pref) {
 		List<CharSequence> entries = new ArrayList<CharSequence>();
 		List<CharSequence> values = new ArrayList<CharSequence>();
-		entries.add("default");
-		values.add("default");
-		entries.add("red");
-		values.add("red");
-		entries.add("custom");
-		values.add("custom");
+		entries.add("Default");
+		values.add("Default");
+		entries.add("Red");
+		values.add("Red");
+		entries.add("Yellow");
+		values.add("Yellow");
+		entries.add("Custom");
+		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
-		String value =prefs.getString(getResources().getString(R.string.pref_theme_color_key), "default");
+		String value =prefs.getString(getResources().getString(R.string.pref_theme_app_color_key), "Default");
 		pref.setSummary(value);
 		pref.setValue(value);
 
@@ -651,17 +653,17 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initThemeSettings() {
-		initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_color_key)));
+		initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
 	}
 	private void setThemePreferencesListener() {
-		findPreference(getString(R.string.pref_theme_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		findPreference(getString(R.string.pref_theme_app_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-				String color = prefs.getString(getString(R.string.pref_theme_color_key), "default");
+				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "default");
 
 				preference.setSummary(newValue.toString());
-				editor.putString(getString(R.string.pref_theme_color_key), newValue.toString());
+				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
 				editor.commit();
 				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
 				return true;

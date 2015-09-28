@@ -73,18 +73,16 @@ public class DialerFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.dialer, container, false);
 
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
-		color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_color_key), "default");
+		color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_app_color_key), "default");
 
 
 
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
 		mAddress.setDialerFragment(this);
 
-		if (color_theme.equals("red")) {
-			mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_red);
-		}else{
-			mAddress.setBackgroundResource(R.drawable.dialer_address_background);
-		}
+
+
+
 
 
 		// VTCSecure SIP Domain selection 
@@ -117,20 +115,17 @@ public class DialerFragment extends Fragment {
 			sipDomainSpinner.setVisibility(View.GONE);
 		}
 
-		if (color_theme.equals("red")) {
-			sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_red);
-		}else{
-			sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
-		}
+
+
+
+
 
 		EraseButton erase = (EraseButton) view.findViewById(R.id.Erase);
 		erase.setAddressWidget(mAddress);
 
-		if (color_theme.equals("red")) {
-			erase.setImageResource(R.drawable.backspace_red);
-		}else{
-			erase.setImageResource(R.drawable.backspace);
-		}
+
+
+
 
 		mCall = (CallButton) view.findViewById(R.id.Call);
 		mCall.setAddressWidget(mAddress);
@@ -142,12 +137,14 @@ public class DialerFragment extends Fragment {
 			}
 		} else {
 
-
-			if (color_theme.equals("red")) {
-				mCall.setImageResource(R.drawable.call_red);
+			if(color_theme.equals("Red")) {
+					mCall.setImageResource(R.drawable.call_red);
+			}else if(color_theme.equals("Yellow")) {
+					mCall.setImageResource(R.drawable.call_yellow);
 			}else{
-				mCall.setImageResource(R.drawable.call);
+					mCall.setImageResource(R.drawable.call);
 			}
+
 
 		}
 
@@ -202,18 +199,26 @@ public class DialerFragment extends Fragment {
 			}
 		}
 
-
-		if (color_theme.equals("red")) {
-			mAddContact.setImageResource(R.drawable.add_contact_red);
+		if(color_theme.equals("Red")) {
+				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_red);
+				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_red);
+				erase.setImageResource(R.drawable.backspace_red);
+				mAddContact.setImageResource(R.drawable.add_contact_red);
+				view.setBackgroundResource(R.drawable.background_theme_red);
+		}else if(color_theme.equals("Yellow")) {
+				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_yellow);
+				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_yellow);
+				erase.setImageResource(R.drawable.backspace_yellow);
+				mAddContact.setImageResource(R.drawable.add_contact_yellow);
+				view.setBackgroundResource(R.drawable.background_theme_yellow);
 		}else{
-			mAddContact.setImageResource(R.drawable.add_contact);
+				mAddress.setBackgroundResource(R.drawable.dialer_address_background);
+				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
+				erase.setImageResource(R.drawable.backspace);
+				mAddContact.setImageResource(R.drawable.add_contact);
+				view.setBackgroundResource(R.drawable.background);
 		}
 
-		if (color_theme.equals("red")) {
-			view.setBackgroundResource(R.drawable.background_theme_red);
-		}else{
-			view.setBackgroundResource(R.drawable.background);
-		}
 		return view;
 	}
 
@@ -264,17 +269,23 @@ public class DialerFragment extends Fragment {
 			mAddContact.setImageResource(R.drawable.cancel);
 			mAddContact.setOnClickListener(cancelListener);
 		} else {
-			if (color_theme.equals("red")) {
-				mCall.setImageResource(R.drawable.call_red);
-			}else{
-				mCall.setImageResource(R.drawable.call);
-			}
+
+
+
 			mAddContact.setEnabled(true);
-			if (color_theme.equals("red")) {
-				mAddContact.setImageResource(R.drawable.add_contact_red);
+
+			if(color_theme.equals("Red")) {
+					mCall.setImageResource(R.drawable.call_red);
+					mAddContact.setImageResource(R.drawable.add_contact_red);
+			}else if(color_theme.equals("Yellow")) {
+					mCall.setImageResource(R.drawable.call_yellow);
+					mAddContact.setImageResource(R.drawable.add_contact_yellow);
 			}else{
-				mAddContact.setImageResource(R.drawable.add_contact);
+					mCall.setImageResource(R.drawable.call);
+					mAddContact.setImageResource(R.drawable.add_contact);
+
 			}
+
 			mAddContact.setOnClickListener(addContactListener);
 			enableDisableAddContact();
 		}

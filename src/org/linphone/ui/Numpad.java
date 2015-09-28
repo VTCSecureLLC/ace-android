@@ -72,9 +72,12 @@ public class Numpad extends LinearLayout implements AddressAware {
 
 		try {
 			final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
-			String color_theme = prefs.getString(getContext().getResources().getString(R.string.pref_theme_color_key), "default");
+			String color_theme = prefs.getString(getContext().getResources().getString(R.string.pref_theme_app_color_key), "default");
 
-			if (color_theme.equals("red")) {
+
+
+			if(color_theme.equals("Red")) {
+
 				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one_red);
 				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two_red);
 				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three_red);
@@ -87,20 +90,36 @@ public class Numpad extends LinearLayout implements AddressAware {
 				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_red);
 				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_red);
 				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_red);
+
+			}else if(color_theme.equals("Yellow")) {
+				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one_yellow);
+				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two_yellow);
+				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three_yellow);
+				view.findViewById(R.id.Digit4).setBackgroundResource(R.drawable.numpad_four_yellow);
+				view.findViewById(R.id.Digit5).setBackgroundResource(R.drawable.numpad_five_yellow);
+				view.findViewById(R.id.Digit6).setBackgroundResource(R.drawable.numpad_six_yellow);
+				view.findViewById(R.id.Digit7).setBackgroundResource(R.drawable.numpad_seven_yellow);
+				view.findViewById(R.id.Digit8).setBackgroundResource(R.drawable.numpad_eight_yellow);
+				view.findViewById(R.id.Digit9).setBackgroundResource(R.drawable.numpad_nine_yellow);
+				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_yellow);
+				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_yellow);
+				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_yellow);
 			}else{
-				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one);
-				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two);
-				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three);
-				view.findViewById(R.id.Digit4).setBackgroundResource(R.drawable.numpad_four);
-				view.findViewById(R.id.Digit5).setBackgroundResource(R.drawable.numpad_five);
-				view.findViewById(R.id.Digit6).setBackgroundResource(R.drawable.numpad_six);
-				view.findViewById(R.id.Digit7).setBackgroundResource(R.drawable.numpad_seven);
-				view.findViewById(R.id.Digit8).setBackgroundResource(R.drawable.numpad_eight);
-				view.findViewById(R.id.Digit9).setBackgroundResource(R.drawable.numpad_nine);
-				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star);
-				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero);
-				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp);
+					view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one);
+					view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two);
+					view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three);
+					view.findViewById(R.id.Digit4).setBackgroundResource(R.drawable.numpad_four);
+					view.findViewById(R.id.Digit5).setBackgroundResource(R.drawable.numpad_five);
+					view.findViewById(R.id.Digit6).setBackgroundResource(R.drawable.numpad_six);
+					view.findViewById(R.id.Digit7).setBackgroundResource(R.drawable.numpad_seven);
+					view.findViewById(R.id.Digit8).setBackgroundResource(R.drawable.numpad_eight);
+					view.findViewById(R.id.Digit9).setBackgroundResource(R.drawable.numpad_nine);
+					view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star);
+					view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero);
+					view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp);
+
 			}
+
 		}catch(Throwable e){
 
 		}
