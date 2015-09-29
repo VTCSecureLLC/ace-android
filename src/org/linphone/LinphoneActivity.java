@@ -320,30 +320,26 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		missedChats = (TextView) findViewById(R.id.missedChats);
 
 		setColorTheme(this);
+		setBackgroundColorTheme(this);
 	}
 
 	public static void setColorTheme(Context context){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String color_theme = prefs.getString(context.getResources().getString(R.string.pref_theme_app_color_key), "default");
 
-
-
 		if(color_theme.equals("Red")) {
-				topLayout.setBackgroundResource(R.drawable.background_theme_red);
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_red);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_red);
 				dialer.setImageResource(R.drawable.dialer_red);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_red);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_red);
 		}else if(color_theme.equals("Yellow")) {
-				topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_yellow);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_yellow);
 				dialer.setImageResource(R.drawable.dialer_yellow);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_yellow);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_yellow);
 		}else{
-				topLayout.setBackgroundResource(R.drawable.background);
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts);
 				dialer.setImageResource(R.drawable.dialer);
@@ -354,8 +350,22 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 
+
 	}
 
+
+	public static void setBackgroundColorTheme(Context context){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String background_color_theme=prefs.getString(context.getResources().getString(R.string.pref_theme_background_color_key), "default");
+		//set background color independent
+		if(background_color_theme.equals("Red")) {
+			topLayout.setBackgroundResource(R.drawable.background_theme_red);
+		}else if(background_color_theme.equals("Yellow")) {
+			topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
+		}else{
+			topLayout.setBackgroundResource(R.drawable.background);
+		}
+	}
 	private boolean isTablet() {
 		return getResources().getBoolean(R.bool.isTablet);
 	}

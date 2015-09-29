@@ -63,7 +63,7 @@ public class DialerFragment extends Fragment {
 	private boolean userInteraction = false;
 
 	String color_theme;
-
+	String background_color_theme;
 	
 	
 	@Override
@@ -74,7 +74,7 @@ public class DialerFragment extends Fragment {
 
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
 		color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_app_color_key), "default");
-
+		background_color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_background_color_key), "default");
 
 
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
@@ -204,19 +204,28 @@ public class DialerFragment extends Fragment {
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_red);
 				erase.setImageResource(R.drawable.backspace_red);
 				mAddContact.setImageResource(R.drawable.add_contact_red);
-				view.setBackgroundResource(R.drawable.background_theme_red);
+
 		}else if(color_theme.equals("Yellow")) {
 				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_yellow);
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_yellow);
 				erase.setImageResource(R.drawable.backspace_yellow);
 				mAddContact.setImageResource(R.drawable.add_contact_yellow);
-				view.setBackgroundResource(R.drawable.background_theme_yellow);
+
 		}else{
 				mAddress.setBackgroundResource(R.drawable.dialer_address_background);
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
 				erase.setImageResource(R.drawable.backspace);
 				mAddContact.setImageResource(R.drawable.add_contact);
-				view.setBackgroundResource(R.drawable.background);
+
+		}
+
+		//set background color independent
+		if(background_color_theme.equals("Red")) {
+			view.setBackgroundResource(R.drawable.background_theme_red);
+		}else if(background_color_theme.equals("Yellow")) {
+			view.setBackgroundResource(R.drawable.background_theme_yellow);
+		}else{
+			view.setBackgroundResource(R.drawable.background);
 		}
 
 		return view;

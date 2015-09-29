@@ -158,6 +158,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		setCallPreferencesListener();
 		setNetworkPreferencesListener();
 		setThemePreferencesListener();
+		setBackgroundThemePreferencesListener();
 		setAdvancedPreferencesListener();
 	}
 
@@ -484,6 +485,24 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	}
 
+	private void initializeBackgroundThemeColorPreferences(ListPreference pref) {
+		List<CharSequence> entries = new ArrayList<CharSequence>();
+		List<CharSequence> values = new ArrayList<CharSequence>();
+		entries.add("Default");
+		values.add("Default");
+		entries.add("Red");
+		values.add("Red");
+		entries.add("Yellow");
+		values.add("Yellow");
+		entries.add("Custom");
+		values.add("Custom");
+		setListPreferenceValues(pref, entries, values);
+		String value =prefs.getString(getResources().getString(R.string.pref_theme_background_color_key), "Default");
+		pref.setSummary(value);
+		pref.setValue(value);
+
+	}
+
 	private void initializePreferredVideoSizePreferences(ListPreference pref) {
 		List<CharSequence> entries = new ArrayList<CharSequence>();
 		List<CharSequence> values = new ArrayList<CharSequence>();
@@ -654,13 +673,14 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	private void initThemeSettings() {
 		initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
+		initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
 	}
 	private void setThemePreferencesListener() {
 		findPreference(getString(R.string.pref_theme_app_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "default");
+				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Default");
 
 				preference.setSummary(newValue.toString());
 				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
@@ -672,6 +692,24 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 	};
+	private void setBackgroundThemePreferencesListener() {
+		findPreference(getString(R.string.pref_theme_background_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+				String color = prefs.getString(getString(R.string.pref_theme_background_color_key), "Default");
+
+				preference.setSummary(newValue.toString());
+				editor.putString(getString(R.string.pref_theme_background_color_key), newValue.toString());
+				editor.commit();
+				LinphoneActivity.setBackgroundColorTheme(LinphoneActivity.ctx);
+				return true;
+			}
+		});
+
+
+	};
+
 
 
 	private void initVideoSettings() {
