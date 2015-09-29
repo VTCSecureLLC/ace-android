@@ -17,31 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.util.Arrays;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphonePlayer;
-import org.linphone.mediastream.Log;
-import org.linphone.mediastream.Version;
-import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
-import org.linphone.ui.AvatarWithShadow;
-import org.linphone.ui.Numpad;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.hardware.Camera.Parameters;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -70,7 +49,25 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphonePlayer;
+import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
+import org.linphone.ui.AvatarWithShadow;
+import org.linphone.ui.Numpad;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Sylvain Berfini
@@ -346,7 +343,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		numpad = (Numpad) findViewById(R.id.numpad);
 		videoProgress =  (ProgressBar) findViewById(R.id.videoInProgress);
 		videoProgress.setVisibility(View.GONE);
-		
+
+
 		
 		try {
 			routeLayout = (LinearLayout) findViewById(R.id.routesLayout);
@@ -398,6 +396,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		
 		LinphoneManager.getInstance().changeStatusToOnThePhone();
 	}
+
+
 	
 	private void refreshInCallActions() {
 		if (!LinphonePreferences.instance().isVideoEnabled()) {
