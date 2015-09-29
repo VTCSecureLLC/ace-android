@@ -136,6 +136,7 @@
                 android:background="#809cac"
                 android:textColorHint="#787878"
                 android:hint="Password"
+                android:password="true"
                 android:paddingLeft="30dp" />
         </LinearLayout>
         
