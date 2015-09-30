@@ -10,8 +10,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:adjustViewBounds="true"
-		android:contentDescription="Resource button"
-		android:src="@drawable/resources_default" />
+		android:contentDescription="@string/content_description_resource"
+		android:src="@drawable/resource" />
 
     <TextView
         android:id="@+id/text"
@@ -21,7 +21,7 @@
         android:layout_alignBottom="@id/image"
         android:paddingBottom="10dp"
         android:textColor="@drawable/text_color"
-        android:text="Resource"
+        android:text="@string/button_resource"
         android:textSize="12sp" />
     
 </RelativeLayout>

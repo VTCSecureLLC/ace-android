@@ -210,6 +210,43 @@
 
 		</PreferenceScreen>
 
+
+		<PreferenceScreen
+			android:title="@string/pref_theme">
+
+
+			<PreferenceCategory
+				android:title="Color"
+				android:key="Color"/>
+
+			<ListPreference
+				android:title="App Color"
+				android:key="@string/pref_theme_app_color_key"/>
+
+			<ListPreference
+				android:title="Background Color"
+				android:key="@string/pref_theme_background_color_key"/>
+
+<!--
+			<PreferenceCategory
+				android:title="Font"
+				android:key="Font"/>
+
+			<ListPreference
+				android:title="Font Style"
+				android:key="@string/pref_theme_font_style_key"/>
+
+			<ListPreference
+				android:title="Font Size"
+				android:key="@string/pref_theme_font_size_key"/>
+
+			<ListPreference
+				android:title="Font Color"
+				android:key="@string/pref_theme_font_color_key"/>
+-->
+		</PreferenceScreen>
+
+
 		<PreferenceScreen
 		    android:title="@string/pref_advanced">
 
