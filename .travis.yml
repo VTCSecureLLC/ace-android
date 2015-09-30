@@ -71,7 +71,6 @@ before_script:
 - echo "Finished updating submodules"
 - android list target -c
 script:
-- "./Tools/prepare_crashlytics.sh"
 - "./Tools/travis_script.sh"
 after_success:
 - "./Tools/release.sh"
