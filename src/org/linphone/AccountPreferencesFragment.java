@@ -471,7 +471,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		}
 		setListPreferenceValues(pref, entries, values);
 		
-		if (! isNewAccount) {
+		if (! isNewAccount && entries.indexOf(mPrefs.getAccountTransportString(n)) !=-1) {
 			pref.setSummary(mPrefs.getAccountTransportString(n));
 			pref.setDefaultValue(mPrefs.getAccountTransportKey(n));
 			pref.setValueIndex(entries.indexOf(mPrefs.getAccountTransportString(n)));
