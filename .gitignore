@@ -41,5 +41,5 @@ tests/build.xml
 tests/project.properties
 ant_password.properties
 fabric.properties
-res/values/com_crashlytics_export_strings.xml
-assets/crashlytics-build.properties
+
+

@@ -17,20 +17,8 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
-dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
-      transitive = true
-    }
-    compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.1@aar') {
-      transitive = true
-    }
-}
-crashlytics {
-  enableNdk true
-  androidNdkOut 'build/generated'
-  androidNdkLibsOut 'libs'
-}
+
+
 android {
     compileSdkVersion 22
     buildToolsVersion "20.0.0"

@@ -18,23 +18,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone;
 
-import static android.content.Intent.ACTION_MAIN;
-
-import org.linphone.mediastream.Log;
-import org.linphone.setup.RemoteProvisioningActivity;
-import org.linphone.tutorials.TutorialLauncherActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
-import org.linphone.R;
+import org.linphone.mediastream.Log;
+import org.linphone.setup.RemoteProvisioningActivity;
+import org.linphone.tutorials.TutorialLauncherActivity;
 
-/*import io.fabric.sdk.android.Fabric;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;*/
+import static android.content.Intent.ACTION_MAIN;
+
+
 
 /**
  * 
@@ -52,7 +48,6 @@ public class LinphoneLauncherActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-     //   Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
 		// Used to change for the lifetime of the app the name used to tag the logs
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
