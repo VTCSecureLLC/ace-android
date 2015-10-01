@@ -123,7 +123,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return instance;
 		throw new RuntimeException("LinphoneActivity not instantiated yet");
 	}
-	//test of version increase automation
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -358,12 +358,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String background_color_theme=prefs.getString(context.getResources().getString(R.string.pref_theme_background_color_key), "default");
 		//set background color independent
-		if(background_color_theme.equals("Red")) {
-			topLayout.setBackgroundResource(R.drawable.background_theme_red);
-		}else if(background_color_theme.equals("Yellow")) {
-			topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
-		}else{
-			topLayout.setBackgroundResource(R.drawable.background);
+		if(topLayout!=null) {
+			if (background_color_theme.equals("Red")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_red);
+			} else if (background_color_theme.equals("Yellow")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
+			} else {
+				topLayout.setBackgroundResource(R.drawable.background);
+			}
 		}
 	}
 	private boolean isTablet() {
