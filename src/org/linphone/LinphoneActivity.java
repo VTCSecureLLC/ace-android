@@ -53,6 +53,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 import org.linphone.LinphoneManager.AddressType;
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.CallDirection;
@@ -1330,6 +1333,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	private void checkForCrashes() {
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+
+	private void checkForUpdates() {
+		// Remove this for store / production builds!
+		UpdateManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
 	}
 }
 
