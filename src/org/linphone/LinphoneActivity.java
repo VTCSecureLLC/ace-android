@@ -123,7 +123,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return instance;
 		throw new RuntimeException("LinphoneActivity not instantiated yet");
 	}
-
+	//test of version increase automation
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
