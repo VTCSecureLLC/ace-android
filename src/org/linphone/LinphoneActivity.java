@@ -18,6 +18,7 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -54,6 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.LoginManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.LinphoneManager.AddressType;
@@ -130,7 +132,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
+		LoginManager.verifyLogin(this, getIntent());
+		checkForUpdates();
 		ctx=this;
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
@@ -1173,16 +1177,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
+
+
 	@Override
 	protected void onPause() {
 		getIntent().putExtra("PreviousActivity", 0);
 		super.onPause();
+		unregisterManagers();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
+		checkForCrashes();
 		// Attempt to update user location
 		LinphoneLocationManager.instance(this).updateLocation();
 		
@@ -1233,6 +1241,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
+
+		unregisterManagers();
+
 	}
 
 	private void unbindDrawables(View view) {
@@ -1335,12 +1346,16 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		return super.onKeyDown(keyCode, event);
 	}
 	private void checkForCrashes() {
-		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc", new MyCustomCrashManagerListener());
 	}
 
 	private void checkForUpdates() {
 		// Remove this for store / production builds!
 		UpdateManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+	private void unregisterManagers() {
+		UpdateManager.unregister();
+		// unregister other managers if necessary...
 	}
 }
 
