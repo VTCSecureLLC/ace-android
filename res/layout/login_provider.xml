@@ -154,12 +154,15 @@
                 android:layout_height="match_parent"
                 android:background="#a0b5c1" />
 
+
+            <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
             <EditText
                 android:id="@+id/et_prv_domain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#809cac"
                 android:textColorHint="#787878"
+                android:text="bc1.vatrp.net"
                 android:hint="Address:Port"
                 android:paddingLeft="30dp" />
         </LinearLayout>
