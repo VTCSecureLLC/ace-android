@@ -15,14 +15,10 @@
 
     <target name="-post-package" depends="android_rules.-post-package" />
 
-    <artifact:dependencies pathId="dependency.classpath">
-      <dependency groupId="net.hockeyapp.android" artifactId="AndroidSDK" version="3.5.0"/>
-    </artifact:dependencies>
-
 	<target name="javah" depends="-set-debug-mode, -compile">
 		<echo level="info">Generate JNI header</echo>
 		<javah outputfile="gen/linphonecore_jni.h">
-			<classpath refid="dependency.classpath">
+            <classpath>
 				<pathelement location="${out.classes.absolute.dir}" />
 			</classpath>
 			<class name="org.linphone.core.LinphoneAddressImpl" />
