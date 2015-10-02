@@ -55,7 +55,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.hockeyapp.android.CrashManager;
-import net.hockeyapp.android.LoginManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.LinphoneManager.AddressType;
@@ -132,8 +131,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
-		LoginManager.verifyLogin(this, getIntent());
+//		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
+//		LoginManager.verifyLogin(this, getIntent());
 		checkForUpdates();
 		ctx=this;
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
@@ -1190,7 +1189,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	protected void onResume() {
 		super.onResume();
 
-		checkForCrashes();
+
 		// Attempt to update user location
 		LinphoneLocationManager.instance(this).updateLocation();
 		
@@ -1222,10 +1221,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					}
 				}
 		}
+
+		checkForCrashes();
+		checkForUpdates();
 	}
 
 	@Override
 	protected void onDestroy() {
+		unregisterManagers();
 		if (mOrientationHelper != null) {
 			mOrientationHelper.disable();
 			mOrientationHelper = null;
@@ -1242,7 +1245,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
 
-		unregisterManagers();
+
 
 	}
 
@@ -1346,7 +1349,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		return super.onKeyDown(keyCode, event);
 	}
 	private void checkForCrashes() {
-		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc", new MyCustomCrashManagerListener());
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
 	}
 
 	private void checkForUpdates() {

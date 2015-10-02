@@ -24,6 +24,9 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 import org.linphone.mediastream.Log;
 import org.linphone.setup.RemoteProvisioningActivity;
 import org.linphone.tutorials.TutorialLauncherActivity;
@@ -47,7 +50,6 @@ public class LinphoneLauncherActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 
 		// Used to change for the lifetime of the app the name used to tag the logs
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
@@ -111,6 +113,34 @@ public class LinphoneLauncherActivity extends Activity {
 			});
 			mThread = null;
 		}
+	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		//checkForCrashes();
+		//checkForUpdates();
+	}
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterManagers();
+	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterManagers();
+	}
+	private void checkForCrashes() {
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+
+	private void checkForUpdates() {
+		// Remove this for store / production builds!
+		UpdateManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+	private void unregisterManagers() {
+		UpdateManager.unregister();
+		// unregister other managers if necessary...
 	}
 }
 
