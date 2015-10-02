@@ -18,6 +18,7 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -52,6 +53,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.LinphoneManager.AddressType;
 import org.linphone.compatibility.Compatibility;
@@ -123,11 +127,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return instance;
 		throw new RuntimeException("LinphoneActivity not instantiated yet");
 	}
-	//test of version increase automation
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+//		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
+//		LoginManager.verifyLogin(this, getIntent());
+		checkForUpdates();
 		ctx=this;
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
@@ -339,6 +345,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				dialer.setImageResource(R.drawable.dialer_yellow);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_yellow);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_yellow);
+		}else if(color_theme.equals("Gray")) {
+				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_gray);
+				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_gray);
+				dialer.setImageResource(R.drawable.dialer_gray);
+				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_gray);
+				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_gray);
+		}else if(color_theme.equals("High Visibility")) {
+				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_hivis);
+				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_hivis);
+				dialer.setImageResource(R.drawable.dialer_hivis);
+				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_hivis);
+				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_hivis);
 		}else{
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts);
@@ -358,12 +376,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String background_color_theme=prefs.getString(context.getResources().getString(R.string.pref_theme_background_color_key), "default");
 		//set background color independent
-		if(background_color_theme.equals("Red")) {
-			topLayout.setBackgroundResource(R.drawable.background_theme_red);
-		}else if(background_color_theme.equals("Yellow")) {
-			topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
-		}else{
-			topLayout.setBackgroundResource(R.drawable.background);
+		if(topLayout!=null) {
+			if (background_color_theme.equals("Red")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_red);
+			} else if (background_color_theme.equals("Yellow")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
+			} else if (background_color_theme.equals("Gray")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_gray);
+			} else if (background_color_theme.equals("High Visibility")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_hivis);
+			} else {
+				topLayout.setBackgroundResource(R.drawable.background);
+			}
 		}
 	}
 	private boolean isTablet() {
@@ -1168,15 +1192,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
+
+
 	@Override
 	protected void onPause() {
 		getIntent().putExtra("PreviousActivity", 0);
 		super.onPause();
+		unregisterManagers();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+
 
 		// Attempt to update user location
 		LinphoneLocationManager.instance(this).updateLocation();
@@ -1209,10 +1237,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					}
 				}
 		}
+
+		checkForCrashes();
+		checkForUpdates();
 	}
 
 	@Override
 	protected void onDestroy() {
+		unregisterManagers();
 		if (mOrientationHelper != null) {
 			mOrientationHelper.disable();
 			mOrientationHelper = null;
@@ -1228,6 +1260,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
+
+
+
 	}
 
 	private void unbindDrawables(View view) {
@@ -1328,6 +1363,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	private void checkForCrashes() {
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+
+	private void checkForUpdates() {
+		// Remove this for store / production builds!
+		UpdateManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+	private void unregisterManagers() {
+		UpdateManager.unregister();
+		// unregister other managers if necessary...
 	}
 }
 

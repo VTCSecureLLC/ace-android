@@ -104,6 +104,32 @@ public class Numpad extends LinearLayout implements AddressAware {
 				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_yellow);
 				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_yellow);
 				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_yellow);
+			}else if(color_theme.equals("Gray")) {
+				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one_gray);
+				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two_gray);
+				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three_gray);
+				view.findViewById(R.id.Digit4).setBackgroundResource(R.drawable.numpad_four_gray);
+				view.findViewById(R.id.Digit5).setBackgroundResource(R.drawable.numpad_five_gray);
+				view.findViewById(R.id.Digit6).setBackgroundResource(R.drawable.numpad_six_gray);
+				view.findViewById(R.id.Digit7).setBackgroundResource(R.drawable.numpad_seven_gray);
+				view.findViewById(R.id.Digit8).setBackgroundResource(R.drawable.numpad_eight_gray);
+				view.findViewById(R.id.Digit9).setBackgroundResource(R.drawable.numpad_nine_gray);
+				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_gray);
+				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_gray);
+				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_gray);
+			}else if(color_theme.equals("High Visibility")) {
+				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one_hivis);
+				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two_hivis);
+				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three_hivis);
+				view.findViewById(R.id.Digit4).setBackgroundResource(R.drawable.numpad_four_hivis);
+				view.findViewById(R.id.Digit5).setBackgroundResource(R.drawable.numpad_five_hivis);
+				view.findViewById(R.id.Digit6).setBackgroundResource(R.drawable.numpad_six_hivis);
+				view.findViewById(R.id.Digit7).setBackgroundResource(R.drawable.numpad_seven_hivis);
+				view.findViewById(R.id.Digit8).setBackgroundResource(R.drawable.numpad_eight_hivis);
+				view.findViewById(R.id.Digit9).setBackgroundResource(R.drawable.numpad_nine_hivis);
+				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_hivis);
+				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_hivis);
+				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_hivis);
 			}else{
 					view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one);
 					view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two);

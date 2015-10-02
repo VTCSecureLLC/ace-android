@@ -2,7 +2,9 @@ package org.linphone;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.preference.Preference;
 
+import net.hockeyapp.android.FeedbackManager;
 
 import org.linphone.ui.PreferencesListFragment;
 
@@ -30,9 +32,23 @@ public class HelpFragment extends PreferencesListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        findPreference("instantfeedbackace").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (LinphoneActivity.isInstanciated()) {
+                    showFeedbackActivity();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
-
+    public void showFeedbackActivity() {
+        FeedbackManager.register(LinphoneActivity.ctx, "d6280d4d277d6876c709f4143964f0dc", null);
+        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx);
+    }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
