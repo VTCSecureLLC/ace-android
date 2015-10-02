@@ -345,6 +345,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				dialer.setImageResource(R.drawable.dialer_yellow);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_yellow);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_yellow);
+		}else if(color_theme.equals("Gray")) {
+				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_gray);
+				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_gray);
+				dialer.setImageResource(R.drawable.dialer_gray);
+				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_gray);
+				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_gray);
+		}else if(color_theme.equals("High Visibility")) {
+				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_hivis);
+				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_hivis);
+				dialer.setImageResource(R.drawable.dialer_hivis);
+				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_hivis);
+				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_hivis);
 		}else{
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts);
@@ -369,6 +381,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				topLayout.setBackgroundResource(R.drawable.background_theme_red);
 			} else if (background_color_theme.equals("Yellow")) {
 				topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
+			} else if (background_color_theme.equals("Gray")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_gray);
+			} else if (background_color_theme.equals("High Visibility")) {
+				topLayout.setBackgroundResource(R.drawable.background_theme_hivis);
 			} else {
 				topLayout.setBackgroundResource(R.drawable.background);
 			}

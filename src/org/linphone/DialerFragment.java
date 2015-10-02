@@ -141,6 +141,10 @@ public class DialerFragment extends Fragment {
 					mCall.setImageResource(R.drawable.call_red);
 			}else if(color_theme.equals("Yellow")) {
 					mCall.setImageResource(R.drawable.call_yellow);
+			}else if(color_theme.equals("Gray")) {
+					mCall.setImageResource(R.drawable.call_gray);
+			}else if(color_theme.equals("High Visibility")) {
+					mCall.setImageResource(R.drawable.call_hivis);
 			}else{
 					mCall.setImageResource(R.drawable.call);
 			}
@@ -204,13 +208,21 @@ public class DialerFragment extends Fragment {
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_red);
 				erase.setImageResource(R.drawable.backspace_red);
 				mAddContact.setImageResource(R.drawable.add_contact_red);
-
 		}else if(color_theme.equals("Yellow")) {
 				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_yellow);
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_yellow);
 				erase.setImageResource(R.drawable.backspace_yellow);
 				mAddContact.setImageResource(R.drawable.add_contact_yellow);
-
+		}else if(color_theme.equals("Gray")) {
+				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_gray);
+				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_gray);
+				erase.setImageResource(R.drawable.backspace_gray);
+				mAddContact.setImageResource(R.drawable.add_contact_gray);
+		}else if(color_theme.equals("High Visibility")) {
+				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_hivis);
+				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_hivis);
+				erase.setImageResource(R.drawable.backspace_hivis);
+				mAddContact.setImageResource(R.drawable.add_contact_hivis);
 		}else{
 				mAddress.setBackgroundResource(R.drawable.dialer_address_background);
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
@@ -224,6 +236,10 @@ public class DialerFragment extends Fragment {
 			view.setBackgroundResource(R.drawable.background_theme_red);
 		}else if(background_color_theme.equals("Yellow")) {
 			view.setBackgroundResource(R.drawable.background_theme_yellow);
+		}else if(background_color_theme.equals("Gray")) {
+			view.setBackgroundResource(R.drawable.background_theme_gray);
+		}else if(background_color_theme.equals("High Visibility")) {
+			view.setBackgroundResource(R.drawable.background_theme_hivis);
 		}else{
 			view.setBackgroundResource(R.drawable.background);
 		}
@@ -289,6 +305,12 @@ public class DialerFragment extends Fragment {
 			}else if(color_theme.equals("Yellow")) {
 					mCall.setImageResource(R.drawable.call_yellow);
 					mAddContact.setImageResource(R.drawable.add_contact_yellow);
+			}else if(color_theme.equals("Gray")) {
+					mCall.setImageResource(R.drawable.call_gray);
+					mAddContact.setImageResource(R.drawable.add_contact_gray);
+			}else if(color_theme.equals("High Visibility")) {
+					mCall.setImageResource(R.drawable.call_hivis);
+					mAddContact.setImageResource(R.drawable.add_contact_hivis);
 			}else{
 					mCall.setImageResource(R.drawable.call);
 					mAddContact.setImageResource(R.drawable.add_contact);
