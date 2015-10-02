@@ -18,23 +18,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone;
 
-import static android.content.Intent.ACTION_MAIN;
-
-import org.linphone.mediastream.Log;
-import org.linphone.setup.RemoteProvisioningActivity;
-import org.linphone.tutorials.TutorialLauncherActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
-import org.linphone.R;
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
 
-/*import io.fabric.sdk.android.Fabric;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;*/
+import org.linphone.mediastream.Log;
+import org.linphone.setup.RemoteProvisioningActivity;
+import org.linphone.tutorials.TutorialLauncherActivity;
+
+import static android.content.Intent.ACTION_MAIN;
+
+
 
 /**
  * 
@@ -51,8 +50,6 @@ public class LinphoneLauncherActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-     //   Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
 
 		// Used to change for the lifetime of the app the name used to tag the logs
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
@@ -116,6 +113,34 @@ public class LinphoneLauncherActivity extends Activity {
 			});
 			mThread = null;
 		}
+	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		//checkForCrashes();
+		//checkForUpdates();
+	}
+	@Override
+	protected void onPause() {
+		super.onPause();
+		unregisterManagers();
+	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterManagers();
+	}
+	private void checkForCrashes() {
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+
+	private void checkForUpdates() {
+		// Remove this for store / production builds!
+		UpdateManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+	}
+	private void unregisterManagers() {
+		UpdateManager.unregister();
+		// unregister other managers if necessary...
 	}
 }
 

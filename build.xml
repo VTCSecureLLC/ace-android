@@ -90,7 +90,7 @@
     -->
 	<path id="android.antlibs">
 		<pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
-		<pathelement path="crashlytics/crashlytics-devtools.jar" />
+
 	</path>
 
 	<!-- Custom tasks -->
@@ -106,6 +106,6 @@
 
 	<!-- version-tag: custom -->
 	<import file="${sdk.dir}/tools/ant/build.xml" />
-    <import file="crashlytics/crashlytics_build.xml"/>
+
 
 </project>

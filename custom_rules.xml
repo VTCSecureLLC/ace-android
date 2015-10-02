@@ -3,25 +3,23 @@
 
 	<property name="linphone.package.name" value="org.linphone.vtcsecure" />
 
-    <import file="crashlytics/crashlytics_build_base.xml"/>
 
 	<target name="-pre-build" description="Move file that is not to be compiled."
-            depends="android_rules.-pre-build,crashlytics-pre-build">
+            depends="android_rules.-pre-build">
 		<copy file="submodules/linphone/share/xml/lpconfig.xsd"
 			tofile="res/raw/lpconfig.xsd"
 			failonerror="false" />
 	</target>
 
-    <target name="-code-gen" depends="crashlytics-code-gen, android_rules.-code-gen" />
+    <target name="-code-gen" depends="android_rules.-code-gen" />
 
-    <target name="-post-package" depends="android_rules.-post-package, crashlytics-post-package" />
+    <target name="-post-package" depends="android_rules.-post-package" />
 
-	<target name="javah" depends="-set-debug-mode, crashlytics-pre-build, -compile">
+	<target name="javah" depends="-set-debug-mode, -compile">
 		<echo level="info">Generate JNI header</echo>
 		<javah outputfile="gen/linphonecore_jni.h">
 			<classpath>
 				<pathelement location="${out.classes.absolute.dir}" />
-		        <pathelement path="crashlytics/crashlytics-devtools.jar" />
 			</classpath>
 			<class name="org.linphone.core.LinphoneAddressImpl" />
 			<class name="org.linphone.core.LinphoneAuthInfoImpl" />
