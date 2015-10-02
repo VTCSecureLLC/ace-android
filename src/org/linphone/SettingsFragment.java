@@ -476,6 +476,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add("Red");
 		entries.add("Yellow");
 		values.add("Yellow");
+		entries.add("Gray");
+		values.add("Gray");
+		entries.add("High Visibility");
+		values.add("High Visibility");
 		entries.add("Custom");
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
@@ -494,6 +498,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add("Red");
 		entries.add("Yellow");
 		values.add("Yellow");
+		entries.add("Gray");
+		values.add("Gray");
+		entries.add("High Visibility");
+		values.add("High Visibility");
 		entries.add("Custom");
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
