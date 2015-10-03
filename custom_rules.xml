@@ -3,6 +3,23 @@
 
 	<property name="linphone.package.name" value="org.linphone.vtcsecure" />
 
+    <!-- Maven ant task for dependencies -->
+    <!--
+    <target name="-dependencies" description="Install dependencies"
+            unless="compile.classpath" 
+            xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+             uri="antlib:org.apache.maven.artifact.ant"
+             classpath="${basedir}/libs/maven-ant-tasks-2.1.3.jar" />
+        <artifact:dependencies pathId="compile.classpath" filesetId="compile.fileset" useScope="compile">
+          <localRepository path="${sdk.dir}/extras/android/m2repository"/>
+          <dependency groupId="org.apache.maven" artifactId="maven-ant-tasks" version="2.1.3"/>
+          <dependency groupId="net.hockeyapp.android" artifactId="HockeySDK" version="3.5.0"/>
+        </artifact:dependencies>
+        <pathconvert property="compilerClasspath" refid="compilerClasspath"/>
+        <echo>compilerClasspath=${compilerClasspath}</echo>
+	</target>
+    -->
 
 	<target name="-pre-build" description="Move file that is not to be compiled."
             depends="android_rules.-pre-build">
