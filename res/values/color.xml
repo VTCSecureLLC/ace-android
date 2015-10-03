@@ -2,12 +2,19 @@
 <resources>
     <color name="main_app_color">#ff8c00</color>
     
-    <color name="text_selected">#ff8c00</color>
+    <!--<color name="text_selected">#ff8c00</color>
     <color name="text_over">#ffb9c4cb</color>
     <color name="text_default">#ff5b656f</color>
-    <color name="text_disabled">#ffa6b3bf</color>
+    <color name="text_disabled">#ffa6b3bf</color>-->
+
+    <color name="text_selected">#8cc9e5</color>
+    <color name="text_over">#ffb9c4cb</color>
+    <color name="text_default">#0085b0</color>
+    <color name="text_disabled">#ff8c00</color>
+
     <color name="text_header">#ff7e8e9e</color>
-    
+
+
     <color name="text_switch_selected">#ffffff</color>
     <color name="text_switch">#ff41484f</color>
     
@@ -15,7 +22,8 @@
     <color name="text_button_disabled">#ffa6b3bf</color>
     <color name="text_button_selected">#ff41484f</color>
     <color name="text_button_over">#ff8c00</color>
-    
+
+
     <color name="numpad_background_bottom">#ffe4edf2</color>
     <color name="numpad_background_dialer">#ffd8d8d8</color>
     <color name="numpad_background_top">#ffb1bdc3</color>
