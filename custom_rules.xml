@@ -35,7 +35,7 @@
 	<target name="javah" depends="-set-debug-mode, -compile">
 		<echo level="info">Generate JNI header</echo>
 		<javah outputfile="gen/linphonecore_jni.h">
-            <classpath>
+			<classpath>
 				<pathelement location="${out.classes.absolute.dir}" />
 			</classpath>
 			<class name="org.linphone.core.LinphoneAddressImpl" />
