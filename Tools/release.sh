@@ -69,4 +69,38 @@ else
       --file $APK_FILE
 fi
 
+# Create a HockeyApp release if credentials are available, and upload apk files
+
+#curl \
+-F "status=2" \
+-F "notify=1" \
+-F "notes=Testing manual upload using cURL" \
+-F "notes_type=0" \
+-F "ipa=@GoHockey.apk" \
+-H "X-HockeyAppToken: 1234567890abcdef1234567890abcdef" \
+https://rink.hockeyapp.net/api/2/apps/abcdef1234567890abcdef1234567890/app_versions/upload \
+| python -m json.tool
+#
+
+
+set +x
+if [ -z "${HOCKEYAPP_TOKEN}" ]; then
+    echo HOCKEYAPP_TOKEN is not defined. Neither uploading apk files, nor creating a HockeyApp release.
+else
+
+curl \
+-F "status=2" \
+-F "notify=0" \
+-F "commit_sha=${SHA1}" \
+-F "build_server_url=https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}" \
+-F "repository_url=http://github.com/${TRAVIS_REPO_SLUG}" \
+-F "release_type=2" \
+-F "notes=$(git log -1 --pretty=format:%B)" \
+-F "notes_type=0" \
+-F "ipa=$APK_FILE" \
+-H "X-HockeyAppToken: ${HOCKEYAPP_TOKEN}" \
+https://rink.hockeyapp.net/api/2/apps/d6280d4d277d6876c709f4143964f0dc/app_versions/upload \
+| python -m json.tool
+
+fi
 
