@@ -86,7 +86,7 @@ else
     -F "release_type=2" \
     -F "notes=$(git log -1 --pretty=format:%B)" \
     -F "notes_type=0" \
-    -F "ipa=$APK_FILE" \
+    -F "ipa=@$APK_FILE" \
     -H "X-HockeyAppToken: ${HOCKEYAPP_TOKEN}" \
     https://rink.hockeyapp.net/api/2/apps/d6280d4d277d6876c709f4143964f0dc/app_versions/upload \
   | python -m json.tool
