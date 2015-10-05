@@ -6,3 +6,4 @@ ace_android_version="$(bundle exec semver format '%M.%m.%p')-${TRAVIS_BUILD_NUMB
 echo TRAVIS_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER;
 perl -pi -e 's/android:versionName="[^\"]*"/android:versionName="'$ace_android_version'"/g' AndroidManifest.xml
 perl -pi -e 's/android:versionCode="[^\"]*"/android:versionCode="'${TRAVIS_BUILD_NUMBER:-1}'"/g' AndroidManifest.xml
+grep version AndroidManifest.xml
