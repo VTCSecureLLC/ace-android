@@ -72,14 +72,14 @@ fi
 # Create a HockeyApp release if credentials are available, and upload apk files
 
 #curl \
--F "status=2" \
--F "notify=1" \
--F "notes=Testing manual upload using cURL" \
--F "notes_type=0" \
--F "ipa=@GoHockey.apk" \
--H "X-HockeyAppToken: 1234567890abcdef1234567890abcdef" \
-https://rink.hockeyapp.net/api/2/apps/abcdef1234567890abcdef1234567890/app_versions/upload \
-| python -m json.tool
+#-F "status=2" \
+#-F "notify=1" \
+#-F "notes=Testing manual upload using cURL" \
+#-F "notes_type=0" \
+#-F "ipa=@GoHockey.apk" \
+#-H "X-HockeyAppToken: 1234567890abcdef1234567890abcdef" \
+#https://rink.hockeyapp.net/api/2/apps/abcdef1234567890abcdef1234567890/app_versions/upload \
+#| python -m json.tool
 #
 
 
