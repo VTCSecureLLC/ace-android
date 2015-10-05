@@ -5,6 +5,8 @@ echo "Running make"
 
 touch /tmp/make.out
 
+export RELEASE_NOTES="$(git log -1 --pretty=format:%B)"
+
 echo "Preparing dependencies for make"
 gradle prepareDebugDependencies
  
