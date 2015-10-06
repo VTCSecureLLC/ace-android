@@ -10,7 +10,7 @@ keepalive_period=30000
 media_encryption=srtp
 
 [video]
-size=vga
+size=cif
 automatically_initiate=1
 automatically_accept=1
 preset=high-fps

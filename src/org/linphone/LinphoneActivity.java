@@ -1239,7 +1239,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 		checkForCrashes();
-		checkForUpdates();
+		//checkForUpdates();
 	}
 
 	@Override
