@@ -12,8 +12,6 @@ if [ "$TRAVIS_BRANCH" != "master" ] ; then
   exit 0
 fi
 
-set -xe
-
 APK_FILE=""
 
 if [ -f bin/Linphone-debug.apk ]; then
@@ -45,8 +43,6 @@ set +ex
 if [ -z "${GITHUB_TOKEN}" ]; then
   echo GITHUB_TOKEN is not defined. Neither uploading apk files, nor creating a GitHub release.
 else
-  set -x
-
   curl -sL https://github.com/aktau/github-release/releases/download/v0.6.2/linux-amd64-github-release.tar.bz2 | bunzip2 -cd | tar xf - --strip=3 -C /tmp/
 
   chmod 755 /tmp/github-release
@@ -71,7 +67,6 @@ fi
 
 # Create a HockeyApp release if credentials are available, and upload apk files
 
-set +x
 if [ -z "${HOCKEYAPP_TOKEN}" ]; then
     echo HOCKEYAPP_TOKEN is not defined. Neither uploading apk files, nor creating a HockeyApp release.
 else
