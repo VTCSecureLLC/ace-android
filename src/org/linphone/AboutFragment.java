@@ -18,12 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import org.linphone.core.LinphoneCore;
-import org.linphone.mediastream.Log;
-
-import org.linphone.R;
-import org.w3c.dom.Text;
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -34,6 +28,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import net.hockeyapp.android.UpdateManager;
+
+import org.linphone.core.LinphoneCore;
+import org.linphone.mediastream.Log;
 
 /**
  * @author Sylvain Berfini
@@ -81,6 +80,8 @@ public class AboutFragment extends Fragment implements OnClickListener {
 		exitButton.setOnClickListener(this);
 		exitButton.setVisibility(View.VISIBLE);
 
+
+
 		return view;
 	}
 
@@ -95,9 +96,15 @@ public class AboutFragment extends Fragment implements OnClickListener {
 				LinphoneActivity.instance().hideStatusBar();
 			}
 		}
-	}
-	
 
+
+		checkForUpdates();
+	}
+
+	private void checkForUpdates() {
+		// Remove this for store / production builds!
+		UpdateManager.register(LinphoneActivity.instance(), "d6280d4d277d6876c709f4143964f0dc");
+	}
 	@Override
 	public void onClick(View v) {
 		if (LinphoneActivity.isInstanciated()) {
