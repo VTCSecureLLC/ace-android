@@ -39,8 +39,9 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
 import android.widget.TextView;
-
 import org.linphone.R;
+import android.view.WindowManager;
+
 
 /**
  * @author Sylvain Berfini
@@ -72,6 +73,8 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			manageAccountPreferencesFields(screen);
 		}
 
+		// Force hide keyboard
+		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
 	
 	public static boolean isEditTextEmpty(String s){
@@ -503,7 +506,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			} catch (LinphoneCoreException e) {
 				e.printStackTrace();
 			}
-
+			LinphoneActivity.instance().isNewProxyConfig();
 			LinphoneManager.getLc().refreshRegisters();
 		}
 	}

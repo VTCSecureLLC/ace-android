@@ -18,6 +18,36 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+import static android.content.Intent.ACTION_MAIN;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+
+import org.linphone.LinphoneManager.AddressType;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneAuthInfo;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCallLog;
+import org.linphone.core.LinphoneCallLog.CallStatus;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.Reason;
+import org.linphone.mediastream.Log;
+import org.linphone.setup.RemoteProvisioningLoginActivity;
+import org.linphone.setup.SetupActivity;
+import org.linphone.ui.AddressText;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -112,6 +142,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
 	private ChatFragment chatFragment;
 	private SavedState dialerSavedState;
+	private boolean newProxyConfig;
 	private boolean isAnimationDisabled = false, preferLinphoneContacts = false;
 	private OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
@@ -229,6 +260,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 							lc.removeAuthInfo(authInfo);
 					}
 				}
+
+				if(state.equals(RegistrationState.RegistrationFailed) && newProxyConfig) {
+					newProxyConfig = false;
+					if (proxy.getError() == Reason.BadCredentials) {
+						displayCustomToast(getString(R.string.error_bad_credentials), Toast.LENGTH_LONG);
+					}
+					if (proxy.getError() == Reason.Unauthorized) {
+						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
+					}
+					if (proxy.getError() == Reason.IOError) {
+						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
+					}
+				}
 			}
 
 			@Override
@@ -243,11 +287,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					}
 				} else if (state == State.CallEnd || state == State.Error || state == State.CallReleased) {
 					// Convert LinphoneCore message for internalization
-					if (message != null && message.equals("Call declined.")) {
+					if (message != null && call.getReason() == Reason.Declined) {
 						displayCustomToast(getString(R.string.error_call_declined), Toast.LENGTH_LONG);
-					} else if (message != null && message.equals("Not Found")) {
+					} else if (message != null && call.getReason() == Reason.NotFound) {
 						displayCustomToast(getString(R.string.error_user_not_found), Toast.LENGTH_LONG);
-					} else if (message != null && message.equals("Unsupported media type")) {
+					} else if (message != null && call.getReason() == Reason.Media) {
 						displayCustomToast(getString(R.string.error_incompatible_media), Toast.LENGTH_LONG);
 					} else if (message != null && state == State.Error) {
 						displayCustomToast(getString(R.string.error_unknown) + " - " + message, Toast.LENGTH_LONG);
@@ -289,7 +333,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		updateAnimationsState();
 	}
-
 
 	private void initButtons() {
 		menu = (LinearLayout) findViewById(R.id.menu);
@@ -415,6 +458,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 		findViewById(R.id.status).setVisibility(View.VISIBLE);
 		findViewById(R.id.fragmentContainer).setPadding(0, LinphoneUtils.pixelsToDpi(getResources(), 40), 0, 0);
+	}
+
+	public void isNewProxyConfig(){
+		newProxyConfig = true;
 	}
 
 	private void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras) {

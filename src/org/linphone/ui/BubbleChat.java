@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -25,7 +26,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import org.linphone.LinphoneManager;
 import org.linphone.R;
+import org.linphone.core.LinphoneBuffer;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatMessage.State;
 import org.linphone.core.LinphoneContent;
@@ -42,6 +45,7 @@ import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Spannable;
@@ -56,15 +60,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 /**
  * @author Sylvain Berfini
  */
 @SuppressLint("SimpleDateFormat")
-public class BubbleChat {
+public class BubbleChat implements LinphoneChatMessage.LinphoneChatMessageListener {
 	private static final HashMap<String, Integer> emoticons = new HashMap<String, Integer>();
 	static {
 	    emoticons.put(":)", R.drawable.emo_im_happy);
@@ -96,82 +98,78 @@ public class BubbleChat {
 	    emoticons.put(":'(", R.drawable.emo_im_crying);
 	    emoticons.put("$.$", R.drawable.emo_im_money_mouth);
 	}
-	
-	private RelativeLayout view;
+
+	private LinearLayout view;
 	private ImageView statusView;
 	private LinphoneChatMessage nativeMessage;
-	private LinphoneChatMessage.LinphoneChatMessageListener fileTransferListener;
 	private Context mContext;
 	private static final int SIZE_MAX = 512;
+	private ProgressBar spinner;
+	private Bitmap defaultBitmap;
 	
 	@SuppressLint("InflateParams") 
-	public BubbleChat(final Context context, LinphoneChatMessage message, LinphoneChatMessage.LinphoneChatMessageListener listener) {
+	public BubbleChat(final Context context, LinphoneChatMessage message) {
 		if (message == null) {
 			return;
 		}
 		nativeMessage = message;
-		fileTransferListener = listener;
 		mContext = context;
-		
-		view = new RelativeLayout(context);
-		LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    	
-    	if (message.isOutgoing()) {
-    		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-    		view.setBackgroundResource(R.drawable.chat_bubble_outgoing);
-    	}
-    	else {
-    		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-    		view.setBackgroundResource(R.drawable.chat_bubble_incoming);
-    	}
 
-    	layoutParams.setMargins(10, 0, 10, 0);
-    	
-    	view.setId(message.getStorageId());	
-    	view.setLayoutParams(layoutParams);
-    	
-		LinearLayout layout;
-    	if (context.getResources().getBoolean(R.bool.display_time_aside)) {
-	    	if (message.isOutgoing()) {
-	    		layout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.chat_bubble_alt_outgoing, null);
-	    	} else {
-	    		layout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.chat_bubble_alt_incoming, null);
-	    	}
-    	} else {
-    		if (message.isOutgoing()) {
-	    		layout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.chat_bubble_outgoing, null);
-	    	} else {
-	    		layout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.chat_bubble_incoming, null);
-	    	}
-    	}
+		if (message.isOutgoing()) {
+			view = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.chat_bubble_outgoing, null);
+			view.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+		} else {
+			view = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.chat_bubble_incoming, null);
+			view.setBackgroundResource(R.drawable.chat_bubble_incoming);
+		}
+
+		defaultBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chat_photo_default);
+
+		view.setId(message.getStorageId());
+
+		spinner = (ProgressBar) view.findViewById(R.id.spinner);
 
     	String externalBodyUrl = message.getExternalBodyUrl();
     	LinphoneContent fileTransferContent = message.getFileTransferInformation();
     	if (externalBodyUrl != null || fileTransferContent != null) {
-			Button download = (Button) layout.findViewById(R.id.download);
-	    	ImageView imageView = (ImageView) layout.findViewById(R.id.image);
+			Button download = (Button) view.findViewById(R.id.download);
+	    	ImageView imageView = (ImageView) view.findViewById(R.id.image);
 	    	
 	    	String appData = message.getAppData();
-    		if (appData == null) {
-    	    	download.setVisibility(View.VISIBLE);
-    	    	download.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						v.setEnabled(false);
-						ProgressBar spinner = (ProgressBar) view.findViewById(R.id.spinner);
-						spinner.setVisibility(View.VISIBLE);
-						v.setVisibility(View.GONE);
-
-						nativeMessage.setListener(fileTransferListener);
-						nativeMessage.downloadFile();
-					}
-				});
+    		if (appData == null || (!LinphoneManager.getInstance().isMessagePending(nativeMessage) &&
+					!nativeMessage.isOutgoing() && appData.contains(context.getString(R.string.temp_photo_name_with_date).split("%s")[0]))) {
+				LinphoneManager.addListener(this);
+					download.setVisibility(View.VISIBLE);
+					download.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							v.setEnabled(false);
+							spinner.setVisibility(View.VISIBLE);
+							v.setVisibility(View.GONE);
+							String filename = context.getString(R.string.temp_photo_name_with_date).replace("%s", String.valueOf(System.currentTimeMillis()));
+							File file = new File(Environment.getExternalStorageDirectory(), filename);
+							nativeMessage.setListener(LinphoneManager.getInstance());
+							nativeMessage.setFileTransferFilepath(file.getPath());
+							nativeMessage.downloadFile();
+							nativeMessage.setAppData(filename);
+							LinphoneManager.getInstance().addDownloadMessagePending(nativeMessage);
+						}
+					});
     		} else {
-    	    	imageView.setVisibility(View.VISIBLE);
-    	    	loadBitmap(appData, imageView);
+				if(LinphoneManager.getInstance().isMessagePending(nativeMessage)){
+					LinphoneManager.addListener(this);
+					download.setEnabled(false);
+					ProgressBar spinner = (ProgressBar) view.findViewById(R.id.spinner);
+					spinner.setVisibility(View.VISIBLE);
+					download.setVisibility(View.GONE);
+				} else {
+					LinphoneManager.removeListener(this);
+					imageView.setVisibility(View.VISIBLE);
+					loadBitmap(appData, imageView);
+				}
     		}
     	} else {
-	    	TextView msgView = (TextView) layout.findViewById(R.id.message);
+	    	TextView msgView = (TextView) view.findViewById(R.id.message);
 	    	if (msgView != null) {
 	        	Spanned text = null;
 	        	String msg = message.getText();
@@ -188,11 +186,11 @@ public class BubbleChat {
 	    	}
     	}
     	
-    	TextView timeView = (TextView) layout.findViewById(R.id.time);
+    	TextView timeView = (TextView) view.findViewById(R.id.time);
     	timeView.setText(timestampToHumanDate(context, message.getTime()));
     	
     	LinphoneChatMessage.State status = message.getStatus();
-    	statusView = (ImageView) layout.findViewById(R.id.status);
+    	statusView = (ImageView) view.findViewById(R.id.status);
     	if (statusView != null) {
     		if (status == LinphoneChatMessage.State.Delivered) {
     			statusView.setImageResource(R.drawable.chat_message_delivered);
@@ -203,7 +201,7 @@ public class BubbleChat {
     		}
     	}
     	
-    	view.addView(layout);
+    	//view.addView(layout);
 	}
 	
 	public void updateStatusView() {
@@ -319,13 +317,12 @@ public class BubbleChat {
 	public void loadBitmap(String path, ImageView imageView) {
 		if (cancelPotentialWork(path, imageView)) {
 			BitmapWorkerTask task = new BitmapWorkerTask(imageView);
-			Bitmap defaultBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chat_photo_default);
 			final AsyncBitmap asyncBitmap = new AsyncBitmap(mContext.getResources(), defaultBitmap, task);
 			imageView.setImageDrawable(asyncBitmap);
 			task.execute(path);
 		}
     }
-	
+
 	private class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
 	    private final WeakReference<ImageView> imageViewReference;
 	    public String path;
@@ -356,11 +353,7 @@ public class BubbleChat {
 	    	}
 	    	
 	    	if (bm != null) {
-	    		if (bm.getWidth() >= bm.getHeight() && bm.getWidth() > SIZE_MAX) {
-					bm = ThumbnailUtils.extractThumbnail(bm, SIZE_MAX, (SIZE_MAX * bm.getHeight()) / bm.getWidth());
-				} else if (bm.getHeight() >= bm.getWidth() && bm.getHeight() > SIZE_MAX) {
-					bm = ThumbnailUtils.extractThumbnail(bm, (SIZE_MAX * bm.getWidth()) / bm.getHeight(), SIZE_MAX);
-				}
+				bm = ThumbnailUtils.extractThumbnail(bm, SIZE_MAX, SIZE_MAX);
 	    	}
 	    	return bm;
 	    }
@@ -377,6 +370,7 @@ public class BubbleChat {
 	            final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 	            if (this == bitmapWorkerTask && imageView != null) {
 	                imageView.setImageBitmap(bitmap);
+					imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 	                imageView.setTag(path);
 			    	imageView.setOnClickListener(new OnClickListener() {
 		    			@Override
@@ -431,5 +425,23 @@ public class BubbleChat {
 	       }
 	    }
 	    return null;
+	}
+
+	@Override
+	public void onLinphoneChatMessageStateChanged(LinphoneChatMessage msg, State state) {
+	}
+
+	@Override
+	public void onLinphoneChatMessageFileTransferReceived(LinphoneChatMessage msg, LinphoneContent content, LinphoneBuffer buffer) {
+	}
+
+	@Override
+	public void onLinphoneChatMessageFileTransferSent(LinphoneChatMessage msg, LinphoneContent content, int offset, int size, LinphoneBuffer bufferToFill) {
+	}
+
+	@Override
+	public void onLinphoneChatMessageFileTransferProgressChanged(LinphoneChatMessage msg, LinphoneContent content, int offset, int total) {
+		if(nativeMessage.getStorageId() == msg.getStorageId())
+			spinner.setProgress(offset * 100 / total);
 	}
 }
