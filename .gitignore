@@ -40,13 +40,7 @@ tests/*$py.class
 tests/build.xml
 tests/project.properties
 ant_password.properties
-<<<<<<< HEAD
-
-
-
-=======
 liblinphone_tester/liblinphonetester_*
 liblinphone_tester/tests.output
 tests/linphonetester_*
 tests/tests.output
->>>>>>> a42d2843c0fe2c7167e8bb987c5c37b5e3ba8329
