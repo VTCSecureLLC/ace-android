@@ -17,13 +17,22 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
+
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.LinphonePreferences.AccountBuilder;
-
 import org.linphone.R;
-
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
 import org.linphone.core.LinphoneCore;
@@ -33,21 +42,6 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.custom.LoginMainActivity;
-import org.linphone.custom.LoginProviderActivity;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 /**
  * @author Sylvain Berfini
  */
@@ -361,16 +355,17 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		.setPassword(password);
 		
 		if (isMainAccountLinphoneDotOrg && useLinphoneDotOrgCustomPorts) {
-			if (getResources().getBoolean(R.bool.disable_all_security_features_for_markets)) {
-				builder.setProxy(domain + ":5060")
-				.setTransport(TransportType.LinphoneTransportTcp);
-			}
-			else {
-				builder.setProxy(domain + ":5061")
-				.setTransport(TransportType.LinphoneTransportTls);
-			}
+			//if (getResources().getBoolean(R.bool.disable_all_security_features_for_markets)) {
+			//	builder.setProxy(domain + ":5060")
+			//	.setTransport(TransportType.LinphoneTransportTcp);
+			//}
+			//else {
+			//	builder.setProxy(domain + ":5061")
+			//	.setTransport(TransportType.LinphoneTransportTls);
+			//}
 
 			builder.setExpires("604800")
+			.setProxy(domain + ":5060")
 			.setTransport(TransportType.LinphoneTransportTcp)
 			.setOutboundProxyEnabled(true)
 			.setAvpfEnabled(true)
@@ -378,18 +373,33 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			.setQualityReportingCollector("sip:voip-metrics@bc1.vatrp.net")
 			.setQualityReportingEnabled(true)
 			.setQualityReportingInterval(180)
-			.setRealm("bc1.vatrp.net");
+			.setRealm(domain);
 			
 			
 			mPrefs.setStunServer(getString(R.string.default_stun));
 			mPrefs.setIceEnabled(true);
 		} else {
-			String forcedProxy = getResources().getString(R.string.setup_forced_proxy);
-			if (!TextUtils.isEmpty(forcedProxy)) {
-				builder.setProxy(forcedProxy)
-				.setOutboundProxyEnabled(true)
-				.setAvpfRRInterval(5);
-			}
+//			String forcedProxy = getResources().getString(R.string.setup_forced_proxy);
+//			if (!TextUtils.isEmpty(forcedProxy)) {
+//				builder.setProxy(forcedProxy)
+//				.setOutboundProxyEnabled(true)
+//				.setAvpfRRInterval(5);
+//			}
+			builder.setExpires("604800")
+					.setProxy(domain + ":5060")
+					.setTransport(TransportType.LinphoneTransportTcp)
+					.setOutboundProxyEnabled(true)
+					.setAvpfEnabled(false)
+							//.setAvpfRRInterval(3)
+					//.setQualityReportingCollector("sip:voip-metrics@bc1.vatrp.net")
+					//.setQualityReportingEnabled(true)
+					//.setQualityReportingInterval(180)
+					.setRealm(domain);
+
+
+			//mPrefs.setStunServer(getString(R.string.default_stun));
+			mPrefs.setMediaEncryption(LinphoneCore.MediaEncryption.None);
+			mPrefs.setIceEnabled(false);
 		}
 		
 		if (getResources().getBoolean(R.bool.enable_push_id)) {
