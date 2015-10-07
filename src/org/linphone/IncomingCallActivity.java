@@ -220,7 +220,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 						});
 
 						ValueAnimator reverseColorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorTo, colorFrom);
-						vreverseColorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+						reverseColorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 							@Override
 							public void onAnimationUpdate(ValueAnimator animator) {
 								topLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
