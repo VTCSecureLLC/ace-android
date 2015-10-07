@@ -32,6 +32,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.Fragment.SavedState;
 import android.support.v4.app.FragmentActivity;
@@ -55,6 +56,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.LinphoneManager.AddressType;
@@ -80,6 +82,9 @@ import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -87,6 +92,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static android.content.Intent.ACTION_MAIN;
+import static org.linphone.LinphoneManager.getLc;
 
 /**
  * @author Sylvain Berfini
@@ -94,6 +100,7 @@ import static android.content.Intent.ACTION_MAIN;
 public class LinphoneActivity extends FragmentActivity implements OnClickListener, ContactPicked {
 	public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
 	public static Context ctx;
+	public static Activity act;
 	private static final int SETTINGS_ACTIVITY = 123;
 	private static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
@@ -135,6 +142,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //		LoginManager.verifyLogin(this, getIntent());
 		checkForUpdates();
 		ctx=this;
+		act=this;
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
 		        .setTitle(getString(R.string.location_for_911_disabled_title))
@@ -255,7 +263,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
 				}
 
-				int missedCalls = LinphoneManager.getLc().getMissedCallsCount();
+				int missedCalls = getLc().getMissedCallsCount();
 				displayMissedCalls(missedCalls);
 			}
 		};
@@ -265,7 +273,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			lc.addListener(mListener);
 		}
 
-		int missedCalls = LinphoneManager.getLc().getMissedCallsCount();
+		int missedCalls = getLc().getMissedCallsCount();
 		displayMissedCalls(missedCalls);
 
 		int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -284,7 +292,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		}
 
-		LinphoneManager.getLc().setDeviceRotation(rotation);
+		getLc().setDeviceRotation(rotation);
 		mAlwaysChangingPhoneAngle = rotation;
 
 		updateAnimationsState();
@@ -780,7 +788,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (id == R.id.history) {
 			changeCurrentFragment(FragmentsAvailable.HISTORY, null);
 			history.setSelected(true);
-			LinphoneManager.getLc().resetMissedCallsCount();
+			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
 		} else if (id == R.id.contacts) {
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
@@ -1106,8 +1114,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			((DialerFragment) dialerFragment).resetLayout(false);
 		}
 
-		if (LinphoneManager.isInstanciated() && LinphoneManager.getLc().getCallsNb() > 0) {
-			LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+		if (LinphoneManager.isInstanciated() && getLc().getCallsNb() > 0) {
+			LinphoneCall call = getLc().getCalls()[0];
 			if (call.getState() == LinphoneCall.State.IncomingReceived) {
 				startActivity(new Intent(LinphoneActivity.this, IncomingCallActivity.class));
 			} else if (call.getCurrentParamsCopy().getVideoEnabled()) {
@@ -1182,7 +1190,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		} else if (resultCode == Activity.RESULT_FIRST_USER && requestCode == CALL_ACTIVITY) {
 			getIntent().putExtra("PreviousActivity", CALL_ACTIVITY);
 			boolean callTransfer = data == null ? false : data.getBooleanExtra("Transfer", false);
-			if (LinphoneManager.getLc().getCallsNb() > 0) {
+			if (getLc().getCallsNb() > 0) {
 				initInCallMenuLayout(callTransfer);
 			} else {
 				resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
@@ -1217,13 +1225,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		updateMissedChatCount();
 
-		displayMissedCalls(LinphoneManager.getLc().getMissedCallsCount());
+		displayMissedCalls(getLc().getMissedCallsCount());
 
 		LinphoneManager.getInstance().changeStatusToOnline();
 
 		if(getIntent().getIntExtra("PreviousActivity", 0) != CALL_ACTIVITY){
-			if (LinphoneManager.getLc().getCalls().length > 0) {
-				LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+			if (getLc().getCalls().length > 0) {
+				LinphoneCall call = getLc().getCalls()[0];
 				LinphoneCall.State callState = call.getState();
 				if (callState == State.IncomingReceived) {
 					startActivity(new Intent(this, IncomingCallActivity.class));
@@ -1287,8 +1295,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			String sipUri = extras.getString("ChatContactSipUri");
 			displayChat(sipUri);
 		} else if (extras != null && extras.getBoolean("Notification", false)) {
-			if (LinphoneManager.getLc().getCallsNb() > 0) {
-				LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+			if (getLc().getCallsNb() > 0) {
+				LinphoneCall call = getLc().getCalls()[0];
 				if (call.getCurrentParamsCopy().getVideoEnabled()) {
 					startVideoActivity(call);
 				} else {
@@ -1307,8 +1315,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					((DialerFragment) dialerFragment).newOutgoingCall(intent);
 				}
 			}
-			if (LinphoneManager.getLc().getCalls().length > 0) {
-				LinphoneCall calls[] = LinphoneManager.getLc().getCalls();
+			if (getLc().getCalls().length > 0) {
+				LinphoneCall calls[] = getLc().getCalls();
 				if (calls.length > 0) {
 					LinphoneCall call = calls[0];
 
@@ -1324,7 +1332,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				// If a call is ringing, start incomingcallactivity
 				Collection<LinphoneCall.State> incoming = new ArrayList<LinphoneCall.State>();
 				incoming.add(LinphoneCall.State.IncomingReceived);
-				if (LinphoneUtils.getCallsInState(LinphoneManager.getLc(), incoming).size() > 0) {
+				if (LinphoneUtils.getCallsInState(getLc(), incoming).size() > 0) {
 					if (InCallActivity.isInstanciated()) {
 						InCallActivity.instance().startIncomingCallActivity();
 					} else {
@@ -1365,7 +1373,65 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		return super.onKeyDown(keyCode, event);
 	}
 	private void checkForCrashes() {
-		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
+
+		CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc",new CrashManagerListener() {
+			public boolean shouldAutoUploadCrashes() {
+				return true;
+			}
+			public boolean ignoreDefaultHandler() {
+				return true;
+			}
+			public String getContact() {
+				LinphonePreferences mPrefs = LinphonePreferences.instance();
+				String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
+				String domain = mPrefs.getAccountDomain(mPrefs.getDefaultAccountIndex());
+				String user=username + "@" + domain;
+				return user;
+			}
+			public String getDescription() {
+				String description = "";
+
+				try {
+					Process process = Runtime.getRuntime().exec("logcat -d HockeyApp:D *:S");
+					BufferedReader bufferedReader =
+							new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+					StringBuilder log = new StringBuilder();
+					String line;
+					while ((line = bufferedReader.readLine()) != null) {
+						log.append(line);
+						log.append(System.getProperty("line.separator"));
+					}
+					bufferedReader.close();
+
+					description = log.toString();
+				}
+				catch (IOException e) {
+				}
+
+				return description;
+			}
+			public String getUserID() {
+				return Settings.Secure.getString(getContentResolver(),
+						Settings.Secure.ANDROID_ID);
+			}
+			public void onCrashesSent() {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(act, "Crash data was sent. Thanks!", Toast.LENGTH_LONG).show();
+					}
+				});
+
+			}
+			public void onCrashesNotSent() {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(act, "Crash data failed to sent. Please try again later.", Toast.LENGTH_LONG).show();
+					}
+				});
+
+			}
+		});
 	}
 
 	private void checkForUpdates() {

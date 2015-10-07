@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.content.Context;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
 import org.linphone.core.LinphoneAuthInfo;
@@ -33,11 +35,6 @@ import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.LpConfig;
 import org.linphone.core.TunnelConfig;
 import org.linphone.mediastream.Log;
-
-import android.content.Context;
-
-import org.linphone.R;
-
 /**
  * @author Sylvain Berfini
  */
@@ -780,7 +777,7 @@ public class LinphonePreferences {
 
 	public String getPreferredVideoSize() {
 		//LinphoneCore can only return video size (width and height), not the name
-		return getConfig().getString("video", "size", "qvga");
+		return getConfig().getString("video", "size", "cif");
 	}
 
 	public void setPreferredVideoSize(String preferredVideoSize) {
