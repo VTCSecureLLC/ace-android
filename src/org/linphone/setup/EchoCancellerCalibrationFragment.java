@@ -60,12 +60,6 @@ public class EchoCancellerCalibrationFragment extends Fragment {
 			@Override
 			public void ecCalibrationStatus(LinphoneCore lc,LinphoneCore.EcCalibratorStatus status, int delay_ms, Object data) {
 				LinphoneManager.getInstance().routeAudioToReceiver();
-				
-				if (status == EcCalibratorStatus.DoneNoEcho) {
-					LinphonePreferences.instance().setEchoCancellation(false);
-				} else if ((status == EcCalibratorStatus.Done) || (status == EcCalibratorStatus.Failed)) {
-					LinphonePreferences.instance().setEchoCancellation(true);
-				}
 				if (mSendEcCalibrationResult) {
 					sendEcCalibrationResult(status, delay_ms);
 				} else {
@@ -81,8 +75,6 @@ public class EchoCancellerCalibrationFragment extends Fragment {
 		}
 		return view;
 	}
-
-	
 
 	public void enableEcCalibrationResultSending(boolean enabled) {
 		mSendEcCalibrationResult = enabled;
@@ -112,9 +104,10 @@ public class EchoCancellerCalibrationFragment extends Fragment {
 			    }
 			};
 
-			Log.i("Add echo canceller calibration result: manufacturer=" + Build.MANUFACTURER + " model=" + Build.MODEL + " status=" + status + " delay=" + delayMs + "ms");
-		    client.callAsync(listener, "add_ec_calibration_result", Build.MANUFACTURER, Build.MODEL, status.toString(), delayMs);
-		} 
+			Boolean hasBuiltInEchoCanceler = LinphoneManager.getLc().hasBuiltInEchoCanceler();
+			Log.i("Add echo canceller calibration result: manufacturer=" + Build.MANUFACTURER + " model=" + Build.MODEL + " status=" + status + " delay=" + delayMs + "ms" + " hasBuiltInEchoCanceler " + hasBuiltInEchoCanceler);
+		    client.callAsync(listener, "add_ec_calibration_result", Build.MANUFACTURER, Build.MODEL, status.toString(), delayMs, hasBuiltInEchoCanceler);
+		}
 		catch(Exception ex) {}
 	}
 }
