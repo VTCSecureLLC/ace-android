@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.linphone"
       android:versionCode="1"
-      android:versionName="0.1.4-1-ebf1b48"
+      android:versionName="0.1.5-1-56804df"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
 
