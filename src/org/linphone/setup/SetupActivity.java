@@ -374,8 +374,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			.setQualityReportingEnabled(true)
 			.setQualityReportingInterval(180)
 			.setRealm(domain);
-			
-			
+
+			mPrefs.setMediaEncryption(LinphoneCore.MediaEncryption.None);
 			mPrefs.setStunServer(getString(R.string.default_stun));
 			mPrefs.setIceEnabled(true);
 		} else {
