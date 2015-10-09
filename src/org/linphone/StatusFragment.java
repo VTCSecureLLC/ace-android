@@ -17,25 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCallStats;
-import org.linphone.core.LinphoneContent;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCore.MediaEncryption;
-import org.linphone.core.LinphoneCore.RegistrationState;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneEvent;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.PayloadType;
-import org.linphone.mediastream.Log;
-import org.linphone.ui.SlidingDrawer;
-import org.linphone.ui.SlidingDrawer.OnDrawerOpenListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -53,11 +34,30 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneCallStats;
+import org.linphone.core.LinphoneContent;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.MediaEncryption;
+import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneEvent;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PayloadType;
+import org.linphone.mediastream.Log;
+import org.linphone.ui.SlidingDrawer;
+import org.linphone.ui.SlidingDrawer.OnDrawerOpenListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Sylvain Berfini
@@ -497,13 +497,30 @@ public class StatusFragment extends Fragment {
 				final TextView ul = (TextView) view.findViewById(R.id.uploadBandwith);
 				final TextView ice = (TextView) view.findViewById(R.id.ice);
 				final TextView videoResolution = (TextView) view.findViewById(R.id.video_resolution);
+
+				final TextView getJitterBufferSize = (TextView) view.findViewById(R.id.getJitterBufferSize);
+				final TextView getLatePacketsCumulativeNumber = (TextView) view.findViewById(R.id.getLatePacketsCumulativeNumber);
+				final TextView getLocalLateRate = (TextView) view.findViewById(R.id.getLocalLateRate);
+				final TextView getLocalLossRate = (TextView) view.findViewById(R.id.getLocalLossRate);
+				final TextView getMediaType = (TextView) view.findViewById(R.id.getMediaType);
+				final TextView getReceiverInterarrivalJitter = (TextView) view.findViewById(R.id.getReceiverInterarrivalJitter);
+				final TextView getReceiverLossRate = (TextView) view.findViewById(R.id.getReceiverLossRate);
+				final TextView getRoundTripDelay = (TextView) view.findViewById(R.id.getRoundTripDelay);
+				final TextView getSenderInterarrivalJitter = (TextView) view.findViewById(R.id.getSenderInterarrivalJitter);
+				final TextView getSenderLossRate = (TextView) view.findViewById(R.id.getSenderLossRate);
+
 				final View videoResolutionLayout = view.findViewById(R.id.video_resolution_layout);
-				
+
+
+				final TextView stat_tv = new TextView(LinphoneActivity.ctx);
+				stat_tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+
 				if (codec == null || dl == null || ul == null || ice == null || videoResolution == null || videoResolutionLayout == null) {
 					mTimer.cancel();
 					return;
 				}
-				
+
 				mHandler.post(new Runnable() {
 					@Override
 					public void run() {
@@ -525,6 +542,19 @@ public class StatusFragment extends Fragment {
 									
 									videoResolutionLayout.setVisibility(View.VISIBLE);
 									videoResolution.setText("\u2191 " + params.getSentVideoSize().toDisplayableString() + " / \u2193 " + params.getReceivedVideoSize().toDisplayableString());
+
+
+									getJitterBufferSize.setText(String.valueOf(videoStats.getJitterBufferSize()));
+									getLatePacketsCumulativeNumber.setText(String.valueOf(videoStats.getLatePacketsCumulativeNumber()));
+									getLocalLateRate.setText(String.valueOf(videoStats.getLocalLateRate()));
+									getLocalLossRate.setText(String.valueOf(videoStats.getLocalLossRate()));
+									getMediaType.setText(String.valueOf(videoStats.getMediaType()));
+									getReceiverInterarrivalJitter.setText(String.valueOf(videoStats.getReceiverInterarrivalJitter()));
+									getReceiverLossRate.setText(String.valueOf(videoStats.getReceiverLossRate()));
+									getRoundTripDelay.setText(String.valueOf(videoStats.getRoundTripDelay()));
+									getSenderInterarrivalJitter.setText(String.valueOf(videoStats.getSenderInterarrivalJitter()));
+									getSenderLossRate.setText(String.valueOf(videoStats.getSenderLossRate()));
+
 								}
 							} else {
 								final LinphoneCallStats audioStats = call.getAudioStats();
