@@ -116,7 +116,9 @@
                 android:background="#809cac"
                 android:hint="Username"
                 android:textColorHint="#787878"
-                android:paddingLeft="30dp" />
+                android:paddingLeft="30dp"
+                android:singleLine="true"
+                android:imeOptions="actionNext"/>
         </LinearLayout>
 
         <LinearLayout
@@ -140,7 +142,9 @@
                 android:textColorHint="#787878"
                 android:hint="Password"
                 android:password="true"
-                android:paddingLeft="30dp" />
+                android:paddingLeft="30dp"
+                android:singleLine="true"
+                android:imeOptions="actionNext"/>
         </LinearLayout>
         
         <LinearLayout
@@ -164,7 +168,9 @@
                 android:textColorHint="#787878"
                 android:text="bc1.vatrp.net"
                 android:hint="Address:Port"
-                android:paddingLeft="30dp" />
+                android:paddingLeft="30dp"
+                android:singleLine="true"
+                android:imeOptions="actionDone"/>
         </LinearLayout>
 <!-- android:background="#001b2b"
 android:textColor="#ffffff" -->
