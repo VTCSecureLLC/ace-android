@@ -707,7 +707,7 @@ public class StatusFragment extends Fragment {
 					TextView buildIdTextView = (TextView) view.findViewById(R.id.buildId);
 					PackageManager manager = getActivity().getPackageManager();
 					PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
-					String version = String.valueOf(info.versionCode);
+					String version = String.valueOf(info.versionName);
 
 					if (buildIdTextView != null) {
 						buildIdTextView.setText("Build: " + version);
