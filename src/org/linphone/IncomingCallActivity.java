@@ -36,10 +36,15 @@ import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import org.linphone.R;
 
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.KeyEvent;
@@ -192,21 +197,43 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	}
 
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void flashRedBackground () {
 		flashRedBackgroundTimer = new Timer();
-		float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashred_frequency", 0.3f);
+		final float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashred_frequency", 0.3f);
 		flashRedBackgroundTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
+						Integer colorFrom = Color.TRANSPARENT;
+						Integer colorTo = Color.rgb(90, 17, 17);//RED;
+
+						AnimatorSet animatorSet = new AnimatorSet();
+						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+						colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+							@Override
+							public void onAnimationUpdate(ValueAnimator animator) {
+								topLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
+							}
+						});
+
+						ValueAnimator reverseColorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorTo, colorFrom);
+						reverseColorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+							@Override
+							public void onAnimationUpdate(ValueAnimator animator) {
+								topLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
+							}
+						});
+						colorAnimation.setDuration((long) (flashFrequencyInSeconds * 3000));
+						reverseColorAnimation.setDuration((long) (flashFrequencyInSeconds * 3000));
+
 						if (terminated) {
 							flashRedBackgroundTimer.cancel();
 						} else {
-							if (backgroundIsRed) topLayout.setBackgroundColor(Color.TRANSPARENT);
-							else topLayout.setBackgroundColor(Color.RED);
-							backgroundIsRed = !backgroundIsRed;
+							animatorSet.play(colorAnimation).after(reverseColorAnimation);
+							animatorSet.start();
 						}
 					}
 				});

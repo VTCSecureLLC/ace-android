@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Globals
+HOCKEYAPP_TEAM_IDS=${HOCKEYAPP_TEAM_IDS:-47813}
+HOCKEYAPP_APP_ID=${HOCKEYAPP_APP_ID:-d6280d4d277d6876c709f4143964f0dc}
+
 # Only deploy master branch builds
 
 if [ -z "$TRAVIS_BRANCH" ] ; then
@@ -74,17 +78,18 @@ else
   echo "Uploading to HockeyApp"
   curl \
     -F "status=2" \
-    -F "notify=0" \
+    -F "notify=1" \
     -F "commit_sha=${SHA1}" \
     -F "build_server_url=https://travis-ci.org/${TRAVIS_REPO_SLUG}/builds/${TRAVIS_BUILD_ID}" \
     -F "repository_url=http://github.com/${TRAVIS_REPO_SLUG}" \
     -F "release_type=2" \
     -F "notes=$(git log -1 --pretty=format:%B)" \
     -F "notes_type=0" \
+    -F "mandatory=0" \
     -F "ipa=@$APK_FILE" \
+    -F "teams=${HOCKEYAPP_TEAM_IDS}" \
     -H "X-HockeyAppToken: ${HOCKEYAPP_TOKEN}" \
-    https://rink.hockeyapp.net/api/2/apps/d6280d4d277d6876c709f4143964f0dc/app_versions/upload \
+    https://rink.hockeyapp.net/api/2/apps/${HOCKEYAPP_APP_ID}/app_versions/upload \
   | python -m json.tool
 
 fi
-

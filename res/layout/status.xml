@@ -139,9 +139,31 @@
 					        android:textSize="12sp"/>
 				        
 				    </TableRow>
-				    
+					<TableRow
+						android:id="@+id/video_resolution_layout"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="@string/call_stats_video_resolution"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/video_resolution"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
 				    <TableRow
-				        android:id="@+id/video_resolution_layout"
 					    android:layout_width="match_parent"
 					    android:layout_height="wrap_content">
 				        
@@ -149,13 +171,13 @@
 						    android:layout_width="wrap_content"
 						    android:layout_height="wrap_content"
 					    	android:gravity="left|center_vertical"
-					    	android:text="@string/call_stats_video_resolution"
+					    	android:text="Jitter Buffer Size:"
 					        android:textStyle="bold"
 					        android:textColor="@android:color/white"
 					        android:textSize="12sp"/>
 				        
 				        <TextView 
-				            android:id="@+id/video_resolution"
+				            android:id="@+id/getJitterBufferSize"
 						    android:layout_width="match_parent"
 						    android:layout_height="wrap_content"
 						    android:paddingLeft="5dp"
@@ -164,7 +186,213 @@
 					        android:textSize="12sp"/>
 				        
 				    </TableRow>
-			    
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Late Packets Cumulative Number"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getLatePacketsCumulativeNumber"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Local Late Rate"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getLocalLateRate"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Local Loss Rate"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getLocalLossRate"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Media Type"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getMediaType"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Reciever Interarrival Jitter"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getReceiverInterarrivalJitter"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Receiver Loss Rate"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getReceiverLossRate"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Round Trip Delay"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getRoundTripDelay"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Sender Interarrival Jitter"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getSenderInterarrivalJitter"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
+					<TableRow
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<TextView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:gravity="left|center_vertical"
+							android:text="Sender Loss Rate"
+							android:textStyle="bold"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+						<TextView
+							android:id="@+id/getSenderLossRate"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:paddingLeft="5dp"
+							android:gravity="right|center_vertical"
+							android:textColor="@android:color/white"
+							android:textSize="12sp"/>
+
+					</TableRow>
 			</TableLayout>
 			
 	        <ListView
