@@ -58,6 +58,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -1260,10 +1261,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	protected void onResume() {
 		super.onResume();
 
-
 		// Attempt to update user location
-		LinphoneLocationManager.instance(this).updateLocation();
-		
+		boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+		if (hasGps) {
+			LinphoneLocationManager.instance(this).updateLocation();
+		} else {
+			Log.d("TAG", "NO GPS");
+		}
+
 		if (!LinphoneService.isReady())  {
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}
