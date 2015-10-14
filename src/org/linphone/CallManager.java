@@ -73,6 +73,9 @@ public class CallManager {
 			Log.d("Low bandwidth enabled in call params");
 		}
 
+		//Log.i("RTT: Enabling RTT in outgoing call");
+		params.enableRealTimeText(true);
+
 		lc.inviteAddressWithParams(lAddress, params);
 	}
 

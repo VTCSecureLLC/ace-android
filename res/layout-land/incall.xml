@@ -53,7 +53,11 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="100dp" />
-    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
@@ -238,6 +242,7 @@
               	
           </LinearLayout>
 
+
           <TextView
           	android:id="@+id/dialer"
             android:contentDescription="@string/content_description_dialer"
@@ -247,7 +252,41 @@
             android:background="@drawable/dialer_alt"
           	android:gravity="center"
             android:paddingTop="30dp" />
+
+
            
        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/rtt_incoming_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/black"
+                    android:textColor="@android:color/white"
+                    android:singleLine="false"/>
+                <TextView
+                    android:id="@+id/rtt_outgoing_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/black"
+                    android:textColor="@android:color/white"
+                    android:singleLine="false"/>
+            </LinearLayout>
+            <EditText
+                android:id="@+id/rtt_input_field"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

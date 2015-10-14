@@ -57,6 +57,7 @@ import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
@@ -1367,7 +1368,48 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
-		Log.d("Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
+		Log.d("RTT: Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
+		if (lc.isIncall() && lc.getCurrentCall().getCurrentParamsCopy().realTimeTextEnabled()) {
+			long charCode = cr.getChar();
+			Log.d("RTT: isComposingReceived, got character: " + (char) charCode);
+		} else {
+			Log.d("RTT: isComposingReceived, not in call or RTT not enabled");
+		}
+	}
+
+	public void sendRealtimeText(CharSequence s) {
+		if (mLc == null || !mLc.isIncall())
+			return;
+
+		LinphoneChatRoom chatRoom = mLc.getCurrentCall().getChatRoom();
+		if (!mLc.getCurrentCall().getCurrentParamsCopy().realTimeTextEnabled()) {
+			Log.d("RTT: RTT not enabled for this call, not sending text");
+			return;
+		}
+
+		LinphoneChatMessage message = null;
+
+		char c;
+		for (int i = 0; i < s.length(); i++) {
+			if (message == null)
+				message = chatRoom.createLinphoneChatMessage("");
+
+			c = s.charAt(i);
+			Log.d("RTT: sendRealtimeText: processing charcode " + (int)c);
+
+			if (c == '\n') {
+				Log.d("RTT: sendRealtimeText: sending newline");
+				chatRoom.sendChatMessage(message);
+				message = null;
+			} else {
+				Log.d("RTT: sendRealtimeText: sending char " + c);
+				try {
+					message.putChar(c);
+				} catch (LinphoneCoreException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override

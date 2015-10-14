@@ -288,6 +288,11 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 			Log.d("Low bandwidth enabled in call params");
 		}
 
+		LinphoneCallParams callerParams = mCall.getRemoteParams();
+
+		params.enableRealTimeText(callerParams.realTimeTextEnabled()); // , for example ... decide upon App BL
+		Log.i("RTT: RTT enabled in incoming call: " + callerParams.realTimeTextEnabled());
+
 		if (!LinphoneManager.getInstance().acceptCallWithParams(mCall, params)) {
 			// the above method takes care of Samsung Galaxy S
 			Toast.makeText(this, R.string.couldnt_accept_call, Toast.LENGTH_LONG).show();

@@ -15,7 +15,7 @@
 		linphone:content="@+id/content">
 	
         <RelativeLayout
-			android:id="@id/content"
+			android:id="@+id/content"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content">
             
@@ -178,7 +178,7 @@
         </RelativeLayout>
         
 		<RelativeLayout
-			android:id="@id/handle"
+			android:id="@+id/handle"
 		    android:layout_width="match_parent"
 		    android:layout_height="20dp"
 		    android:layout_marginBottom="10dp">

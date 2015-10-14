@@ -31,7 +31,10 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -43,6 +46,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 
@@ -80,22 +84,22 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			@Override
 			public boolean onTouch(View view, MotionEvent motionEvent) {
 				switch (motionEvent.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					dx = (int) motionEvent.getX();
-					dy = (int) motionEvent.getY();
+					case MotionEvent.ACTION_DOWN:
+						dx = (int) motionEvent.getX();
+						dy = (int) motionEvent.getY();
 						break;
-				case MotionEvent.ACTION_MOVE:
-					int x = (int) motionEvent.getX();
-					int y = (int) motionEvent.getY();
-					RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mCaptureView.getLayoutParams();
-					lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); // Clears the rule, as there is no removeRule until API 17.
-					lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
-					int left = lp.leftMargin + (x - dx);
-					int top = lp.topMargin + (y - dy);
-					lp.leftMargin = left;
-					lp.topMargin = top;
-					view.setLayoutParams(lp);
-					break;
+					case MotionEvent.ACTION_MOVE:
+						int x = (int) motionEvent.getX();
+						int y = (int) motionEvent.getY();
+						RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mCaptureView.getLayoutParams();
+						lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); // Clears the rule, as there is no removeRule until API 17.
+						lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+						int left = lp.leftMargin + (x - dx);
+						int top = lp.topMargin + (y - dy);
+						lp.leftMargin = left;
+						lp.topMargin = top;
+						view.setLayoutParams(lp);
+						break;
 				}
 				return true;
 			}

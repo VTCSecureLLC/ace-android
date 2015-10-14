@@ -30,6 +30,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,6 +44,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -278,6 +281,106 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
 
         }
+		final TextView outgoingTextView = (TextView)findViewById(R.id.rtt_outgoing_view);
+		EditText rttInput = (EditText)findViewById(R.id.rtt_input_field);
+		if (rttInput != null) {
+			rttInput.addTextChangedListener(new TextWatcher() {
+				private CharSequence bc;
+				private boolean enable = true;
+				Handler h = new Handler();
+
+
+				String text = null;
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+					if (count > 0) {
+						bc = s.subSequence(start, start + count);
+					} else {
+						bc = null;
+					}
+					//Log.d(String.format("RTW-before cs:%s start:%s count:%s after:%s",cs, start, count, after));
+					//Log.d("RTT: In beforeTextChanged() in RttTextWatcher.java - s: " + s + ", start: " + start + ", count: " + count + ", after: " + after);
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					//Log.d("RTT: In onTextChanged() in RttTextWatcher.java - s: " + s + ", start: " + start + ", before: " + before + ", count: " + count);
+					//LinphoneCore lc=LinphoneService.instance().getLinphoneCore();
+
+					CharSequence text = outgoingTextView.getText().toString();
+					String typedText = s.toString();
+
+					if (text.length() > 0) {
+
+					}
+
+//					int newline = typedText.indexOf("\n");
+//					if (newline >= 0) {
+//						text += s.subSequence(0,newline).toString();
+//					} else {
+//
+//					}
+
+
+					int ic = count;
+					int remove;
+					int i;
+
+					if (bc != null) {
+						remove = bc.length();
+					} else {
+						remove = 0;
+					}
+
+					i = 0;
+					while (remove > 0 && ic > 0) {
+						if (s.charAt(start + i) != bc.charAt(i)) {
+							break;
+						}
+						i++;
+						ic--;
+						remove--;
+					}
+
+					final int u = 1;
+
+
+					i = count - ic;
+					final CharSequence cc;
+					final int rr = remove;
+
+
+					if (i < count) {
+						cc = s.subSequence(start + i, start + count);
+					} else {
+						cc = null;
+					}
+
+					//Log.d("RTT: In onTextChanged() in RttTextWatcher.java - i: " + i + ", ic: " + ic + ", remove: " + remove + ", cc: " + cc);
+
+					h.post(new Runnable() {
+						public void run() {
+							//Log.d("RTT: XXX D1");
+							//RttData.instance().deleteText(u,rr);
+							if (cc != null) {
+								//RttData.instance().sendRealtimeText(cc);
+								LinphoneManager.getInstance().sendRealtimeText(cc);
+								//RttScrollView scroll = RttData.instance().getScroll();
+								//if (scroll != null)
+								//	scroll.setScrollAllowed(true);
+							}
+							//RttData.instance().refresh(u);
+						}
+					});
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+
+				}
+			});
+		}
 	}
 	
 	private boolean isVideoEnabled(LinphoneCall call) {
