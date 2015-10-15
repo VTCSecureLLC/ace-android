@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.content.Context;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
 import org.linphone.core.LinphoneAuthInfo;
@@ -33,11 +35,6 @@ import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.LpConfig;
 import org.linphone.core.TunnelConfig;
 import org.linphone.mediastream.Log;
-
-import android.content.Context;
-
-import org.linphone.R;
-
 /**
  * @author Sylvain Berfini
  */
@@ -432,8 +429,10 @@ public class LinphonePreferences {
 			prxCfg.setIdentity(identity);
 			prxCfg.done();
 
-			info.setUsername(username);
-			saveAuthInfo(info);
+			if(info != null) {
+				info.setUsername(username);
+				saveAuthInfo(info);
+			}
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
@@ -470,8 +469,10 @@ public class LinphonePreferences {
 
 	public void setAccountUserId(int n, String userId) {
 		LinphoneAuthInfo info = getClonedAuthInfo(n);
-		info.setUserId(userId);
-		saveAuthInfo(info);
+		if(info != null) {
+			info.setUserId(userId);
+			saveAuthInfo(info);
+		}
 	}
 
 	public String getAccountUserId(int n) {
@@ -481,8 +482,10 @@ public class LinphonePreferences {
 
 	public void setAccountPassword(int n, String password) {
 		LinphoneAuthInfo info = getClonedAuthInfo(n);
-		info.setPassword(password);
-		saveAuthInfo(info);
+		if(info != null) {
+			info.setPassword(password);
+			saveAuthInfo(info);
+		}
 	}
 
 	public String getAccountPassword(int n) {
@@ -494,8 +497,10 @@ public class LinphonePreferences {
 
 		try {
 			LinphoneAuthInfo authInfo = getClonedAuthInfo(n);
-			authInfo.setDomain(domain);
-			saveAuthInfo(authInfo);
+			if(authInfo != null) {
+				authInfo.setDomain(domain);
+				saveAuthInfo(authInfo);
+			}
 
 			LinphoneProxyConfig prxCfg = getProxyConfig(n);
 			prxCfg.edit();
@@ -780,7 +785,7 @@ public class LinphonePreferences {
 
 	public String getPreferredVideoSize() {
 		//LinphoneCore can only return video size (width and height), not the name
-		return getConfig().getString("video", "size", "qvga");
+		return getConfig().getString("video", "size", "cif");
 	}
 
 	public void setPreferredVideoSize(String preferredVideoSize) {
@@ -1030,7 +1035,7 @@ public class LinphonePreferences {
 	}
 
 	public boolean isAutoStartEnabled() {
-		return getConfig().getBool("app", "auto_start", false);
+		return getConfig().getBool("app", "auto_start", true);
 	}
 
 	public void setAutoStart(boolean autoStartEnabled) {
