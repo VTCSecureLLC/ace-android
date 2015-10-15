@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.linphone"
+      package="com.vtcsecure"
       android:versionCode="305"
       android:versionName="0.1.5-305-56804df.p1"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
 
     <!-- Permissions for Push Notification -->
-    <permission android:name="org.linphone.vtcsecure.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
-	<uses-permission android:name="org.linphone.vtcsecure.permission.C2D_MESSAGE" />  <!-- Change package ! -->
+    <permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
+	<uses-permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" />  <!-- Change package ! -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -52,7 +52,7 @@
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity android:name="net.hockeyapp.android.FeedbackActivity" />
         <activity android:name="net.hockeyapp.android.PaintActivity" />
-		<activity android:name="org.linphone.LinphoneLauncherActivity"
+		<activity android:name="com.vtcsecure.LinphoneLauncherActivity"
 		    android:label="@string/app_name"
 		    android:windowSoftInputMode="adjustPan|stateHidden"
             android:exported="true"
@@ -87,7 +87,7 @@
 
 		</activity>
 
-		<activity android:name="org.linphone.LinphoneActivity"
+		<activity android:name="com.vtcsecure.LinphoneActivity"
 		    android:theme="@style/NoTitle"
             android:screenOrientation="behind"
             android:launchMode="singleTask">
@@ -96,7 +96,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="org.linphone.IncomingCallActivity"
+        <activity android:name="com.vtcsecure.IncomingCallActivity"
 		    android:theme="@style/NoTitle"
             android:noHistory="true"
 			android:launchMode="singleTop"
@@ -106,7 +106,7 @@
             </intent-filter>
          </activity>
 
-        <activity android:name="org.linphone.InCallActivity"
+        <activity android:name="com.vtcsecure.InCallActivity"
 		   android:theme="@style/FullScreen"
            android:noHistory="true"
            android:launchMode="singleTop">
@@ -122,7 +122,7 @@
             </intent-filter>-->
         </activity>
 
-        <activity android:name="org.linphone.ChatActivity"
+        <activity android:name="com.vtcsecure.ChatActivity"
             android:theme="@style/NoTitle"
             android:configChanges="orientation|screenSize|keyboardHidden" 
             android:windowSoftInputMode="adjustPan|adjustResize"
@@ -132,7 +132,7 @@
             </intent-filter>
         </activity>
          
-        <activity android:name="org.linphone.setup.SetupActivity"
+        <activity android:name="com.vtcsecure.setup.SetupActivity"
 		    android:theme="@style/NoTitle"
             android:screenOrientation="nosensor">
             <intent-filter>
@@ -140,7 +140,7 @@
             </intent-filter>
          </activity>
          
-        <activity android:name="org.linphone.setup.RemoteProvisioningLoginActivity"
+        <activity android:name="com.vtcsecure.setup.RemoteProvisioningLoginActivity"
 		    android:theme="@style/NoTitle"
             android:screenOrientation="nosensor">
             <intent-filter>
@@ -148,7 +148,7 @@
             </intent-filter>
          </activity>
          
-        <activity android:name="org.linphone.setup.RemoteProvisioningActivity"
+        <activity android:name="com.vtcsecure.setup.RemoteProvisioningActivity"
             android:theme="@style/NoTitle"
             android:screenOrientation="nosensor">
             <intent-filter>
@@ -163,12 +163,12 @@
      		</intent-filter>
         </activity>
 
-	    <service android:name="org.linphone.LinphoneService"
+	    <service android:name="com.vtcsecure.LinphoneService"
 	        android:label="@string/service_name"
 	        android:stopWithTask="false"/>
 
         <service
-            android:name="org.linphone.sync.SyncService"
+            android:name="com.vtcsecure.sync.SyncService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
@@ -178,7 +178,7 @@
         </service>
 
         <service
-            android:name="org.linphone.sync.AuthenticationService">
+            android:name="com.vtcsecure.sync.AuthenticationService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
@@ -187,78 +187,78 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <receiver android:name="org.linphone.NetworkManager">
+        <receiver android:name="com.vtcsecure.NetworkManager">
 			<intent-filter><action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action></intent-filter>
 		</receiver>
 	
-	    <receiver android:name="org.linphone.BluetoothManager" android:enabled="false">
+	    <receiver android:name="com.vtcsecure.BluetoothManager" android:enabled="false">
 		</receiver>
 	
-		<receiver android:name="org.linphone.BootReceiver">
+		<receiver android:name="com.vtcsecure.BootReceiver">
 			<intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"></action></intent-filter>
 		</receiver>
 	
-		<receiver android:name="org.linphone.PhoneStateChangedReceiver">
+		<receiver android:name="com.vtcsecure.PhoneStateChangedReceiver">
 			<intent-filter><action android:name="android.intent.action.PHONE_STATE" /></intent-filter>
 		</receiver>
 		
-		<receiver android:name="KeepAliveHandler" >
+		<receiver android:name="com.vtcsecure.KeepAliveHandler" >
         </receiver>
         
 		<!-- Needed for push notification -->
-		<receiver android:name="org.linphone.gcm.GCMReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+		<receiver android:name="com.vtcsecure.gcm.GCMReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
 		  <intent-filter>
 		    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 		    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-		    <category android:name="org.linphone.vtcsecure" /> <!-- Change package ! -->
+		    <category android:name="com.vtcsecure.ace" /> <!-- Change package ! -->
 		  </intent-filter>
 		</receiver>
 		
-		<service android:name="org.linphone.gcm.GCMService" />
+		<service android:name="com.vtcsecure.gcm.GCMService" />
 
-        <activity android:name="org.linphone.tutorials.TutorialLauncherActivity"
+        <activity android:name="com.vtcsecure.tutorials.TutorialLauncherActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 		
-		<activity android:name="org.linphone.tutorials.TutorialBuddyStatusActivity"
+		<activity android:name="com.vtcsecure.tutorials.TutorialBuddyStatusActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         
-		<activity android:name="org.linphone.tutorials.TutorialChatRoomActivity"
+		<activity android:name="com.vtcsecure.tutorials.TutorialChatRoomActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         
-		<activity android:name="org.linphone.tutorials.TutorialHelloWorldActivity"
+		<activity android:name="com.vtcsecure.tutorials.TutorialHelloWorldActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         
-		<activity android:name="org.linphone.tutorials.TutorialRegistrationActivity"
+		<activity android:name="com.vtcsecure.tutorials.TutorialRegistrationActivity"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         
-		<activity android:name="org.linphone.tutorials.TutorialRttSender"
+		<activity android:name="com.vtcsecure.tutorials.TutorialRttSender"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         
-		<activity android:name="org.linphone.tutorials.TutorialRttReceiver"
+		<activity android:name="com.vtcsecure.tutorials.TutorialRttReceiver"
 		    android:theme="@style/NoTitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

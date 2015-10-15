@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="custom_rules">
 
-	<property name="linphone.package.name" value="org.linphone.vtcsecure" />
+	<property name="ace.package.name" value="org.linphone.vtcsecure" />
 
     <!-- Maven ant task for dependencies -->
     <!--
@@ -117,9 +117,9 @@
 				<arg value="-S" />
 				<arg path="${resource.absolute.dir}" />
 				<arg value="--rename-manifest-package" />
-				<arg value="${linphone.package.name}" />
+				<arg value="${ace.package.name}" />
 				<arg value="--custom-package" />
-				<arg value="${linphone.package.name}" />
+				<arg value="${ace.package.name}" />
 			</exec>
 		</do-only-if-not-library>
 	</target>
@@ -132,7 +132,7 @@
 			<arg value="-a" />
 			<arg value="android.intent.action.MAIN" />
 			<arg value="-n" />
-			<arg value="${linphone.package.name}/org.linphone.LinphoneLauncherActivity" />
+			<arg value="${ace.package.name}/com.vtcsecure.LinphoneLauncherActivity" />
 		</exec>
 	</target>
 

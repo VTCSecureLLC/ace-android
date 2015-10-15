@@ -27,7 +27,7 @@ SQLITE_URL=http://www.sqlite.org/2013/$(SQLITE_BASENAME).zip
 ENABLE_GPL_THIRD_PARTIES=1
 #override CC variable to disable compiler specific FLAGS in configure using the system compiler instead of the android one
 CC=
-PACKAGE_NAME=$(shell sed -nE 's|<property name="linphone.package.name" value="(.*)" />|\1|p' custom_rules.xml)
+PACKAGE_NAME=$(shell sed -nE 's|<property name="ace.package.name" value="(.*)" />|\1|p' custom_rules.xml)
 #default options, can be overidden using make OPTION=value .
 
 ifeq ($(ENABLE_GPL_THIRD_PARTIES),1)

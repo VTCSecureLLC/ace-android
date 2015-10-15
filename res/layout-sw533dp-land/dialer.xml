@@ -14,7 +14,7 @@
        	android:layout_gravity="center">
        	<!-- focusable/focusableInTouchMode are set to true to prevent the keyboard to be displayed automatically -->
         
-	    <org.linphone.ui.AddressText
+	    <com.vtcsecure.ui.AddressText
 	        android:id="@+id/Adress"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
 	        android:textColor="@android:color/white"
 	        android:textSize="30sp" />
 	            
-        <org.linphone.ui.EraseButton
+        <com.vtcsecure.ui.EraseButton
             android:id="@id/Erase"
             android:contentDescription="@string/content_description_backspace"
             android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
         android:layout_height="match_parent"
         android:paddingBottom="10dp">
         
-        <org.linphone.ui.Numpad 
+        <com.vtcsecure.ui.Numpad
 		    android:id="@+id/Dialer"
             android:contentDescription="@string/content_description_numpad"
 	  		android:background="@drawable/background_alt"
@@ -93,7 +93,7 @@
 	            android:scaleType="fitXY"
 	            android:src="@drawable/add_contact" />
 	        
-	        <org.linphone.ui.CallButton
+	        <com.vtcsecure.ui.CallButton
 	            android:id="@+id/Call"
                 android:contentDescription="@string/content_description_call"
 	            android:layout_width="match_parent"

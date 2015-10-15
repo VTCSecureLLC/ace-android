@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 		    
-    <org.linphone.ui.SlidingDrawer
+    <com.vtcsecure.ui.SlidingDrawer
 		android:id="@+id/statusBar"
 		linphone:direction="topToBottom"
 		android:layout_width="match_parent"
@@ -487,7 +487,7 @@
 		
 		</RelativeLayout>
 		
-	</org.linphone.ui.SlidingDrawer>
+	</com.vtcsecure.ui.SlidingDrawer>
 
     <ImageView
         android:contentDescription="@string/content_description_encryption"
