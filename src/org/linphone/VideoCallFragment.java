@@ -17,16 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import org.linphone.compatibility.Compatibility;
-import org.linphone.compatibility.CompatibilityScaleGestureDetector;
-import org.linphone.compatibility.CompatibilityScaleGestureListener;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.mediastream.Log;
-import org.linphone.mediastream.video.AndroidVideoWindowImpl;
-import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
-
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
@@ -42,8 +32,17 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
 import android.widget.RelativeLayout;
+
+import org.linphone.compatibility.Compatibility;
+import org.linphone.compatibility.CompatibilityScaleGestureDetector;
+import org.linphone.compatibility.CompatibilityScaleGestureListener;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneCore;
+import org.linphone.mediastream.Log;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
 
 /**
@@ -63,8 +62,8 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 	@SuppressWarnings("deprecation") // Warning useless because value is ignored and automatically set by new APIs.
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
 
 
 		isH263();
@@ -113,7 +112,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 			@Override
 			public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-				LinphoneCore lc = LinphoneManager.getLc(); 
+				LinphoneCore lc = LinphoneManager.getLc();
 				if (lc != null) {
 					lc.setVideoWindow(null);
 				}
@@ -155,7 +154,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	}
 
 	//Check to see if current call is using an H263 video codec, if so, adjust the video for portrait
-	private boolean isH263(){
+	public static boolean isH263(){
 		LinphoneCallParams params;
 		LinphoneCall call;
 
@@ -168,7 +167,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 				if(params.getUsedVideoCodec() != null) {
 					if (params.getUsedVideoCodec().toString().contains("H263")) {
 
-						adjustH263VideoForCall(call);
+						//adjustH263VideoForCall(call);
 
 						return true;
 					}
