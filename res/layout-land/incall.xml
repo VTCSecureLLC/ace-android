@@ -257,6 +257,8 @@
            
        </LinearLayout>
         <LinearLayout
+            android:id="@+id/rtt_container"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -271,7 +273,8 @@
                     android:layout_weight="1"
                     android:background="@android:color/black"
                     android:textColor="@android:color/white"
-                    android:singleLine="false"/>
+                    android:singleLine="false"
+                    android:scrollbars="vertical"/>
                 <TextView
                     android:id="@+id/rtt_outgoing_view"
                     android:layout_width="match_parent"
@@ -279,13 +282,15 @@
                     android:layout_weight="1"
                     android:background="@android:color/black"
                     android:textColor="@android:color/white"
-                    android:singleLine="false"/>
+                    android:singleLine="false"
+                    android:scrollbars="vertical"/>
             </LinearLayout>
             <EditText
                 android:id="@+id/rtt_input_field"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_weight="1"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"/>
         </LinearLayout>
     </LinearLayout>
 

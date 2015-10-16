@@ -419,5 +419,7 @@
   
  <string name="gpsdenied">not authorized by user</string> 
  <string name="gpsnolocation">user location could not be established</string> 
- <string name="leave_empty">Leave empty</string>  
-  </resources>
+ <string name="leave_empty">Leave empty</string>
+  <string name="pref_text_enable_title">Enable text (RTT)</string>
+  <string name="pref_text_enable_key">pref_text_enable_key</string>
+</resources>

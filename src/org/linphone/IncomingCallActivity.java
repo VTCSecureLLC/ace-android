@@ -34,23 +34,22 @@ import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
-import org.linphone.R;
-
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -290,8 +289,19 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 		LinphoneCallParams callerParams = mCall.getRemoteParams();
 
-		params.enableRealTimeText(callerParams.realTimeTextEnabled()); // , for example ... decide upon App BL
-		Log.i("RTT: RTT enabled in incoming call: " + callerParams.realTimeTextEnabled());
+		LinphoneManager.getInstance().setDefaultRttPreference();
+
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		Log.d("RTT: pref_text_enable_key in prefs? " + prefs.contains(getResources().getString(R.string.pref_text_enable_key)));
+		boolean textEnabled = prefs.getBoolean(getResources().getString(R.string.pref_text_enable_key), false);
+		Log.d("RTT: textEnabled: " + textEnabled);
+		if (callerParams.realTimeTextEnabled() && textEnabled) {
+			Log.d("RTT: enabling RTT!");
+			params.enableRealTimeText(true);
+		} else {
+			Log.d("RTT: disabling RTT!");
+			params.enableRealTimeText(false);
+		}
 
 		if (!LinphoneManager.getInstance().acceptCallWithParams(mCall, params)) {
 			// the above method takes care of Samsung Galaxy S
