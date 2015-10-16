@@ -89,6 +89,7 @@ public class LinphoneLauncherActivity extends Activity {
 			@Override
 			public void run() {
 				startActivity(new Intent().setClass(LinphoneLauncherActivity.this, classToStart).setData(getIntent().getData()));
+				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 				finish();
 			}
 		}, 1000);
