@@ -17,15 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.linphone.core.CallDirection;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCallLog.CallStatus;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -48,7 +40,14 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneCallLog;
+import org.linphone.core.LinphoneCallLog.CallStatus;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -70,6 +69,8 @@ public class HistoryFragment extends Fragment implements OnClickListener, OnChil
         noMissedCallHistory = (TextView) view.findViewById(R.id.noMissedCallHistory);
         
         historyList = (ExpandableListView) view.findViewById(R.id.historyList);
+		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+		historyList.setLayoutAnimation(lac);
         historyList.setOnChildClickListener(this);
         historyList.setOnGroupClickListener(this);
         
@@ -435,7 +436,9 @@ public class HistoryFragment extends Fragment implements OnClickListener, OnChil
 		public long getGroupId(int groupPosition) {
 			return groupPosition;
 		}
-		
+
+		private int lastPosition = -1;
+
 		@Override
 		public View getGroupView(int groupPosition, boolean isExpanded,
 				View convertView, ViewGroup parent) {
@@ -469,6 +472,9 @@ public class HistoryFragment extends Fragment implements OnClickListener, OnChil
 				delete.setVisibility(View.GONE);
 			}
 
+			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (groupPosition > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+			view.startAnimation(animation);
+			lastPosition = groupPosition;
 			return view;
 		}
 		

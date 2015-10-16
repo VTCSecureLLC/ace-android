@@ -17,11 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.util.List;
-
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.LinphoneFriend;
-import org.linphone.core.PresenceActivityType;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -35,6 +30,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AlphabetIndexer;
@@ -46,7 +44,11 @@ import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.LinphoneFriend;
+import org.linphone.core.PresenceActivityType;
+
+import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -93,7 +95,10 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
         
         contactsList = (ListView) view.findViewById(R.id.contactsList);
         contactsList.setOnItemClickListener(this);
-        
+		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+		contactsList.setLayoutAnimation(lac);
+
+
         allContacts = (TextView) view.findViewById(R.id.allContacts);
         allContacts.setOnClickListener(this);
         
@@ -314,8 +319,12 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 			return position;
 		}
 
+		private int lastPosition = -1;
+
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = null;
+
+
 			Contact contact = null;
 			do {
 				contact = (Contact) getItem(position);
@@ -367,7 +376,10 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 					friendStatus.setImageResource(R.drawable.call_quality_indicator_0);
 				}
 			}
-			
+			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+			view.startAnimation(animation);
+			lastPosition = position;
+
 			return view;
 		}
 

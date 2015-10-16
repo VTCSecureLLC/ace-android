@@ -31,6 +31,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -99,6 +102,8 @@ public class StatusFragment extends Fragment {
 		});
 		
 		sliderContentAccounts = (ListView) view.findViewById(R.id.accounts);
+		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+		sliderContentAccounts.setLayoutAnimation(lac);
 
 		voicemailCount = (TextView) view.findViewById(R.id.voicemailCount);
 
@@ -646,7 +651,7 @@ public class StatusFragment extends Fragment {
 		public long getItemId(int position) {
 			return position;
 		}
-
+		private int lastPosition = -1;
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			View view = null;			
 			if (convertView != null) {
@@ -720,7 +725,11 @@ public class StatusFragment extends Fragment {
 			}
 
 			isDefault.setOnClickListener(defaultListener);
-			
+
+			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+			view.startAnimation(animation);
+			lastPosition = position;
+
 			return view;
 		}
 	}
