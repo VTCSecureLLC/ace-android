@@ -102,7 +102,7 @@
 
         <fragment
             android:id="@+id/status"
-            android:name="org.linphone.StatusFragment"
+            android:name="com.vtcsecure.StatusFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/status" />

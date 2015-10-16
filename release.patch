@@ -9,5 +9,5 @@ index 5ef1374..86e13be 100644
 -    <application android:label="@string/app_name" android:icon="@drawable/logo_linphone_57x57" android:largeHeap="true" android:allowBackup="true">
 +    <application android:label="@string/app_name" android:icon="@drawable/logo_linphone_57x57" android:largeHeap="true" android:allowBackup="true" android:debuggable="false">
  
- 		<activity android:name="org.linphone.LinphoneLauncherActivity"
+ 		<activity android:name="com.vtcsecure.LinphoneLauncherActivity"
  		    android:label="@string/app_name"

@@ -36,7 +36,7 @@ EOF
 # Fix package name
 (
 cd $D
-grep -R "org.linphone.R" . -l  | grep java | xargs sed -i 's/org\.linphone\.R/org\.linphone\.sdk\.R/g'
+grep -R "com.vtcsecure.R" . -l  | grep java | xargs sed -i 's/com\.vtcsecure\.R/com\.vtcsecure\.sdk\.R/g'
 )
 
 # Create a basic AndroidManifest.xml
