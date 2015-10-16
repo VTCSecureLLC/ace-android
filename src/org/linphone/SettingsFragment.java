@@ -32,6 +32,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.widget.CheckBox;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -115,6 +116,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		initTunnelSettings();
 		initAudioSettings();
 		initVideoSettings();
+		initTextSettings();
 		initCallSettings();
 		initNetworkSettings();
 		initThemeSettings();
@@ -718,7 +720,24 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	};
 
+	private void initTextSettings() {
+		Log.d("RTT: initTextSettings()");
+		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
 
+		if (prefs.contains(getString(R.string.pref_text_enable_key))) {
+			Log.d("RTT: RTT enabled from earlier? " + prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
+			enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
+		}
+		enableTextCb.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object value) {
+				boolean enabled = (Boolean) value;
+				Log.d("RTT: onPreferenceChange(), enabled: " + enabled);
+				editor.putBoolean(getString(R.string.pref_text_enable_key), enabled);
+				return true;
+			}
+		});
+	}
 
 	private void initVideoSettings() {
 		initializeVideoPresetPreferences((ListPreference) findPreference(getString(R.string.pref_video_preset_key)));

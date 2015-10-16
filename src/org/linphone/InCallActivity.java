@@ -30,6 +30,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,6 +45,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -105,6 +109,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private LinphoneCoreListenerBase mListener;
 	private Timer outgoingRingCountTimer = null;
 
+	// RTT views
+	private TextWatcher rttTextWatcher;
+	private EditText rttInputField;
+	private TextView rttOutgoingTextView;
+	private View rttContainerView;
 	
 	public static InCallActivity instance() {
 		return instance;
@@ -277,7 +286,164 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             callFragment.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
 
+
+			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+			LinphoneCallParams params = call.getCurrentParamsCopy();
+
+			//if (params.realTimeTextEnabled()) { // Does not work, always false
+			if (LinphoneManager.getInstance().getRttPreference()) {
+				Log.d("RTT: initializing RTT");
+				initRtt();
+			} else {
+				Log.d("RTT: RTT not enabled in current params");
+			}
         }
+	}
+
+	/** Initializes the views and other components needed for RTT in a call */
+	private void initRtt() {
+		rttContainerView = findViewById(R.id.rtt_container);
+		if (rttContainerView == null)
+			return;
+
+		rttContainerView.setVisibility(View.VISIBLE);
+
+		TextView incomingTextView = (TextView)findViewById(R.id.rtt_incoming_view);
+		rttOutgoingTextView = (TextView)findViewById(R.id.rtt_outgoing_view);
+		rttInputField = (EditText)findViewById(R.id.rtt_input_field);
+
+		incomingTextView.setMovementMethod(new ScrollingMovementMethod());
+		LinphoneManager.getInstance().setIncomingTextView(incomingTextView);
+		rttOutgoingTextView.setMovementMethod(new ScrollingMovementMethod());
+
+
+		if (rttInputField != null) {
+			rttTextWatcher = new TextWatcher() {
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+					if (after < count) { // Text removed
+						for (int i = 0; i < (count - after); i++) {
+							backspacePressed();
+						}
+					}
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					if (count > before) { // Text added
+						CharSequence added = s.subSequence(start + before, start + count);
+						sendRttCharacterSequence(added);
+					}
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {}
+			};
+			rttInputField.addTextChangedListener(rttTextWatcher);
+
+			rttInputField.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
+				@Override
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					if (event.getAction() == KeyEvent.ACTION_DOWN) {
+						if (keyCode == KeyEvent.KEYCODE_ENTER) {
+							enterPressed();
+							return true;
+						} else if (keyCode == KeyEvent.KEYCODE_DEL) {
+							// Disabled for now, sometimes needed for hardware keyboards
+							//return backspacePressed();
+						}
+					}
+					return false;
+				}
+			});
+		}
+	}
+
+	/** Called when backspace is pressed in an RTT conversation.
+	 * Sends a backspace character and updates the outgoing text
+	 * views if necessary.
+	 * @return true if the key event should be consumed (ie. there should
+	 * be no further processing of this backspace event)
+	 */
+	private boolean backspacePressed() {
+		if (rttInputField.getText().length() == 0) {
+			rttInputField.removeTextChangedListener(rttTextWatcher);
+
+			// If there's no text in the input EditText, check if
+			// there's any old sent text that can be brought down.
+			// Lines are delimited by \n in this simple text UI.
+
+			String outtext = rttOutgoingTextView.getText().toString();
+			int newline = outtext.lastIndexOf("\n");
+
+			if (newline >= 0) {
+				rttOutgoingTextView.setText(outtext.substring(0, newline));
+				rttInputField.append(outtext.substring(newline+1));
+			} else {
+				rttOutgoingTextView.setText("");
+				rttInputField.append(outtext);
+			}
+			rttInputField.addTextChangedListener(rttTextWatcher);
+			return true;
+		} else {
+
+			sendRttCharacter((char) 8);
+
+			if (hasHardwareKeyboard()) {
+				rttInputField.removeTextChangedListener(rttTextWatcher);
+
+				// Quick and dirty hack to keep the cursor at the end of the line.
+				// EditText.append() inserts the text and places the cursor last.
+				CharSequence cs = rttInputField.getText();
+				rttInputField.setText("");
+				rttInputField.append(cs.subSequence(0, cs.length() - 1));
+
+				rttInputField.addTextChangedListener(rttTextWatcher);
+			}
+
+			return true;
+		}
+	}
+
+	/** Somewhat reliable method of detecting the presence of a hardware
+	 * keyboard. Not fully tested, needs to work for both Bluetooth and USB.
+	 * @return true if a hardware keyboard is present
+	 */
+	private boolean hasHardwareKeyboard() {
+		Resources res = getApplicationContext().getResources();
+		return res.getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY;
+	}
+
+	/** Called when the user has pressed enter in an RTT conversation. This
+	 * method inserts line breaks in the text views and sends the appropriate
+	 * newline character.
+	 */
+	private void enterPressed() {
+		rttInputField.removeTextChangedListener(rttTextWatcher);
+		//rttOutgoingTextView.setText(rttOutgoingTextView.getText() + "\n" + rttInputField.getText());
+		rttOutgoingTextView.append("\n");
+		rttOutgoingTextView.append(rttInputField.getText());
+
+		int scroll_amount = (rttOutgoingTextView.getLineCount() * rttOutgoingTextView.getLineHeight()) - (rttOutgoingTextView.getBottom() - rttOutgoingTextView.getTop());
+		rttOutgoingTextView.scrollTo(0, (int) (scroll_amount + rttOutgoingTextView.getLineHeight() * 0.5));
+
+		rttInputField.setText("");
+		sendRttCharacter((char) 10);
+
+		rttInputField.addTextChangedListener(rttTextWatcher);
+	}
+
+	/** Send a single character in RTT */
+	private void sendRttCharacter(char character) {
+		sendRttCharacterSequence(String.valueOf(character));
+	}
+
+	/** Send a sequence of characters in RTT */
+	private void sendRttCharacterSequence(CharSequence cs) {
+		if (cs.length() > 0) {
+			LinphoneManager.getInstance().sendRealtimeText(cs);
+		}
 	}
 	
 	private boolean isVideoEnabled(LinphoneCall call) {
