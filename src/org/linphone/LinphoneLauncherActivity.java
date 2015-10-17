@@ -89,7 +89,7 @@ public class LinphoneLauncherActivity extends Activity {
 			@Override
 			public void run() {
 				startActivity(new Intent().setClass(LinphoneLauncherActivity.this, classToStart).setData(getIntent().getData()));
-				overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+				overridePendingTransition(R.anim.zoom_enter, R.anim.zoom_exit);
 				finish();
 			}
 		}, 1000);
