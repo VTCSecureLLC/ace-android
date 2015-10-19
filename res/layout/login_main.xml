@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="46dp"
-        android:text="Which service you use the most?"
+        android:text="Which service do you use the most?"
         android:textColor="#fff"
         android:textSize="12dp" />
 

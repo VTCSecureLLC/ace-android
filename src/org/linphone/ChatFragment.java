@@ -18,31 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-
-import android.graphics.Matrix;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneBuffer;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatMessage.LinphoneChatMessageListener;
-import org.linphone.core.LinphoneChatMessage.State;
-import org.linphone.core.LinphoneChatRoom;
-import org.linphone.core.LinphoneContent;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.mediastream.Log;
-import org.linphone.ui.AvatarWithShadow;
-import org.linphone.ui.BubbleChat;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -74,6 +49,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -85,7 +63,27 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.linphone.R;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneBuffer;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatMessage.LinphoneChatMessageListener;
+import org.linphone.core.LinphoneChatMessage.State;
+import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneContent;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.mediastream.Log;
+import org.linphone.ui.AvatarWithShadow;
+import org.linphone.ui.BubbleChat;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatFragment extends Fragment implements OnClickListener, LinphoneChatMessageListener {
 	private static ChatFragment instance;
@@ -149,6 +147,9 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		contactName = (TextView) view.findViewById(R.id.contactName);
 		contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
 		messagesList = (ListView) view.findViewById(R.id.chatMessageList);
+		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+		messagesList.setLayoutAnimation(lac);
+
 		textLayout = (RelativeLayout) view.findViewById(R.id.messageLayout);
 		progressBar = (ProgressBar) view.findViewById(R.id.progressbar);
 		topBar = (LinearLayout) view.findViewById(R.id.topbar);
@@ -331,7 +332,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		public long getItemId(int position) {
 			return history[position].getStorageId();
 		}
-
+		private int lastPosition = -1;
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			LinphoneChatMessage message = history[position];
@@ -354,6 +355,10 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 				v.setLayoutParams(layoutParams);
 			}
 			rlayout.addView(v);
+
+			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+			rlayout.startAnimation(animation);
+			lastPosition = position;
 
 			return rlayout;
 		}
