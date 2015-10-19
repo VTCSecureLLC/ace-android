@@ -73,8 +73,12 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
         noMissedCallHistory = (TextView) view.findViewById(R.id.noMissedCallHistory);
         
         historyList = (ListView) view.findViewById(R.id.historyList);
-		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-		historyList.setLayoutAnimation(lac);
+
+		if(LinphonePreferences.instance().areAnimationsEnabled()) {
+			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+			historyList.setLayoutAnimation(lac);
+		}
+
 		historyList.setOnItemClickListener(this);
         registerForContextMenu(historyList);
         
@@ -432,8 +436,10 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
 					}
 				});
 			}
-			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
-			view.startAnimation(animation);
+			if(LinphonePreferences.instance().areAnimationsEnabled()) {
+				Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+				view.startAnimation(animation);
+			}
 			lastPosition = position;
 			return view;
 		}		  

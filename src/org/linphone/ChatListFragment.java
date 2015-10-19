@@ -79,8 +79,10 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 		View view = inflater.inflate(R.layout.chatlist, container, false);
 		chatList = (ListView) view.findViewById(R.id.chatList);
 		chatList.setOnItemClickListener(this);
-		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-		chatList.setLayoutAnimation(lac);
+		if(LinphonePreferences.instance().areAnimationsEnabled()) {
+			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+			chatList.setLayoutAnimation(lac);
+		}
 		registerForContextMenu(chatList);
 		
 		noChatHistory = (TextView) view.findViewById(R.id.noChatHistory);
@@ -426,9 +428,11 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 				delete.setVisibility(View.INVISIBLE);
 			}
 
+			if(LinphonePreferences.instance().areAnimationsEnabled()) {
+				Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+				view.startAnimation(animation);
+			}
 
-			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
-			view.startAnimation(animation);
 			lastPosition = position;
 			return view;
 		}
