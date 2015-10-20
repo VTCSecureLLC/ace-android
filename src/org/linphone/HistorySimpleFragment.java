@@ -17,17 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
-import org.linphone.core.CallDirection;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCallLog.CallStatus;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -44,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -52,7 +42,16 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneCallLog;
+import org.linphone.core.LinphoneCallLog.CallStatus;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -74,7 +73,9 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
         noMissedCallHistory = (TextView) view.findViewById(R.id.noMissedCallHistory);
         
         historyList = (ListView) view.findViewById(R.id.historyList);
-        historyList.setOnItemClickListener(this);
+		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+		historyList.setLayoutAnimation(lac);
+		historyList.setOnItemClickListener(this);
         registerForContextMenu(historyList);
         
         deleteAll = (TextView) view.findViewById(R.id.deleteAll);
@@ -342,7 +343,7 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
 			yesterday.roll(Calendar.DAY_OF_MONTH, -1);
 	        return isSameDay(cal, yesterday);
 	    }
-
+		private int lastPosition = -1;
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = null;
 			if (convertView != null) {
@@ -431,7 +432,9 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
 					}
 				});
 			}
-
+			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+			view.startAnimation(animation);
+			lastPosition = position;
 			return view;
 		}		  
 	  }

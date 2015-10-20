@@ -17,18 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.List;
-
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatRoom;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.mediastream.Log;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -46,6 +34,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -55,7 +46,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.mediastream.Log;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -78,6 +79,8 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 		View view = inflater.inflate(R.layout.chatlist, container, false);
 		chatList = (ListView) view.findViewById(R.id.chatList);
 		chatList.setOnItemClickListener(this);
+		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+		chatList.setLayoutAnimation(lac);
 		registerForContextMenu(chatList);
 		
 		noChatHistory = (TextView) view.findViewById(R.id.noChatHistory);
@@ -330,7 +333,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 		public long getItemId(int position) {
 			return position;
 		}
-
+		private int lastPosition = -1;
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = null;
 			
@@ -422,7 +425,11 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 			} else {
 				delete.setVisibility(View.INVISIBLE);
 			}
-			
+
+
+			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+			view.startAnimation(animation);
+			lastPosition = position;
 			return view;
 		}
 	}

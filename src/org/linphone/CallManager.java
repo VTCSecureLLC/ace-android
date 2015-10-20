@@ -18,6 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCallParams;
@@ -72,6 +76,15 @@ public class CallManager {
 			params.enableLowBandwidth(true);
 			Log.d("Low bandwidth enabled in call params");
 		}
+
+		Context ctx = LinphoneManager.getInstance().getContext();
+		LinphoneManager.getInstance().setDefaultRttPreference();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+
+		boolean textEnabled = prefs.getBoolean(ctx.getResources().getString(R.string.pref_text_enable_key), false);
+		Log.d(String.format("RTT: %s text in outgoing call", textEnabled ? "enabling" : "disabling"));
+
+		params.enableRealTimeText(textEnabled);
 
 		lc.inviteAddressWithParams(lAddress, params);
 	}

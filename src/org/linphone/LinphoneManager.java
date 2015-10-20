@@ -57,6 +57,7 @@ import org.linphone.core.LinphoneCore.RemoteProvisioningState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneInfoMessage;
@@ -109,6 +110,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.linphone.R;
@@ -147,6 +149,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private WakeLock mIncallWakeLock;
 	private static List<LinphoneChatMessage> mPendingChatFileMessage;
 	private static LinphoneChatMessage mUploadPendingFileMessage;
+
+	private TextView incomingTextView;
 
 	public String wizardLoginViewDomain = null;
 
@@ -1365,9 +1369,110 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		Log.d("Publish state changed to " + state + " for event name " + ev.getEventName());
 	}
 
+	/**
+	 * Set the TextView used to display incoming text.
+	 * @param tv the TextView to use
+	 */
+	public void setIncomingTextView(TextView tv) {
+		incomingTextView = tv;
+	}
+
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
-		Log.d("Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
+		Log.d("RTT: Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
+
+		if (!cr.isRemoteComposing()) {
+			Log.d("RTT: remote is not composing, getChar() returns: " + cr.getChar());
+			return;
+		}
+
+		if (lc.isIncall() && lc.getCurrentCall().getCurrentParamsCopy().realTimeTextEnabled()) {
+			long charCode = cr.getChar();
+			Log.d(String.format("RTT: isComposingReceived, got character (%s): %s", charCode, (char) charCode));
+			updateIncomingTextView(charCode);
+		} else {
+			Log.d("RTT: isComposingReceived, not in call or RTT not enabled");
+		}
+	}
+
+	private void updateIncomingTextView(long character) {
+		if (incomingTextView == null) return;
+
+		String currentText = incomingTextView.getText().toString();
+		if (character == 8) {// backspace
+			incomingTextView.setText(currentText.substring(0,currentText.length()-1));
+		} else if (character == 0x2028) {
+			Log.d("RTT: received Line Separator");
+			incomingTextView.setText(currentText + "\n");
+		} else if (character == 10) {
+			Log.d("RTT: received newline");
+			incomingTextView.setText(currentText + "\n");
+		} else { // regular character
+			incomingTextView.setText(currentText + (char)character);
+		}
+
+		int scroll_amount = (incomingTextView.getLineCount() * incomingTextView.getLineHeight()) - (incomingTextView.getBottom() - incomingTextView.getTop());
+		incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
+	}
+
+	public void setDefaultRttPreference() {
+		Log.d("RTT: setDefaultRttPreference");
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+
+		if (!prefs.contains(getString(R.string.pref_text_enable_key))) {
+			Log.d("RTT: adding pref_text_enable_key preference");
+			SharedPreferences.Editor editor = prefs.edit();
+			// Enable by default
+			editor.putBoolean(getString(R.string.pref_text_enable_key), true);
+			editor.commit();
+		}
+	}
+
+	public boolean getRttPreference() {
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+		return prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
+	}
+
+	public void sendRealtimeText(CharSequence s) {
+		if (mLc == null || !mLc.isIncall())
+			return;
+
+		LinphoneChatRoom chatRoom = mLc.getCurrentCall().getChatRoom();
+		if (!mLc.getCurrentCall().getCurrentParamsCopy().realTimeTextEnabled()) {
+			Log.d("RTT: RTT not enabled for this call, not sending text");
+			return;
+		}
+
+		LinphoneChatMessage message = null;
+
+		char c;
+		for (int i = 0; i < s.length(); i++) {
+			if (message == null)
+				message = chatRoom.createLinphoneChatMessage("");
+
+			c = s.charAt(i);
+			Log.d("RTT: sendRealtimeText: processing charcode " + (int)c);
+			if (c == '\n') {
+				Log.d("RTT: sendRealtimeText: sending Line Separator and then the SIP MESSAGE");
+
+				try {
+					message.putChar(0x2028); // Line Separator
+				} catch (LinphoneCoreException e) {
+					e.printStackTrace();
+				}
+				chatRoom.sendChatMessage(message);
+				message = null;
+			} else {
+				Log.d("RTT: sendRealtimeText: sending char " + c);
+				try {
+					message.putChar(c);
+				} catch (LinphoneCoreException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	@Override

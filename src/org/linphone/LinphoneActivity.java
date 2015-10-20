@@ -18,37 +18,6 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import static android.content.Intent.ACTION_MAIN;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-
-import org.linphone.LinphoneManager.AddressType;
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.CallDirection;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneAuthInfo;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCallLog.CallStatus;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatRoom;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCore.RegistrationState;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.Reason;
-import org.linphone.mediastream.Log;
-import org.linphone.setup.RemoteProvisioningLoginActivity;
-import org.linphone.setup.SetupActivity;
-import org.linphone.ui.AddressText;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -107,6 +76,7 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
@@ -576,19 +546,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-		if (!withoutAnimation && !isAnimationDisabled && currentFragment.shouldAnimate()) {
-			if (newFragmentType.isRightOf(currentFragment)) {
-				transaction.setCustomAnimations(R.anim.slide_in_right_to_left,
-						R.anim.slide_out_right_to_left,
-						R.anim.slide_in_left_to_right,
-						R.anim.slide_out_left_to_right);
-			} else {
-				transaction.setCustomAnimations(R.anim.slide_in_left_to_right,
-						R.anim.slide_out_left_to_right,
-						R.anim.slide_in_right_to_left,
-						R.anim.slide_out_right_to_left);
-			}
-		}
+//		if (!withoutAnimation && !isAnimationDisabled && currentFragment.shouldAnimate()) {
+//			if (newFragmentType.isRightOf(currentFragment)) {
+//				transaction.setCustomAnimations(R.anim.slide_in_right_to_left,
+//						R.anim.slide_out_right_to_left,
+//						R.anim.slide_in_left_to_right,
+//						R.anim.slide_out_left_to_right);
+//			} else {
+//				transaction.setCustomAnimations(R.anim.slide_in_left_to_right,
+//						R.anim.slide_out_left_to_right,
+//						R.anim.slide_in_right_to_left,
+//						R.anim.slide_out_right_to_left);
+//			}
+//		}
 
 		if (newFragmentType != FragmentsAvailable.DIALER
 				|| newFragmentType != FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT
