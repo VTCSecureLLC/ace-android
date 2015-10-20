@@ -1282,6 +1282,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
+			lc.terminateAllCalls();
 			lc.removeListener(mListener);
 		}
 
