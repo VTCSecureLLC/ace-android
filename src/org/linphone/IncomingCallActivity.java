@@ -225,8 +225,8 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 								topLayout.setBackgroundColor((Integer) animator.getAnimatedValue());
 							}
 						});
-						colorAnimation.setDuration((long) (flashFrequencyInSeconds * 3000));
-						reverseColorAnimation.setDuration((long) (flashFrequencyInSeconds * 3000));
+						colorAnimation.setDuration((long) (flashFrequencyInSeconds * 1000));
+						reverseColorAnimation.setDuration((long) (flashFrequencyInSeconds * 1000));
 
 						if (terminated) {
 							flashRedBackgroundTimer.cancel();
@@ -237,7 +237,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 					}
 				});
 			}
-		}, 0, (long)(flashFrequencyInSeconds*1000));
+		}, 0, (long)(flashFrequencyInSeconds*2000));
 	}
 
 
