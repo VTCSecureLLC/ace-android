@@ -147,9 +147,10 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		contactName = (TextView) view.findViewById(R.id.contactName);
 		contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
 		messagesList = (ListView) view.findViewById(R.id.chatMessageList);
-		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-		messagesList.setLayoutAnimation(lac);
-
+		if(LinphonePreferences.instance().areAnimationsEnabled()) {
+			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+			messagesList.setLayoutAnimation(lac);
+		}
 		textLayout = (RelativeLayout) view.findViewById(R.id.messageLayout);
 		progressBar = (ProgressBar) view.findViewById(R.id.progressbar);
 		topBar = (LinearLayout) view.findViewById(R.id.topbar);
@@ -355,9 +356,10 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 				v.setLayoutParams(layoutParams);
 			}
 			rlayout.addView(v);
-
-			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
-			rlayout.startAnimation(animation);
+			if(LinphonePreferences.instance().areAnimationsEnabled()) {
+				Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+				rlayout.startAnimation(animation);
+			}
 			lastPosition = position;
 
 			return rlayout;

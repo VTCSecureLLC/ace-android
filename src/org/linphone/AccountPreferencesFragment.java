@@ -18,16 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.linphone.LinphonePreferences.AccountBuilder;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.mediastream.Log;
-import org.linphone.ui.PreferencesListFragment;
-
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -38,9 +28,14 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
-import android.widget.TextView;
-import org.linphone.R;
 import android.view.WindowManager;
+
+import org.linphone.LinphonePreferences.AccountBuilder;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.ui.PreferencesListFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -142,6 +137,35 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			preference.setSummary(newValue.toString());
 			return true;
 		}		
+	};
+	OnPreferenceChangeListener transportChangedListener = new OnPreferenceChangeListener() {
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object newValue) {
+			String key = newValue.toString();
+			if (isNewAccount) {
+				//TODO
+				//builder.setTransport(transport);
+			} else {
+				mPrefs.setAccountTransport(n, key);
+				preference.setSummary(mPrefs.getAccountTransportString(n));
+				preference.setDefaultValue(mPrefs.getAccountTransportKey(n));
+				if (mProxyPreference != null) {
+					if(mPrefs.getAccountTransportString(n).equalsIgnoreCase("tls")){
+						mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
+
+					}else if(mPrefs.getAccountTransportString(n).equalsIgnoreCase("tcp")){
+						mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
+					}
+
+					String newProxy = mPrefs.getAccountProxy(n);
+					mProxyPreference.setSummary(newProxy);
+					mProxyPreference.setText(newProxy);
+				}
+
+
+			}
+			return true;
+		}
 	};
 	OnPreferenceChangeListener proxyChangedListener = new OnPreferenceChangeListener() {
 		@Override
@@ -253,26 +277,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			return true;
 		}		
 	};
-	OnPreferenceChangeListener transportChangedListener = new OnPreferenceChangeListener() {
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			String key = newValue.toString();
-			if (isNewAccount) {
-				//TODO
-				//builder.setTransport(transport);
-			} else {
-				mPrefs.setAccountTransport(n, key);
-				preference.setSummary(mPrefs.getAccountTransportString(n));
-				preference.setDefaultValue(mPrefs.getAccountTransportKey(n));
-				if (mProxyPreference != null) {
-					String newProxy = mPrefs.getAccountProxy(n);
-					mProxyPreference.setSummary(newProxy);
-					mProxyPreference.setText(newProxy);
-				}
-			}		
-			return true;
-		}
-	};
+
 	
 	private void initAccountPreferencesFields(PreferenceScreen parent) {
 		boolean isDefaultAccount = mPrefs.getDefaultAccountIndex() == n;
