@@ -102,9 +102,10 @@ public class StatusFragment extends Fragment {
 		});
 		
 		sliderContentAccounts = (ListView) view.findViewById(R.id.accounts);
-		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-		sliderContentAccounts.setLayoutAnimation(lac);
-
+		if(LinphonePreferences.instance().areAnimationsEnabled()) {
+			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+			sliderContentAccounts.setLayoutAnimation(lac);
+		}
 		voicemailCount = (TextView) view.findViewById(R.id.voicemailCount);
 
 
@@ -726,8 +727,10 @@ public class StatusFragment extends Fragment {
 
 			isDefault.setOnClickListener(defaultListener);
 
-			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
-			view.startAnimation(animation);
+			if(LinphonePreferences.instance().areAnimationsEnabled()) {
+				Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+				view.startAnimation(animation);
+			}
 			lastPosition = position;
 
 			return view;

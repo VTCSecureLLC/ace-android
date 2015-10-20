@@ -38,6 +38,7 @@ import android.view.animation.LayoutAnimationController;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import org.linphone.LinphonePreferences;
 import org.linphone.R;
 
 import java.lang.reflect.Constructor;
@@ -111,8 +112,10 @@ public class PreferencesListFragment extends ListFragment {
         
         mPreferenceManager = onCreatePreferenceManager();
         preferencesList = (ListView) LayoutInflater.from(getActivity()).inflate(R.layout.preference_list_content, null);
-        LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-        preferencesList.setLayoutAnimation(lac);
+        if(LinphonePreferences.instance().areAnimationsEnabled()) {
+            LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+            preferencesList.setLayoutAnimation(lac);
+        }
         preferencesList.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         addPreferencesFromResource(xmlResID);
         postBindPreferences();

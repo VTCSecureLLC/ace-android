@@ -95,8 +95,11 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
         
         contactsList = (ListView) view.findViewById(R.id.contactsList);
         contactsList.setOnItemClickListener(this);
-		LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-		contactsList.setLayoutAnimation(lac);
+
+		if(LinphonePreferences.instance().areAnimationsEnabled()) {
+			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
+			contactsList.setLayoutAnimation(lac);
+		}
 
 
         allContacts = (TextView) view.findViewById(R.id.allContacts);
@@ -376,8 +379,11 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 					friendStatus.setImageResource(R.drawable.call_quality_indicator_0);
 				}
 			}
-			Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
-			view.startAnimation(animation);
+
+			if(LinphonePreferences.instance().areAnimationsEnabled()) {
+				Animation animation = AnimationUtils.loadAnimation(LinphoneActivity.ctx, (position > lastPosition) ? R.anim.slide_in_right_to_left : R.anim.slide_in_left_to_right);
+				view.startAnimation(animation);
+			}
 			lastPosition = position;
 
 			return view;
