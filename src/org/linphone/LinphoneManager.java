@@ -811,11 +811,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	@Override
-	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, String message) {
-
-	}
-
-	@Override
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {
 		Log.d("DTMF received: " + dtmf);
 	}
