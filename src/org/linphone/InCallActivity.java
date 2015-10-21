@@ -114,6 +114,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private EditText rttInputField;
 	private TextView rttOutgoingTextView;
 	private View rttContainerView;
+	String contactName = "";
 	
 	public static InCallActivity instance() {
 		return instance;
@@ -1515,16 +1516,30 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	
 	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
 		TextView contact = (TextView) callView.findViewById(R.id.contactNameOrNumber);
+		TextView partnerName = (TextView) findViewById(R.id.partner_name);
+		TextView userName = (TextView) findViewById(R.id.user_name);
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
+		userName.setText(username);
 
 		Contact lContact  = ContactsManager.getInstance().findContactWithAddress(callView.getContext().getContentResolver(), lAddress);
 		if (lContact == null) {
 	        if (resources.getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(sipUri)) {
 	        	contact.setText(lAddress.getUserName());
+		        contactName = lAddress.getUserName();
+		        android.util.Log.e("Info", "contactName = " + contactName);
+		        partnerName.setText(contactName);
 			} else {
 				contact.setText(sipUri);
+		        contactName = sipUri;
+		        android.util.Log.e("Info", "contactName = " + contactName);
+		        partnerName.setText(contactName);
 			}
 		} else {
 			contact.setText(lContact.getName());
+			contactName = lContact.getName();
+			android.util.Log.e("Info", "contactName = " + contactName);
+			partnerName.setText(contactName);
 		}
 	}
 	
