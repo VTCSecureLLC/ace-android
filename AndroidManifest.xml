@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.linphone"
+      package="com.vtcsecure.ace.android"
       android:versionCode="1"
       android:versionName="0.1.6-1-1ed3b52"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
 
     <!-- Permissions for Push Notification -->
-    <permission android:name="org.linphone.vtcsecure.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
-	<uses-permission android:name="org.linphone.vtcsecure.permission.C2D_MESSAGE" />  <!-- Change package ! -->
+    <permission android:name="com.vtcsecure.ace.android.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
+	<uses-permission android:name="com.vtcsecure.ace.android.permission.C2D_MESSAGE" />  <!-- Change package ! -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -210,7 +210,7 @@
 		  <intent-filter>
 		    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 		    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-		    <category android:name="org.linphone.vtcsecure" /> <!-- Change package ! -->
+		    <category android:name="com.vtcsecure.ace.android" /> <!-- Change package ! -->
 		  </intent-filter>
 		</receiver>
 		
