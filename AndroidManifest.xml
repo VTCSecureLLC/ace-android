@@ -210,7 +210,7 @@
 		  <intent-filter>
 		    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 		    <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-		    <category android:name="org.linphone.vtcsecure" /> <!-- Change package ! -->
+		    <category android:name="com.vtcsecure.ace" /> <!-- Change package ! -->
 		  </intent-filter>
 		</receiver>
 		
