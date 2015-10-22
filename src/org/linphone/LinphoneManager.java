@@ -1406,7 +1406,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			incomingTextView.setText(currentText + "\n");
 		} else if (character == 10) {
 			Log.d("RTT: received newline");
-			incomingTextView.setText(currentText + "\n");
+			incomingTextView.append(System.getProperty("line.separator"));
 		} else { // regular character
 			incomingTextView.setText(currentText + (char)character);
 		}
@@ -1458,7 +1458,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				Log.d("RTT: sendRealtimeText: sending Line Separator and then the SIP MESSAGE");
 
 				try {
-					message.putChar(0x2028); // Line Separator
+					message.putChar((char) 10); // Line Separator  0x2028
 				} catch (LinphoneCoreException e) {
 					e.printStackTrace();
 				}

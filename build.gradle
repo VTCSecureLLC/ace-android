@@ -29,6 +29,9 @@ dependencies {
 android {
     compileSdkVersion 22
     buildToolsVersion "20.0.0"
+    defaultConfig {
+        applicationId "com.vtcsecure.ace.android"
+    }
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'

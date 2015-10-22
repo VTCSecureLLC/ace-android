@@ -310,6 +310,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+	        <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal"
+		        android:weightSum="2">
+		        <TextView
+			        android:id="@+id/partner_name"
+			        android:layout_width="0dp"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="1"
+			        android:gravity="center"
+			        android:textColor="@android:color/white"
+			        android:textSize="14sp"
+			        android:textStyle="bold"/>
+		        <View
+			        android:layout_width="3dp"
+			        android:layout_height="match_parent"/>
+		        <TextView
+			        android:id="@+id/user_name"
+			        android:layout_width="0dp"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="1"
+			        android:gravity="center"
+			        android:textColor="@android:color/white"
+			        android:textSize="14sp"
+			        android:textStyle="bold"/>
+	        </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -322,7 +349,13 @@
                     android:background="@android:color/black"
                     android:textColor="@android:color/white"
                     android:singleLine="false"
-                    android:scrollbars="vertical"/>
+                    android:scrollbars="vertical"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"/>
+	            <View
+		            android:layout_width="3dp"
+		            android:layout_height="match_parent"
+		            android:background="@android:color/white"/>
                 <TextView
                     android:id="@+id/rtt_outgoing_view"
                     android:layout_width="match_parent"
@@ -331,14 +364,17 @@
                     android:background="@android:color/black"
                     android:textColor="@android:color/white"
                     android:singleLine="false"
-                    android:scrollbars="vertical"/>
+                    android:scrollbars="vertical"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"/>
             </LinearLayout>
             <EditText
                 android:id="@+id/rtt_input_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:singleLine="true"/>
+                android:singleLine="true"
+                android:textColor="@android:color/white"/>
         </LinearLayout>
 
 
