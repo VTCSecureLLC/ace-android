@@ -53,11 +53,83 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="100dp" />
+
     <LinearLayout
+        android:id="@+id/rtt_container"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/partner_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                style="@style/RttHeaderTextStyle" />
+
+            <View
+                android:layout_width="3dp"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                style="@style/RttHeaderTextStyle" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/rtt_incoming_view"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="#B0000000"
+                android:singleLine="false"
+                android:scrollbars="vertical"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                style="@style/RttTextStyle"/>
+            <View
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"/>
+            <TextView
+                android:id="@+id/rtt_outgoing_view"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="#B0000000"
+                android:singleLine="false"
+                android:scrollbars="vertical"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                style="@style/RttTextStyle"/>
+        </LinearLayout>
+        <EditText
+            android:id="@+id/rtt_input_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:background="@android:color/black"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
@@ -252,85 +324,7 @@
             android:background="@drawable/dialer_alt"
           	android:gravity="center"
             android:paddingTop="30dp" />
-
-
-           
-       </LinearLayout>
-        <LinearLayout
-            android:id="@+id/rtt_container"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-	        <LinearLayout
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:orientation="horizontal"
-		        android:weightSum="2">
-
-		        <TextView
-			        android:id="@+id/partner_name"
-			        android:layout_width="0dp"
-			        android:layout_height="wrap_content"
-			        android:layout_weight="1"
-			        android:gravity="center"
-			        android:textColor="@android:color/black"
-			        android:textSize="14sp"
-			        android:textStyle="bold"/>
-
-		        <View
-			        android:layout_width="3dp"
-			        android:layout_height="match_parent"/>
-
-		        <TextView
-			        android:id="@+id/user_name"
-			        android:layout_width="0dp"
-			        android:layout_height="wrap_content"
-			        android:layout_weight="1"
-			        android:gravity="center"
-			        android:textColor="@android:color/black"
-			        android:textSize="14sp"
-			        android:textStyle="bold"/>
-	        </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/rtt_incoming_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/black"
-                    android:textColor="@android:color/white"
-                    android:singleLine="false"
-                    android:scrollbars="vertical"
-	                android:paddingLeft="2dp"
-	                android:paddingRight="2dp"/>
-	            <View
-		            android:layout_width="3dp"
-		            android:layout_height="match_parent"
-		            android:background="@android:color/white"/>
-                <TextView
-                    android:id="@+id/rtt_outgoing_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_weight="1"
-                    android:background="@android:color/black"
-                    android:textColor="@android:color/white"
-                    android:singleLine="false"
-                    android:scrollbars="vertical"
-	                android:paddingLeft="2dp"
-	                android:paddingRight="2dp"/>
-            </LinearLayout>
-            <EditText
-                android:id="@+id/rtt_input_field"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:singleLine="true"
-	            android:textColor="@android:color/black"/>
-        </LinearLayout>
+        
     </LinearLayout>
 
 </RelativeLayout>
