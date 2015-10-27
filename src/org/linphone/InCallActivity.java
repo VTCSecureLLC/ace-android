@@ -474,7 +474,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		rttInputField.setText("");
 		sendRttCharacter((char) 10);
 
-		rttInputField.addTextChangedListener(rttTextWatcher);
+		//rttInputField.addTextChangedListener(rttTextWatcher);
 	}
 
 	/** Send a single character in RTT */
