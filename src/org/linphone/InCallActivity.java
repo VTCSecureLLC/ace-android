@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -43,6 +44,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -336,6 +338,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			rttContainerView.setVisibility(View.VISIBLE);
 
 			TextView incomingTextView = (TextView) findViewById(R.id.rtt_incoming_view);
+
 			rttOutgoingTextView = (TextView) findViewById(R.id.rtt_outgoing_view);
 			rttInputField = (EditText) findViewById(R.id.rtt_input_field);
 
@@ -343,6 +346,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneManager.getInstance().setIncomingTextView(incomingTextView);
 			rttOutgoingTextView.setMovementMethod(new ScrollingMovementMethod());
 
+			incomingTextView.setText(rttMinimizedIncomingText.getText().toString());
+			rttMinimizedIncomingText.setText("");
+
+			rttInputField.requestFocus();
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(rttInputField, InputMethodManager.SHOW_IMPLICIT);
 
 			if (rttInputField != null) {
 				rttTextWatcher = new TextWatcher() {
