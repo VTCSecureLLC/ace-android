@@ -246,11 +246,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         			status.refreshStatusItems(call, call.getCurrentParamsCopy().getVideoEnabled());
         		}
         	}
-        	
         };
         
         if (findViewById(R.id.fragmentContainer) != null) {
-
             initUI();
             
             if (LinphoneManager.getLc().getCallsNb() > 0) {
@@ -351,7 +349,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			rttInputField.requestFocus();
 			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.showSoftInput(rttInputField, InputMethodManager.SHOW_IMPLICIT);
+			imm.showSoftInput(rttInputField, InputMethodManager.SHOW_FORCED);
 
 			if (rttInputField != null) {
 				rttTextWatcher = new TextWatcher() {
@@ -384,7 +382,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					public boolean onKey(View v, int keyCode, KeyEvent event) {
 						if (event.getAction() == KeyEvent.ACTION_DOWN) {
 							if (keyCode == KeyEvent.KEYCODE_ENTER) {
+								View view = getCurrentFocus();
+								if (view != null) {
+									InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+									imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+								}
 								enterPressed();
+								initMinimizedRtt(true);
+								initRtt(false);
 								return true;
 							} else if (keyCode == KeyEvent.KEYCODE_DEL) {
 								// Disabled for now, sometimes needed for hardware keyboards
