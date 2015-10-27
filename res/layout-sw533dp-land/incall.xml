@@ -23,7 +23,17 @@
 		    android:layout_height="wrap_content"
 		    android:gravity="top" />
 
-        <fragment
+		<TextView
+			android:layout_width="150dp"
+			android:layout_height="50dp"
+			android:id="@+id/incomingRTTMinimized"
+			android:layout_gravity="center"
+			android:background="#010000"
+			android:textColor="#ffffff"
+			android:enabled="true"
+			android:maxLines="3" />
+
+		<fragment
             android:id="@+id/status"
             android:name="org.linphone.StatusFragment"
             android:layout_width="match_parent"
@@ -242,11 +252,11 @@
 		        android:background="@drawable/conference" />
 	        
 	        <TextView
-		        android:id="@+id/pause"
+				android:id="@+id/toggleChat"
                 android:contentDescription="@string/content_description_pause"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-		        android:background="@drawable/pause_off" />
+				android:background="@drawable/about_chat" />
 	        
 	        <TextView
 	            android:id="@+id/dialer"
