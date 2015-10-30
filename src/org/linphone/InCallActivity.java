@@ -59,6 +59,8 @@ import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
@@ -153,7 +155,25 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
         
         mListener = new LinphoneCoreListenerBase(){
-        	@Override
+			@Override
+			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+				super.isComposingReceived(lc, cr);
+				if(!isRTTMaximized){
+					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
+					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
+				}
+			}
+
+			@Override
+			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+				super.messageReceived(lc, cr, message);
+				if(!isRTTMaximized){
+					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
+					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
+				}
+			}
+
+			@Override
         	public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
         		if (LinphoneManager.getLc().getCallsNb() == 0) {
         			finish();
@@ -309,12 +329,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			isRTTMaximized = false;
 			rttMinimizedIncomingText = (TextView) findViewById(R.id.incomingRTTMinimized);
 			rttMinimizedIncomingText.setMovementMethod(new ScrollingMovementMethod());
-			rttMinimizedIncomingText.setVisibility(View.VISIBLE);
+			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+			rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
 			LinphoneManager.getInstance().setIncomingTextView(rttMinimizedIncomingText);
 		}
 		else{
 			if(rttMinimizedIncomingText != null) {
-				rttMinimizedIncomingText.setVisibility(View.GONE);
+				rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
 				isRTTMaximized = true;
 			}
 		}
@@ -324,7 +345,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void initRtt(boolean setToVisible) {
 		if(!setToVisible){
 			rttContainerView = findViewById(R.id.rtt_container);
-			rttContainerView.setVisibility(View.GONE);
+			rttContainerView.setVisibility(View.INVISIBLE);
 			isRTTMaximized = false;
 		}
 		if (setToVisible) {
@@ -352,6 +373,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			imm.showSoftInput(rttInputField, InputMethodManager.SHOW_FORCED);
 
 			if (rttInputField != null) {
+
+				if(rttTextWatcher != null){
+					rttInputField.removeTextChangedListener(rttTextWatcher);
+				}
+
 				rttTextWatcher = new TextWatcher() {
 
 					@Override
@@ -708,6 +734,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} 
 		else if (id == R.id.toggleChat) {
 			if(isRTTMaximized){
+				if (v != null) {
+					InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+				}
 				initMinimizedRtt(true);
 				initRtt(false);
 			}
@@ -716,7 +746,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				initMinimizedRtt(false);
 			}
 
-		} 
+		}
+		else if(id == R.id.incomingRTTMinimized){
+			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+		}
 		else if (id == R.id.hangUp) {
 			hangUp();
 		} 
