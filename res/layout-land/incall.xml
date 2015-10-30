@@ -22,6 +22,15 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:gravity="top" />
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:id="@+id/incomingRTTMinimized"
+            android:layout_gravity="center"
+            android:background="#010000"
+            android:textColor="#ffffff"
+            android:enabled="true"
+            android:maxLines="3" />
 
         <fragment
             android:id="@+id/status"
@@ -140,11 +149,11 @@
 
         <TextView
             android:contentDescription="@string/content_description_pause"
-            android:id="@+id/pause"
+            android:id="@+id/toggleChat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/pause_off"
+            android:background="@drawable/about_chat"
             android:gravity="center"
             android:paddingTop="30dp" />
            
