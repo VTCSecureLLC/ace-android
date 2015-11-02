@@ -67,8 +67,9 @@ public class LinphonePreferences {
 	}
 
 	private LinphoneCore getLc() {
-		if (!LinphoneManager.isInstanciated())
-			return null;
+		if (!LinphoneManager.isInstanciated()){
+			LinphoneManager.createAndStart(LinphoneActivity.ctx);
+		}
 
 		return LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 	}
