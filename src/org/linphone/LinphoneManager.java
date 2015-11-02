@@ -235,7 +235,14 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			throw new RuntimeException("Linphone Manager is already initialized");
 
 		instance = new LinphoneManager(c);
-		instance.startLibLinphone(c);
+		try {
+			instance.startLibLinphone(LinphoneActivity.ctx);
+			instance.initLiblinphone();
+		}
+
+		catch(LinphoneCoreException e){
+			Log.e("Could not initialize linphone core");
+		}
 		TelephonyManager tm = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
 		boolean gsmIdle = tm.getCallState() == TelephonyManager.CALL_STATE_IDLE;
 		setGsmIdle(gsmIdle);
