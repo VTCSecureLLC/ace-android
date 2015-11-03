@@ -880,7 +880,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		Log.i("New global state [",state,"]");
 		if (state == GlobalState.GlobalOn){
 			initLiblinphone(lc);
-
 		}
 	}
 
