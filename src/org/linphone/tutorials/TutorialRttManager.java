@@ -71,7 +71,7 @@ public class TutorialRttManager implements LinphoneCoreListener {
 	
 	public void startCall(String to) {
 		try {
-			LinphoneCallParams params = core.createDefaultCallParameters();
+			LinphoneCallParams params = core.createCallParams(null);
 			params.enableRealTimeText(true);
 			LinphoneAddress destination = LinphoneCoreFactory.instance().createLinphoneAddress(to);
 			core.inviteAddressWithParams(destination, params);
