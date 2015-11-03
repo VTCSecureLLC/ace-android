@@ -236,7 +236,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		instance = new LinphoneManager(c);
 		instance.startLibLinphone(c);
-		instance.initLiblinphone();
 
 		TelephonyManager tm = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
 		boolean gsmIdle = tm.getCallState() == TelephonyManager.CALL_STATE_IDLE;
@@ -617,8 +616,9 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		}
 	}
 
-	private synchronized void initLiblinphone(){
-		boolean isDebugLogEnabled = !(mR.getBoolean(R.bool.disable_every_log)) && mPrefs.isDebugEnabled();
+	private synchronized void initLiblinphone(LinphoneCore lc) {
+		mLc = lc;
+        boolean isDebugLogEnabled = !(mR.getBoolean(R.bool.disable_every_log)) && mPrefs.isDebugEnabled();
 		LinphoneCoreFactory.instance().setDebugMode(isDebugLogEnabled, getString(R.string.app_name));
 		LinphoneCoreFactory.instance().enableLogCollection(isDebugLogEnabled);
 
@@ -879,7 +879,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	public void globalState(final LinphoneCore lc, final GlobalState state, final String message) {
 		Log.i("New global state [",state,"]");
 		if (state == GlobalState.GlobalOn){
-			initLiblinphone();
+			initLiblinphone(lc);
+
 		}
 	}
 
