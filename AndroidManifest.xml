@@ -7,7 +7,7 @@
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
 
     <!-- Permissions for Push Notification -->
-    <permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" android:protectionLevel="signature" /> <!-- Change package ! -->
+    <!--  <permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" android:protectionLevel="signature" />  Change package ! -->
 	<uses-permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" />  <!-- Change package ! -->
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
