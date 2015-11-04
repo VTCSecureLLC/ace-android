@@ -17,9 +17,11 @@ import net.hockeyapp.android.views.FeedbackView;
 
 import org.linphone.ui.PreferencesListFragment;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * A fragment representing a list of Items.
@@ -73,7 +75,7 @@ public class HelpFragment extends PreferencesListFragment {
         }
 
         String devStats = "\n\n" + Constants.PHONE_MANUFACTURER
-                + " " + Constants.PHONE_MODEL + "\nAndroid:" + Constants.ANDROID_VERSION + " " + "\n\nACE v" + version;
+                + " " + Constants.PHONE_MODEL + "\nAndroid:" + Constants.ANDROID_VERSION + " " + "\nACE v" + version + "\n\n" + getFeedbackLogs();
         File feedback = null;
         try
         {
@@ -94,7 +96,12 @@ public class HelpFragment extends PreferencesListFragment {
         }
 
         if(feedback != null) {
-            FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback));
+	        File crashFeedbackFile = new File(Environment.getExternalStorageDirectory() +"/ACE/hockeyAppCrashFeedback.txt");
+	        if(crashFeedbackFile.exists() && crashFeedbackFile.isFile())
+		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback),
+		            Uri.parse(new File(Environment.getExternalStorageDirectory() +"/ACE/hockeyAppCrashFeedback.txt").toString()));
+	        else
+		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback));
         }
     }
     @Override
@@ -107,5 +114,39 @@ public class HelpFragment extends PreferencesListFragment {
         super.onDetach();
     }
 
+    public String getFeedbackLogs(){
+
+        String feedbackLogs = "";
+
+        try {
+            Process process = Runtime.getRuntime().exec( "logcat -d Linphone:I LinphoneCoreFactoryImpl:I WEBRTC-JR:W *:S");
+
+            BufferedReader bufferedReader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            StringBuilder log = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                log.append(line);
+                log.append(System.getProperty("line.separator"));
+            }
+            bufferedReader.close();
+
+            feedbackLogs = System.getProperty("line.separator") + log.toString();
+        }
+        catch (IOException e) {
+        }
+
+	   int startOfLastThousandLines = feedbackLogs.length();
+
+	     for (int i = 0; i < 1000; i++) {
+		     if(startOfLastThousandLines == 0)
+			     break;
+		     else
+		    startOfLastThousandLines = feedbackLogs.lastIndexOf('\n', startOfLastThousandLines - 1);
+	    }
+
+        return feedbackLogs.substring(startOfLastThousandLines);
+    }
 
 }
