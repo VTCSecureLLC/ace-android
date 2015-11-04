@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -43,6 +44,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -57,6 +59,8 @@ import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
@@ -114,8 +118,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private EditText rttInputField;
 	private TextView rttOutgoingTextView;
 	private View rttContainerView;
+	private TextView rttMinimizedIncomingText;
 	String contactName = "";
-	
+
+	private boolean isRTTMaximized = false;
+
 	public static InCallActivity instance() {
 		return instance;
 	}
@@ -148,7 +155,25 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
         
         mListener = new LinphoneCoreListenerBase(){
-        	@Override
+			@Override
+			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
+				super.isComposingReceived(lc, cr);
+				if(!isRTTMaximized){
+					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
+					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
+				}
+			}
+
+			@Override
+			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+				super.messageReceived(lc, cr, message);
+				if(!isRTTMaximized){
+					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
+					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
+				}
+			}
+
+			@Override
         	public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
         		if (LinphoneManager.getLc().getCallsNb() == 0) {
         			finish();
@@ -241,11 +266,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         			status.refreshStatusItems(call, call.getCurrentParamsCopy().getVideoEnabled());
         		}
         	}
-        	
         };
         
         if (findViewById(R.id.fragmentContainer) != null) {
-
             initUI();
             
             if (LinphoneManager.getLc().getCallsNb() > 0) {
@@ -294,70 +317,115 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			//if (params.realTimeTextEnabled()) { // Does not work, always false
 			if (LinphoneManager.getInstance().getRttPreference()) {
 				Log.d("RTT: initializing RTT");
-				initRtt();
+				initMinimizedRtt(true);
 			} else {
 				Log.d("RTT: RTT not enabled in current params");
 			}
         }
 	}
 
-	/** Initializes the views and other components needed for RTT in a call */
-	private void initRtt() {
-		rttContainerView = findViewById(R.id.rtt_container);
-		if (rttContainerView == null)
-			return;
+	private void initMinimizedRtt(boolean setToVisible){
+		if(setToVisible) {
+			isRTTMaximized = false;
+			rttMinimizedIncomingText = (TextView) findViewById(R.id.incomingRTTMinimized);
+			rttMinimizedIncomingText.setMovementMethod(new ScrollingMovementMethod());
+			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+			rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
+			LinphoneManager.getInstance().setIncomingTextView(rttMinimizedIncomingText);
+		}
+		else{
+			if(rttMinimizedIncomingText != null) {
+				rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+				isRTTMaximized = true;
+			}
+		}
+	}
 
-		rttContainerView.setVisibility(View.VISIBLE);
+				/** Initializes the views and other components needed for RTT in a call */
+	private void initRtt(boolean setToVisible) {
+		if(!setToVisible){
+			rttContainerView = findViewById(R.id.rtt_container);
+			rttContainerView.setVisibility(View.INVISIBLE);
+			isRTTMaximized = false;
+		}
+		if (setToVisible) {
+			isRTTMaximized = true;
+			rttContainerView = findViewById(R.id.rtt_container);
+			if (rttContainerView == null)
+				return;
 
-		TextView incomingTextView = (TextView)findViewById(R.id.rtt_incoming_view);
-		rttOutgoingTextView = (TextView)findViewById(R.id.rtt_outgoing_view);
-		rttInputField = (EditText)findViewById(R.id.rtt_input_field);
+			rttContainerView.setVisibility(View.VISIBLE);
 
-		incomingTextView.setMovementMethod(new ScrollingMovementMethod());
-		LinphoneManager.getInstance().setIncomingTextView(incomingTextView);
-		rttOutgoingTextView.setMovementMethod(new ScrollingMovementMethod());
+			TextView incomingTextView = (TextView) findViewById(R.id.rtt_incoming_view);
 
+			rttOutgoingTextView = (TextView) findViewById(R.id.rtt_outgoing_view);
+			rttInputField = (EditText) findViewById(R.id.rtt_input_field);
 
-		if (rttInputField != null) {
-			rttTextWatcher = new TextWatcher() {
+			incomingTextView.setMovementMethod(new ScrollingMovementMethod());
+			LinphoneManager.getInstance().setIncomingTextView(incomingTextView);
+			rttOutgoingTextView.setMovementMethod(new ScrollingMovementMethod());
 
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-					if (after < count) { // Text removed
-						for (int i = 0; i < (count - after); i++) {
-							backspacePressed();
+			incomingTextView.setText(rttMinimizedIncomingText.getText().toString());
+			rttMinimizedIncomingText.setText("");
+
+			rttInputField.requestFocus();
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(rttInputField, InputMethodManager.SHOW_FORCED);
+
+			if (rttInputField != null) {
+
+				if(rttTextWatcher != null){
+					rttInputField.removeTextChangedListener(rttTextWatcher);
+				}
+
+				rttTextWatcher = new TextWatcher() {
+
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+						if (after < count) { // Text removed
+							for (int i = 0; i < (count - after); i++) {
+								backspacePressed();
+							}
 						}
 					}
-				}
 
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					if (count > before) { // Text added
-						CharSequence added = s.subSequence(start + before, start + count);
-						sendRttCharacterSequence(added);
-					}
-				}
-
-				@Override
-				public void afterTextChanged(Editable s) {}
-			};
-			rttInputField.addTextChangedListener(rttTextWatcher);
-
-			rttInputField.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
-				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					if (event.getAction() == KeyEvent.ACTION_DOWN) {
-						if (keyCode == KeyEvent.KEYCODE_ENTER) {
-							enterPressed();
-							return true;
-						} else if (keyCode == KeyEvent.KEYCODE_DEL) {
-							// Disabled for now, sometimes needed for hardware keyboards
-							//return backspacePressed();
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+						if (count > before) { // Text added
+							CharSequence added = s.subSequence(start + before, start + count);
+							sendRttCharacterSequence(added);
 						}
 					}
-					return false;
-				}
-			});
+
+					@Override
+					public void afterTextChanged(Editable s) {
+					}
+				};
+				rttInputField.addTextChangedListener(rttTextWatcher);
+
+				rttInputField.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
+					@Override
+					public boolean onKey(View v, int keyCode, KeyEvent event) {
+						if (event.getAction() == KeyEvent.ACTION_DOWN) {
+							if (keyCode == KeyEvent.KEYCODE_ENTER) {
+								View view = getCurrentFocus();
+								if (view != null) {
+									InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+									imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+								}
+								enterPressed();
+								initMinimizedRtt(true);
+								initRtt(false);
+								return true;
+							} else if (keyCode == KeyEvent.KEYCODE_DEL) {
+								// Disabled for now, sometimes needed for hardware keyboards
+								//return backspacePressed();
+							}
+						}
+						return false;
+					}
+				});
+			}
 		}
 	}
 
@@ -432,7 +500,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		rttInputField.setText("");
 		sendRttCharacter((char) 10);
 
-		rttInputField.addTextChangedListener(rttTextWatcher);
+		//rttInputField.addTextChangedListener(rttTextWatcher);
 	}
 
 	/** Send a single character in RTT */
@@ -497,7 +565,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		options = (TextView) findViewById(R.id.options);
 		options.setOnClickListener(this);
 		options.setEnabled(false);
-		pause = (TextView) findViewById(R.id.pause);
+		pause = (TextView) findViewById(R.id.toggleChat);
 		pause.setOnClickListener(this);
 		pause.setEnabled(false);
 		hangUp = (TextView) findViewById(R.id.hangUp);
@@ -664,9 +732,24 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		else if (id == R.id.addCall) {
 			goBackToDialer();
 		} 
-		else if (id == R.id.pause) {
-			pauseOrResumeCall();
-		} 
+		else if (id == R.id.toggleChat) {
+			if(isRTTMaximized){
+				if (v != null) {
+					InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+				}
+				initMinimizedRtt(true);
+				initRtt(false);
+			}
+			else{
+				initRtt(true);
+				initMinimizedRtt(false);
+			}
+
+		}
+		else if(id == R.id.incomingRTTMinimized){
+			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+		}
 		else if (id == R.id.hangUp) {
 			hangUp();
 		} 

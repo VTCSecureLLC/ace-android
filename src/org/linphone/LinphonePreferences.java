@@ -67,8 +67,9 @@ public class LinphonePreferences {
 	}
 
 	private LinphoneCore getLc() {
-		if (!LinphoneManager.isInstanciated())
-			return null;
+		if (!LinphoneManager.isInstanciated()){
+			LinphoneManager.createAndStart(LinphoneActivity.ctx);
+		}
 
 		return LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 	}
@@ -1054,14 +1055,11 @@ public class LinphonePreferences {
 		if (url != null && url.length() == 0) {
 			url = null;
 		}
-
-		LpConfig config = getConfig();
-		config.setString("misc", "config-uri", url);
-		config.sync();
+		getLc().setProvisioningUri(url);
 	}
 
 	public String getRemoteProvisioningUrl() {
-		return getConfig().getString("misc", "config-uri", null);
+		return getLc().getProvisioningUri();
 	}
 
 	public void setDefaultDisplayName(String displayName) {
@@ -1091,8 +1089,7 @@ public class LinphonePreferences {
 				if(servers.length > 0) {
 					tunnelConfig = servers[0];
 				} else {
-					tunnelConfig = new TunnelConfig();
-					tunnelConfig.setDelay(500);
+					tunnelConfig = LinphoneCoreFactory.instance().createTunnelConfig();
 				}
 			}
 			return tunnelConfig;

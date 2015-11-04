@@ -57,7 +57,7 @@ public class CallManager {
 	public void inviteAddress(LinphoneAddress lAddress, boolean videoEnabled, boolean lowBandwidth) throws LinphoneCoreException {
 		LinphoneCore lc = LinphoneManager.getLc();
 		
-		LinphoneCallParams params = lc.createDefaultCallParameters();
+		LinphoneCallParams params = lc.createCallParams(null);
 		bm().updateWithProfileSettings(lc, params);
 		
 		String emergencyNumber = LinphonePreferences.instance().getConfig().getString("vtcsecure", "emergency_username", "911");

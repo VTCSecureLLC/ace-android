@@ -277,11 +277,11 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	}
 
 	private void answer() {
-		
-		LinphoneTorchFlasher.instance().stopFlashTorch();
-		LinphoneCallParams params = LinphoneManager.getLc().createDefaultCallParameters();
+		LinphoneCallParams params = LinphoneManager.getLc().createCallParams(mCall);
 
-		boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(this);
+		LinphoneTorchFlasher.instance().stopFlashTorch();
+
+        boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(this);
 		if (isLowBandwidthConnection) {
 			params.enableLowBandwidth(true);
 			Log.d("Low bandwidth enabled in call params");
