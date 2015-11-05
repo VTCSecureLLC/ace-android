@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
@@ -84,6 +85,8 @@ import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
@@ -1431,6 +1434,27 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				}
 				catch (IOException e) {
 				}
+
+				File crashStacktrace = null;
+				try
+				{
+					File root = new File(Environment.getExternalStorageDirectory(), "ACE");
+					if (!root.exists()) {
+						root.mkdirs();
+					}
+					crashStacktrace = new File(root, "hockeyAppCrashFeedback.txt");
+					FileWriter writer = new FileWriter(crashStacktrace);
+					writer.append(description);
+					writer.flush();
+					writer.close();
+					Toast.makeText(LinphoneActivity.ctx, "Crash feedback saved", Toast.LENGTH_SHORT).show();
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+				}
+				android.util.Log.e("Info", "Uri.fromFile(Crash feedback) = " + Uri.fromFile(crashStacktrace));
+
 
 				return description;
 			}
