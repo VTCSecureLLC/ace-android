@@ -175,19 +175,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
         	public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
-        		if (LinphoneManager.getLc().getCallsNb() == 0) {
+        		if (lc.getCallsNb() == 0) {
         			finish();
         			return;
         		}
-        		
+
         		if (state == State.IncomingReceived) {
         			startIncomingCallActivity();
         			return;
         		}
-        		
+        		LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
         		if (state == State.Paused || state == State.PausedByRemote ||  state == State.Pausing) {
         			video.setEnabled(false);
-        			if(isVideoEnabled(call)){
+        			if(!isVideoEnabled(call)){
         				showAudioView();
         			}
         		}
@@ -195,7 +195,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         		if (state == State.Resuming) {
         			if(LinphonePreferences.instance().isVideoEnabled()){
         				status.refreshStatusItems(call, isVideoEnabled(call));
-        				if(call.getCurrentParamsCopy().getVideoEnabled()){
+        				if(isVideoEnabled(call)){
         					showVideoView();
         				}
         			}
@@ -209,9 +209,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						video.setEnabled(true);
 					}
 
-        			LinphoneManager.getLc().enableSpeaker(isSpeakerEnabled);
+        			lc.enableSpeaker(isSpeakerEnabled);
 
-        			isMicMuted = LinphoneManager.getLc().isMicMuted();
+        			isMicMuted = lc.isMicMuted();
         			enableAndRefreshInCallActions();
         			
         			if (status != null) {
