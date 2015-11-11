@@ -1550,4 +1550,21 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		// TODO Auto-generated method stub
 
 	}
+	public void initSDP(boolean videoEnabled){
+		LinphoneCore lC = getLcIfManagerNotDestroyedOrNull();
+			if (lC != null && videoEnabled){
+				PayloadType pT = lC.findPayloadType("H263", 90000, -1);
+				if(pT != null){
+					pT.setRecvFmtp("CIF=1;QCIF=1");
+					pT.setSendFmtp("CIF=1;QCIF=1");
+					try {
+						lC.enablePayloadType(pT, true);
+					} catch (LinphoneCoreException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+	}
+
 }
