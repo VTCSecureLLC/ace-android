@@ -1272,11 +1272,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 		if(BuildConfig.DEBUG) {
-			Toast.makeText(LinphoneActivity.this, "DEBUG", Toast.LENGTH_LONG).show();
+			//Debug
 		}
 		else{
+		 	//Release
 			checkForCrashes();
-			Toast.makeText(LinphoneActivity.this, "RELEASE", Toast.LENGTH_LONG).show();
 		}
 		//checkForUpdates();
 	}
