@@ -16,6 +16,31 @@ if [ "$TRAVIS_BRANCH" != "master" ] ; then
   exit 0
 fi
 
+# Prepare codesigning keys
+
+if [ -z "${AWS_ACCESS_KEY_ID}" ]; then
+  echo "Missing AWS_ACCESS_KEY_ID"
+  unset BUCKET
+fi
+if [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+  echo "Missing AWS_SECRET_ACCESS_KEY"
+  unset BUCKET
+fi
+if [ -n "${BUCKET}" ]; then
+  which aws || brew install awscli
+  aws s3 sync --quiet s3://${BUCKET}/android/ sync/
+  cd sync
+  pwd
+  . ./apply.sh
+  cd ..
+fi
+if [ -z "${KSTOREPWD}" ]; then
+  echo "Missing KSTOREPWD"
+fi
+if [ -z "${KEYPWD}" ]; then
+  echo "Missing KEYPWD"
+fi
+
 APK_FILE=""
 
 if [ -f bin/Linphone-debug.apk ]; then
