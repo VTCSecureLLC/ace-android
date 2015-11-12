@@ -256,7 +256,7 @@
                 android:contentDescription="@string/content_description_pause"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
-				android:background="@drawable/about_chat" />
+				android:background="@drawable/pause" />
 	        
 	        <TextView
 	            android:id="@+id/dialer"
