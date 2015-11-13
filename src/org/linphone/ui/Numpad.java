@@ -21,11 +21,13 @@ package org.linphone.ui;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import org.linphone.LinphoneActivity;
@@ -72,7 +74,7 @@ public class Numpad extends LinearLayout implements AddressAware {
 
 		try {
 			final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
-			String color_theme = prefs.getString(getContext().getResources().getString(R.string.pref_theme_app_color_key), "default");
+			String color_theme = prefs.getString(getContext().getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 
 
 
@@ -130,6 +132,22 @@ public class Numpad extends LinearLayout implements AddressAware {
 				view.findViewById(R.id.DigitStar).setBackgroundResource(R.drawable.numpad_star_hivis);
 				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_hivis);
 				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_hivis);
+			}else if(color_theme.equals("Tech")) {
+				techify(view,R.id.Digit1);
+				techify(view,R.id.Digit2);
+				techify(view,R.id.Digit3);
+				techify(view,R.id.Digit4);
+				techify(view,R.id.Digit5);
+				techify(view,R.id.Digit6);
+				techify(view,R.id.Digit7);
+				techify(view,R.id.Digit8);
+				techify(view,R.id.Digit9);
+				techify(view,R.id.DigitStar);
+				techify(view,R.id.Digit00);
+				techify(view,R.id.DigitHash);
+				techify(view,R.id.Digit1);
+				techify(view,R.id.Digit1);
+				techify(view,R.id.Digit1);
 			}else{
 					view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one);
 					view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two);
@@ -149,6 +167,13 @@ public class Numpad extends LinearLayout implements AddressAware {
 		}catch(Throwable e){
 
 		}
+
+	}
+	public void techify(View view, int id){
+		view.findViewById(id).setBackgroundResource(R.drawable.numpad_generic_tech);
+		view.findViewById(id).setAlpha(0.50f);
+		((Button)view.findViewById(id)).setTextSize(50);
+		((Button)view.findViewById(id)).setTextColor(Color.WHITE);
 
 	}
 	@Override

@@ -83,7 +83,7 @@ import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
-import org.linphone.BuildConfig;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -356,7 +356,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public static void setColorTheme(Context context){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String color_theme = prefs.getString(context.getResources().getString(R.string.pref_theme_app_color_key), "default");
+		String color_theme = prefs.getString(context.getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 
 		if(color_theme.equals("Red")) {
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_red);

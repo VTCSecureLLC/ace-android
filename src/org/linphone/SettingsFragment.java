@@ -32,7 +32,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.widget.CheckBox;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -482,10 +481,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add("Gray");
 		entries.add("High Visibility");
 		values.add("High Visibility");
+		entries.add("Tech");
+		values.add("Tech");
 		entries.add("Custom");
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
-		String value =prefs.getString(getResources().getString(R.string.pref_theme_app_color_key), "Default");
+		String value =prefs.getString(getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 		pref.setSummary(value);
 		pref.setValue(value);
 
@@ -690,7 +691,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 
-				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Default");
+				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Tech");
 
 				preference.setSummary(newValue.toString());
 				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
