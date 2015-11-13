@@ -179,12 +179,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         			finish();
         			return;
         		}
-
+                if(state==State.IncomingReceived||state == state.OutgoingInit) {
+                    LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
+                }
         		if (state == State.IncomingReceived) {
         			startIncomingCallActivity();
         			return;
         		}
-        		LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
+
+
         		if (state == State.Paused || state == State.PausedByRemote ||  state == State.Pausing) {
         			video.setEnabled(false);
         			if(!isVideoEnabled(call)){
