@@ -1421,8 +1421,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		String currentText = incomingTextView.getText().toString();
 		if (character == 8) {// backspace
-			incomingTextView.setText(currentText.substring(0,currentText.length()-1));
-		} else if (character == 0x2028) {
+			incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
+		} else if (character == (long)0x2028) {
 			Log.d("RTT: received Line Separator");
 			incomingTextView.setText(currentText + "\n");
 		} else if (character == 10) {
@@ -1477,12 +1477,12 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			Log.d("RTT: sendRealtimeText: processing charcode " + (int)c);
 			if (c == '\n') {
 				Log.d("RTT: sendRealtimeText: sending Line Separator and then the SIP MESSAGE");
-
-				try {
-					message.putChar((char) 10); // Line Separator  0x2028
-				} catch (LinphoneCoreException e) {
-					e.printStackTrace();
-				}
+// chatRoom.sendChatMessage should send 2028 so no need to send LF from JAVA
+//				try {
+//					message.putChar((char) 10); // Line Separator  0x2028
+//				} catch (LinphoneCoreException e) {
+//					e.printStackTrace();
+//				}
 				chatRoom.sendChatMessage(message);
 				message = null;
 			} else {
