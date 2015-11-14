@@ -27,7 +27,7 @@ if [ -z "${AWS_SECRET_ACCESS_KEY}" ]; then
   unset BUCKET
 fi
 if [ -n "${BUCKET}" ]; then
-  which aws || brew install awscli
+  which aws || pip install awscli
   aws s3 sync --quiet s3://${BUCKET}/android/ sync/
   cd sync
   pwd
