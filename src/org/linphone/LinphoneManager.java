@@ -236,7 +236,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		instance = new LinphoneManager(c);
 		instance.startLibLinphone(c);
-		instance.initLiblinphone();
 
 		TelephonyManager tm = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
 		boolean gsmIdle = tm.getCallState() == TelephonyManager.CALL_STATE_IDLE;
@@ -617,7 +616,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		}
 	}
 
-	private synchronized void initLiblinphone(){
+	private synchronized void initLiblinphone(LinphoneCore lc) {
+		mLc = lc;
 		boolean isDebugLogEnabled = !(mR.getBoolean(R.bool.disable_every_log)) && mPrefs.isDebugEnabled();
 		LinphoneCoreFactory.instance().setDebugMode(isDebugLogEnabled, getString(R.string.app_name));
 		LinphoneCoreFactory.instance().enableLogCollection(isDebugLogEnabled);
@@ -879,7 +879,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	public void globalState(final LinphoneCore lc, final GlobalState state, final String message) {
 		Log.i("New global state [",state,"]");
 		if (state == GlobalState.GlobalOn){
-			initLiblinphone();
+			initLiblinphone(lc);
 		}
 	}
 
@@ -1550,4 +1550,21 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		// TODO Auto-generated method stub
 
 	}
+	public void initSDP(boolean videoEnabled){
+		LinphoneCore lC = getLcIfManagerNotDestroyedOrNull();
+			if (lC != null && videoEnabled){
+				PayloadType pT = lC.findPayloadType("H263", 90000, -1);
+				if(pT != null){
+					pT.setRecvFmtp("CIF=1;QCIF=1");
+					pT.setSendFmtp("CIF=1;QCIF=1");
+					try {
+						lC.enablePayloadType(pT, true);
+					} catch (LinphoneCoreException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+	}
+
 }

@@ -83,7 +83,7 @@ import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
-
+import org.linphone.BuildConfig;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -1271,7 +1271,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				}
 		}
 
-		checkForCrashes();
+		if(BuildConfig.DEBUG) {
+			//Debug
+		}
+		else{
+		 	//Release
+			checkForCrashes();
+		}
 		//checkForUpdates();
 	}
 
