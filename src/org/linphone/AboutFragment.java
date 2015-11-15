@@ -62,7 +62,8 @@ public class AboutFragment extends Fragment implements OnClickListener {
 			PackageInfo info = manager.getPackageInfo(
 					getActivity().getPackageName(), 0);
 			String version = String.valueOf(info.versionName);
-			buildIdText.setText("Build: " +version);
+			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+			buildIdText.setText("Build: " +version+"\n"+"Core: "+lc.getVersion());
 
 		} catch (NameNotFoundException e) {
 			Log.e(e, "cannot get version name");
