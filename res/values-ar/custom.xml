@@ -6,7 +6,7 @@
   <string name="today_date_format">HH:mm</string>
   <string name="picture_name_format">linphone-mms-%s.jpg</string>
   <string name="app_name">لِنْفُونْ</string>
-  <string name="service_name">خدمة لِنْفُونْ</string>
+  <string name="service_name"> خدمة Ace</string>
   <string name="addressbook_label">لِنْفُونْ</string>
   <string name="notification_title">لِنْفُونْ</string>
   <string name="wait_dialog_text">يجري التشغيل</string>

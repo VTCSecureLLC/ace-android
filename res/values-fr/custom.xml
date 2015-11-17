@@ -6,7 +6,7 @@
   <string name="today_date_format">HH:mm</string>
   <string name="picture_name_format">vtcsecure-mms-%s.jpg</string>
   <string name="app_name">VTCSecure</string>
-  <string name="service_name">VTCSecure Service</string>
+  <string name="service_name">Ace Service</string>
   <string name="addressbook_label">VTCSecure</string>
   <string name="sync_account_type">org.linphone</string>
   <string name="sync_mimetype">vnd.android.cursor.item/org.linphone.profile</string>
