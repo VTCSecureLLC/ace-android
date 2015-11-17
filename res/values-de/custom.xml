@@ -4,7 +4,7 @@
   <string name="messages_date_format">HH:mm t MMM</string>
   <string name="today_date_format">HH:mm</string>
   <string name="picture_name_format">linphone-mms-%s.jpg</string>
-  <string name="app_name">Linphone</string>
+  <string name="app_name">Ace</string>
   <string name="service_name">Linphone-Dienst</string>
   <string name="addressbook_label">Linphone</string>
   <string name="notification_title">Linphone</string>
