@@ -6,13 +6,7 @@
     android:background="@drawable/background"
     android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Build: 0.0"
-        android:id="@+id/buildId"
-        android:layout_gravity="right"
-        android:textSize="24dp" />
+
 
     <View android:layout_weight="30" android:layout_width="0dp" android:layout_height="0dp" />
 
@@ -34,6 +28,13 @@
         android:textSize="30dp"
         android:textStyle="bold" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Build: 0.0"
+        android:id="@+id/buildId"
+        android:layout_gravity="center_horizontal"
+        android:textSize="24dp" />
 
     <View android:layout_weight="50" android:layout_width="0dp" android:layout_height="0dp" />
     <TextView
