@@ -1,11 +1,11 @@
-<?xml version='1.0' encoding='UTF-8'?>
+﻿<?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="history_date_format">d MMM</string>
   <string name="history_detail_date_format">EEEE MMM d HH:mm</string>
   <string name="messages_date_format">HH:mm d MMM</string>
   <string name="today_date_format">HH:mm</string>
   <string name="picture_name_format">linphone-mms-%s.jpg</string>
-  <string name="app_name">لِنْفُونْ</string>
+  <string name="app_name">Ace</string>
   <string name="service_name"> خدمة Ace</string>
   <string name="addressbook_label">لِنْفُونْ</string>
   <string name="notification_title">لِنْفُونْ</string>
