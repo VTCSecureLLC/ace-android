@@ -4,7 +4,7 @@
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto">
-    
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,8 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal" />
-	
-		<TableLayout 
+
+		<TableLayout
 	        android:id="@+id/calls"
 	    	android:paddingTop="40dp"
 		    android:layout_width="match_parent"
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/status" />
-        
+
     </FrameLayout>
 
     <ImageView
@@ -53,7 +53,7 @@
         android:layout_marginTop="40dp"
         android:visibility="invisible"
         android:src="@drawable/switch_camera" />
-    
+
     <org.linphone.ui.Numpad
         android:contentDescription="@string/content_description_numpad"
         android:id="@+id/numpad"
@@ -66,78 +66,54 @@
 
     <LinearLayout
         android:id="@+id/rtt_container"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/switchCamera"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true">
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <TextView
-                android:id="@+id/user_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                style="@style/RttHeaderTextStyle" />
-
-            <View
-                android:layout_width="3dp"
-                android:layout_height="match_parent"/>
-
-            <TextView
-                android:id="@+id/partner_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                style="@style/RttHeaderTextStyle" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:orientation="vertical">
 
             <EditText
+                android:text="The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  "
                 android:id="@+id/rtt_input_field"
-                android:layout_width="0dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#B0000000"
+                android:background="@drawable/chat_bubble_outgoing"
                 android:singleLine="false"
-                android:scrollbars="vertical"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="50dp"
+                android:layout_marginLeft="10dp"
                 style="@style/RttTextStyle"/>
 
-            <View
-                android:layout_width="3dp"
-                android:layout_height="match_parent"
-                android:background="@android:color/white"/>
 
             <TextView
+                android:text="The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  "
                 android:id="@+id/rtt_incoming_view"
-                android:layout_width="0dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="#B0000000"
+                android:background="@drawable/chat_bubble_incoming"
                 android:singleLine="false"
-                android:scrollbars="vertical"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingBottom="50dp"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="right"
+                android:textColor="#000000"
                 style="@style/RttTextStyle"/>
         </LinearLayout>
 
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
@@ -150,19 +126,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-            
-            <TextView 
-	           	android:layout_width="match_parent"
-	           	android:layout_height="wrap_content"
-	           	android:visibility="invisible"
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:layout_weight="0.5"/>
-            
-            <TextView 
-	           	android:layout_width="match_parent"
-	           	android:layout_height="wrap_content"
-	           	android:visibility="invisible"
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:layout_weight="0.5"/>
-            
+
 	        <TextView
 				android:id="@+id/routeBluetooth"
 	           	android:visibility="invisible"
@@ -174,32 +150,32 @@
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
                 android:layout_weight="0.5" />
-            
-            <TextView 
+
+            <TextView
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
 	           	android:visibility="invisible"
                 android:layout_weight="0.5"/>
-	       
+
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-            
-            <TextView 
+
+            <TextView
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
 	           	android:visibility="invisible"
                 android:layout_weight="0.5"/>
-            
-            <TextView 
+
+            <TextView
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
 	           	android:visibility="invisible"
                 android:layout_weight="0.5"/>
-            
+
 	        <TextView
 				android:id="@+id/routeReceiver"
 	           	android:visibility="invisible"
@@ -223,26 +199,26 @@
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
                 android:layout_weight="0.5" />
-	       
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-            
-            <TextView 
+
+            <TextView
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
 	           	android:visibility="invisible"
                 android:layout_weight="0.5"/>
-            
-            <TextView 
+
+            <TextView
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
 	           	android:visibility="invisible"
                 android:layout_weight="0.5"/>
-            
+
 	        <TextView
 				android:id="@+id/routeSpeaker"
 	           	android:visibility="invisible"
@@ -254,7 +230,7 @@
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
                 android:layout_weight="0.5" />
-            
+
             <TextView
 				android:id="@+id/addCall"
 	           	android:visibility="invisible"
@@ -266,7 +242,7 @@
 	           	android:layout_width="match_parent"
 	           	android:layout_height="wrap_content"
                 android:layout_weight="0.5" />
-	       
+
         </LinearLayout>
 
         <LinearLayout
@@ -274,12 +250,12 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <RelativeLayout   
+            <RelativeLayout
                 android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
 	            android:gravity="center">
-	            
+
            	<TextView
 	            android:id="@+id/video"
 	           	android:background="@drawable/video_off"
@@ -289,18 +265,18 @@
 	            android:textColor="@drawable/text_incall_button_color"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"/>
-                
+
             <ProgressBar
                 android:id="@+id/videoInProgress"
-                style="?android:attr/progressBarStyle" 
+                style="?android:attr/progressBarStyle"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:visibility="gone"
                 android:layout_width="match_parent"
 	            android:layout_height="wrap_content"/>
 
-            </RelativeLayout>  
-            
+            </RelativeLayout>
+
             <TextView
                 android:id="@+id/micro"
                 android:background="@drawable/micro_on"
@@ -311,8 +287,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
-			
-            
+
+
             <TextView
                 android:id="@+id/speaker"
                 android:background="@drawable/speaker_off"
@@ -361,7 +337,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/about_chat" />
-            
+
             <TextView
                 android:id="@+id/conference"
                 android:contentDescription="@string/content_description_conference"
@@ -386,7 +362,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/dialer_alt" />
-            
+
         </LinearLayout>
 
     </LinearLayout>

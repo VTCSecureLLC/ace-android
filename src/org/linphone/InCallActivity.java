@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -131,7 +130,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public static boolean isInstanciated() {
 		return instance != null;
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -139,7 +138,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.incall);
-        
+
         isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
         showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
         isSpeakerEnabled = LinphoneManager.getLcIfManagerNotDestroyedOrNull().isSpeakerEnabled();
@@ -157,7 +156,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
-        
+
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
@@ -326,6 +325,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 			LinphoneCallParams params = call.getCurrentParamsCopy();
+
 			if(isRTTEnabled){
 				initRTT();
 			}
@@ -362,8 +362,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				/** Initializes the views and other components needed for RTT in a call */
 	private void initRTT(){
 		rttContainerView = findViewById(R.id.rtt_container);
+		rttContainerView.setVisibility(View.GONE);
 		rttInputField = (EditText) findViewById(R.id.rtt_input_field);
-
+		rttInputField.setText("");
 		//forces the user cursor to the last position always
 		rttInputField.setCursorVisible(false);
 		rttInputField.setOnClickListener(new OnClickListener() {
@@ -377,6 +378,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//
 
 		rttIncomingTextView = (TextView) findViewById(R.id.rtt_incoming_view);
+		rttIncomingTextView.setText("");
 		rttTextWatcher = new TextWatcher() {
 
 			@Override
@@ -425,7 +427,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void showRTTinterface() {
 		isRTTMaximized = true;
 		rttContainerView.setVisibility(View.VISIBLE);
-		rttIncomingTextView.setMovementMethod(new ScrollingMovementMethod());
+		//rttIncomingTextView.setMovementMethod(new ScrollingMovementMethod());
 		LinphoneManager.getInstance().setIncomingTextView(rttIncomingTextView);
 		//rttInputField.setMovementMethod(new ScrollingMovementMethod());
 		//rttMinimizedIncomingText.setText("");
@@ -729,7 +731,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			displayVideoCallControlsIfHidden();
 		}
 
-		if (id == R.id.video) {		
+		if (id == R.id.video) {
 			enabledOrDisabledVideo(isVideoEnabled(LinphoneManager.getLc().getCurrentCall()));	
 		} 
 		else if (id == R.id.micro) {
@@ -1066,7 +1068,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			mControlsHandler.postDelayed(mControls = new Runnable() {
 				public void run() {
 					hideNumpad();
-					
+
 					if (isAnimationDisabled) {
 						transfer.setVisibility(View.INVISIBLE);
 						addCall.setVisibility(View.INVISIBLE);
@@ -1075,18 +1077,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						switchCamera.setVisibility(View.INVISIBLE);
 						numpad.setVisibility(View.GONE);
 						options.setBackgroundResource(R.drawable.options);
-					} else {					
+					} else {
 						Animation animation = slideOutTopToBottom;
 						animation.setAnimationListener(new AnimationListener() {
 							@Override
 							public void onAnimationStart(Animation animation) {
 								video.setEnabled(false); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
 							}
-							
+
 							@Override
 							public void onAnimationRepeat(Animation animation) {
 							}
-							
+
 							@Override
 							public void onAnimationEnd(Animation animation) {
 								video.setEnabled(true); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
@@ -1097,7 +1099,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 								switchCamera.setVisibility(View.INVISIBLE);
 								numpad.setVisibility(View.GONE);
 								options.setBackgroundResource(R.drawable.options);
-								
+
 								animation.setAnimationListener(null);
 							}
 						});
@@ -1160,7 +1162,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		
 		if (numpad.getVisibility() == View.VISIBLE) {
 			hideNumpad();
-		} else {	
+		} else {
 			dialer.setBackgroundResource(R.drawable.dialer_alt_back);	
 			if (isAnimationDisabled) {
 				numpad.setVisibility(View.VISIBLE);
@@ -1614,11 +1616,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	
 	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
 		TextView contact = (TextView) callView.findViewById(R.id.contactNameOrNumber);
-		TextView partnerName = (TextView) findViewById(R.id.partner_name);
-		TextView userName = (TextView) findViewById(R.id.user_name);
+		//TextView partnerName = (TextView) findViewById(R.id.partner_name);
+		//TextView userName = (TextView) findViewById(R.id.user_name);
 		LinphonePreferences mPrefs = LinphonePreferences.instance();
 		String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
-		userName.setText(username);
+		//userName.setText(username);
 
 		Contact lContact  = ContactsManager.getInstance().findContactWithAddress(callView.getContext().getContentResolver(), lAddress);
 		if (lContact == null) {
@@ -1626,18 +1628,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	        	contact.setText(lAddress.getUserName());
 		        contactName = lAddress.getUserName();
 		        android.util.Log.e("Info", "contactName = " + contactName);
-		        partnerName.setText(contactName);
+		        //partnerName.setText(contactName);
 			} else {
 				contact.setText(sipUri);
 		        contactName = sipUri;
 		        android.util.Log.e("Info", "contactName = " + contactName);
-		        partnerName.setText(contactName);
+		       // partnerName.setText(contactName);
 			}
 		} else {
 			contact.setText(lContact.getName());
 			contactName = lContact.getName();
 			android.util.Log.e("Info", "contactName = " + contactName);
-			partnerName.setText(contactName);
+			//partnerName.setText(contactName);
 		}
 	}
 	
@@ -1762,7 +1764,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         if(LinphoneManager.getLc().getCurrentCall() == null){
         	showAudioView();
         	video.setEnabled(false);
-        } 
+        }
         
         callsList.invalidate();
 	}
