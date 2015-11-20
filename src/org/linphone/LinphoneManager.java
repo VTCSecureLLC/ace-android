@@ -1398,7 +1398,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		Log.d("RTT: Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
-
+		if(!InCallActivity.instance().incoming_chat_initiated){
+			InCallActivity.instance().create_new_incoming_bubble();
+			InCallActivity.instance().incoming_chat_initiated=true;
+		}
 		if (!cr.isRemoteComposing()) {
 			Log.d("RTT: remote is not composing, getChar() returns: " + cr.getChar());
 			return;
@@ -1421,11 +1424,16 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
 		} else if (character == (long)0x2028) {
 			Log.d("RTT: received Line Separator");
-			incomingTextView.setText(currentText + "\n");
+			InCallActivity.instance().create_new_incoming_bubble();
 		} else if (character == 10) {
 			Log.d("RTT: received newline");
 			incomingTextView.append(System.getProperty("line.separator"));
+			InCallActivity.instance().create_new_incoming_bubble();
 		} else { // regular character
+			if(InCallActivity.instance().rttIncomingBubbleCount==0){
+				Log.d("There was no incoming bubble to send text to, so now we must make one.");
+				incomingTextView=InCallActivity.instance().create_new_incoming_bubble();
+			}
 			incomingTextView.setText(currentText + (char)character);
 		}
 
