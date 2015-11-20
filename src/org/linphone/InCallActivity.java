@@ -489,7 +489,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		et.setLayoutParams(lp);
 		et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
 		et.setSingleLine(false);
-		et.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(50));
+		et.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
 		et.addTextChangedListener(rttTextWatcher);
 		et.setTextAppearance(this, R.style.RttTextStyle);
 		et.setMovementMethod(null);
@@ -538,7 +538,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setLayoutParams(lp1);
 		tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
 		tv.setSingleLine(false);
-		tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(50));
+		tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
 		tv.setTextAppearance(this, R.style.RttTextStyle);
 		tv.setTextColor(Color.parseColor("#000000"));
 
@@ -550,6 +550,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void showRTTinterface() {
 		isRTTMaximized = true;
 		rtt_scrollview.setVisibility(View.VISIBLE);
+	}
+	@Override
+	public void onBackPressed()
+	{
+		if(isRTTMaximized) {
+			hideRTTinterface();
+		}
+		// code here to show dialog
+		super.onBackPressed();  // optional depending on your needs
 	}
 
 	/** Called when backspace is pressed in an RTT conversation.
@@ -859,7 +868,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			goBackToDialer();
 		} 
 		else if (id == R.id.toggleChat) {
-			toggle_chat(v);
+			toggle_chat();
 		}
 		else if(id == R.id.incomingRTTMinimized){
 			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
@@ -922,29 +931,25 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 
-	public void toggle_chat(View v){
+	public void toggle_chat(){
 		Log.d("RTT", "toggleChat clicked");
 		Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
 		mControlsLayout.setVisibility(View.GONE);
 		if(isRTTMaximized){
-			if (v != null) {
-				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-			}
-			if(rtt_scrollview!=null) {
-				rtt_scrollview.setVisibility(View.GONE);
-				isRTTMaximized=false;
-			}
-
+			hideRTTinterface();
 		} else{
 			if(rttOutgoingBubbleCount==0){
 				create_new_outgoing_bubble(null);
-				//create_new_incoming_bubble();
 			}
-			//initMinimizedRtt(false);
 			showRTTinterface();
 		}
 
+	}
+	public void hideRTTinterface(){
+		if(rtt_scrollview!=null) {
+			rtt_scrollview.setVisibility(View.GONE);
+			isRTTMaximized=false;
+		}
 	}
 
 	private void enabledOrDisabledVideo(final boolean isVideoEnabled) {
