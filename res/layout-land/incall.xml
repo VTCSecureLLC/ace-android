@@ -30,7 +30,8 @@
             android:background="#010000"
             android:textColor="#ffffff"
             android:enabled="true"
-            android:maxLines="3" />
+            android:maxLines="3"
+            android:visibility="gone"/>
 
         <fragment
             android:id="@+id/status"

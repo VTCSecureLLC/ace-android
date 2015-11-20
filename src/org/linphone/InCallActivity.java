@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -96,7 +95,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private StatusFragment status;
 	private AudioCallFragment audioCallFragment;
 	private VideoCallFragment videoCallFragment;
-	private boolean isSpeakerEnabled = false, isMicMuted = false, isTransferAllowed, isAnimationDisabled;
+	private boolean isSpeakerEnabled = false, isMicMuted = false, isTransferAllowed, isAnimationDisabled, isRTTEnabled=false;
 	private ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
@@ -116,9 +115,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	// RTT views
 	private TextWatcher rttTextWatcher;
 	private EditText rttInputField;
-	private TextView rttOutgoingTextView;
+	private TextView rttIncomingTextView;
 	private View rttContainerView;
 	private TextView rttMinimizedIncomingText;
+
 	String contactName = "";
 
 	private boolean isRTTMaximized = false;
@@ -130,7 +130,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public static boolean isInstanciated() {
 		return instance != null;
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -138,10 +138,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         setContentView(R.layout.incall);
-        
+
         isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
         showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
         isSpeakerEnabled = LinphoneManager.getLcIfManagerNotDestroyedOrNull().isSpeakerEnabled();
+
+		//if (params.realTimeTextEnabled()) { // Does not work, always false
+		isRTTEnabled=LinphoneManager.getInstance().getRttPreference();
 
 		if (Version.sdkAboveOrEqual(Version.API11_HONEYCOMB_30)) {
 			if(!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
@@ -153,11 +156,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
-        
+
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 				super.isComposingReceived(lc, cr);
+				Log.d("RTT", "isComposingReceived cr=" + cr.toString());
+				Log.d("RTT","isRTTMaximaized"+isRTTMaximized);
+
 				if(!isRTTMaximized){
 					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
 					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
@@ -167,6 +173,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				super.messageReceived(lc, cr, message);
+				Log.d("RTT", "messageReceived cr=" + message.toString());
+				Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
 				if(!isRTTMaximized){
 					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
 					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
@@ -284,7 +292,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             
             if (savedInstanceState != null) { 
             	// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
-            	isSpeakerEnabled = savedInstanceState.getBoolean("Speaker");
+				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
+				isSpeakerEnabled = savedInstanceState.getBoolean("Speaker");
             	isMicMuted = savedInstanceState.getBoolean("Mic");
             	isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
             	refreshInCallActions();
@@ -317,119 +326,115 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 			LinphoneCallParams params = call.getCurrentParamsCopy();
 
-			//if (params.realTimeTextEnabled()) { // Does not work, always false
-			if (LinphoneManager.getInstance().getRttPreference()) {
-				Log.d("RTT: initializing RTT");
-				initMinimizedRtt(true);
-			} else {
-				Log.d("RTT: RTT not enabled in current params");
+			if(isRTTEnabled){
+				initRTT();
 			}
+			if(isRTTMaximized){
+				showRTTinterface();
+			}
+
         }
 	}
 
-	private void initMinimizedRtt(boolean setToVisible){
-		if(setToVisible) {
-			isRTTMaximized = false;
-			rttMinimizedIncomingText = (TextView) findViewById(R.id.incomingRTTMinimized);
-			rttMinimizedIncomingText.setMovementMethod(new ScrollingMovementMethod());
-			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
-			rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
-			LinphoneManager.getInstance().setIncomingTextView(rttMinimizedIncomingText);
-		}
-		else{
-			if(rttMinimizedIncomingText != null) {
-				rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
-				isRTTMaximized = true;
-			}
-		}
-	}
+//	private void initMinimizedRtt(boolean setToVisible){
+//		Log.d("RTT", "initMinimizedRtt");
+//		Log.d("RTT", "setToVisible" + setToVisible);
+//
+//
+//		rttMinimizedIncomingText = (TextView) findViewById(R.id.incomingRTTMinimized);
+//
+//		if(setToVisible) {
+//			isRTTMaximized = false;
+//
+//			rttMinimizedIncomingText.setMovementMethod(new ScrollingMovementMethod());
+//			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+//			rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
+//			LinphoneManager.getInstance().setIncomingTextView(rttMinimizedIncomingText);
+//		}
+//		else{
+//			if(rttMinimizedIncomingText != null) {
+//				rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
+//				isRTTMaximized = true;
+//			}
+//		}
+//	}
 
 				/** Initializes the views and other components needed for RTT in a call */
-	private void initRtt(boolean setToVisible) {
-		if(!setToVisible){
-			rttContainerView = findViewById(R.id.rtt_container);
-			rttContainerView.setVisibility(View.INVISIBLE);
-			isRTTMaximized = false;
-		}
-		if (setToVisible) {
-			isRTTMaximized = true;
-			rttContainerView = findViewById(R.id.rtt_container);
-			if (rttContainerView == null)
-				return;
+	private void initRTT(){
+		rttContainerView = findViewById(R.id.rtt_container);
+		rttContainerView.setVisibility(View.GONE);
+		rttInputField = (EditText) findViewById(R.id.rtt_input_field);
+		rttInputField.setText("");
+		//forces the user cursor to the last position always
+		rttInputField.setCursorVisible(false);
+		rttInputField.setOnClickListener(new OnClickListener() {
 
-			rttContainerView.setVisibility(View.VISIBLE);
-
-			TextView incomingTextView = (TextView) findViewById(R.id.rtt_incoming_view);
-
-			rttOutgoingTextView = (TextView) findViewById(R.id.rtt_outgoing_view);
-			rttInputField = (EditText) findViewById(R.id.rtt_input_field);
-
-			incomingTextView.setMovementMethod(new ScrollingMovementMethod());
-			LinphoneManager.getInstance().setIncomingTextView(incomingTextView);
-			rttOutgoingTextView.setMovementMethod(new ScrollingMovementMethod());
-
-			incomingTextView.setText(rttMinimizedIncomingText.getText().toString());
-			rttMinimizedIncomingText.setText("");
-
-			rttInputField.requestFocus();
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.showSoftInput(rttInputField, InputMethodManager.SHOW_FORCED);
-
-			if (rttInputField != null) {
-
-				if(rttTextWatcher != null){
-					rttInputField.removeTextChangedListener(rttTextWatcher);
-				}
-
-				rttTextWatcher = new TextWatcher() {
-
-					@Override
-					public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-						if (after < count) { // Text removed
-							for (int i = 0; i < (count - after); i++) {
-								backspacePressed();
-							}
-						}
-					}
-
-					@Override
-					public void onTextChanged(CharSequence s, int start, int before, int count) {
-						if (count > before) { // Text added
-							CharSequence added = s.subSequence(start + before, start + count);
-							sendRttCharacterSequence(added);
-						}
-					}
-
-					@Override
-					public void afterTextChanged(Editable s) {
-					}
-				};
-				rttInputField.addTextChangedListener(rttTextWatcher);
-
-				rttInputField.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
-					@Override
-					public boolean onKey(View v, int keyCode, KeyEvent event) {
-						if (event.getAction() == KeyEvent.ACTION_DOWN) {
-							if (keyCode == KeyEvent.KEYCODE_ENTER) {
-								View view = getCurrentFocus();
-								if (view != null) {
-									InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-									imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-								}
-								enterPressed();
-								initMinimizedRtt(true);
-								initRtt(false);
-								return true;
-							} else if (keyCode == KeyEvent.KEYCODE_DEL) {
-								// Disabled for now, sometimes needed for hardware keyboards
-								//return backspacePressed();
-							}
-						}
-						return false;
-					}
-				});
+			@Override
+			public void onClick(View v) {
+				rttInputField.setSelection(rttInputField.getText().length());
 			}
-		}
+		});
+
+		//
+
+		rttIncomingTextView = (TextView) findViewById(R.id.rtt_incoming_view);
+		rttIncomingTextView.setText("");
+		rttTextWatcher = new TextWatcher() {
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				Log.d("RTT", "onTextChanged sequence"+s);
+
+				if (count > before) { // Text added
+					CharSequence added = s.subSequence(start + before, start + count);
+					sendRttCharacterSequence(added);
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		};
+		rttInputField.addTextChangedListener(rttTextWatcher);
+		rttInputField.setMovementMethod(null);
+		rttInputField.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN) {
+					if (keyCode == KeyEvent.KEYCODE_ENTER) {
+//						View view = getCurrentFocus();
+//						if (view != null) {
+//							InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//							imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//						}
+//						//enterPressed();
+//						//initMinimizedRtt(true);
+//						showRTTinterface();
+//						return true;
+					} else if (keyCode == KeyEvent.KEYCODE_DEL) {
+						sendRttCharacter((char) 8);
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	private void showRTTinterface() {
+		isRTTMaximized = true;
+		rttContainerView.setVisibility(View.VISIBLE);
+		//rttIncomingTextView.setMovementMethod(new ScrollingMovementMethod());
+		LinphoneManager.getInstance().setIncomingTextView(rttIncomingTextView);
+		//rttInputField.setMovementMethod(new ScrollingMovementMethod());
+		//rttMinimizedIncomingText.setText("");
+
+		rttInputField.requestFocus();
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.showSoftInput(rttInputField, InputMethodManager.SHOW_FORCED);
 	}
 
 	/** Called when backspace is pressed in an RTT conversation.
@@ -438,45 +443,45 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	 * @return true if the key event should be consumed (ie. there should
 	 * be no further processing of this backspace event)
 	 */
-	private boolean backspacePressed() {
-		if (rttInputField.getText().length() == 0) {
-			rttInputField.removeTextChangedListener(rttTextWatcher);
-
-			// If there's no text in the input EditText, check if
-			// there's any old sent text that can be brought down.
-			// Lines are delimited by \n in this simple text UI.
-
-			String outtext = rttOutgoingTextView.getText().toString();
-			int newline = outtext.lastIndexOf("\n");
-
-			if (newline >= 0) {
-				rttOutgoingTextView.setText(outtext.substring(0, newline));
-				rttInputField.append(outtext.substring(newline+1));
-			} else {
-				rttOutgoingTextView.setText("");
-				rttInputField.append(outtext);
-			}
-			rttInputField.addTextChangedListener(rttTextWatcher);
-			return true;
-		} else {
-
-			sendRttCharacter((char) 8);
-
-			if (hasHardwareKeyboard()) {
-				rttInputField.removeTextChangedListener(rttTextWatcher);
-
-				// Quick and dirty hack to keep the cursor at the end of the line.
-				// EditText.append() inserts the text and places the cursor last.
-				CharSequence cs = rttInputField.getText();
-				rttInputField.setText("");
-				rttInputField.append(cs.subSequence(0, cs.length() - 1));
-
-				rttInputField.addTextChangedListener(rttTextWatcher);
-			}
-
-			return true;
-		}
-	}
+//	private boolean backspacePressed() {
+//		if (rttInputField.getText().length() == 0) {
+//			rttInputField.removeTextChangedListener(rttTextWatcher);
+//
+//			// If there's no text in the input EditText, check if
+//			// there's any old sent text that can be brought down.
+//			// Lines are delimited by \n in this simple text UI.
+//
+//			String outtext = rttInputField.getText().toString();
+//			int newline = outtext.lastIndexOf("\n");
+//
+//			if (newline >= 0) {
+//				rttInputField.setText(outtext.substring(0, newline));
+//				rttInputField.append(outtext.substring(newline+1));
+//			} else {
+//				rttInputField.setText("");
+//				rttInputField.append(outtext);
+//			}
+//			rttInputField.addTextChangedListener(rttTextWatcher);
+//			return true;
+//		} else {
+//
+//			sendRttCharacter((char) 8);
+//
+//			if (hasHardwareKeyboard()) {
+//				rttInputField.removeTextChangedListener(rttTextWatcher);
+//
+//				// Quick and dirty hack to keep the cursor at the end of the line.
+//				// EditText.append() inserts the text and places the cursor last.
+//				CharSequence cs = rttInputField.getText();
+//				rttInputField.setText("");
+//				rttInputField.append(cs.subSequence(0, cs.length() - 1));
+//
+//				rttInputField.addTextChangedListener(rttTextWatcher);
+//			}
+//
+//			return true;
+//		}
+//	}
 
 	/** Somewhat reliable method of detecting the presence of a hardware
 	 * keyboard. Not fully tested, needs to work for both Bluetooth and USB.
@@ -491,20 +496,20 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	 * method inserts line breaks in the text views and sends the appropriate
 	 * newline character.
 	 */
-	private void enterPressed() {
-		rttInputField.removeTextChangedListener(rttTextWatcher);
-		//rttOutgoingTextView.setText(rttOutgoingTextView.getText() + "\n" + rttInputField.getText());
-		rttOutgoingTextView.append("\n");
-		rttOutgoingTextView.append(rttInputField.getText());
-
-		int scroll_amount = (rttOutgoingTextView.getLineCount() * rttOutgoingTextView.getLineHeight()) - (rttOutgoingTextView.getBottom() - rttOutgoingTextView.getTop());
-		rttOutgoingTextView.scrollTo(0, (int) (scroll_amount + rttOutgoingTextView.getLineHeight() * 0.5));
-
-		rttInputField.setText("");
-		sendRttCharacter((char) 10);
-
-		//rttInputField.addTextChangedListener(rttTextWatcher);
-	}
+//	private void enterPressed() {
+//		rttInputField.removeTextChangedListener(rttTextWatcher);
+//		//rttOutgoingTextView.setText(rttOutgoingTextView.getText() + "\n" + rttInputField.getText());
+//		rttOutgoingTextView.append("\n");
+//		rttOutgoingTextView.append(rttInputField.getText());
+//
+//		int scroll_amount = (rttOutgoingTextView.getLineCount() * rttOutgoingTextView.getLineHeight()) - (rttOutgoingTextView.getBottom() - rttOutgoingTextView.getTop());
+//		rttOutgoingTextView.scrollTo(0, (int) (scroll_amount + rttOutgoingTextView.getLineHeight() * 0.5));
+//
+//		rttInputField.setText("");
+//		sendRttCharacter((char) 10);
+//
+//		//rttInputField.addTextChangedListener(rttTextWatcher);
+//	}
 
 	/** Send a single character in RTT */
 	private void sendRttCharacter(char character) {
@@ -513,7 +518,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	/** Send a sequence of characters in RTT */
 	private void sendRttCharacterSequence(CharSequence cs) {
+
 		if (cs.length() > 0) {
+			Log.d("RTT","LinphoneManager.getInstance().sendRealtimeText(cs);"+cs);
 			LinphoneManager.getInstance().sendRealtimeText(cs);
 		}
 	}
@@ -527,6 +534,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		outState.putBoolean("isRTTMaximized", isRTTMaximized);
 		outState.putBoolean("Speaker", LinphoneManager.getLc().isSpeakerEnabled());
 		outState.putBoolean("Mic", LinphoneManager.getLc().isMicMuted());
 		outState.putBoolean("VideoCallPaused", isVideoCallPaused);
@@ -723,7 +731,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			displayVideoCallControlsIfHidden();
 		}
 
-		if (id == R.id.video) {		
+		if (id == R.id.video) {
 			enabledOrDisabledVideo(isVideoEnabled(LinphoneManager.getLc().getCurrentCall()));	
 		} 
 		else if (id == R.id.micro) {
@@ -736,17 +744,23 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			goBackToDialer();
 		} 
 		else if (id == R.id.toggleChat) {
+			Log.d("RTT", "toggleChat clicked");
+			Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
+			mControlsLayout.setVisibility(View.GONE);
 			if(isRTTMaximized){
 				if (v != null) {
 					InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 				}
-				initMinimizedRtt(true);
-				initRtt(false);
-			}
-			else{
-				initRtt(true);
-				initMinimizedRtt(false);
+				if(rttContainerView!=null) {
+					rttContainerView.setVisibility(View.GONE);
+					isRTTMaximized=false;
+				}
+
+			} else{
+
+				//initMinimizedRtt(false);
+				showRTTinterface();
 			}
 
 		}
@@ -1054,7 +1068,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			mControlsHandler.postDelayed(mControls = new Runnable() {
 				public void run() {
 					hideNumpad();
-					
+
 					if (isAnimationDisabled) {
 						transfer.setVisibility(View.INVISIBLE);
 						addCall.setVisibility(View.INVISIBLE);
@@ -1063,18 +1077,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						switchCamera.setVisibility(View.INVISIBLE);
 						numpad.setVisibility(View.GONE);
 						options.setBackgroundResource(R.drawable.options);
-					} else {					
+					} else {
 						Animation animation = slideOutTopToBottom;
 						animation.setAnimationListener(new AnimationListener() {
 							@Override
 							public void onAnimationStart(Animation animation) {
 								video.setEnabled(false); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
 							}
-							
+
 							@Override
 							public void onAnimationRepeat(Animation animation) {
 							}
-							
+
 							@Override
 							public void onAnimationEnd(Animation animation) {
 								video.setEnabled(true); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
@@ -1085,7 +1099,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 								switchCamera.setVisibility(View.INVISIBLE);
 								numpad.setVisibility(View.GONE);
 								options.setBackgroundResource(R.drawable.options);
-								
+
 								animation.setAnimationListener(null);
 							}
 						});
@@ -1148,7 +1162,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		
 		if (numpad.getVisibility() == View.VISIBLE) {
 			hideNumpad();
-		} else {	
+		} else {
 			dialer.setBackgroundResource(R.drawable.dialer_alt_back);	
 			if (isAnimationDisabled) {
 				numpad.setVisibility(View.VISIBLE);
@@ -1602,11 +1616,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	
 	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
 		TextView contact = (TextView) callView.findViewById(R.id.contactNameOrNumber);
-		TextView partnerName = (TextView) findViewById(R.id.partner_name);
-		TextView userName = (TextView) findViewById(R.id.user_name);
+		//TextView partnerName = (TextView) findViewById(R.id.partner_name);
+		//TextView userName = (TextView) findViewById(R.id.user_name);
 		LinphonePreferences mPrefs = LinphonePreferences.instance();
 		String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
-		userName.setText(username);
+		//userName.setText(username);
 
 		Contact lContact  = ContactsManager.getInstance().findContactWithAddress(callView.getContext().getContentResolver(), lAddress);
 		if (lContact == null) {
@@ -1614,18 +1628,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	        	contact.setText(lAddress.getUserName());
 		        contactName = lAddress.getUserName();
 		        android.util.Log.e("Info", "contactName = " + contactName);
-		        partnerName.setText(contactName);
+		        //partnerName.setText(contactName);
 			} else {
 				contact.setText(sipUri);
 		        contactName = sipUri;
 		        android.util.Log.e("Info", "contactName = " + contactName);
-		        partnerName.setText(contactName);
+		       // partnerName.setText(contactName);
 			}
 		} else {
 			contact.setText(lContact.getName());
 			contactName = lContact.getName();
 			android.util.Log.e("Info", "contactName = " + contactName);
-			partnerName.setText(contactName);
+			//partnerName.setText(contactName);
 		}
 	}
 	
@@ -1750,7 +1764,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         if(LinphoneManager.getLc().getCurrentCall() == null){
         	showAudioView();
         	video.setEnabled(false);
-        } 
+        }
         
         callsList.invalidate();
 	}
