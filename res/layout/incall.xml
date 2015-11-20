@@ -63,56 +63,30 @@
         android:visibility="invisible"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
-
-    <LinearLayout
-        android:id="@+id/rtt_container"
-        android:visibility="visible"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="500dp"
+        android:id="@+id/rtt_scrollview"
         android:layout_below="@+id/switchCamera"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true">
-
-
+        android:visibility="gone"
+        android:layout_above="@+id/menu">
         <LinearLayout
+            android:id="@+id/rtt_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <EditText
-                android:text="The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  "
-                android:id="@+id/rtt_input_field"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/chat_bubble_outgoing"
-                android:singleLine="false"
-                android:paddingTop="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="50dp"
-                android:layout_marginLeft="10dp"
-                style="@style/RttTextStyle"/>
+            android:orientation="vertical"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true">
 
 
-            <TextView
-                android:text="The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  "
-                android:id="@+id/rtt_incoming_view"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/chat_bubble_incoming"
-                android:singleLine="false"
-                android:paddingTop="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingBottom="50dp"
-                android:layout_marginRight="10dp"
-                android:layout_gravity="right"
-                android:textColor="#000000"
-                style="@style/RttTextStyle"/>
         </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout>
+
+
+
+
+
 
     <LinearLayout
         android:id="@+id/menu"
