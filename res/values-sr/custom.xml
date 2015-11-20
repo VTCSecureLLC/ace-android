@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+﻿<?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="history_date_format">д МММ</string>
   <string name="history_detail_date_format">ГГГГ МММ д ЧЧ:мм</string>
@@ -6,7 +6,7 @@
   <string name="today_date_format">ЧЧ:мм</string>
   <string name="picture_name_format">linphone-mms-%s.jpg</string>
   <string name="app_name">Ace</string>
-  <string name="service_name">Услуга Линфона</string>
+  <string name="service_name">Услуга Ace</string>
   <string name="addressbook_label">Линфон</string>
   <string name="notification_title">Линфон</string>
   <string name="wait_dialog_text">Покрећем се</string>
