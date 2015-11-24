@@ -530,6 +530,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		rttOutgoingBubbleCount++;
 	}
 	public TextView create_new_incoming_bubble(){
+		if(!isRTTMaximized){
+			showRTTinterface();
+		}
 		TextView tv=new TextView(this);
 		//tv.setText("The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  ");
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
