@@ -6,7 +6,7 @@
 	<string name="today_date_format">HH:mm</string>
 	<string name="picture_name_format">vtcsecure-mms-%s.jpg</string>
 
-	<string name="app_name">VTCSecure</string>
+	<string name="app_name">Ace</string>
 	<string name="service_name">VTCSecure Service</string>
 	<string name="addressbook_label">VTCSecure</string>
 	<string name="sync_account_type">com.vtcsecure</string>
