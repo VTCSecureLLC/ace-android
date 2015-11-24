@@ -18,63 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
-import static android.media.AudioManager.MODE_RINGTONE;
-import static android.media.AudioManager.STREAM_RING;
-import static android.media.AudioManager.STREAM_VOICE_CALL;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.CallDirection;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneBuffer;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCallStats;
-import org.linphone.core.LinphoneChatMessage;
-import org.linphone.core.LinphoneChatRoom;
-import org.linphone.core.LinphoneContent;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCore.EcCalibratorStatus;
-import org.linphone.core.LinphoneCore.GlobalState;
-import org.linphone.core.LinphoneCore.LogCollectionUploadState;
-import org.linphone.core.LinphoneCore.RegistrationState;
-import org.linphone.core.LinphoneCore.RemoteProvisioningState;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListener;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneEvent;
-import org.linphone.core.LinphoneFriend;
-import org.linphone.core.LinphoneInfoMessage;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.PayloadType;
-import org.linphone.core.PresenceActivityType;
-import org.linphone.core.PresenceModel;
-import org.linphone.core.PublishState;
-import org.linphone.core.SubscriptionState;
-import org.linphone.core.TunnelConfig;
-import org.linphone.mediastream.Log;
-import org.linphone.mediastream.Version;
-import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
-import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
-import org.linphone.mediastream.video.capture.hwconf.Hacks;
-import org.linphone.vtcsecure.LinphoneTorchFlasher;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -113,7 +56,61 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.linphone.R;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneBuffer;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneCallStats;
+import org.linphone.core.LinphoneChatMessage;
+import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneContent;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.EcCalibratorStatus;
+import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.LogCollectionUploadState;
+import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCore.RemoteProvisioningState;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneEvent;
+import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneInfoMessage;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PayloadType;
+import org.linphone.core.PresenceActivityType;
+import org.linphone.core.PresenceModel;
+import org.linphone.core.PublishState;
+import org.linphone.core.SubscriptionState;
+import org.linphone.core.TunnelConfig;
+import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
+import org.linphone.mediastream.video.capture.hwconf.Hacks;
+import org.linphone.vtcsecure.LinphoneTorchFlasher;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static android.media.AudioManager.MODE_RINGTONE;
+import static android.media.AudioManager.STREAM_RING;
+import static android.media.AudioManager.STREAM_VOICE_CALL;
 
 /**
  *
@@ -625,7 +622,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		PreferencesMigrator prefMigrator = new PreferencesMigrator(mServiceContext);
 		prefMigrator.migrateRemoteProvisioningUriIfNeeded();
 		prefMigrator.migrateSharingServerUrlIfNeeded();
-		
+
 		if (prefMigrator.isMigrationNeeded()) {
 			prefMigrator.doMigration();
 		}
@@ -682,7 +679,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			BluetoothManager.getInstance().initBluetooth();
 		}
         resetCameraFromPreferences();
-        
+
 		mLc.setFileTransferServer(LinphonePreferences.instance().getSharingPictureServerUrl());
 	}
 
@@ -1401,7 +1398,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		Log.d("RTT: Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
-
+		if(!InCallActivity.instance().incoming_chat_initiated){
+			InCallActivity.instance().create_new_incoming_bubble();
+			InCallActivity.instance().incoming_chat_initiated=true;
+		}
 		if (!cr.isRemoteComposing()) {
 			Log.d("RTT: remote is not composing, getChar() returns: " + cr.getChar());
 			return;
@@ -1424,16 +1424,21 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
 		} else if (character == (long)0x2028) {
 			Log.d("RTT: received Line Separator");
-			incomingTextView.setText(currentText + "\n");
+			InCallActivity.instance().create_new_incoming_bubble();
 		} else if (character == 10) {
 			Log.d("RTT: received newline");
 			incomingTextView.append(System.getProperty("line.separator"));
+			InCallActivity.instance().create_new_incoming_bubble();
 		} else { // regular character
+			if(InCallActivity.instance().rttIncomingBubbleCount==0){
+				Log.d("There was no incoming bubble to send text to, so now we must make one.");
+				incomingTextView=InCallActivity.instance().create_new_incoming_bubble();
+			}
 			incomingTextView.setText(currentText + (char)character);
 		}
 
-		int scroll_amount = (incomingTextView.getLineCount() * incomingTextView.getLineHeight()) - (incomingTextView.getBottom() - incomingTextView.getTop());
-		incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
+		//int scroll_amount = (incomingTextView.getLineCount() * incomingTextView.getLineHeight()) - (incomingTextView.getBottom() - incomingTextView.getTop());
+		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
 	}
 
 	public void setDefaultRttPreference() {
