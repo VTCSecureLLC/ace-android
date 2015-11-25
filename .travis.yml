@@ -76,6 +76,7 @@ before_script:
 - echo "Submodule list before fetching all the tags"
 - git submodule
 - git fetch --all
+- ( cd submodule/linphone ; git fetch --all )
 - echo "Submodule list after fetching all the tags"
 - git submodule
 - echo "Finished updating submodules"
