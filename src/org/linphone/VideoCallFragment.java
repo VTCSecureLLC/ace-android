@@ -17,24 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import org.linphone.compatibility.Compatibility;
-import org.linphone.compatibility.CompatibilityScaleGestureDetector;
-import org.linphone.compatibility.CompatibilityScaleGestureListener;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.mediastream.Log;
-import org.linphone.mediastream.video.AndroidVideoWindowImpl;
-import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
-
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -45,9 +32,17 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
+
+import org.linphone.compatibility.Compatibility;
+import org.linphone.compatibility.CompatibilityScaleGestureDetector;
+import org.linphone.compatibility.CompatibilityScaleGestureListener;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneCore;
+import org.linphone.mediastream.Log;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
 
 /**
@@ -55,7 +50,7 @@ import android.widget.RelativeLayout;
  */
 public class VideoCallFragment extends Fragment implements OnGestureListener, OnDoubleTapListener, CompatibilityScaleGestureListener {
 	private SurfaceView mVideoView;
-	private SurfaceView mCaptureView;
+	public static SurfaceView mCaptureView;
 	private AndroidVideoWindowImpl androidVideoWindowImpl;
 	private GestureDetector mGestureDetector;
 	private float mZoomFactor = 1.f;
@@ -76,6 +71,8 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
+
+
 		mCaptureView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // Warning useless because value is ignored and automatically set by new APIs.
 
 		// VTCSecure - Make the preview video draggable

@@ -89,7 +89,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	
 	private static InCallActivity instance;
 
-	private Handler mControlsHandler = new Handler(); 
+	private boolean camera_mute_enabled=false;
+
+	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
 	private ImageView switchCamera;
 	private TextView pause, hangUp, dialer, video, micro, speaker, options, addCall, transfer, conference;
@@ -859,7 +861,26 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 		if (id == R.id.video) {
-			enabledOrDisabledVideo(isVideoEnabled(LinphoneManager.getLc().getCurrentCall()));	
+			if (camera_mute_enabled) {
+				video.setBackgroundResource(R.drawable.video_on);
+				LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
+				camera_mute_enabled=false;
+			} else {
+				video.setBackgroundResource(R.drawable.video_off);
+
+//				SurfaceView blankview=new SurfaceView(this){
+//					@Override
+//					protected void onDraw(Canvas canvas) {
+//						super.onDraw(canvas);
+//						Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.about_chat_over);
+//						canvas.drawColor(Color.BLACK);
+//						canvas.drawBitmap(icon, 10, 10, new Paint());
+//					}
+//				};
+				//VideoCallFragment.mCaptureView.draw(canvas);
+				LinphoneManager.getLc().setPreviewWindow(null);
+				camera_mute_enabled=true;
+			}
 		}
 		else if (id == R.id.micro) {
 			toggleMicro();
@@ -873,9 +894,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		else if (id == R.id.toggleChat) {
 			toggle_chat();
 		}
-		else if(id == R.id.incomingRTTMinimized){
-			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
-		}
+
 		else if (id == R.id.hangUp) {
 			hangUp();
 		} 
@@ -955,27 +974,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 
-	private void enabledOrDisabledVideo(final boolean isVideoEnabled) {
-		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
-		if (call == null) {
-			return;
-		}
-		
-		if (isVideoEnabled) {
-			video.setEnabled(true);
-			LinphoneCallParams params = call.getCurrentParamsCopy();
-			params.setVideoEnabled(false);
-			LinphoneManager.getLc().updateCall(call, params);
-		} else {
-			video.setEnabled(false);
-			videoProgress.setVisibility(View.VISIBLE);
-			if (!call.getRemoteParams().isLowBandwidthEnabled()) {
-				LinphoneManager.getInstance().addVideo();
-			} else {
-				displayCustomToast(getString(R.string.error_low_bandwidth), Toast.LENGTH_LONG);
-			}
-		}
-	}
+
 
 	public void displayCustomToast(final String message, final int duration) {
 		LayoutInflater inflater = getLayoutInflater();
