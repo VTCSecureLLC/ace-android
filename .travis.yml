@@ -73,6 +73,12 @@ before_script:
 - if [ ! -d submodules/mswebrtc/webrtc/.git ]; then rm -fr submodules/mswebrtc/webrtc/
   ; git clone git://git.linphone.org/webrtc.git submodules/mswebrtc/webrtc ; fi
 - git submodule update --init --recursive
+- echo "Submodule list before fetching all the tags"
+- git submodule
+- git fetch --all
+- ( cd submodules/linphone ; git fetch --all )
+- echo "Submodule list after fetching all the tags"
+- git submodule
 - echo "Finished updating submodules"
 - android list target -c
 script:
