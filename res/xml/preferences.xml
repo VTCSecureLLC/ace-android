@@ -64,6 +64,24 @@
 			android:key=""/>
 	</PreferenceScreen>
 
+	<PreferenceScreen
+		android:title="@string/pref_summary_settings"
+		android:key="@string/pref_summary_settings_key"
+		android:shouldDisableView="true">
+		<Preference
+			android:title="@string/pref_summary_view_tss"
+			android:key="@string/pref_summary_view_tss_key"/>
+		<Preference
+			android:title="@string/pref_summary_send_tss"
+			android:key="@string/pref_summary_send_tss_key"/>
+		<Preference
+			android:title="@string/pref_summary_show_advanced"
+			android:key="@string/pref_summary_show_advanced_key"/>
+		<Preference
+			android:title="@string/pref_summary_show_debug"
+			android:key="@string/pref_summary_show_debug_key"/>
+	</PreferenceScreen>
+
     <Preference
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>
