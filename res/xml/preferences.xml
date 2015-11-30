@@ -30,8 +30,12 @@
 		android:title="@string/pref_av_mute_mic"
 		android:key="@string/pref_av_mute_mic_key"/>
 	<CheckBoxPreference
-		android:title="@string/pref_av_echo_cancel"
-		android:key="@string/pref_av_echo_cancel_key"/>
+		android:title="@string/pref_echo_cancellation"
+		android:key="@string/pref_echo_cancellation_key"
+		android:summary="@string/pref_echo_cancellation_summary"/>
+	<Preference
+		android:title="@string/pref_echo_canceller_calibration"
+		android:key="@string/pref_echo_canceller_calibration_key"/>
 	<CheckBoxPreference
 		android:title="@string/pref_av_show_self_view"
 		android:key="@string/pref_av_show_self_view_key"/>
