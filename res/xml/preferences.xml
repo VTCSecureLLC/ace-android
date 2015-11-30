@@ -55,6 +55,15 @@
 			android:key="@string/pref_theme_force_508_key"/>
 	</PreferenceScreen>
 
+	<PreferenceScreen
+		android:title="@string/pref_text_settings"
+		android:key="@string/pref_text_settings_key"
+		android:shouldDisableView="true">
+		<Preference
+			android:title=""
+			android:key=""/>
+	</PreferenceScreen>
+
     <Preference
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>

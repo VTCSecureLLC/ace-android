@@ -449,4 +449,7 @@
   <string name="pref_theme_background_color_setting">Background Color</string>
   <string name="pref_theme_force_508_key">pref_theme_force_508_key</string>
   <string name="pref_theme_force_508">Force 508</string>
+
+  <string name="pref_text_settings_key">pref_text_settings_key</string>
+  <string name="pref_text_settings">Text</string>
 </resources>
