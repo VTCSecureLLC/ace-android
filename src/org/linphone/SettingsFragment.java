@@ -762,9 +762,14 @@ public class SettingsFragment extends PreferencesListFragment {
 		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(false);
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_mute_mic_key))).setChecked(false);
+		//
+		CheckBoxPreference echoCancellation = (CheckBoxPreference) findPreference(getString(R.string.pref_echo_cancellation_key));
+		echoCancellation.setChecked(mPrefs.isEchoCancellationEnabled());
 
-		//Todo: VATRP-1018 -- Add echo cancellation
-		((CheckBoxPreference)findPreference(getString(R.string.pref_av_echo_cancel_key))).setChecked(false);
+		if (mPrefs.isEchoCancellationEnabled()) {
+			Preference echoCalibration = findPreference(getString(R.string.pref_echo_canceller_calibration_key));
+			echoCalibration.setSummary(String.format(getString(R.string.ec_calibrated), mPrefs.getEchoCalibration()));
+		}
 
 		//Todo: VATRP-1019 -- Add self view toggle
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
@@ -789,14 +794,31 @@ public class SettingsFragment extends PreferencesListFragment {
 				return true;
 			}
 		});
-		//Todo: VATRP-1018 -- Add echo cancellation
-		findPreference(getString(R.string.pref_av_echo_cancel_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		//
+		findPreference(getString(R.string.pref_echo_cancellation_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				boolean value = (Boolean) newValue;
+				boolean enabled = (Boolean) newValue;
+				mPrefs.setEchoCancellation(enabled);
 				return true;
 			}
 		});
+
+		findPreference(getString(R.string.pref_echo_canceller_calibration_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				synchronized (SettingsFragment.this) {
+					try {
+						LinphoneManager.getInstance().startEcCalibration(mListener);
+						preference.setSummary(R.string.ec_calibrating);
+					} catch (LinphoneCoreException e) {
+						Log.w(e, "Cannot calibrate EC");
+					}
+				}
+				return true;
+			}
+		});
+		//
 		//Todo: VATRP-1019 -- Add self view toggle
 		findPreference(getString(R.string.pref_av_show_self_view_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
