@@ -32,6 +32,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.widget.Toast;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -112,14 +113,14 @@ public class SettingsFragment extends PreferencesListFragment {
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
 		initGeneralSettings();
 		initAudioVideoSettings();
-		
+		initThemeSettings();
+
 		initTunnelSettings();
 		initAudioSettings();
 		initVideoSettings();
 		initTextSettings();
 		initCallSettings();
 		initNetworkSettings();
-		initThemeSettings();
 		initAdvancedSettings();
 
 		// Add action on About button
@@ -156,13 +157,13 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void setListeners() {
 		setGeneralPreferencesListener();
 		setAudioVideoPreferencesListener();
+		setThemePreferencesListener();
 
 		setTunnelPreferencesListener();
 		setAudioPreferencesListener();
 		setVideoPreferencesListener();
 		setCallPreferencesListener();
 		setNetworkPreferencesListener();
-		setThemePreferencesListener();
 		setBackgroundThemePreferencesListener();
 		setAdvancedPreferencesListener();
 	}
@@ -686,44 +687,23 @@ public class SettingsFragment extends PreferencesListFragment {
 		});
 	}
 
-	private void initThemeSettings() {
-		initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
-		initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
-	}
-	private void setThemePreferencesListener() {
-		findPreference(getString(R.string.pref_theme_app_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Tech");
-
-				preference.setSummary(newValue.toString());
-				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
-				editor.commit();
-				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
-				return true;
-			}
-		});
-
-
-	};
 	private void setBackgroundThemePreferencesListener() {
-		findPreference(getString(R.string.pref_theme_background_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//		findPreference(getString(R.string.pref_theme_background_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//
+//				String color = prefs.getString(getString(R.string.pref_theme_background_color_key), "Default");
+//
+//				preference.setSummary(newValue.toString());
+//				editor.putString(getString(R.string.pref_theme_background_color_key), newValue.toString());
+//				editor.commit();
+//				LinphoneActivity.setBackgroundColorTheme(LinphoneActivity.ctx);
+//				return true;
+//			}
+//		});
+//
 
-				String color = prefs.getString(getString(R.string.pref_theme_background_color_key), "Default");
-
-				preference.setSummary(newValue.toString());
-				editor.putString(getString(R.string.pref_theme_background_color_key), newValue.toString());
-				editor.commit();
-				LinphoneActivity.setBackgroundColorTheme(LinphoneActivity.ctx);
-				return true;
-			}
-		});
-
-
-	};
+	}
 
 	private void initGeneralSettings(){
 		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
@@ -834,6 +814,50 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 	}
+
+
+	private void initThemeSettings() {
+
+		//initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
+		//initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
+
+		((Preference)findPreference(getString(R.string.pref_theme_foreground_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				//Todo: VATRP-1022 -- Add foreground / background color picker
+				return true;
+			}
+		});
+		((Preference)findPreference(getString(R.string.pref_theme_background_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				//Todo: VATRP-1022 -- Add foreground / background color picker
+				return true;
+			}
+		});
+
+		//Todo: VATRP-1024 Add 508 compliance logic
+		((CheckBoxPreference)findPreference(getString(R.string.pref_theme_force_508_key))).setChecked(false);
+
+	}
+	private void setThemePreferencesListener() {
+
+
+//		findPreference(getString(R.string.pref_theme_app_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//
+//				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Tech");
+//
+//				preference.setSummary(newValue.toString());
+//				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
+//				editor.commit();
+//				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
+//				return true;
+//			}
+//		});
+
+	};
 
 	private void initTextSettings() {
 		Log.d("RTT: initTextSettings()");

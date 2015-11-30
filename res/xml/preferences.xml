@@ -20,24 +20,39 @@
 	</PreferenceScreen>
 
 	<PreferenceScreen
-		android:title="@string/pref_audio_video_settings"
-		android:key="@string/pref_audio_video_settings_key"
+	android:title="@string/pref_audio_video_settings"
+	android:key="@string/pref_audio_video_settings_key"
+	android:shouldDisableView="true">
+	<CheckBoxPreference
+		android:title="@string/pref_av_speaker_mute"
+		android:key="@string/pref_av_speaker_mute_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_av_mute_mic"
+		android:key="@string/pref_av_mute_mic_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_av_echo_cancel"
+		android:key="@string/pref_av_echo_cancel_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_av_show_self_view"
+		android:key="@string/pref_av_show_self_view_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_av_show_preview"
+		android:key="@string/pref_av_show_preview_key"/>
+	</PreferenceScreen>
+
+	<PreferenceScreen
+		android:title="@string/pref_theme_settings"
+		android:key="@string/pref_theme_settings_key"
 		android:shouldDisableView="true">
+		<Preference
+			android:title="@string/pref_theme_foreground_color_setting"
+			android:key="@string/pref_theme_foreground_color_setting_key"/>
+		<Preference
+			android:title="@string/pref_theme_background_color_setting"
+			android:key="@string/pref_theme_background_color_setting_key"/>
 		<CheckBoxPreference
-			android:title="@string/pref_av_speaker_mute"
-			android:key="@string/pref_av_speaker_mute_key"/>
-		<CheckBoxPreference
-			android:title="@string/pref_av_mute_mic"
-			android:key="@string/pref_av_mute_mic_key"/>
-		<CheckBoxPreference
-			android:title="@string/pref_av_echo_cancel"
-			android:key="@string/pref_av_echo_cancel_key"/>
-		<CheckBoxPreference
-			android:title="@string/pref_av_show_self_view"
-			android:key="@string/pref_av_show_self_view_key"/>
-		<CheckBoxPreference
-			android:title="@string/pref_av_show_preview"
-			android:key="@string/pref_av_show_preview_key"/>
+			android:title="@string/pref_theme_force_508"
+			android:key="@string/pref_theme_force_508_key"/>
 	</PreferenceScreen>
 
     <Preference
@@ -254,40 +269,40 @@
 		</PreferenceScreen>
 
 
-		<PreferenceScreen
-			android:title="@string/pref_theme">
+		<!--<PreferenceScreen-->
+			<!--android:title="@string/pref_theme">-->
 
 
-			<PreferenceCategory
-				android:title="Color"
-				android:key="Color"/>
+			<!--<PreferenceCategory-->
+				<!--android:title="Color"-->
+				<!--android:key="Color"/>-->
 
-			<ListPreference
-				android:title="App Color"
-				android:key="@string/pref_theme_app_color_key"/>
+			<!--<ListPreference-->
+				<!--android:title="App Color"-->
+				<!--android:key="@string/pref_theme_app_color_key"/>-->
 
-			<ListPreference
-				android:title="Background Color"
-				android:key="@string/pref_theme_background_color_key"/>
+			<!--<ListPreference-->
+				<!--android:title="Background Color"-->
+				<!--android:key="@string/pref_theme_background_color_key"/>-->
 
-<!--
-			<PreferenceCategory
-				android:title="Font"
-				android:key="Font"/>
+<!--&lt;!&ndash;-->
+			<!--<PreferenceCategory-->
+				<!--android:title="Font"-->
+				<!--android:key="Font"/>-->
 
-			<ListPreference
-				android:title="Font Style"
-				android:key="@string/pref_theme_font_style_key"/>
+			<!--<ListPreference-->
+				<!--android:title="Font Style"-->
+				<!--android:key="@string/pref_theme_font_style_key"/>-->
 
-			<ListPreference
-				android:title="Font Size"
-				android:key="@string/pref_theme_font_size_key"/>
+			<!--<ListPreference-->
+				<!--android:title="Font Size"-->
+				<!--android:key="@string/pref_theme_font_size_key"/>-->
 
-			<ListPreference
-				android:title="Font Color"
-				android:key="@string/pref_theme_font_color_key"/>
--->
-		</PreferenceScreen>
+			<!--<ListPreference-->
+				<!--android:title="Font Color"-->
+				<!--android:key="@string/pref_theme_font_color_key"/>-->
+<!--&ndash;&gt;-->
+		<!--</PreferenceScreen>-->
 
 
 		<PreferenceScreen
