@@ -32,6 +32,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.widget.Toast;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -110,7 +111,9 @@ public class SettingsFragment extends PreferencesListFragment {
 	// Inits the values or the listener on some settings
 	private void initSettings() {
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
-
+		initGeneralSettings();
+		initAudioVideoSettings();
+		initThemeSettings();
 
 		initTunnelSettings();
 		initAudioSettings();
@@ -118,7 +121,6 @@ public class SettingsFragment extends PreferencesListFragment {
 		initTextSettings();
 		initCallSettings();
 		initNetworkSettings();
-		initThemeSettings();
 		initAdvancedSettings();
 
 		// Add action on About button
@@ -153,12 +155,15 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	// Sets listener for each preference to update the matching value in linphonecore
 	private void setListeners() {
+		setGeneralPreferencesListener();
+		setAudioVideoPreferencesListener();
+		setThemePreferencesListener();
+
 		setTunnelPreferencesListener();
 		setAudioPreferencesListener();
 		setVideoPreferencesListener();
 		setCallPreferencesListener();
 		setNetworkPreferencesListener();
-		setThemePreferencesListener();
 		setBackgroundThemePreferencesListener();
 		setAdvancedPreferencesListener();
 	}
@@ -682,42 +687,175 @@ public class SettingsFragment extends PreferencesListFragment {
 		});
 	}
 
+	private void setBackgroundThemePreferencesListener() {
+//		findPreference(getString(R.string.pref_theme_background_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//
+//				String color = prefs.getString(getString(R.string.pref_theme_background_color_key), "Default");
+//
+//				preference.setSummary(newValue.toString());
+//				editor.putString(getString(R.string.pref_theme_background_color_key), newValue.toString());
+//				editor.commit();
+//				LinphoneActivity.setBackgroundColorTheme(LinphoneActivity.ctx);
+//				return true;
+//			}
+//		});
+//
+
+	}
+
+	private void initGeneralSettings(){
+		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
+
+		boolean isSipEncryptionEnabled = false; //VATRP-1007
+		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
+
+		((CheckBoxPreference) findPreference(getString(R.string.pref_wifi_only_key))).setChecked(mPrefs.isWifiOnlyEnabled());
+
+		CheckBoxPreference autoAnswer = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_answer_key));
+		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
+
+		if (auto_answer) {
+			autoAnswer.setChecked(true);
+			autoAnswer.setEnabled(true);
+			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
+			editor.commit();
+		} else {
+			autoAnswer.setChecked(false);
+			autoAnswer.setEnabled(true);
+			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
+			editor.commit();
+		}
+	}
+
+	private void setGeneralPreferencesListener(){
+		findPreference(getString(R.string.pref_autostart_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				mPrefs.setAutoStart(value);
+				return true;
+			}
+		});
+
+		//Todo: VATRP-1007 -- Add SIP Encryption logic on toggle
+		findPreference(getString(R.string.pref_general_sip_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+
+		findPreference(getString(R.string.pref_wifi_only_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				mPrefs.setWifiOnlyEnabled((Boolean) newValue);
+				return true;
+			}
+		});
+
+	}
+
+	private void initAudioVideoSettings(){
+		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(false);
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_mute_mic_key))).setChecked(false);
+
+		//Todo: VATRP-1018 -- Add echo cancellation
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_echo_cancel_key))).setChecked(false);
+
+		//Todo: VATRP-1019 -- Add self view toggle
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
+
+		//Todo: VATRP-1020 Add global camera preview toggle
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
+	}
+
+	private void setAudioVideoPreferencesListener(){
+		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
+		findPreference(getString(R.string.pref_av_speaker_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		findPreference(getString(R.string.pref_av_mute_mic_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		//Todo: VATRP-1018 -- Add echo cancellation
+		findPreference(getString(R.string.pref_av_echo_cancel_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		//Todo: VATRP-1019 -- Add self view toggle
+		findPreference(getString(R.string.pref_av_show_self_view_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		//Todo: VATRP-1020 Add global camera preview toggle
+		findPreference(getString(R.string.pref_av_show_preview_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+	}
+
+
 	private void initThemeSettings() {
-		initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
-		initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
+
+		//initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
+		//initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
+
+		((Preference)findPreference(getString(R.string.pref_theme_foreground_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				//Todo: VATRP-1022 -- Add foreground / background color picker
+				return true;
+			}
+		});
+		((Preference)findPreference(getString(R.string.pref_theme_background_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				//Todo: VATRP-1022 -- Add foreground / background color picker
+				return true;
+			}
+		});
+
+		//Todo: VATRP-1024 Add 508 compliance logic
+		((CheckBoxPreference)findPreference(getString(R.string.pref_theme_force_508_key))).setChecked(false);
+
 	}
 	private void setThemePreferencesListener() {
-		findPreference(getString(R.string.pref_theme_app_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Tech");
-
-				preference.setSummary(newValue.toString());
-				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
-				editor.commit();
-				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
-				return true;
-			}
-		});
 
 
-	};
-	private void setBackgroundThemePreferencesListener() {
-		findPreference(getString(R.string.pref_theme_background_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-
-				String color = prefs.getString(getString(R.string.pref_theme_background_color_key), "Default");
-
-				preference.setSummary(newValue.toString());
-				editor.putString(getString(R.string.pref_theme_background_color_key), newValue.toString());
-				editor.commit();
-				LinphoneActivity.setBackgroundColorTheme(LinphoneActivity.ctx);
-				return true;
-			}
-		});
-
+//		findPreference(getString(R.string.pref_theme_app_color_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//
+//				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Tech");
+//
+//				preference.setSummary(newValue.toString());
+//				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
+//				editor.commit();
+//				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
+//				return true;
+//			}
+//		});
 
 	};
 
@@ -1199,7 +1337,6 @@ public class SettingsFragment extends PreferencesListFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
 		initAccounts();
 
 		if (LinphoneActivity.isInstanciated()) {
