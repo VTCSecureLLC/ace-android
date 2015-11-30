@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<PreferenceScreen
+		android:title="@string/general_settings_title"
+		android:key="@string/pref_usm_general_settings"
+		android:shouldDisableView="true">
+	<CheckBoxPreference
+		android:title="@string/pref_autostart"
+		android:key="@string/pref_autostart_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_general_sip_encryption"
+		android:key="@string/pref_general_sip_encryption_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_wifi_only"
+		android:key="@string/pref_wifi_only_key"/>
+	<CheckBoxPreference
+		android:title="@string/pref_auto_answer"
+		android:key="@string/pref_auto_answer_key"/>
+	</PreferenceScreen>
+
     <Preference
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>

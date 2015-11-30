@@ -110,8 +110,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	// Inits the values or the listener on some settings
 	private void initSettings() {
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
-
-
+		initGeneralSettings();
 		initTunnelSettings();
 		initAudioSettings();
 		initVideoSettings();
@@ -153,6 +152,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	// Sets listener for each preference to update the matching value in linphonecore
 	private void setListeners() {
+		setGeneralPreferencesListener();
 		setTunnelPreferencesListener();
 		setAudioPreferencesListener();
 		setVideoPreferencesListener();
@@ -721,6 +721,60 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	};
 
+	private void initGeneralSettings(){
+		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
+
+		boolean isSipEncryptionEnabled = false; //VATRP-1007
+		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
+
+		((CheckBoxPreference) findPreference(getString(R.string.pref_wifi_only_key))).setChecked(mPrefs.isWifiOnlyEnabled());
+
+		CheckBoxPreference autoAnswer = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_answer_key));
+		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
+
+		if (auto_answer) {
+			autoAnswer.setChecked(true);
+			autoAnswer.setEnabled(true);
+			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
+			editor.commit();
+		} else {
+			autoAnswer.setChecked(false);
+			autoAnswer.setEnabled(true);
+			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
+			editor.commit();
+		}
+
+	}
+
+	private void setGeneralPreferencesListener(){
+		findPreference(getString(R.string.pref_autostart_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				mPrefs.setAutoStart(value);
+				return true;
+			}
+		});
+
+		//Todo: VATRP-1007 -- Add SIP Encryption logic on toggle
+		findPreference(getString(R.string.pref_general_sip_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+
+		findPreference(getString(R.string.pref_wifi_only_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				mPrefs.setWifiOnlyEnabled((Boolean) newValue);
+				return true;
+			}
+		});
+
+	}
+
 	private void initTextSettings() {
 		Log.d("RTT: initTextSettings()");
 		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
@@ -1199,7 +1253,6 @@ public class SettingsFragment extends PreferencesListFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
 		initAccounts();
 
 		if (LinphoneActivity.isInstanciated()) {
