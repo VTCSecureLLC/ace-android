@@ -19,6 +19,27 @@
 		android:key="@string/pref_auto_answer_key"/>
 	</PreferenceScreen>
 
+	<PreferenceScreen
+		android:title="@string/pref_audio_video_settings"
+		android:key="@string/pref_audio_video_settings_key"
+		android:shouldDisableView="true">
+		<CheckBoxPreference
+			android:title="@string/pref_av_speaker_mute"
+			android:key="@string/pref_av_speaker_mute_key"/>
+		<CheckBoxPreference
+			android:title="@string/pref_av_mute_mic"
+			android:key="@string/pref_av_mute_mic_key"/>
+		<CheckBoxPreference
+			android:title="@string/pref_av_echo_cancel"
+			android:key="@string/pref_av_echo_cancel_key"/>
+		<CheckBoxPreference
+			android:title="@string/pref_av_show_self_view"
+			android:key="@string/pref_av_show_self_view_key"/>
+		<CheckBoxPreference
+			android:title="@string/pref_av_show_preview"
+			android:key="@string/pref_av_show_preview_key"/>
+	</PreferenceScreen>
+
     <Preference
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>

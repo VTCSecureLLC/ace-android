@@ -111,6 +111,8 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initSettings() {
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
 		initGeneralSettings();
+		initAudioVideoSettings();
+		
 		initTunnelSettings();
 		initAudioSettings();
 		initVideoSettings();
@@ -153,6 +155,8 @@ public class SettingsFragment extends PreferencesListFragment {
 	// Sets listener for each preference to update the matching value in linphonecore
 	private void setListeners() {
 		setGeneralPreferencesListener();
+		setAudioVideoPreferencesListener();
+
 		setTunnelPreferencesListener();
 		setAudioPreferencesListener();
 		setVideoPreferencesListener();
@@ -743,7 +747,6 @@ public class SettingsFragment extends PreferencesListFragment {
 			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
 			editor.commit();
 		}
-
 	}
 
 	private void setGeneralPreferencesListener(){
@@ -773,6 +776,63 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
+	}
+
+	private void initAudioVideoSettings(){
+		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(false);
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_mute_mic_key))).setChecked(false);
+
+		//Todo: VATRP-1018 -- Add echo cancellation
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_echo_cancel_key))).setChecked(false);
+
+		//Todo: VATRP-1019 -- Add self view toggle
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
+
+		//Todo: VATRP-1020 Add global camera preview toggle
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
+	}
+
+	private void setAudioVideoPreferencesListener(){
+		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
+		findPreference(getString(R.string.pref_av_speaker_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		findPreference(getString(R.string.pref_av_mute_mic_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		//Todo: VATRP-1018 -- Add echo cancellation
+		findPreference(getString(R.string.pref_av_echo_cancel_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		//Todo: VATRP-1019 -- Add self view toggle
+		findPreference(getString(R.string.pref_av_show_self_view_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
+		//Todo: VATRP-1020 Add global camera preview toggle
+		findPreference(getString(R.string.pref_av_show_preview_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				return true;
+			}
+		});
 	}
 
 	private void initTextSettings() {

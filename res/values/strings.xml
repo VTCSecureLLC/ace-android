@@ -426,4 +426,16 @@
   <string name="general_settings_title">General</string>
   <string name="pref_general_sip_encryption_key">pref_general_sip_encryption_key</string>
   <string name="pref_general_sip_encryption">SIP Encryption</string>
+  <string name="pref_audio_video_settings_key">pref_audio_video_settings_key</string>
+  <string name="pref_audio_video_settings">Audio/Video</string>
+  <string name="pref_av_speaker_mute_key">pref_av_speaker_mute_key</string>
+  <string name="pref_av_speaker_mute">Speaker Mute</string>
+  <string name="pref_av_mute_mic_key">pref_av_mute_mic_key</string>
+  <string name="pref_av_mute_mic">Mic Mute</string>
+  <string name="pref_av_show_self_view_key">pref_av_show_self_view_key</string>
+  <string name="pref_av_show_self_view">Show Self-View</string>
+  <string name="pref_av_show_preview_key">pref_av_show_preview_key</string>
+  <string name="pref_av_show_preview">Show Preview</string>
+  <string name="pref_av_echo_cancel_key">pref_av_echo_cancel_key</string>
+  <string name="pref_av_echo_cancel">Echo Cancel</string>
 </resources>
