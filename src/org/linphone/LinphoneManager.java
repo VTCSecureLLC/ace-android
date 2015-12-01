@@ -1397,7 +1397,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
-
 		Log.d("RTT: Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
 		if(!InCallActivity.instance().incoming_chat_initiated){
 			InCallActivity.instance().create_new_incoming_bubble();
@@ -1418,7 +1417,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	private void updateIncomingTextView(long character) {
-		Log.d("updateIncomingTextView(character)"+character);
 		if (incomingTextView == null) return;
 
 		String currentText = incomingTextView.getText().toString();

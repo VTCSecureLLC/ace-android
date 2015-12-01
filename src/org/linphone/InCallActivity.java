@@ -535,7 +535,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(!isRTTMaximized){
 			showRTTinterface();
 		}
-		final TextView tv=new TextView(this);
+		TextView tv=new TextView(this);
 		//tv.setText("The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  ");
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
@@ -548,21 +548,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextColor(Color.parseColor("#000000"));
 
 		LinphoneManager.getInstance().setIncomingTextView(tv);
-		runOnUiThread(new Runnable(){
-			public void run() {
-				((LinearLayout) rttContainerView).addView(tv);
-			}
-		});
+		((LinearLayout)rttContainerView).addView(tv);
 		rttIncomingBubbleCount++;
 		return tv;
 	}
 	private void showRTTinterface() {
-		runOnUiThread(new Runnable(){
-			public void run() {
-				isRTTMaximized = true;
-				rtt_scrollview.setVisibility(View.VISIBLE);
-			}
-		});
+		isRTTMaximized = true;
+		rtt_scrollview.setVisibility(View.VISIBLE);
 	}
 	@Override
 	public void onBackPressed()
