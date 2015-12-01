@@ -233,9 +233,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         				status.refreshStatusItems(call, isVideoEnabled(call));
         				if(isVideoEnabled(call)){
         					showVideoView();
-        				}
-        			}
-        		}
+						}
+					}
+				}
 
         		if (state == State.StreamsRunning) {
         			switchVideo(isVideoEnabled(call));

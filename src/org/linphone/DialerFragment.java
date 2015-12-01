@@ -21,11 +21,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -38,6 +41,10 @@ import android.widget.TextView;
 
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.MediastreamerAndroidContext;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.mediastream.video.capture.AndroidVideoApi5JniWrapper;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
@@ -58,10 +65,12 @@ public class DialerFragment extends Fragment {
 	private AddressText mAddress;
 	private CallButton mCall;
 	private ImageView mAddContact;
+	private static SurfaceView cameraPreview;
+	private AndroidVideoWindowImpl androidVideoWindowImpl;
 	private OnClickListener addContactListener, cancelListener, transferListener;
 	private boolean shouldEmptyAddressField = true;
 	private boolean userInteraction = false;
-
+	private Camera camera;
 	String color_theme;
 	String background_color_theme;
 	
@@ -79,9 +88,6 @@ public class DialerFragment extends Fragment {
 
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
 		mAddress.setDialerFragment(this);
-
-
-
 
 
 
@@ -115,16 +121,8 @@ public class DialerFragment extends Fragment {
 			sipDomainSpinner.setVisibility(View.GONE);
 		}
 
-
-
-
-
-
 		EraseButton erase = (EraseButton) view.findViewById(R.id.Erase);
 		erase.setAddressWidget(mAddress);
-
-
-
 
 
 		mCall = (CallButton) view.findViewById(R.id.Call);
@@ -148,8 +146,6 @@ public class DialerFragment extends Fragment {
 			}else{
 					mCall.setImageResource(R.drawable.call);
 			}
-
-
 		}
 
 		AddressAware numpad = (AddressAware) view.findViewById(R.id.Dialer);
@@ -158,8 +154,6 @@ public class DialerFragment extends Fragment {
 		}
 
 		mAddContact = (ImageView) view.findViewById(R.id.addContact);
-
-
 
 		addContactListener = new OnClickListener() {
 			@Override
@@ -228,7 +222,6 @@ public class DialerFragment extends Fragment {
 				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
 				erase.setImageResource(R.drawable.backspace);
 				mAddContact.setImageResource(R.drawable.add_contact);
-
 		}
 
 		//set background color independent
@@ -244,6 +237,56 @@ public class DialerFragment extends Fragment {
 			view.setBackgroundResource(R.drawable.background);
 		}
 
+		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+		boolean isPreviewEnabled = true; //prefs.getBoolean(previewIsEnabledKey, true);
+		if(isPreviewEnabled) {
+			cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
+			if (cameraPreview != null) {
+				cameraPreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // Warning useless because value is ignored and automatically set by new APIs.
+				LinphoneManager.getLc().enableVideo(true, true);
+				LinphoneManager.getLc().setPreviewWindow(cameraPreview);
+
+					androidVideoWindowImpl = new AndroidVideoWindowImpl(cameraPreview, cameraPreview, new AndroidVideoWindowImpl.VideoWindowListener() {
+						@Override
+						public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
+							LinphoneManager.getLc().setVideoWindow(vw);
+						}
+
+						@Override
+						public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
+							LinphoneCore lc = LinphoneManager.getLc();
+							if (lc != null) {
+								lc.setVideoWindow(null);
+							}
+						}
+
+						@Override
+						public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
+							try {
+								LinphoneManager.getLc().setVideoDevice(LinphoneManager.getLc().getVideoDevice());
+								camera = Camera.open(1);
+								cameraPreview = surface;
+								cameraPreview = (SurfaceView)view.findViewById(R.id.dialerCameraPreview);
+								LinphoneManager.getLc().setPreviewWindow(cameraPreview);
+								camera.setPreviewDisplay(cameraPreview.getHolder());
+								camera.startPreview();
+							}
+							catch (Exception exc) {
+								exc.printStackTrace();
+							}
+
+
+						}
+
+						@Override
+						public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
+							// Remove references kept in jni code and restart camera
+							LinphoneManager.getLc().setPreviewWindow(null);
+						}
+					});
+			}
+		}
+
 		return view;
 	}
 
@@ -255,11 +298,22 @@ public class DialerFragment extends Fragment {
 	}
 
 	@Override
+	public void onPause() {
+		super.onPause();
+		if (androidVideoWindowImpl != null) {
+			synchronized (androidVideoWindowImpl) {
+				/*
+				 * this call will destroy native opengl renderer which is used by
+				 * androidVideoWindowImpl
+				 */
+				LinphoneManager.getLc().setVideoWindow(null);
+			}
+		}
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
-
-		
-		
 		
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
@@ -272,7 +326,25 @@ public class DialerFragment extends Fragment {
 		} else {
 			shouldEmptyAddressField = true;
 		}
+
+		if (androidVideoWindowImpl != null) {
+			synchronized (androidVideoWindowImpl) {
+				LinphoneManager.getLc().setVideoWindow(androidVideoWindowImpl);
+				//LinphoneManager.getLc().setPreviewWindow(cameraPreview);
+			}
+		}
 		resetLayout(isCallTransferOngoing);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		cameraPreview = null;
+		if (androidVideoWindowImpl != null) {
+			// Prevent linphone from crashing if correspondent hang up while you are rotating
+			androidVideoWindowImpl.release();
+			androidVideoWindowImpl = null;
+		}
 	}
 
 	public void resetLayout(boolean callTransfer) {
@@ -294,9 +366,6 @@ public class DialerFragment extends Fragment {
 			mAddContact.setImageResource(R.drawable.cancel);
 			mAddContact.setOnClickListener(cancelListener);
 		} else {
-
-
-
 			mAddContact.setEnabled(true);
 
 			if(color_theme.equals("Red")) {
