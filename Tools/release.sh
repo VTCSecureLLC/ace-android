@@ -6,6 +6,8 @@ HOCKEYAPP_APP_ID=${HOCKEYAPP_APP_ID:-d6280d4d277d6876c709f4143964f0dc}
 
 # Only deploy master branch builds
 
+echo TRAVIS_BRANCH=$TRAVIS_BRANCH
+
 if [ -z "$TRAVIS_BRANCH" ] ; then
 echo "TRAVIS_BRANCH not found. Deploy skipped"
 exit 0

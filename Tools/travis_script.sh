@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -ex
 
 echo "Running make"
 
@@ -26,7 +26,6 @@ MUTED_PID=$!
 echo "Running make for dependencies"
 make >> /tmp/make.out 2>&1
 
-echo "Ignore the make error above. We expect it to fail at the moment. Running gradle to successfully accomplish the actual build."
 gradle build >> /tmp/make.out 2>&1
 MAKE_RESULT=$?
 
@@ -35,3 +34,4 @@ kill $MUTED_PID
 
 echo exit $MAKE_RESULT
 exit $MAKE_RESULT
+
