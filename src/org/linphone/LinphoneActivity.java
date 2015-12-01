@@ -161,8 +161,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		         .show();
 		}
 
-		if (isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		if (isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else if (!isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
