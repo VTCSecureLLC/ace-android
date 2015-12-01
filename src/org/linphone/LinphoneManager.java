@@ -53,7 +53,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.linphone.compatibility.Compatibility;
@@ -147,7 +146,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private static List<LinphoneChatMessage> mPendingChatFileMessage;
 	private static LinphoneChatMessage mUploadPendingFileMessage;
 
-	private TextView incomingTextView;
+
 
 	public String wizardLoginViewDomain = null;
 
@@ -1387,13 +1386,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		Log.d("Publish state changed to " + state + " for event name " + ev.getEventName());
 	}
 
-	/**
-	 * Set the TextView used to display incoming text.
-	 * @param tv the TextView to use
-	 */
-	public void setIncomingTextView(TextView tv) {
-		incomingTextView = tv;
-	}
 
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
@@ -1410,36 +1402,13 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		if (lc.isIncall() && lc.getCurrentCall().getCurrentParamsCopy().realTimeTextEnabled()) {
 			long charCode = cr.getChar();
 			Log.d(String.format("RTT: isComposingReceived, got character (%s): %s", charCode, (char) charCode));
-			updateIncomingTextView(charCode);
+			InCallActivity.instance().updateIncomingTextView(charCode);
 		} else {
 			Log.d("RTT: isComposingReceived, not in call or RTT not enabled");
 		}
 	}
 
-	private void updateIncomingTextView(long character) {
-		if (incomingTextView == null) return;
 
-		String currentText = incomingTextView.getText().toString();
-		if (character == 8) {// backspace
-			incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
-		} else if (character == (long)0x2028) {
-			Log.d("RTT: received Line Separator");
-			InCallActivity.instance().create_new_incoming_bubble();
-		} else if (character == 10) {
-			Log.d("RTT: received newline");
-			incomingTextView.append(System.getProperty("line.separator"));
-			InCallActivity.instance().create_new_incoming_bubble();
-		} else { // regular character
-			if(InCallActivity.instance().rttIncomingBubbleCount==0){
-				Log.d("There was no incoming bubble to send text to, so now we must make one.");
-				incomingTextView=InCallActivity.instance().create_new_incoming_bubble();
-			}
-			incomingTextView.setText(currentText + (char)character);
-		}
-
-		//int scroll_amount = (incomingTextView.getLineCount() * incomingTextView.getLineHeight()) - (incomingTextView.getBottom() - incomingTextView.getTop());
-		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
-	}
 
 	public void setDefaultRttPreference() {
 		Log.d("RTT: setDefaultRttPreference");

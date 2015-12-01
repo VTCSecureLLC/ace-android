@@ -133,6 +133,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
 
+	private TextView incomingTextView;
+
 	public static InCallActivity instance() {
 		return instance;
 	}
@@ -531,6 +533,35 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		imm.showSoftInput(et, InputMethodManager.SHOW_FORCED);
 		rttOutgoingBubbleCount++;
 	}
+	public void updateIncomingTextView(final long character) {
+		runOnUiThread(new Runnable(){
+			public void run() {
+				if (incomingTextView == null) return;
+
+				String currentText = incomingTextView.getText().toString();
+				if (character == 8) {// backspace
+					incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
+				} else if (character == (long)0x2028) {
+					Log.d("RTT: received Line Separator");
+					InCallActivity.instance().create_new_incoming_bubble();
+				} else if (character == 10) {
+					Log.d("RTT: received newline");
+					incomingTextView.append(System.getProperty("line.separator"));
+					InCallActivity.instance().create_new_incoming_bubble();
+				} else { // regular character
+					if(InCallActivity.instance().rttIncomingBubbleCount==0){
+						Log.d("There was no incoming bubble to send text to, so now we must make one.");
+						incomingTextView=InCallActivity.instance().create_new_incoming_bubble();
+					}
+					incomingTextView.setText(currentText + (char)character);
+				}
+			}
+		});
+
+
+		//int scroll_amount = (incomingTextView.getLineCount() * incomingTextView.getLineHeight()) - (incomingTextView.getBottom() - incomingTextView.getTop());
+		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
+	}
 	public TextView create_new_incoming_bubble(){
 		if(!isRTTMaximized){
 			showRTTinterface();
@@ -539,7 +570,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//tv.setText("The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  ");
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
-		lp1.gravity=Gravity.RIGHT;
+		lp1.gravity = Gravity.RIGHT;
 		tv.setLayoutParams(lp1);
 		tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
 		tv.setSingleLine(false);
@@ -547,14 +578,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextAppearance(this, R.style.RttTextStyle);
 		tv.setTextColor(Color.parseColor("#000000"));
 
-		LinphoneManager.getInstance().setIncomingTextView(tv);
+		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
 		rttIncomingBubbleCount++;
 		return tv;
 	}
 	private void showRTTinterface() {
-		isRTTMaximized = true;
-		rtt_scrollview.setVisibility(View.VISIBLE);
+		runOnUiThread(new Runnable() {
+			public void run() {
+				isRTTMaximized = true;
+				rtt_scrollview.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 	@Override
 	public void onBackPressed()
