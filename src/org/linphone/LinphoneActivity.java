@@ -416,7 +416,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		}
 	}
-	private boolean isTablet() {
+	public boolean isTablet() {
 		return getResources().getBoolean(R.bool.isTablet);
 	}
 

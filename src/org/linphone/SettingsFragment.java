@@ -781,7 +781,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		//Todo: VATRP-1020 Add global camera preview toggle
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
-		boolean isPreviewEnabled = prefs.getBoolean(selfVideoIsEnabledKey, true);
+		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_preview_key))).setChecked(isPreviewEnabled);
 	}
 

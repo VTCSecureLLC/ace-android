@@ -238,7 +238,10 @@ public class DialerFragment extends Fragment {
 		}
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
-		boolean isPreviewEnabled = true; //prefs.getBoolean(previewIsEnabledKey, true);
+		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
+		if(!LinphoneActivity.instance().isTablet()){
+			isPreviewEnabled = false;
+		}
 		if(isPreviewEnabled) {
 			cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
 			if (cameraPreview != null) {
@@ -284,9 +287,8 @@ public class DialerFragment extends Fragment {
 							LinphoneManager.getLc().setPreviewWindow(null);
 						}
 					});
+				}
 			}
-		}
-
 		return view;
 	}
 
