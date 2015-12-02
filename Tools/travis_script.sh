@@ -7,9 +7,6 @@ touch /tmp/make.out
 
 export RELEASE_NOTES="$(git log -1 --pretty=format:%B)"
 
-echo "Preparing dependencies for make"
-gradle prepareDebugDependencies
- 
 (
   COUNTER=0
   while [  $COUNTER -lt 30 ]; do
@@ -25,9 +22,6 @@ MUTED_PID=$!
 
 echo "Running make for dependencies"
 make >> /tmp/make.out 2>&1
-
-gradle build >> /tmp/make.out 2>&1
-MAKE_RESULT=$?
 
 tail -1000 /tmp/make.out
 kill $MUTED_PID

@@ -124,10 +124,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
 				mCaptureView = surface;
 			//	isH263();
-
 				LinphoneManager.getLc().setPreviewWindow(mCaptureView);
-
-
 			}
 
 			@Override
