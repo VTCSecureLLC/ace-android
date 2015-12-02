@@ -18,9 +18,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
@@ -59,19 +61,21 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	private InCallActivity inCallActivity;
 	private int dx,dy;
 	private int viewId = R.layout.video;
-
+	private SharedPreferences prefs;
+	private boolean isSelfViewEnabled;
 	@SuppressWarnings("deprecation") // Warning useless because value is ignored and automatically set by new APIs.
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
 
-
+		prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+		isSelfViewEnabled = prefs.getBoolean(getString(R.string.pref_av_show_self_view_key), true);
 		isH263();
 		View view = inflater.inflate(viewId, container, false);
 
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
-
 
 		mCaptureView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // Warning useless because value is ignored and automatically set by new APIs.
 
@@ -102,8 +106,9 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			}
 		});
 
-		fixZOrder(mVideoView, mCaptureView);
-
+		if(isSelfViewEnabled){
+			fixZOrder(mVideoView, mCaptureView);
+		}
 		LinphoneManager.getLc().setPreviewWindow(mCaptureView);
 		androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
 			@Override
