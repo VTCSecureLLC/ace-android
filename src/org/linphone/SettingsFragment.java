@@ -759,9 +759,12 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initAudioVideoSettings(){
-		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
-		((CheckBoxPreference)findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(false);
-		((CheckBoxPreference)findPreference(getString(R.string.pref_av_mute_mic_key))).setChecked(false);
+		// VATRP-1017 -- Add global speaker and mic mute logic
+		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
+
+		boolean isMicMuted = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_mute_mic_key))).setChecked(isMicMuted);
 		//
 		CheckBoxPreference echoCancellation = (CheckBoxPreference) findPreference(getString(R.string.pref_echo_cancellation_key));
 		echoCancellation.setChecked(mPrefs.isEchoCancellationEnabled());
@@ -779,7 +782,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		boolean isSelfViewEnabled = prefs.getBoolean(selfVideoIsEnabledKey, true);
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(isSelfViewEnabled);
 
-		//Todo: VATRP-1020 Add global camera preview toggle
+		//VATRP-1020 Add global camera preview toggle
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_preview_key))).setChecked(isPreviewEnabled);
@@ -791,6 +794,8 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+				LinphoneManager.getLc().enableSpeaker(value);
+				prefs.edit().putBoolean(getString(R.string.pref_av_speaker_mute_key), value).commit();
 				return true;
 			}
 		});
@@ -798,6 +803,8 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+				LinphoneManager.getLc().muteMic(value);
+				prefs.edit().putBoolean(getString(R.string.pref_av_mute_mic_key), value).commit();
 				return true;
 			}
 		});

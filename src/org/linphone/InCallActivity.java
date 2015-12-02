@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -133,6 +135,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
 
+	private SharedPreferences prefs;
 	private TextView incomingTextView;
 
 	public static InCallActivity instance() {
@@ -169,6 +172,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
 
+		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		boolean isMicMutedPref = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
+		boolean isSpeakerMutedPref = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		LinphoneManager.getLc().muteMic(isMicMutedPref);
+		LinphoneManager.getLc().enableSpeaker(isSpeakerMutedPref);
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
