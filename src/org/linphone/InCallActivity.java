@@ -36,6 +36,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -183,21 +184,22 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				super.isComposingReceived(lc, cr);
 				Log.d("RTT incall", "isComposingReceived cr=" + cr.toString());
 				Log.d("RTT incall","isRTTMaximaized"+isRTTMaximized);
+				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
 
-				if(!isRTTMaximized){
+				if(rtt_scrollview.getVisibility()!=View.VISIBLE&&rttMinimizedIncomingText!=null){
 					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
 					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
 				}
-				if (!cr.isRemoteComposing()) {
-					Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
-					return;
+				try {
+					if (!cr.isRemoteComposing()) {
+						Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
+						return;
+					}
+				}catch(Throwable e){
+
 				}
 
 
-				if(!incoming_chat_initiated){
-					create_new_incoming_bubble();
-					incoming_chat_initiated=true;
-				}
 
 			}
 
@@ -206,14 +208,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
 				Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
+				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
 				if(!isRTTMaximized){
 					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
 					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
 				}
-				if(!incoming_chat_initiated){
-					create_new_incoming_bubble();
-					incoming_chat_initiated=true;
-				}
+//				if(!incoming_chat_initiated){
+//					create_new_incoming_bubble();
+//					incoming_chat_initiated=true;
+//				}
 			}
 
 			@Override
@@ -504,7 +507,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		et.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
 		et.addTextChangedListener(rttTextWatcher);
 		et.setTextAppearance(this, R.style.RttTextStyle);
+		et.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		et.setMovementMethod(null);
+		//et.setImeOptions(EditorInfo.IME_ACTION_SEND);
 		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -544,6 +549,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void updateIncomingTextView(final long character) {
 		runOnUiThread(new Runnable(){
 			public void run() {
+
+				if(!incoming_chat_initiated){
+					incomingTextView=create_new_incoming_bubble();
+					incoming_chat_initiated=true;
+				}
 				if (incomingTextView == null) return;
 
 				String currentText = incomingTextView.getText().toString();
@@ -551,18 +561,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
 				} else if (character == (long)0x2028) {
 					Log.d("RTT: received Line Separator");
-					InCallActivity.instance().create_new_incoming_bubble();
+					create_new_incoming_bubble();
 				} else if (character == 10) {
 					Log.d("RTT: received newline");
 					incomingTextView.append(System.getProperty("line.separator"));
-					InCallActivity.instance().create_new_incoming_bubble();
+					create_new_incoming_bubble();
 				} else { // regular character
-					if(InCallActivity.instance().rttIncomingBubbleCount==0){
+					if(rttIncomingBubbleCount==0){
 						Log.d("There was no incoming bubble to send text to, so now we must make one.");
-						incomingTextView=InCallActivity.instance().create_new_incoming_bubble();
+						incomingTextView=create_new_incoming_bubble();
 					}
 					incomingTextView.setText(currentText + (char)character);
 				}
+
 			}
 		});
 
@@ -571,7 +582,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
 	}
 	public TextView create_new_incoming_bubble(){
-		if(!isRTTMaximized){
+		if(rtt_scrollview.getVisibility()!=View.VISIBLE){
 			showRTTinterface();
 		}
 		TextView tv=new TextView(this);

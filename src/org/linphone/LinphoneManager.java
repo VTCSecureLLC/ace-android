@@ -1390,15 +1390,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	@Override
 	public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 		Log.d("RTT: Composing received for chatroom " + cr.getPeerAddress().asStringUriOnly());
-		if(!InCallActivity.instance().incoming_chat_initiated){
-			InCallActivity.instance().create_new_incoming_bubble();
-			InCallActivity.instance().incoming_chat_initiated=true;
-		}
-		if (!cr.isRemoteComposing()) {
-			Log.d("RTT: remote is not composing, getChar() returns: " + cr.getChar());
-			return;
-		}
-
 		if (lc.isIncall() && lc.getCurrentCall().getCurrentParamsCopy().realTimeTextEnabled()) {
 			long charCode = cr.getChar();
 			Log.d(String.format("RTT: isComposingReceived, got character (%s): %s", charCode, (char) charCode));
