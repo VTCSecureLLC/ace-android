@@ -41,10 +41,7 @@ import android.widget.TextView;
 
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
-import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
-import org.linphone.mediastream.video.capture.AndroidVideoApi5JniWrapper;
-import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
@@ -239,8 +236,13 @@ public class DialerFragment extends Fragment {
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
-		if(!LinphoneActivity.instance().isTablet()){
-			isPreviewEnabled = false;
+
+		try {
+			if (!LinphoneActivity.instance().isTablet()) {
+				isPreviewEnabled = false;
+			}
+		}catch(Throwable e){
+			Log.e("Trying to check if device is tablet, but linphoneactivity isn't instanciated yet\n"+e.getMessage());
 		}
 		if(isPreviewEnabled) {
 			cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
