@@ -771,11 +771,18 @@ public class SettingsFragment extends PreferencesListFragment {
 			echoCalibration.setSummary(String.format(getString(R.string.ec_calibrated), mPrefs.getEchoCalibration()));
 		}
 
-		//Todo: VATRP-1019 -- Add self view toggle
-		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+
+			//Todo: VATRP-1019 -- Add self view toggle
+		String selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
+		boolean isSelfViewEnabled = prefs.getBoolean(selfVideoIsEnabledKey, true);
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(isSelfViewEnabled);
 
 		//Todo: VATRP-1020 Add global camera preview toggle
-		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(false);
+		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
+		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_preview_key))).setChecked(isPreviewEnabled);
 	}
 
 	private void setAudioVideoPreferencesListener(){
@@ -824,6 +831,10 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+				SharedPreferences prefs = PreferenceManager.
+						getDefaultSharedPreferences(LinphoneActivity.instance());
+				String selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
+				prefs.edit().putBoolean(selfVideoIsEnabledKey, value).commit();
 				return true;
 			}
 		});
@@ -832,6 +843,11 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+
+					SharedPreferences prefs = PreferenceManager.
+						getDefaultSharedPreferences(LinphoneActivity.instance());
+				String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+				prefs.edit().putBoolean(previewIsEnabledKey, value).commit();
 				return true;
 			}
 		});

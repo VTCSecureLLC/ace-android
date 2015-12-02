@@ -44,6 +44,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
 import android.view.Surface;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -415,7 +416,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		}
 	}
-	private boolean isTablet() {
+	public boolean isTablet() {
 		return getResources().getBoolean(R.bool.isTablet);
 	}
 
