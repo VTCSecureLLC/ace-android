@@ -309,6 +309,9 @@ public class DialerFragment extends Fragment {
 				 * androidVideoWindowImpl
 				 */
 				LinphoneManager.getLc().setVideoWindow(null);
+				if(camera != null) {
+					camera.release();
+				}
 			}
 		}
 	}
@@ -332,7 +335,6 @@ public class DialerFragment extends Fragment {
 		if (androidVideoWindowImpl != null) {
 			synchronized (androidVideoWindowImpl) {
 				LinphoneManager.getLc().setVideoWindow(androidVideoWindowImpl);
-				//LinphoneManager.getLc().setPreviewWindow(cameraPreview);
 			}
 		}
 		resetLayout(isCallTransferOngoing);
@@ -341,10 +343,14 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		if(camera != null) {
+			camera.release();
+		}
 		cameraPreview = null;
 		if (androidVideoWindowImpl != null) {
 			// Prevent linphone from crashing if correspondent hang up while you are rotating
 			androidVideoWindowImpl.release();
+
 			androidVideoWindowImpl = null;
 		}
 	}
