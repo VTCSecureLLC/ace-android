@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -29,11 +30,13 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -133,6 +136,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
 
+	private SharedPreferences prefs;
+	private TextView incomingTextView;
+
 	public static InCallActivity instance() {
 		return instance;
 	}
@@ -167,27 +173,33 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
 
+		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		boolean isMicMutedPref = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
+		boolean isSpeakerMutedPref = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		LinphoneManager.getLc().muteMic(isMicMutedPref);
+		LinphoneManager.getLc().enableSpeaker(isSpeakerMutedPref);
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 				super.isComposingReceived(lc, cr);
 				Log.d("RTT incall", "isComposingReceived cr=" + cr.toString());
 				Log.d("RTT incall","isRTTMaximaized"+isRTTMaximized);
+				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
 
-				if(!isRTTMaximized){
+				if(rtt_scrollview.getVisibility()!=View.VISIBLE&&rttMinimizedIncomingText!=null){
 					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
 					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
 				}
-				if (!cr.isRemoteComposing()) {
-					Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
-					return;
+				try {
+					if (!cr.isRemoteComposing()) {
+						Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
+						return;
+					}
+				}catch(Throwable e){
+
 				}
 
 
-				if(!incoming_chat_initiated){
-					create_new_incoming_bubble();
-					incoming_chat_initiated=true;
-				}
 
 			}
 
@@ -196,14 +208,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
 				Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
+				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
 				if(!isRTTMaximized){
 					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
 					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
 				}
-				if(!incoming_chat_initiated){
-					create_new_incoming_bubble();
-					incoming_chat_initiated=true;
-				}
+//				if(!incoming_chat_initiated){
+//					create_new_incoming_bubble();
+//					incoming_chat_initiated=true;
+//				}
 			}
 
 			@Override
@@ -233,9 +246,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         				status.refreshStatusItems(call, isVideoEnabled(call));
         				if(isVideoEnabled(call)){
         					showVideoView();
-        				}
-        			}
-        		}
+						}
+					}
+				}
 
         		if (state == State.StreamsRunning) {
         			switchVideo(isVideoEnabled(call));
@@ -494,7 +507,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		et.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
 		et.addTextChangedListener(rttTextWatcher);
 		et.setTextAppearance(this, R.style.RttTextStyle);
+		et.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		et.setMovementMethod(null);
+		//et.setImeOptions(EditorInfo.IME_ACTION_SEND);
 		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -531,15 +546,50 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		imm.showSoftInput(et, InputMethodManager.SHOW_FORCED);
 		rttOutgoingBubbleCount++;
 	}
+	public void updateIncomingTextView(final long character) {
+		runOnUiThread(new Runnable(){
+			public void run() {
+
+				if(!incoming_chat_initiated){
+					incomingTextView=create_new_incoming_bubble();
+					incoming_chat_initiated=true;
+				}
+				if (incomingTextView == null) return;
+
+				String currentText = incomingTextView.getText().toString();
+				if (character == 8) {// backspace
+					incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
+				} else if (character == (long)0x2028) {
+					Log.d("RTT: received Line Separator");
+					create_new_incoming_bubble();
+				} else if (character == 10) {
+					Log.d("RTT: received newline");
+					incomingTextView.append(System.getProperty("line.separator"));
+					create_new_incoming_bubble();
+				} else { // regular character
+					if(rttIncomingBubbleCount==0){
+						Log.d("There was no incoming bubble to send text to, so now we must make one.");
+						incomingTextView=create_new_incoming_bubble();
+					}
+					incomingTextView.setText(currentText + (char)character);
+				}
+
+			}
+		});
+
+
+		//int scroll_amount = (incomingTextView.getLineCount() * incomingTextView.getLineHeight()) - (incomingTextView.getBottom() - incomingTextView.getTop());
+		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
+	}
 	public TextView create_new_incoming_bubble(){
-		if(!isRTTMaximized){
+		if(rtt_scrollview.getVisibility()!=View.VISIBLE){
 			showRTTinterface();
 		}
 		TextView tv=new TextView(this);
 		//tv.setText("The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  ");
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
-		lp1.gravity=Gravity.RIGHT;
+		lp1.gravity = Gravity.RIGHT;
 		tv.setLayoutParams(lp1);
 		tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
 		tv.setSingleLine(false);
@@ -547,14 +597,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextAppearance(this, R.style.RttTextStyle);
 		tv.setTextColor(Color.parseColor("#000000"));
 
-		LinphoneManager.getInstance().setIncomingTextView(tv);
+		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
 		rttIncomingBubbleCount++;
 		return tv;
 	}
 	private void showRTTinterface() {
-		isRTTMaximized = true;
-		rtt_scrollview.setVisibility(View.VISIBLE);
+		runOnUiThread(new Runnable() {
+			public void run() {
+				isRTTMaximized = true;
+				rtt_scrollview.setVisibility(View.VISIBLE);
+			}
+		});
 	}
 	@Override
 	public void onBackPressed()

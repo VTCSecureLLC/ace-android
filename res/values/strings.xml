@@ -422,4 +422,46 @@
  <string name="leave_empty">Leave empty</string>
   <string name="pref_text_enable_title">Enable text (RTT)</string>
   <string name="pref_text_enable_key">pref_text_enable_key</string>
+
+  <string name="pref_usm_general_settings">pref_usm_general_settings</string>
+  <string name="general_settings_title">General</string>
+  <string name="pref_general_sip_encryption_key">pref_general_sip_encryption_key</string>
+  <string name="pref_general_sip_encryption">SIP Encryption</string>
+
+  <string name="pref_audio_video_settings_key">pref_audio_video_settings_key</string>
+  <string name="pref_audio_video_settings">Audio/Video</string>
+  <string name="pref_av_speaker_mute_key">pref_av_speaker_mute_key</string>
+  <string name="pref_av_speaker_mute">Speaker Mute</string>
+  <string name="pref_av_mute_mic_key">pref_av_mute_mic_key</string>
+  <string name="pref_av_mute_mic">Mic Mute</string>
+  <string name="pref_av_show_self_view_key">pref_av_show_self_view_key</string>
+  <string name="pref_av_show_self_view">Show Self-View</string>
+  <string name="pref_av_show_preview_key">pref_av_show_preview_key</string>
+  <string name="pref_av_show_preview">Show Preview</string>
+  <string name="pref_av_echo_cancel_key">pref_av_echo_cancel_key</string>
+  <string name="pref_av_echo_cancel">Echo Cancel</string>
+
+  <string name="pref_theme_settings_key">pref_theme_settings_key</string>
+  <string name="pref_theme_settings">Theme</string>
+  <string name="pref_theme_foreground_color_setting_key">pref_theme_foreground_color_setting_key</string>
+  <string name="pref_theme_foreground_color_setting">Foreground Color</string>
+  <string name="pref_theme_background_color_setting_key">pref_theme_background_color_setting_key</string>
+  <string name="pref_theme_background_color_setting">Background Color</string>
+  <string name="pref_theme_force_508_key">pref_theme_force_508_key</string>
+  <string name="pref_theme_force_508">Force 508</string>
+
+  <string name="pref_text_settings_key">pref_text_settings_key</string>
+  <string name="pref_text_settings">Text</string>
+
+  <string name="pref_summary_settings_key">pref_summary_settings_key</string>
+  <string name="pref_summary_settings">Summary</string>
+  <string name="pref_summary_view_tss_key">pref_summary_view_tss_key</string>
+  <string name="pref_summary_view_tss">View TSS</string>
+  <string name="pref_summary_send_tss_key">pref_summary_send_tss_key</string>
+  <string name="pref_summary_send_tss">Send TSS</string>
+  <string name="pref_summary_show_advanced_key">pref_summary_show_advanced_key</string>
+  <string name="pref_summary_show_advanced">Show Advanced</string>
+  <string name="pref_summary_show_debug_key">pref_summary_show_debug_key</string>
+  <string name="pref_summary_show_debug">Show Debug</string>
+
 </resources>
