@@ -492,24 +492,27 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//et.setSelected(false);
 		et.setKeyListener(null);
 	}
+	public void standardize_bubble_view(TextView tv){
+		tv.setSingleLine(false);
+		tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
+		tv.setTextAppearance(this, R.style.RttTextStyle);
+	}
 	public void create_new_outgoing_bubble(EditText old_bubble){
-
 		if(old_bubble!=null){
 			disable_bubble_editing(old_bubble);
 		}
 		LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp.setMargins(to_dp(10), 0, 0, 0);
+
 		EditText et=new EditText(this);
-		//et.setText("The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  ");
 		et.setLayoutParams(lp);
 		et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
-		et.setSingleLine(false);
-		et.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
-		et.addTextChangedListener(rttTextWatcher);
-		et.setTextAppearance(this, R.style.RttTextStyle);
 		et.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		standardize_bubble_view(et);
+
+		et.addTextChangedListener(rttTextWatcher);
+
 		et.setMovementMethod(null);
-		//et.setImeOptions(EditorInfo.IME_ACTION_SEND);
 		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -518,16 +521,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						//sendRttCharacter((char) 10);
 						sendRttCharacter((char) 10);
 						create_new_outgoing_bubble((EditText) v);
-
-//						View view = getCurrentFocus();
-//						if (view != null) {
-//							InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//							imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//						}
-//						//enterPressed();
-//						//initMinimizedRtt(true);
-//						showRTTinterface();
-//						return true;
 
 					} else if (keyCode == KeyEvent.KEYCODE_DEL) {
 						sendRttCharacter((char) 8);
@@ -538,8 +531,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		});
 		hold_cursor_at_end_of_edit_text(et);
 		((LinearLayout) rttContainerView).addView(et);
-
-
 
 		et.requestFocus();
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -585,16 +576,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(rtt_scrollview.getVisibility()!=View.VISIBLE){
 			showRTTinterface();
 		}
-		TextView tv=new TextView(this);
-		//tv.setText("The teal layer is the active layer (look for the white border), and the one which we will add ... To illustrate how masks can affect its layers transparency, let's paint! ... I want to fill this selection with black, but before I do I need to make sure that my  ");
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
 		lp1.gravity = Gravity.RIGHT;
+		TextView tv=new TextView(this);
 		tv.setLayoutParams(lp1);
 		tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
-		tv.setSingleLine(false);
-		tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
-		tv.setTextAppearance(this, R.style.RttTextStyle);
+
+		standardize_bubble_view(tv);
+
 		tv.setTextColor(Color.parseColor("#000000"));
 
 		incomingTextView=tv;
