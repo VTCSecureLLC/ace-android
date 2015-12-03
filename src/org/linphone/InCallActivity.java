@@ -544,6 +544,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		et.requestFocus();
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.showSoftInput(et, InputMethodManager.SHOW_FORCED);
+
+		rtt_scrollview.post(new Runnable() {
+			@Override
+			public void run() {
+				rtt_scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
 		rttOutgoingBubbleCount++;
 	}
 	public void updateIncomingTextView(final long character) {
@@ -599,6 +606,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
+
+		rtt_scrollview.post(new Runnable() {
+			@Override
+			public void run() {
+				rtt_scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
 		rttIncomingBubbleCount++;
 		return tv;
 	}
