@@ -19,8 +19,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -33,6 +35,9 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
+
+import com.android.colorpicker.ColorPickerDialog;
+import com.android.colorpicker.ColorPickerSwatch;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -862,7 +867,8 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 	private void initThemeSettings() {
-
+		final SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
 		//initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
 		//initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
 
@@ -870,13 +876,42 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				//Todo: VATRP-1022 -- Add foreground / background color picker
+
+				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
+						Color.WHITE, Color.YELLOW};
+
+				int selectedColor = prefs.getInt(getString(R.string.pref_theme_foreground_color_setting_key), Color.RED);
+				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_foreground_title,
+						colors, selectedColor, colors.length, colors.length);
+				dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+					@Override
+					public void onColorSelected(int color) {
+						prefs.edit().putInt(getString(R.string.pref_theme_foreground_color_setting_key), color).commit();
+					}
+				});
+				dialog.show(getFragmentManager(), "COLOR_PICKER");
+
 				return true;
 			}
 		});
 		((Preference)findPreference(getString(R.string.pref_theme_background_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				//Todo: VATRP-1022 -- Add foreground / background color picker
+				//VATRP-1022 -- Add foreground / background color picker
+				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
+						Color.WHITE, Color.YELLOW};
+
+				int selectedColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.RED);
+				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_background_title,
+						colors, selectedColor, colors.length, colors.length);
+				dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+					@Override
+					public void onColorSelected(int color) {
+						prefs.edit().putInt(getString(R.string.pref_theme_background_color_setting_key), color).commit();
+					}
+				});
+				dialog.show(getFragmentManager(), "COLOR_PICKER");
+
 				return true;
 			}
 		});
