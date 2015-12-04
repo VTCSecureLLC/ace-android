@@ -1,5 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="importfile">File path:</string>
+
+
+  <string name="importServiceMsg">Importing VCards</string>
+
+  <string name="exportServiceMsg">Exporting VCards</string>
+
   <string name="pref_disable_account">Disable</string>
   <string name="pref_tunnel">Tunnel</string>
   <string name="pref_tunnel_host">Hostname</string>
@@ -317,6 +324,7 @@
   <string name="button_ok">Okay</string>
   <string name="button_back">Back</string>
   <string name="button_all_contacts">All</string>
+  <string name="button_import_export_contact">Import/Export</string>
   <string name="button_add_contact">New contact</string>
   <string name="button_all_call">All</string>
   <string name="button_missed_call">Missed</string>
