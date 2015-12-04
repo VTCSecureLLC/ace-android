@@ -177,6 +177,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>-->
         </activity>
+        <service android:name="io.VCardIO"></service>
 	    <service android:name="org.linphone.LinphoneService"
 	        android:label="@string/service_name"
 	        android:stopWithTask="false"/>

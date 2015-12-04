@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.linphone.R;
+import org.linphone.mediastream.Log;
 
 public class App extends Activity {
     /** Called when the activity is first created. */
@@ -118,7 +119,7 @@ public class App extends Activity {
     	        // the service explicitly specifies our service component, because
     	        // we want it running in our own process and don't want other
     	        // applications to replace it.
-    			
+    			Log.d("ListenExport started");
     			if (mBoundService != null) {
     				String fileName = ((EditText) findViewById(R.id.ExportFile)).getText().toString();
     			    // Update the progress bar
