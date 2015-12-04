@@ -12,8 +12,14 @@
 		android:background="@drawable/toolsbar_background">
 
 		<TextView
-			android:visibility="invisible"
+			android:contentDescription="@string/content_description_new_contact"
+			android:id="@+id/import_export_Contacts"
+			android:background="@drawable/contacts_add_contact"
+			android:text="@string/button_import_export_contact"
+			android:gravity="center"
 			android:paddingTop="20dp"
+			android:textSize="13sp"
+			android:textColor="@drawable/text_button"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:scaleType="centerCrop"

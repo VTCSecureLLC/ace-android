@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -47,8 +48,11 @@ import android.widget.TextView;
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.PresenceActivityType;
+import org.linphone.mediastream.Log;
 
 import java.util.List;
+
+import io.App;
 
 /**
  * @author Sylvain Berfini
@@ -57,7 +61,7 @@ import java.util.List;
 public class ContactsFragment extends Fragment implements OnClickListener, OnItemClickListener {
 	private LayoutInflater mInflater;
 	private ListView contactsList;
-	private TextView allContacts, linphoneContacts, newContact, noSipContact, noContact;
+	private TextView import_export_Contacts, allContacts, linphoneContacts, newContact, noSipContact, noContact;
 	private boolean onlyDisplayLinphoneContacts;
 	private int lastKnownPosition;
 	private AlphabetIndexer indexer;
@@ -104,6 +108,9 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 
         allContacts = (TextView) view.findViewById(R.id.allContacts);
         allContacts.setOnClickListener(this);
+
+		import_export_Contacts = (TextView) view.findViewById(R.id.import_export_Contacts);
+		import_export_Contacts.setOnClickListener(this);
         
         linphoneContacts = (TextView) view.findViewById(R.id.linphoneContacts);
         linphoneContacts.setOnClickListener(this);
@@ -168,6 +175,12 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		else if (id == R.id.clearSearchField) {
 			searchField.setText("");
 		}
+		else if (id == R.id.import_export_Contacts) {
+			Log.d("trying import export");
+			Intent intent = new Intent(getActivity(), App.class);
+			startActivity(intent);
+		}
+
 	}
 	
 	private void searchContacts() {
