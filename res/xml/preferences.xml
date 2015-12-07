@@ -63,9 +63,11 @@
 		android:title="@string/pref_text_settings"
 		android:key="@string/pref_text_settings_key"
 		android:shouldDisableView="true">
-		<Preference
-			android:title=""
-			android:key=""/>
+		<ListPreference
+			android:title="@string/pref_text_settings_send_mode_title"
+			android:key="@string/pref_text_settings_send_mode_key"
+			android:entries="@array/pref_text_settings_send_mode_entries"
+			android:entryValues="@array/pref_text_settings_send_mode_entry_values"/>
 	</PreferenceScreen>
 
 	<PreferenceScreen

@@ -460,6 +460,14 @@
 
   <string name="pref_text_settings_key">pref_text_settings_key</string>
   <string name="pref_text_settings">Text</string>
+  <string name="pref_text_settings_send_mode_key">pref_text_settings_send_mode_key</string>
+  <string name="pref_text_settings_send_mode_title">Text Send-Mode</string>
+  <!--do not change order without changing corresponding entry_values in non_localizable_strings.xml-->
+  <string-array name="pref_text_settings_send_mode_entries">
+    <item>RTT</item>
+    <item>SIP SIMPLE</item>
+  </string-array>
+
 
   <string name="pref_summary_settings_key">pref_summary_settings_key</string>
   <string name="pref_summary_settings">Summary</string>
