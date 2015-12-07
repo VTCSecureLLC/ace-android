@@ -19,7 +19,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -34,7 +33,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.widget.Toast;
 
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
@@ -63,8 +61,15 @@ import java.util.List;
  * @author Sylvain Berfini
  */
 public class SettingsFragment extends PreferencesListFragment {
-	private static final int WIZARD_INTENT = 1;
+
+	//duplicate variables from AccountPreferencesFragment to duplicate functionality from that fragment for USM
+	private int n;
+	private boolean isNewAccount=false;
 	private LinphonePreferences mPrefs;
+
+
+
+	private static final int WIZARD_INTENT = 1;
 	private Handler mHandler = new Handler();
 	private LinphoneCoreListenerBase mListener;
 
@@ -82,6 +87,9 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		editor = prefs.edit();
+
+
+
 
 		// Init the settings page interface
 		initSettings();
@@ -115,6 +123,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	// Inits the values or the listener on some settings
 	private void initSettings() {
+		initUSM();
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
 		initGeneralSettings();
 		initAudioVideoSettings();
@@ -709,7 +718,14 @@ public class SettingsFragment extends PreferencesListFragment {
 //
 
 	}
-
+	private void initUSM(){
+		//Added code from AccountPreferencesFragment to help reproduce functionality.
+		n = mPrefs.getDefaultAccountIndex();
+		if(n == mPrefs.getAccountCount()){
+			isNewAccount=true;
+		} else {
+		}
+	}
 	private void initGeneralSettings(){
 		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
 
@@ -749,6 +765,13 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+				if(value){
+					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tls_key));
+					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
+				}else{
+					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tcp_key));
+					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
+				}
 				return true;
 			}
 		});
@@ -920,6 +943,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		((CheckBoxPreference)findPreference(getString(R.string.pref_theme_force_508_key))).setChecked(false);
 
 	}
+
+
 	private void setThemePreferencesListener() {
 
 
@@ -1427,4 +1452,6 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		}
 	}
+
+
 }
