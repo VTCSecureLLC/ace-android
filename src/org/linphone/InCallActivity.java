@@ -494,7 +494,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 	public void standardize_bubble_view(TextView tv){
 		tv.setSingleLine(false);
-		tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
+		//tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
 		tv.setTextAppearance(this, R.style.RttTextStyle);
 	}
 	public void create_new_outgoing_bubble(EditText old_bubble){
