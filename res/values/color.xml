@@ -36,6 +36,11 @@
     
     <color name="text_contrast">#ff000000</color> <!-- If background is white, set to black, else set to white -->
     <color name="menu_button_background">#ff262a2e</color>
+
+    <color name="background_color">#00000000</color>
+    <color name="border_color">#ffffffff</color>
+    <color name="text_color">#ffffffff</color>
+
     <drawable name="btn_white">#efefef</drawable>
     <drawable name="btn_white_selected">#D7D7D7</drawable>
     
@@ -44,4 +49,6 @@
     
     <drawable name="ab_def">#FFF</drawable>
     <drawable name="ab_select">#CCC</drawable>
+
+
 </resources>
