@@ -442,11 +442,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				Log.d("RTT", "onTextChanged sequence"+s);
+				Log.d("RTT", " onTextChanged sequence"+s);
 
 				if (count > before) { // Text added
 					CharSequence added = s.subSequence(start + before, start + count);
 					sendRttCharacterSequence(added);
+				}else{
+					sendRttCharacter((char) 8); // backspace);
 				}
 			}
 
