@@ -1,14 +1,5 @@
 package org.linphone;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.mediastream.Version;
-import org.linphone.ui.AvatarWithShadow;
-
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -30,7 +21,14 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.mediastream.Version;
+import org.linphone.ui.AvatarWithShadow;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditContactFragment extends Fragment {
 	private View view;
@@ -47,7 +45,7 @@ public class EditContactFragment extends Fragment {
 	private String newSipOrNumberToAdd;
 	private ContactsManager contactsManager;
 
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.inflater = inflater;
 		
 		contact = null;
@@ -115,7 +113,7 @@ public class EditContactFragment extends Fragment {
 		        	e.printStackTrace();
 		        }
 
-				getFragmentManager().popBackStackImmediate();
+				LinphoneActivity.contacts.performClick();
 
 				if(LinphoneActivity.instance().getResources().getBoolean(R.bool.isTablet))
 					ContactsFragment.instance().invalidate();
@@ -199,7 +197,7 @@ public class EditContactFragment extends Fragment {
 		
 		return view;
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
