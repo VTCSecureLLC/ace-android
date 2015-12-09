@@ -104,17 +104,22 @@ public class DialerFragment extends Fragment {
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
-					if (position == 0) {
-						//set background gray because we are using the @ symbol
-						((LinearLayout)dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
-					}else{
-						((LinearLayout)dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
+					if(dialer_view != null) {
+						View providerSpinnerBox = dialer_view.findViewById(R.id.provider_spinner_box);
+						if(providerSpinnerBox != null){
+							if (position == 0) {
+								//set background gray because we are using the @ symbol
+								providerSpinnerBox.setBackgroundColor(getResources().getColor(R.color.background_color));
+							} else {
+								providerSpinnerBox.setBackgroundColor(getResources().getColor(R.color.text_color));
+							}
+						}
 					}
 					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
 					else sipDomainTextView.setText("");
 					mAddress.setTag(sipDomainTextView.getText());
-				}  
+				}
 				public void onNothingSelected(AdapterView<?> arg0) {}  
 			});
 			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
