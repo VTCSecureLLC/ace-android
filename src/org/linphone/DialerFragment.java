@@ -105,11 +105,15 @@ public class DialerFragment extends Fragment {
 
 			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
-					if (position == 0) {
-						//set background gray because we are using the @ symbol
-						((LinearLayout)dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
-					}else{
-						((LinearLayout)dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+					try {
+						if (position == 0) {
+							//set background gray because we are using the @ symbol
+							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
+						} else {
+							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+						}
+					}catch(Throwable e){
+						//crashing on tablets because dialer_view or provider_spinner_box is missing
 					}
 					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
 					else sipDomainTextView.setText("");
