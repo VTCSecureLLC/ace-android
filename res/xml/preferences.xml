@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<PreferenceCategory
+		android:title="@string/pref_preferences">
+
 	<PreferenceScreen
 		android:title="@string/general_settings_title"
 		android:key="@string/pref_usm_general_settings"
@@ -123,28 +126,13 @@
 
     </PreferenceCategory>
 
-	<PreferenceCategory
-	    android:title="@string/pref_preferences">
-
 		<CheckBoxPreference
 			android:title="@string/pref_video_enable_title"
 			android:key="@string/pref_video_enable_key"/>
 
-		<CheckBoxPreference
-			android:title="@string/pref_text_enable_title"
-			android:key="@string/pref_text_enable_key"/>
-
 		<PreferenceScreen
-		    android:title="@string/pref_audio">
-
-		    <CheckBoxPreference
-				android:title="@string/pref_echo_cancellation"
-			    android:key="@string/pref_echo_cancellation_key"
-				android:summary="@string/pref_echo_cancellation_summary"/>
-
-			<Preference
-				android:title="@string/pref_echo_canceller_calibration"
-			    android:key="@string/pref_echo_canceller_calibration_key"/>
+		    android:title="@string/pref_audio"
+			android:key="@string/pref_audio">
 
 			<CheckBoxPreference
 				android:title="@string/pref_adaptive_rate_control"
@@ -225,15 +213,12 @@
 		</PreferenceScreen>
 
 		<PreferenceScreen
-		    android:title="@string/call">
+		    android:title="@string/call"
+			android:key="@string/call">
 
 			<CheckBoxPreference
 			android:title="@string/pref_sipinfo_dtmf"
 			android:key="@string/pref_sipinfo_dtmf_key"/>
-
-			<CheckBoxPreference
-				android:title="@string/pref_auto_answer"
-				android:key="@string/pref_auto_answer_key"/>
 
 			<CheckBoxPreference
 				android:title="@string/pref_rfc2833_dtmf"
@@ -246,11 +231,9 @@
 	    </PreferenceScreen>
 
 		<PreferenceScreen
-		    android:title="@string/pref_network_title">
+		    android:title="@string/pref_network_title"
+			android:key="@string/pref_network_title">
 
-			<CheckBoxPreference
-				android:title="@string/pref_wifi_only"
-			    android:key="@string/pref_wifi_only_key"/>
 
 			<EditTextPreference
 			    android:title="@string/pref_stun_server"
@@ -337,7 +320,8 @@
 
 
 		<PreferenceScreen
-		    android:title="@string/pref_advanced">
+		    android:title="@string/pref_advanced"
+			android:key="@string/pref_advanced">
 
 			<CheckBoxPreference
 				android:title="@string/pref_debug"
@@ -351,9 +335,6 @@
 				android:title="@string/pref_animation_enable_title"
 				android:key="@string/pref_animation_enable_key"/>
 
-			<CheckBoxPreference
-			    android:title="@string/pref_autostart"
-				android:key="@string/pref_autostart_key"/>
 
 			<EditTextPreference
 			    android:title="@string/pref_incoming_call_timeout_title"
