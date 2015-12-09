@@ -44,7 +44,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -384,11 +383,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_hivis);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_hivis);
 		}else{
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts);
-				dialer.setImageResource(R.drawable.dialer);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource);
+				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_new);
+				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_new);
+				dialer.setImageResource(R.drawable.dialer_new);
+				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_new);
+				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resources_new);
 
 		}
 
@@ -412,7 +411,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			} else if (background_color_theme.equals("High Visibility")) {
 				topLayout.setBackgroundResource(R.drawable.background_theme_hivis);
 			} else {
-				topLayout.setBackgroundResource(R.drawable.background);
+				topLayout.setBackgroundResource(R.drawable.background_theme_new);
 			}
 		}
 	}

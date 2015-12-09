@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
-    
+
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="0dp"
@@ -20,9 +20,9 @@
 		    android:layout_weight="0.2"
 		    android:adjustViewBounds="true"
 		    android:scaleType="fitXY"
-		    android:src="@drawable/mark"
+		    android:src="@drawable/mark_new"
 		    android:visibility="invisible" />
-		
+
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="0dp"
@@ -30,9 +30,9 @@
 		    android:layout_weight="0.2"
 		    android:adjustViewBounds="true"
 		    android:scaleType="fitXY"
-		    android:src="@drawable/mark"
+		    android:src="@drawable/mark_new"
 		    android:visibility="invisible" />
-		
+
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="0dp"
@@ -40,9 +40,9 @@
 		    android:layout_weight="0.2"
 		    android:adjustViewBounds="true"
 		    android:scaleType="fitXY"
-		    android:src="@drawable/mark"
+		    android:src="@drawable/mark_new"
 		    android:visibility="invisible" />
-		
+
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="0dp"
@@ -50,9 +50,9 @@
 		    android:layout_weight="0.2"
 		    android:adjustViewBounds="true"
 		    android:scaleType="fitXY"
-		    android:src="@drawable/mark"
+		    android:src="@drawable/mark_new"
 		    android:visibility="invisible" />
-		
+
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="0dp"
@@ -60,9 +60,9 @@
 		    android:layout_weight="0.2"
 		    android:adjustViewBounds="true"
 		    android:scaleType="fitXY"
-		    android:src="@drawable/mark"
+		    android:src="@drawable/mark_new"
 		    android:visibility="invisible" />
-        
+
     </LinearLayout>
     
     <FrameLayout
@@ -115,7 +115,7 @@
         </RelativeLayout>
 
         <include layout="@layout/menu_contact_button" />
-        
+
         <ImageView
             android:id="@+id/dialer"
             android:layout_width="0dp"
