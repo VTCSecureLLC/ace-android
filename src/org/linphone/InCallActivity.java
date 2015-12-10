@@ -55,6 +55,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -138,6 +139,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	private SharedPreferences prefs;
 	private TextView incomingTextView;
+	View mFragmentHolder;
+	View mViewsHolder;
+	RelativeLayout mainLayout;
 
 	public static InCallActivity instance() {
 		return instance;
@@ -153,7 +157,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		instance = this;
 		
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-        setContentView(R.layout.incall);
+		mainLayout = new RelativeLayout(this);
+		mainLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+		mViewsHolder =  getLayoutInflater().inflate(R.layout.incall, null);
+		mFragmentHolder = getLayoutInflater().inflate(R.layout.incall_fragment_holder, null);
+		mainLayout.addView(mFragmentHolder);
+		mainLayout.addView(mViewsHolder);
+		setContentView(mainLayout);
 
         isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
         showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
@@ -372,6 +382,34 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 
         }
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mainLayout.removeView(mViewsHolder);
+		mViewsHolder = (ViewGroup) getLayoutInflater().inflate(R.layout.incall, null);
+		mainLayout.addView(mViewsHolder);
+		initUI();
+		if(isRTTEnabled){
+			initRTT();
+		}
+		if(isRTTMaximized){
+			showRTTinterface();
+		}
+		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
+			displayVideoCallControlsIfHidden();
+		}
+
+		if (LinphoneManager.getLc().getCallsNb() > 0) {
+			LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+
+			if (LinphoneUtils.isCallEstablished(call)) {
+				enableAndRefreshInCallActions();
+			}
+		}
+		//refreshCallList(getResources());
+		//handleViewIntent();
 	}
 
 //	private void initMinimizedRtt(boolean setToVisible){

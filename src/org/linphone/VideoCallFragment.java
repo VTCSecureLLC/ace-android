@@ -20,10 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -155,6 +157,23 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		});
 
 		return view;
+	}
+
+	void handleSurfaceBounds(SurfaceView sv, int orientation, int screenLayout, boolean isH263) {
+		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) sv.getLayoutParams();
+		lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM); // Clears the rule, as there is no removeRule until API 17.
+		lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+		lp.leftMargin = 0;
+		lp.topMargin = 0;
+		//resize will cause camera reinitialization
+		sv.setLayoutParams(lp);
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		boolean ish263 = isH263();
+		handleSurfaceBounds(mCaptureView, newConfig.orientation, newConfig.screenLayout, ish263);
 	}
 
 	//Check to see if current call is using an H263 video codec, if so, adjust the video for portrait

@@ -109,7 +109,8 @@
         <activity android:name="org.linphone.InCallActivity"
 		   android:theme="@style/FullScreen"
            android:noHistory="true"
-           android:launchMode="singleTop">
+           android:launchMode="singleTop"
+           android:configChanges="keyboardHidden|orientation|screenSize">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 			</intent-filter>
