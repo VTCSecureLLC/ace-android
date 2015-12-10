@@ -477,9 +477,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						//sendRttCharacter((char) 10);
 						sendRttCharacter((char) 10);
 						create_new_outgoing_bubble((EditText) v);
-
-					} else if (keyCode == KeyEvent.KEYCODE_DEL) {
-						sendRttCharacter((char) 8);
 					}
 				}
 				return false;
@@ -550,7 +547,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		standardize_bubble_view(tv);
 
 		tv.setTextColor(Color.parseColor("#000000"));
-
+		tv.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(rttOutgoingBubbleCount==0){
+					create_new_outgoing_bubble(null);
+				}
+			}
+		});
 		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
 
