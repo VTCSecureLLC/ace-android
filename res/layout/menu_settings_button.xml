@@ -5,14 +5,15 @@
     android:layout_weight="1"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-	android:adjustViewBounds="true">
+	android:adjustViewBounds="true"
+    android:background="@color/background_color">
     
     <ImageView
         android:id="@+id/image"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:adjustViewBounds="true"
-		android:src="@drawable/settings" />
+		android:src="@drawable/settings_new" />
 
     <TextView
         android:contentDescription="@string/content_description_settings"

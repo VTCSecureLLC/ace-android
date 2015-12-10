@@ -123,7 +123,7 @@
 			android:adjustViewBounds="true"
             android:contentDescription="@string/content_description_dialer"
             android:scaleType="fitXY"
-            android:src="@drawable/dialer" />
+            android:src="@drawable/dialer_new" />
         
         <include layout="@layout/menu_about_chat_button" />
 
@@ -133,7 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2">
 
-            <include layout="@layout/menu_chat_button" />
+            <include layout="@layout/menu_resources_button" />
 
             <TextView
                 android:id="@+id/missedChats"
@@ -150,8 +150,7 @@
 
         <include layout="@layout/menu_settings_button" />
         
-        <include layout="@layout/menu_about_settings_button" />
-        
+
     </LinearLayout>
     
     <LinearLayout

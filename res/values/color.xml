@@ -40,7 +40,7 @@
     <color name="text_contrast">#ff000000</color> <!-- If background is white, set to black, else set to white -->
     <color name="menu_button_background">#ff262a2e</color>
 
-    <color name="background_color">#00000000</color>
+    <color name="background_color">#2c373d</color>
     <color name="border_color">#ffffffff</color>
     <color name="text_color">#ffffffff</color>
 
