@@ -504,4 +504,6 @@
 
   <string name="color_picker_foreground_title">Foreground Color</string>
   <string name="color_picker_background_title">Background Color</string>
+
+  <string name="unlock_adv_settings">Unlock Advanced Settings</string>
 </resources>

@@ -124,18 +124,17 @@
     </PreferenceCategory>
 
 	<PreferenceCategory
-	    android:title="@string/pref_preferences">
+	    android:title="@string/pref_preferences"
+		android:key="@string/pref_preferences">
 
 		<CheckBoxPreference
 			android:title="@string/pref_video_enable_title"
 			android:key="@string/pref_video_enable_key"/>
 
-		<CheckBoxPreference
-			android:title="@string/pref_text_enable_title"
-			android:key="@string/pref_text_enable_key"/>
 
 		<PreferenceScreen
-		    android:title="@string/pref_audio">
+		    android:title="@string/pref_audio"
+			android:key="@string/pref_audio">
 
 		    <CheckBoxPreference
 				android:title="@string/pref_echo_cancellation"
@@ -225,7 +224,8 @@
 		</PreferenceScreen>
 
 		<PreferenceScreen
-		    android:title="@string/call">
+		    android:title="@string/call"
+			android:key="@string/call">
 
 			<CheckBoxPreference
 			android:title="@string/pref_sipinfo_dtmf"
@@ -246,7 +246,8 @@
 	    </PreferenceScreen>
 
 		<PreferenceScreen
-		    android:title="@string/pref_network_title">
+		    android:title="@string/pref_network_title"
+			android:key="@string/pref_network_title">
 
 			<CheckBoxPreference
 				android:title="@string/pref_wifi_only"
@@ -337,7 +338,8 @@
 
 
 		<PreferenceScreen
-		    android:title="@string/pref_advanced">
+		    android:title="@string/pref_advanced"
+			android:key="@string/pref_advanced">
 
 			<CheckBoxPreference
 				android:title="@string/pref_debug"

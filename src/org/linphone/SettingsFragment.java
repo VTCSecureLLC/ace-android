@@ -67,7 +67,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private boolean isNewAccount=false;
 	private LinphonePreferences mPrefs;
 
-
+	public static boolean isAdvancedSettings = false;
 
 	private static final int WIZARD_INTENT = 1;
 	private Handler mHandler = new Handler();
@@ -87,9 +87,6 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		editor = prefs.edit();
-
-
-
 
 		// Init the settings page interface
 		initSettings();
@@ -128,15 +125,16 @@ public class SettingsFragment extends PreferencesListFragment {
 		initGeneralSettings();
 		initAudioVideoSettings();
 		initThemeSettings();
-
-		initTunnelSettings();
-		initAudioSettings();
-		initVideoSettings();
 		initTextSettings();
-		initCallSettings();
-		initNetworkSettings();
-		initAdvancedSettings();
 
+		if(isAdvancedSettings) {
+			initTunnelSettings();
+			initAudioSettings();
+			initVideoSettings();
+			initCallSettings();
+			initNetworkSettings();
+			initAdvancedSettings();
+		}
 		// Add action on About button
 		findPreference(getString(R.string.menu_about_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
@@ -172,18 +170,32 @@ public class SettingsFragment extends PreferencesListFragment {
 		setGeneralPreferencesListener();
 		setAudioVideoPreferencesListener();
 		setThemePreferencesListener();
-
-		setTunnelPreferencesListener();
-		setAudioPreferencesListener();
-		setVideoPreferencesListener();
-		setCallPreferencesListener();
-		setNetworkPreferencesListener();
-		setBackgroundThemePreferencesListener();
-		setAdvancedPreferencesListener();
+		if(isAdvancedSettings) {
+			setTunnelPreferencesListener();
+			setAudioPreferencesListener();
+			setVideoPreferencesListener();
+			setCallPreferencesListener();
+			setNetworkPreferencesListener();
+			setBackgroundThemePreferencesListener();
+			setAdvancedPreferencesListener();
+		}
 	}
 
 	// Read the values set in resources and hides the settings accordingly
 	private void hideSettings() {
+		if(!isAdvancedSettings) {
+			emptyAndHidePreferenceCategory(R.string.pref_preferences);
+			hidePreference(R.string.pref_video_enable_key);
+
+			emptyAndHidePreferenceCategory(R.string.pref_tunnel_key);
+
+			emptyAndHidePreferenceScreen(R.string.pref_audio);
+			emptyAndHidePreferenceScreen(R.string.pref_video_key);
+			emptyAndHidePreferenceScreen(R.string.call);
+			emptyAndHidePreferenceScreen(R.string.pref_advanced);
+			emptyAndHidePreferenceScreen(R.string.pref_network_title);
+		}
+
 		if (!getResources().getBoolean(R.bool.display_about_in_settings)) {
 			hidePreference(R.string.menu_about_key);
 		}
@@ -285,7 +297,9 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void hidePreference(Preference preference) {
-		preference.setLayoutResource(R.layout.hidden);
+		if(preference != null) {
+			preference.setLayoutResource(R.layout.hidden);
+		}
 	}
 
 	private void setPreferenceDefaultValueAndSummary(int pref, String value) {
