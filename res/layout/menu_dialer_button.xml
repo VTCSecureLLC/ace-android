@@ -3,14 +3,15 @@
 	android:id="@+id/dialer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/background_color">
     
     <ImageView
         android:id="@+id/image"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:adjustViewBounds="true"
-		android:contentDescription="@string/content_description_history"
+		android:contentDescription="@string/content_description_dialer"
 		android:src="@drawable/dialer_new" />
     
     <TextView
@@ -21,7 +22,7 @@
         android:layout_alignBottom="@id/image"
         android:paddingBottom="10dp"
         android:textColor="@drawable/text_color"
-        android:text="Dialpad"
+        android:text="@string/button_dialpad"
         android:textSize="12sp" />
     
 </RelativeLayout>
