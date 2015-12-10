@@ -78,7 +78,6 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.Numpad;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -124,11 +123,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	// RTT views
 	private TextWatcher rttTextWatcher;
-	private ArrayList<EditText> rttOutputEditTexts;
-	private ArrayList<TextView> rttIncomingTextViews;
 	private ScrollView rtt_scrollview;
 	private View rttContainerView;
-	private TextView rttMinimizedIncomingText;
 
 	String contactName = "";
 
@@ -196,10 +192,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				Log.d("RTT incall","isRTTMaximaized"+isRTTMaximized);
 				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
 
-				if(rtt_scrollview.getVisibility()!=View.VISIBLE&&rttMinimizedIncomingText!=null){
-					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
-					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
-				}
 				try {
 					if (!cr.isRemoteComposing()) {
 						Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
@@ -217,16 +209,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
-				Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
-				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
-				if(!isRTTMaximized){
-					rttMinimizedIncomingText.setVisibility(View.VISIBLE);
-					rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
-				}
-//				if(!incoming_chat_initiated){
-//					create_new_incoming_bubble();
-//					incoming_chat_initiated=true;
-//				}
+
 			}
 
 			@Override
@@ -412,29 +395,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//handleViewIntent();
 	}
 
-//	private void initMinimizedRtt(boolean setToVisible){
-//		Log.d("RTT", "initMinimizedRtt");
-//		Log.d("RTT", "setToVisible" + setToVisible);
-//
-//
-//		rttMinimizedIncomingText = (TextView) findViewById(R.id.incomingRTTMinimized);
-//
-//		if(setToVisible) {
-//			isRTTMaximized = false;
-//
-//			rttMinimizedIncomingText.setMovementMethod(new ScrollingMovementMethod());
-//			rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
-//			rttMinimizedIncomingText.setOnClickListener(InCallActivity.this);
-//			LinphoneManager.getInstance().setIncomingTextView(rttMinimizedIncomingText);
-//		}
-//		else{
-//			if(rttMinimizedIncomingText != null) {
-//				rttMinimizedIncomingText.setVisibility(View.INVISIBLE);
-//				isRTTMaximized = true;
-//			}
-//		}
-//	}
-
 
 	public void hold_cursor_at_end_of_edit_text(final EditText et){
 		et.setCursorVisible(false);
@@ -449,28 +409,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				/** Initializes the views and other components needed for RTT in a call */
 	private void initRTT(){
 		rttContainerView = findViewById(R.id.rtt_container);
+		rttContainerView.setOnClickListener(this);
 		rtt_scrollview = (ScrollView)findViewById(R.id.rtt_scrollview);
-		rttOutputEditTexts=new ArrayList<EditText>();
-		rttIncomingTextViews =new ArrayList<TextView>();
-
-		//rttOutputEditText = (EditText) findViewById(R.id.rtt_input_field);
 
 
-		//rttOutputEditTexts.setText("");
-		//forces the user cursor to the last position always
-		//rttOutputEditTexts.setCursorVisible(false);
-		//rttOutputEditTexts.setOnClickListener(new OnClickListener() {
-
-		//	@Override
-		//	public void onClick(View v) {
-		//		rttOutputEditTexts.setSelection(rttOutputEditTexts.getText().length());
-		//	}
-		//});
-
-		//
-
-		//rttIncomingTextViews = (TextView) findViewById(R.id.rtt_incoming_view);
-		//rttIncomingTextViews.setText("");
 		rttTextWatcher = new TextWatcher() {
 
 			@Override
@@ -493,29 +435,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			@Override
 			public void afterTextChanged(Editable s) {}
 		};
-//		rttOutputEditTexts.addTextChangedListener(rttTextWatcher);
-//		rttOutputField.setMovementMethod(null);
-//		rttOutputField.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
-//			@Override
-//			public boolean onKey(View v, int keyCode, KeyEvent event) {
-//				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-////						View view = getCurrentFocus();
-////						if (view != null) {
-////							InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-////							imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-////						}
-////						//enterPressed();
-////						//initMinimizedRtt(true);
-////						showRTTinterface();
-////						return true;
-//					} else if (keyCode == KeyEvent.KEYCODE_DEL) {
-//						sendRttCharacter((char) 8);
-//					}
-//				}
-//				return false;
-//			}
-//		});
+
 	}
 
 	public int to_dp(int dp){
@@ -525,11 +445,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	public void disable_bubble_editing(EditText et){
-		//et.setCursorVisible(false);
-		//et.setLongClickable(false);
-		//et.setClickable(false);
-		//et.setFocusable(false);
-		//et.setSelected(false);
 		et.setKeyListener(null);
 	}
 	public void standardize_bubble_view(TextView tv){
@@ -658,10 +573,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	public void onBackPressed()
 	{
-		if(isRTTMaximized) {
-			hideRTTinterface();
-		}
-		// code here to show dialog
 		super.onBackPressed();  // optional depending on your needs
 	}
 
@@ -954,7 +865,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-		
+
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			displayVideoCallControlsIfHidden();
 		}
