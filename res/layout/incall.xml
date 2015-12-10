@@ -28,15 +28,16 @@
         android:layout_centerVertical="true"/>
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="500dp"
+        android:layout_height="fill_parent"
         android:id="@+id/rtt_scrollview"
         android:layout_below="@+id/switchCamera"
         android:visibility="gone"
-        android:layout_above="@+id/menu">
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true">
         <LinearLayout
             android:id="@+id/rtt_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true">
