@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:left="0dp" android:right="-2dp"  android:top="0dp" android:bottom="-2dp">
-        <shape android:shape="rectangle">
-            <stroke android:width="2dp" android:color="#FFFFFF" />
-        </shape>
-    </item>
-</layer-list><!-- From: file:/Users/Patrick/git/ace-android/res/drawable/border_lt.xml -->
