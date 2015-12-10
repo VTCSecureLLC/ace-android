@@ -115,9 +115,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private StatusFragment statusFragment;
 	private TextView missedCalls, missedChats;
-	public static ImageView dialer;
 	private LinearLayout menu, mark;
-	public static RelativeLayout contacts, history, settings, chat, aboutChat;
+	public static RelativeLayout contacts, history, settings, dialer, chat, aboutChat;
 	private FragmentsAvailable currentFragment, nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
@@ -324,7 +323,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		history.setOnClickListener(this);
 		contacts = (RelativeLayout) findViewById(R.id.contacts);
 		contacts.setOnClickListener(this);
-		dialer = (ImageView) findViewById(R.id.dialer);
+		dialer = (RelativeLayout) findViewById(R.id.dialer);
 		dialer.setOnClickListener(this);
 		settings = (RelativeLayout) findViewById(R.id.settings);
 		settings.setOnClickListener(this);
@@ -358,31 +357,31 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if(color_theme.equals("Red")) {
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_red);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_red);
-				dialer.setImageResource(R.drawable.dialer_red);
+				((ImageView)dialer.findViewById(R.id.image)).setImageResource(R.drawable.dialer_red);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_red);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_red);
 		}else if(color_theme.equals("Yellow")) {
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_yellow);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_yellow);
-				dialer.setImageResource(R.drawable.dialer_yellow);
+				((ImageView)dialer.findViewById(R.id.image)).setImageResource(R.drawable.dialer_yellow);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_yellow);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_yellow);
 		}else if(color_theme.equals("Gray")) {
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_gray);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_gray);
-				dialer.setImageResource(R.drawable.dialer_gray);
+				((ImageView)dialer.findViewById(R.id.image)).setImageResource(R.drawable.dialer_gray);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_gray);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_gray);
 		}else if(color_theme.equals("High Visibility")) {
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_hivis);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_hivis);
-				dialer.setImageResource(R.drawable.dialer_hivis);
+				((ImageView)dialer.findViewById(R.id.image)).setImageResource(R.drawable.dialer_hivis);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_hivis);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_hivis);
 		}else{
 				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_new);
 				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_new);
-				dialer.setImageResource(R.drawable.dialer_new);
+				((ImageView)dialer.findViewById(R.id.image)).setImageResource(R.drawable.dialer_new);
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_new);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resources_new);
 
