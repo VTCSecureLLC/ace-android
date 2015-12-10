@@ -33,7 +33,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.widget.CheckBox;
 
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
@@ -171,13 +170,13 @@ public class SettingsFragment extends PreferencesListFragment {
 		setGeneralPreferencesListener();
 		setAudioVideoPreferencesListener();
 		setThemePreferencesListener();
-		setBackgroundThemePreferencesListener();
 		if(isAdvancedSettings) {
 			setTunnelPreferencesListener();
 			setAudioPreferencesListener();
 			setVideoPreferencesListener();
 			setCallPreferencesListener();
 			setNetworkPreferencesListener();
+			setBackgroundThemePreferencesListener();
 			setAdvancedPreferencesListener();
 		}
 	}
@@ -185,19 +184,16 @@ public class SettingsFragment extends PreferencesListFragment {
 	// Read the values set in resources and hides the settings accordingly
 	private void hideSettings() {
 		if(!isAdvancedSettings) {
-			emptyAndHidePreference(R.string.pref_video_enable_key);
-			emptyAndHidePreference(R.string.pref_text_enable_key);
+			emptyAndHidePreferenceCategory(R.string.pref_preferences);
+			hidePreference(R.string.pref_video_enable_key);
 
 			emptyAndHidePreferenceCategory(R.string.pref_tunnel_key);
+
 			emptyAndHidePreferenceScreen(R.string.pref_audio);
 			emptyAndHidePreferenceScreen(R.string.pref_video_key);
 			emptyAndHidePreferenceScreen(R.string.call);
 			emptyAndHidePreferenceScreen(R.string.pref_advanced);
-//			emptyAndHidePreferenceScreen(R.string.pref_usm_general_settings);
-//			emptyAndHidePreferenceScreen(R.string.pref_audio_video_settings_key);
-//			emptyAndHidePreferenceScreen(R.string.pref_theme_settings_key);
-//			emptyAndHidePreferenceScreen(R.string.pref_text_settings_key);
-//			emptyAndHidePreferenceScreen(R.string.pref_summary_settings_key);
+			emptyAndHidePreferenceScreen(R.string.pref_network_title);
 		}
 
 		if (!getResources().getBoolean(R.bool.display_about_in_settings)) {
@@ -745,20 +741,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 	}
 	private void initGeneralSettings(){
-		CheckBoxPreference autoStart = (CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key)),
-		sipEncryption = (CheckBoxPreference) findPreference(getString(R.string.pref_general_sip_encryption_key)),
-		wifiOnly =  (CheckBoxPreference)findPreference(getString(R.string.pref_wifi_only_key));
-		if(autoStart != null) {
-			autoStart.setChecked(mPrefs.isAutoStartEnabled());
-		}
-		boolean isSipEncryptionEnabled = false; //VATRP-1007
-		if(sipEncryption != null){
-			sipEncryption.setChecked(isSipEncryptionEnabled);
-		}
+		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
 
-		if(wifiOnly != null) {
-			wifiOnly.setChecked(mPrefs.isWifiOnlyEnabled());
-		}
+		boolean isSipEncryptionEnabled = false; //VATRP-1007
+		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
+
+		((CheckBoxPreference) findPreference(getString(R.string.pref_wifi_only_key))).setChecked(mPrefs.isWifiOnlyEnabled());
 
 		CheckBoxPreference autoAnswer = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_answer_key));
 		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
