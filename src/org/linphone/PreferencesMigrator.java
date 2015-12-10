@@ -19,17 +19,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import org.linphone.LinphonePreferences.AccountBuilder;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreException;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
-import org.linphone.R;
+import org.linphone.LinphonePreferences.AccountBuilder;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCoreException;
 
 /**
  * @author Sylvain Berfini
@@ -85,7 +83,7 @@ public class PreferencesMigrator {
 		mNewPrefs.setPushNotificationRegistrationID(getPrefString(R.string.push_reg_id_key, null));
 		mNewPrefs.setDebugEnabled(getPrefBoolean(R.string.pref_debug_key, false));
 		mNewPrefs.setBackgroundModeEnabled(getPrefBoolean(R.string.pref_background_mode_key, true));
-		mNewPrefs.setAnimationsEnabled(getPrefBoolean(R.string.pref_animation_enable_key, false));
+		mNewPrefs.setAnimationsEnabled(getPrefBoolean(R.string.pref_animation_enable_key, true));
 		mNewPrefs.setAutoStart(getPrefBoolean(R.string.pref_autostart_key, false));
 		mNewPrefs.setSharingPictureServerUrl(getPrefString(R.string.pref_image_sharing_server_key, null));
 		mNewPrefs.setRemoteProvisioningUrl(getPrefString(R.string.pref_remote_provisioning_key, null));

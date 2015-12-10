@@ -44,7 +44,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.OrientationEventListener;
 import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -118,7 +117,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private TextView missedCalls, missedChats;
 	public static ImageView dialer;
 	private LinearLayout menu, mark;
-	public static RelativeLayout contacts, history, settings, chat, aboutChat, aboutSettings;
+	public static RelativeLayout contacts, history, settings, chat, aboutChat;
 	private FragmentsAvailable currentFragment, nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
@@ -332,7 +331,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		chat = (RelativeLayout) findViewById(R.id.chat);
 		chat.setOnClickListener(this);
 		aboutChat = (RelativeLayout) findViewById(R.id.about_chat);
-		aboutSettings = (RelativeLayout) findViewById(R.id.about_settings);
 
 		if (getResources().getBoolean(R.bool.replace_chat_by_about)) {
 			chat.setVisibility(View.GONE);
@@ -344,8 +342,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (getResources().getBoolean(R.bool.replace_settings_by_about)) {
 			settings.setVisibility(View.GONE);
 			settings.setOnClickListener(null);
-			aboutSettings.setVisibility(View.VISIBLE);
-			aboutSettings.setOnClickListener(this);
 		}
 
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
@@ -384,11 +380,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_hivis);
 				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_hivis);
 		}else{
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts);
-				dialer.setImageResource(R.drawable.dialer);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource);
+				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_new);
+				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_new);
+				dialer.setImageResource(R.drawable.dialer_new);
+				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_new);
+				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resources_new);
 
 		}
 
@@ -412,7 +408,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			} else if (background_color_theme.equals("High Visibility")) {
 				topLayout.setBackgroundResource(R.drawable.background_theme_hivis);
 			} else {
-				topLayout.setBackgroundResource(R.drawable.background);
+				topLayout.setBackgroundResource(R.drawable.background_theme_new);
 			}
 		}
 	}
@@ -826,11 +822,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
 			aboutChat.setSelected(true);
-		} else if (id == R.id.about_settings) {
-			Bundle b = new Bundle();
-			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_SETTINGS);
-			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_SETTINGS, b);
-			aboutSettings.setSelected(true);
 		} else if (id == R.id.chat) {
 			changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
 			chat.setSelected(true);
@@ -844,7 +835,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		settings.setSelected(false);
 		chat.setSelected(false);
 		aboutChat.setSelected(false);
-		aboutSettings.setSelected(false);
 	}
 
 	@SuppressWarnings("incomplete-switch")
@@ -871,9 +861,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		case ABOUT_INSTEAD_OF_CHAT:
 			aboutChat.setSelected(true);
-			break;
-		case ABOUT_INSTEAD_OF_SETTINGS:
-			aboutSettings.setSelected(true);
 			break;
 		case CHATLIST:
 		case CHAT:

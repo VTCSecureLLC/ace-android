@@ -35,4 +35,22 @@ external_domains=Sorenson.com,ZVRS.com,CAAG.com,PurpleVRS.com,GlobalVRS.com,Conv
 [rtp]
 rtcp_xr_enabled=0
 
+[video_codec_0]
+mime=H264
+rate=90000
+enabled=1
+recv_fmtp=profile-level-id=42801F
+
+
+[video_codec_1]
+mime=H263
+rate=90000
+enabled=1
+recv_fmtp=CIF=1;QCIF=1
+
+[video_codec_2]
+mime=VP8
+rate=90000
+enabled=1
+
 

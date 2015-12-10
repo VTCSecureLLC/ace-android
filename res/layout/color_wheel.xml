@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/redColorTheme"
+        android:layout_gravity="left|top"
+        android:background="#fc2b32" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/greenColorTheme"
+        android:layout_gravity="center_horizontal|top"
+        android:background="#6eed29" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageButton3"
+        android:layout_gravity="right|top"
+        android:background="#086ff6" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageButton4"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginBottom="100dp"
+        android:background="@android:color/holo_blue_bright" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageButton5"
+        android:layout_gravity="center"
+        android:layout_marginBottom="100dp"
+        android:background="#d900ff" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageButton6"
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginBottom="100dp"
+        android:background="#f6ee19" />
+</FrameLayout>

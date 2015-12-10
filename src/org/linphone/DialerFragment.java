@@ -18,9 +18,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +36,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -70,6 +71,7 @@ public class DialerFragment extends Fragment {
 	private Camera camera;
 	String color_theme;
 	String background_color_theme;
+	View dialer_view;
 	
 	
 	@Override
@@ -77,7 +79,7 @@ public class DialerFragment extends Fragment {
 			Bundle savedInstanceState) {
 		instance = this;
 		final View view = inflater.inflate(R.layout.dialer, container, false);
-
+		dialer_view=view;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
 		color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 		background_color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_background_color_key), "default");
@@ -90,6 +92,7 @@ public class DialerFragment extends Fragment {
 
 		// VTCSecure SIP Domain selection 
 		Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
+
 		final TextView sipDomainTextView = (TextView)view.findViewById(R.id.sipDomainTextView);
 		sipDomainTextView.setText("");
 		String externalDomains = LinphonePreferences.instance().getConfig().getString("vtcsecure", "external_domains", "");
@@ -102,17 +105,30 @@ public class DialerFragment extends Fragment {
 
 			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
-					if (spinnerView != null) {
-						((TextView) spinnerView).setText("");
-						((TextView) spinnerView).setTextColor(Color.TRANSPARENT);
+					try {
+						if (position == 0) {
+							//set background gray because we are using the @ symbol
+							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
+						} else {
+							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+						}
+					}catch(Throwable e){
+						//crashing on tablets because dialer_view or provider_spinner_box is missing
 					}
 					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
 					else sipDomainTextView.setText("");
 					mAddress.setTag(sipDomainTextView.getText());
-				}  
+				}
 				public void onNothingSelected(AdapterView<?> arg0) {}  
 			});
-			sipDomainSpinner.setAdapter(adapter);
+			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
+					new String[]{ "","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
+					new int[]{R.drawable.atbutton_new,R.drawable.provider_logo_sorenson,
+							R.drawable.provider_logo_zvrs,
+							R.drawable.provider_logo_caag,//caag
+							R.drawable.provider_logo_purplevrs,
+							R.drawable.provider_logo_globalvrs,//global
+							R.drawable.provider_logo_convorelay}));
 
 		} else {
 			sipDomainSpinner.setVisibility(View.GONE);
@@ -141,7 +157,7 @@ public class DialerFragment extends Fragment {
 			}else if(color_theme.equals("High Visibility")) {
 					mCall.setImageResource(R.drawable.call_hivis);
 			}else{
-					mCall.setImageResource(R.drawable.call);
+					mCall.setImageResource(R.drawable.call_button_new);
 			}
 		}
 
@@ -215,10 +231,10 @@ public class DialerFragment extends Fragment {
 				erase.setImageResource(R.drawable.backspace_hivis);
 				mAddContact.setImageResource(R.drawable.add_contact_hivis);
 		}else{
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
-				erase.setImageResource(R.drawable.backspace);
-				mAddContact.setImageResource(R.drawable.add_contact);
+				mAddress.setBackgroundResource(R.drawable.dialer_address_background_new);
+				//sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
+				erase.setImageResource(R.drawable.backspace_new);
+				mAddContact.setImageResource(R.drawable.add_contact_new);
 		}
 
 		//set background color independent
@@ -231,7 +247,7 @@ public class DialerFragment extends Fragment {
 		}else if(background_color_theme.equals("High Visibility")) {
 			view.setBackgroundResource(R.drawable.background_theme_hivis);
 		}else{
-			view.setBackgroundResource(R.drawable.background);
+			view.setBackgroundResource(R.drawable.background_theme_new);
 		}
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
@@ -391,8 +407,8 @@ public class DialerFragment extends Fragment {
 					mCall.setImageResource(R.drawable.call_hivis);
 					mAddContact.setImageResource(R.drawable.add_contact_hivis);
 			}else{
-					mCall.setImageResource(R.drawable.call);
-					mAddContact.setImageResource(R.drawable.add_contact);
+					mCall.setImageResource(R.drawable.call_button_new);
+					mAddContact.setImageResource(R.drawable.add_contact_new);
 
 			}
 
@@ -439,4 +455,55 @@ public class DialerFragment extends Fragment {
 			LinphoneManager.getInstance().newOutgoingCall(mAddress);
 		}
 	}
+}
+class SpinnerAdapter extends ArrayAdapter<String> {
+
+	int[] drawables;
+	public SpinnerAdapter(Context ctx, int txtViewResourceId,
+						  String[] objects, int [] drawable) {
+		super(ctx, txtViewResourceId, objects);
+		this.drawables = drawable;
+
+	}
+
+	@Override
+	public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
+		return getCustomViewSpinner(position, cnvtView, prnt);
+	}
+
+	@Override
+	public View getView(int pos, View cnvtView, ViewGroup prnt) {
+		return getCustomView(pos, cnvtView, prnt);
+	}
+
+	public View getCustomView(int position, View convertView,
+							  ViewGroup parent) {
+		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
+		View mySpinner = inflater.inflate(R.layout.provider_spinner_image_only, parent,
+				false);
+
+//		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
+//		main_text.setText(getItem(position));
+		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
+		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
+
+		return mySpinner;
+	}
+
+
+	public View getCustomViewSpinner(int position, View convertView,
+									 ViewGroup parent) {
+		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
+		View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
+				false);
+
+		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
+		main_text.setText(getItem(position));
+		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
+		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
+
+		return mySpinner;
+	}
+
+
 }

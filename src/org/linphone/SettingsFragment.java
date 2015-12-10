@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -32,7 +33,9 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.widget.Toast;
+
+import com.android.colorpicker.ColorPickerDialog;
+import com.android.colorpicker.ColorPickerSwatch;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -58,8 +61,15 @@ import java.util.List;
  * @author Sylvain Berfini
  */
 public class SettingsFragment extends PreferencesListFragment {
-	private static final int WIZARD_INTENT = 1;
+
+	//duplicate variables from AccountPreferencesFragment to duplicate functionality from that fragment for USM
+	private int n;
+	private boolean isNewAccount=false;
 	private LinphonePreferences mPrefs;
+
+
+
+	private static final int WIZARD_INTENT = 1;
 	private Handler mHandler = new Handler();
 	private LinphoneCoreListenerBase mListener;
 
@@ -77,6 +87,9 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		editor = prefs.edit();
+
+
+
 
 		// Init the settings page interface
 		initSettings();
@@ -110,6 +123,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	// Inits the values or the listener on some settings
 	private void initSettings() {
+		initUSM();
 		//Init accounts on Resume instead of on Create to update the account list when coming back from wizard
 		initGeneralSettings();
 		initAudioVideoSettings();
@@ -704,7 +718,14 @@ public class SettingsFragment extends PreferencesListFragment {
 //
 
 	}
-
+	private void initUSM(){
+		//Added code from AccountPreferencesFragment to help reproduce functionality.
+		n = mPrefs.getDefaultAccountIndex();
+		if(n == mPrefs.getAccountCount()){
+			isNewAccount=true;
+		} else {
+		}
+	}
 	private void initGeneralSettings(){
 		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
 
@@ -744,6 +765,13 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+				if(value){
+					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tls_key));
+					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
+				}else{
+					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tcp_key));
+					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
+				}
 				return true;
 			}
 		});
@@ -862,7 +890,8 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 	private void initThemeSettings() {
-
+		final SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
 		//initializeThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_app_color_key)));
 		//initializeBackgroundThemeColorPreferences((ListPreference) findPreference(getString(R.string.pref_theme_background_color_key)));
 
@@ -870,13 +899,42 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				//Todo: VATRP-1022 -- Add foreground / background color picker
+
+				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
+						Color.WHITE, Color.YELLOW};
+
+				int selectedColor = prefs.getInt(getString(R.string.pref_theme_foreground_color_setting_key), Color.RED);
+				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_foreground_title,
+						colors, selectedColor, colors.length, colors.length);
+				dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+					@Override
+					public void onColorSelected(int color) {
+						prefs.edit().putInt(getString(R.string.pref_theme_foreground_color_setting_key), color).commit();
+					}
+				});
+				dialog.show(getFragmentManager(), "COLOR_PICKER");
+
 				return true;
 			}
 		});
 		((Preference)findPreference(getString(R.string.pref_theme_background_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				//Todo: VATRP-1022 -- Add foreground / background color picker
+				//VATRP-1022 -- Add foreground / background color picker
+				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
+						Color.WHITE, Color.YELLOW};
+
+				int selectedColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.RED);
+				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_background_title,
+						colors, selectedColor, colors.length, colors.length);
+				dialog.setOnColorSelectedListener(new ColorPickerSwatch.OnColorSelectedListener() {
+					@Override
+					public void onColorSelected(int color) {
+						prefs.edit().putInt(getString(R.string.pref_theme_background_color_setting_key), color).commit();
+					}
+				});
+				dialog.show(getFragmentManager(), "COLOR_PICKER");
+
 				return true;
 			}
 		});
@@ -885,6 +943,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		((CheckBoxPreference)findPreference(getString(R.string.pref_theme_force_508_key))).setChecked(false);
 
 	}
+
+
 	private void setThemePreferencesListener() {
 
 
@@ -1392,4 +1452,6 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		}
 	}
+
+
 }

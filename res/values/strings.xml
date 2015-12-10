@@ -1,5 +1,12 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources>
+<?xml version='1.0' encoding='UTF-8' ?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="importfile">File path:</string>
+
+
+  <string name="importServiceMsg">Importing VCards</string>
+
+  <string name="exportServiceMsg">Exporting VCards</string>
+
   <string name="pref_disable_account">Disable</string>
   <string name="pref_tunnel">Tunnel</string>
   <string name="pref_tunnel_host">Hostname</string>
@@ -226,7 +233,7 @@
   <string name="status_not_connected">Not Registered</string>
   <string name="status_in_progress">Registration in progress</string>
   <string name="status_error">Registration failed</string>
-  <string name="addressHint">Number or address</string>
+  <string name="addressHint">Dial Number</string>
   <string name="conference">Conference</string>
   <string name="incoming">Incoming call</string>
   <string name="draft">Draft</string>
@@ -302,10 +309,10 @@
   <string name="setup_check_account_validation">Check</string>
   <string name="setup_account_not_validated">Your account has not been validated yet.</string>
   <string name="setup_account_validated">Your account has been validated.</string>
-  <string name="button_history">History</string>
-  <string name="button_contacts">Contacts</string>
+  <string name="button_history">Call History</string>
+  <string name="button_contacts">Phonebook</string>
   <string name="button_settings">Settings</string>
-  <string name="button_resource">Resource</string>
+  <string name="button_resource">Resources</string>
   <string name="button_chat">Chat</string>
   <string name="button_about">About</string>
   <string name="button_setup_cancel">Cancel</string>
@@ -317,6 +324,7 @@
   <string name="button_ok">Okay</string>
   <string name="button_back">Back</string>
   <string name="button_all_contacts">All</string>
+  <string name="button_import_export_contact">Import/Export</string>
   <string name="button_add_contact">New contact</string>
   <string name="button_all_call">All</string>
   <string name="button_missed_call">Missed</string>
@@ -452,6 +460,14 @@
 
   <string name="pref_text_settings_key">pref_text_settings_key</string>
   <string name="pref_text_settings">Text</string>
+  <string name="pref_text_settings_send_mode_key">pref_text_settings_send_mode_key</string>
+  <string name="pref_text_settings_send_mode_title">Text Send-Mode</string>
+  <!--do not change order without changing corresponding entry_values in non_localizable_strings.xml-->
+  <string-array name="pref_text_settings_send_mode_entries">
+    <item>RTT</item>
+    <item>SIP SIMPLE</item>
+  </string-array>
+
 
   <string name="pref_summary_settings_key">pref_summary_settings_key</string>
   <string name="pref_summary_settings">Summary</string>
@@ -463,5 +479,29 @@
   <string name="pref_summary_show_advanced">Show Advanced</string>
   <string name="pref_summary_show_debug_key">pref_summary_show_debug_key</string>
   <string name="pref_summary_show_debug">Show Debug</string>
+<!-- Copyright (C) 2013 The Android Open Source Project
 
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Select a Color</string>
+    <!-- Content description for a color square. -->
+    <string name="color_swatch_description">Color <xliff:g id="color_index" example="14">%1$d</xliff:g></string>
+    <!-- Content description for a selected color square. -->
+    <string name="color_swatch_description_selected">Color <xliff:g id="color_index" example="14">%1$d</xliff:g> selected</string>
+
+  <string name="color_picker_foreground_title">Foreground Color</string>
+  <string name="color_picker_background_title">Background Color</string>
 </resources>

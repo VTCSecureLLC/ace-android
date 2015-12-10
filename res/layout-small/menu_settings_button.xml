@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_weight="0.2"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/background_color">
     
     <ImageView
         android:id="@+id/image"
@@ -13,7 +14,7 @@
 		android:adjustViewBounds="true"
 		android:contentDescription="@string/content_description_settings"
  		android:scaleType="fitXY"
-		android:src="@drawable/settings" />
+		android:src="@drawable/settings_new" />
 
     <TextView
         android:id="@+id/text"

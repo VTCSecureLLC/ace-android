@@ -44,8 +44,7 @@
         android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="33dp"
         android:paddingRight="33dp" >
@@ -62,8 +61,6 @@
             android:layout_width="match_parent"
             android:layout_height="42dp"
             android:layout_marginBottom="27dp" />
-
-      
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,14 +90,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="5dp"
             android:text="ENTER ACCOUNT" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:layout_marginBottom="7dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp">
 
             <ImageView
                 android:layout_width="45dp"
@@ -124,7 +121,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp">
 
             <ImageView
                 android:src="@drawable/icon_lock"
@@ -146,11 +144,37 @@
                 android:singleLine="true"
                 android:imeOptions="actionNext"/>
         </LinearLayout>
-        
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:clickable="true">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:text="+"
+                android:id="@+id/toggleAdvancedLoginPanel"
+                android:background="@android:color/background_dark"
+                android:textColor="@android:color/white"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/advancedLoginPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:orientation="vertical"
+            android:visibility="gone">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp">
 
             <ImageView
                 android:layout_width="45dp"
@@ -167,24 +191,106 @@
                 android:background="#809cac"
                 android:textColorHint="#787878"
                 android:text="bc1.vatrp.net"
-                android:hint="Address:Port"
+                android:hint="Address:Domain"
                 android:paddingLeft="30dp"
                 android:singleLine="true"
-                android:imeOptions="actionDone"/>
+                android:imeOptions="actionNext"/>
         </LinearLayout>
-<!-- android:background="#001b2b"
-android:textColor="#ffffff" -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="45dp"
+                android:paddingBottom="5dp"
+                android:scaleType="center"
+                android:layout_height="match_parent"
+                android:background="#a0b5c1" />
+
+
+            <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
+            <EditText
+                android:id="@+id/et_prv_transport"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#809cac"
+                android:textColorHint="#787878"
+                android:text="TCP"
+                android:hint="Address:Transport"
+                android:paddingLeft="30dp"
+                android:singleLine="true"
+                android:imeOptions="actionNext"/>
+                </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="5dp">
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:scaleType="center"
+                    android:layout_height="match_parent"
+                    android:background="#a0b5c1" />
+
+
+                <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
+                <EditText
+                    android:id="@+id/et_prv_port"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#809cac"
+                    android:textColorHint="#787878"
+                    android:text="5060"
+                    android:hint="Address:Port"
+                    android:paddingLeft="30dp"
+                    android:singleLine="true"
+                    android:imeOptions="actionNext"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal"
+                android:layout_marginBottom="5dp">
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:scaleType="center"
+                    android:layout_height="match_parent"
+                    android:background="#a0b5c1" />
+
+                <EditText
+                    android:id="@+id/et_prv_userid"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#809cac"
+                    android:textColorHint="#787878"
+                    android:text="userid"
+                    android:hint="Address:userid"
+                    android:paddingLeft="30dp"
+                    android:singleLine="true"
+                    android:imeOptions="actionDone"/>
+            </LinearLayout>
+        </LinearLayout>
+        <!-- android:background="#00
+        android:textColor="#ffffff" -->
         <Button
             android:id="@+id/btn_prv_login"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/btn_login_provider"
             
             android:textColor="#ffffff"
             android:text="Login"
             android:textAppearance="?android:attr/textAppearanceLarge"
-             />
+            android:layout_marginBottom="10dp" />
     </LinearLayout>
     </ScrollView>
     <LinearLayout

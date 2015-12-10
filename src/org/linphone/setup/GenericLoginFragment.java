@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -36,8 +37,11 @@ import org.linphone.R;
  * @author Sylvain Berfini
  */
 public class GenericLoginFragment extends Fragment implements OnClickListener {
-	private EditText login, password, domain;
+	private EditText login, password, domain, port, transport, userid;;
 	private ImageView apply;
+	View advancedLoginPanel;
+	Button advancedLoginPanelToggle;
+	boolean isAdvancedLogin = false;
 	Spinner sp_provider;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +51,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		login = (EditText) view.findViewById(R.id.et_prv_user);
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
+
+		port = (EditText)view.findViewById(R.id.et_prv_port);
+		transport = (EditText)view.findViewById(R.id.et_prv_transport);
+		userid = (EditText)view.findViewById(R.id.et_prv_userid);
+
 		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
 		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
 		
@@ -60,6 +69,24 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			R.drawable.provider_logo_convorelay}));
 		
 		view.findViewById(R.id.ab_back).setOnClickListener(this);
+
+		advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
+		advancedLoginPanel.setVisibility(View.GONE);
+		advancedLoginPanelToggle = (Button)view.findViewById(R.id.toggleAdvancedLoginPanel);
+		advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!isAdvancedLogin) {
+					advancedLoginPanel.setVisibility(View.VISIBLE);
+					((Button) v).setText("-");
+					isAdvancedLogin = true;
+				} else {
+					advancedLoginPanel.setVisibility(View.GONE);
+					((Button) v).setText("+");
+					isAdvancedLogin = false;
+				}
+			}
+		});
 		
 		return view;
 	}
@@ -73,7 +100,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
 				return;
 			}
-			
 			SetupActivity.instance().genericLogIn(login.getText().toString().replaceAll("\\s", ""),
 					password.getText().toString().replaceAll("\\s", ""), domain.getText().toString().replaceAll("\\s", ""));
 			

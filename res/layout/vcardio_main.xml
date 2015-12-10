@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/ExportButton" android:layout_alignParentRight="false" android:layout_alignParentLeft="true" android:text="Export to:"></Button>
+<Button android:layout_height="wrap_content" android:id="@+id/ImportButton" android:layout_width="wrap_content" android:layout_below="@+id/ExportButton" android:layout_alignParentLeft="true" android:layout_alignParentRight="false" android:text="Import from:"></Button>
+
+
+<EditText android:layout_height="wrap_content" android:id="@+id/ImportFile" android:layout_width="fill_parent" android:text="/sdcard/contacts.vcf" android:layout_alignTop="@+id/ImportButton" android:layout_toRightOf="@+id/ImportButton"></EditText><EditText android:layout_height="wrap_content" android:id="@+id/ExportFile" android:layout_width="fill_parent" android:text="/sdcard/backup.vcf" android:layout_toRightOf="@+id/ExportButton"></EditText>
+
+<CheckBox android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/ImportButton" android:id="@+id/ReplaceOnImport" android:text="Replace existing contacts"></CheckBox><TextView android:id="@+id/StatusText" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_alignParentBottom="true"></TextView>
+
+</RelativeLayout>

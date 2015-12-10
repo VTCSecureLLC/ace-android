@@ -63,9 +63,9 @@
 		android:title="@string/pref_text_settings"
 		android:key="@string/pref_text_settings_key"
 		android:shouldDisableView="true">
-		<Preference
-			android:title=""
-			android:key=""/>
+		<CheckBoxPreference
+			android:title="@string/pref_text_enable_title"
+			android:key="@string/pref_text_enable_key"/>
 	</PreferenceScreen>
 
 	<PreferenceScreen

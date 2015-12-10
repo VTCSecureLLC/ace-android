@@ -23,7 +23,10 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,22 +136,22 @@ public class Numpad extends LinearLayout implements AddressAware {
 				view.findViewById(R.id.Digit00).setBackgroundResource(R.drawable.numpad_zero_hivis);
 				view.findViewById(R.id.DigitHash).setBackgroundResource(R.drawable.numpad_sharp_hivis);
 			}else if(color_theme.equals("Tech")) {
-				techify(view,R.id.Digit1);
-				techify(view,R.id.Digit2);
-				techify(view,R.id.Digit3);
-				techify(view,R.id.Digit4);
-				techify(view,R.id.Digit5);
-				techify(view,R.id.Digit6);
-				techify(view,R.id.Digit7);
-				techify(view,R.id.Digit8);
-				techify(view,R.id.Digit9);
-				techify(view,R.id.DigitStar);
-				techify(view,R.id.Digit00);
-				techify(view,R.id.DigitHash);
-				techify(view,R.id.Digit1);
-				techify(view,R.id.Digit1);
-				techify(view,R.id.Digit1);
+				techify(view,R.id.Digit1,"1\n   ");
+				techify(view,R.id.Digit2,"2\nABC");
+				techify(view, R.id.Digit3, "3\nDEF");
+				techify(view, R.id.Digit4, "4\nGHI");
+				techify(view, R.id.Digit5, "5\nJKL");
+				techify(view,R.id.Digit6,"6\nMNO");
+				techify(view,R.id.Digit7,"7\nPQRS");
+				techify(view,R.id.Digit8,"8\nTUV");
+				techify(view, R.id.Digit9, "9\nWXYZ");
+				techify(view, R.id.DigitStar, "*\n   ");
+				techify(view, R.id.Digit00, "0\n + ");
+				techify(view, R.id.DigitHash, "#\n   ");
+
 			}else{
+
+
 				view.findViewById(R.id.Digit1).setBackgroundResource(R.drawable.numpad_one);
 				view.findViewById(R.id.Digit2).setBackgroundResource(R.drawable.numpad_two);
 				view.findViewById(R.id.Digit3).setBackgroundResource(R.drawable.numpad_three);
@@ -169,11 +172,18 @@ public class Numpad extends LinearLayout implements AddressAware {
 		}
 
 	}
-	public void techify(View view, int id){
+	public void techify(View view, int id, String s){
 		view.findViewById(id).setBackgroundResource(R.drawable.numpad_generic_tech);
-		view.findViewById(id).setAlpha(0.50f);
+		view.findViewById(id).getBackground().setAlpha(127);
 		((Button)view.findViewById(id)).setTextSize(50);
+
+		SpannableString ss;
+		ss=  new SpannableString(s);
+		ss.setSpan(new RelativeSizeSpan(.4f), 2, ss.length(), 0); // set size
 		((Button)view.findViewById(id)).setTextColor(Color.WHITE);
+		((Button)view.findViewById(id)).setText(ss);
+		((Button)view.findViewById(id)).setLineSpacing(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, getResources().getDisplayMetrics()), .8f);
+
 
 	}
 	@Override
