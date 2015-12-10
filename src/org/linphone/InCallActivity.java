@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -104,7 +105,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private StatusFragment status;
 	private AudioCallFragment audioCallFragment;
 	private VideoCallFragment videoCallFragment;
-	private boolean isSpeakerEnabled = false, isMicMuted = false, isTransferAllowed, isAnimationDisabled, isRTTEnabled=false;
+	private boolean isSpeakerMuted, isMicMuted = false, isTransferAllowed, isAnimationDisabled, isRTTEnabled=false;
 	private ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
@@ -157,27 +158,20 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
         isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
         showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
-        isSpeakerEnabled = LinphoneManager.getLcIfManagerNotDestroyedOrNull().isSpeakerEnabled();
+		LinphoneManager.getLc().enableSpeaker(true);
+
 
 		//if (params.realTimeTextEnabled()) { // Does not work, always false
 		isRTTEnabled=LinphoneManager.getInstance().getRttPreference();
-
-		if (Version.sdkAboveOrEqual(Version.API11_HONEYCOMB_30)) {
-			if(!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
-				BluetoothManager.getInstance().initBluetooth();
-			} else {
-				isSpeakerEnabled = false;
-			}
-		}
 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		boolean isMicMutedPref = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
-		boolean isSpeakerMutedPref = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		LinphoneManager.getLc().muteMic(isMicMutedPref);
-		LinphoneManager.getLc().enableSpeaker(isSpeakerMutedPref);
+
+		isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
@@ -252,14 +246,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
         		if (state == State.StreamsRunning) {
         			switchVideo(isVideoEnabled(call));
-
 					//Check media in progress
 					if(LinphonePreferences.instance().isVideoEnabled() && !call.mediaInProgress()){
 						video.setEnabled(true);
 					}
-
-        			lc.enableSpeaker(isSpeakerEnabled);
-
         			isMicMuted = lc.isMicMuted();
         			enableAndRefreshInCallActions();
         			
@@ -331,7 +321,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             if (savedInstanceState != null) { 
             	// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
 				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
-				isSpeakerEnabled = savedInstanceState.getBoolean("Speaker");
             	isMicMuted = savedInstanceState.getBoolean("Mic");
             	isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
             	refreshInCallActions();
@@ -342,7 +331,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
             	callFragment = new VideoCallFragment();
             	videoCallFragment = (VideoCallFragment) callFragment;
-            	isSpeakerEnabled = true;
             	
             	if (cameraNumber > 1) {
             		switchCamera.setVisibility(View.VISIBLE); 
@@ -725,7 +713,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean("isRTTMaximized", isRTTMaximized);
-		outState.putBoolean("Speaker", LinphoneManager.getLc().isSpeakerEnabled());
 		outState.putBoolean("Mic", LinphoneManager.getLc().isMicMuted());
 		outState.putBoolean("VideoCallPaused", isVideoCallPaused);
 		
@@ -753,10 +740,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //		micro.setEnabled(false);
 		speaker = (TextView) findViewById(R.id.speaker);
 		speaker.setOnClickListener(this);
-		if(isTablet()){
-			speaker.setEnabled(false);
-		}
-//		speaker.setEnabled(false);
+		toggleSpeaker(isSpeakerMuted);
+
 		addCall = (TextView) findViewById(R.id.addCall);
 		addCall.setOnClickListener(this);
 		addCall.setEnabled(false);
@@ -804,6 +789,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         if (!isTransferAllowed) {
         	addCall.setBackgroundResource(R.drawable.options_add_call);
         }
+		if (Version.sdkAboveOrEqual(Version.API11_HONEYCOMB_30)) {
+			if(!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
+				BluetoothManager.getInstance().initBluetooth();
+			} else {
+				isSpeakerMuted = true;
+			}
+		}
 
         if (!isAnimationDisabled) {
 	        slideInRightToLeft = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_to_left);
@@ -847,7 +839,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		
 		try {
-			if (isSpeakerEnabled) {
+			if (!isSpeakerMuted) {
 				speaker.setBackgroundResource(R.drawable.speaker_on);
 				routeSpeaker.setBackgroundResource(R.drawable.route_speaker_on);
 				routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
@@ -898,9 +890,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			video.setEnabled(true);
 		}
 		micro.setEnabled(true);
-		if(!isTablet()){
-			speaker.setEnabled(true);
-    	}
+		speaker.setEnabled(true);
+
 		transfer.setEnabled(true);
 		pause.setEnabled(true);
 		dialer.setEnabled(true);
@@ -947,7 +938,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			toggleMicro();
 		} 
 		else if (id == R.id.speaker) {
-			toggleSpeaker();
+			toggleSpeaker(!isSpeakerMuted);
 		} 
 		else if (id == R.id.addCall) {
 			goBackToDialer();
@@ -981,7 +972,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		else if (id == R.id.routeBluetooth) {
 			if (BluetoothManager.getInstance().routeAudioToBluetooth()) {
-				isSpeakerEnabled = false;
+				isSpeakerMuted = true;
 				routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_on);
 				routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
 				routeSpeaker.setBackgroundResource(R.drawable.route_speaker_off);
@@ -990,7 +981,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		else if (id == R.id.routeReceiver) {
 			LinphoneManager.getInstance().routeAudioToReceiver();
-			isSpeakerEnabled = false;
+			isSpeakerMuted = true;
 			routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_off);
 			routeReceiver.setBackgroundResource(R.drawable.route_receiver_on);
 			routeSpeaker.setBackgroundResource(R.drawable.route_speaker_off);
@@ -998,7 +989,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		else if (id == R.id.routeSpeaker) {
 			LinphoneManager.getInstance().routeAudioToSpeaker();
-			isSpeakerEnabled = true;
 			routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_off);
 			routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
 			routeSpeaker.setBackgroundResource(R.drawable.route_speaker_on);
@@ -1084,7 +1074,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if (!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
 			Log.w("Bluetooth not available, using speaker");
 			LinphoneManager.getInstance().routeAudioToSpeaker();
-			isSpeakerEnabled = true;
 			speaker.setBackgroundResource(R.drawable.speaker_on);
 		}
 		video.setBackgroundResource(R.drawable.video_off);
@@ -1133,16 +1122,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 	
-	private void toggleSpeaker() {
-		isSpeakerEnabled = !isSpeakerEnabled;
-		if (isSpeakerEnabled) {
-			LinphoneManager.getInstance().routeAudioToSpeaker();
-			speaker.setBackgroundResource(R.drawable.speaker_on);
-			LinphoneManager.getLc().enableSpeaker(isSpeakerEnabled);
-		} else {
-			Log.d("Toggle speaker off, routing back to earpiece");
-			LinphoneManager.getInstance().routeAudioToReceiver();
+	private void toggleSpeaker(boolean isMuted) {
+		final float mute_db = -1000.0f;
+		isSpeakerMuted = isMuted;
+		if (isSpeakerMuted) {
+			LinphoneManager.getLc().setPlaybackGain(mute_db);
 			speaker.setBackgroundResource(R.drawable.speaker_off);
+		} else {
+			LinphoneManager.getLc().setPlaybackGain(0);
+			speaker.setBackgroundResource(R.drawable.speaker_on);
 		}
 	}
 	

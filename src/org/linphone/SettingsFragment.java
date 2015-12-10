@@ -831,12 +831,11 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void setAudioVideoPreferencesListener(){
-		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
+		//VATRP-1017 -- Add global speaker and mic mute logic
 		findPreference(getString(R.string.pref_av_speaker_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
-				LinphoneManager.getLc().enableSpeaker(value);
 				prefs.edit().putBoolean(getString(R.string.pref_av_speaker_mute_key), value).commit();
 				return true;
 			}
