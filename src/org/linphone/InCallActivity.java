@@ -503,11 +503,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void updateIncomingTextView(final long character) {
 		runOnUiThread(new Runnable(){
 			public void run() {
-
+				if(rtt_scrollview.getVisibility()!=View.VISIBLE){
+					showRTTinterface();
+				}
 				if(!incoming_chat_initiated){
 					incomingTextView=create_new_incoming_bubble();
 					incoming_chat_initiated=true;
 				}
+
 				if (incomingTextView == null) return;
 
 				String currentText = incomingTextView.getText().toString();
@@ -536,9 +539,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
 	}
 	public TextView create_new_incoming_bubble(){
-		if(rtt_scrollview.getVisibility()!=View.VISIBLE){
-			showRTTinterface();
-		}
+
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
 		lp1.gravity = Gravity.RIGHT;

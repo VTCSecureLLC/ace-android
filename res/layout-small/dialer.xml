@@ -78,6 +78,7 @@
                         android:layout_weight="1"
                         android:src="@drawable/call_button_new" />
                     <TextView
+                        android:id="@+id/call_button_text"
                         android:textColor="@color/text_color"
                         android:text="CALL"
                         android:layout_width="match_parent"

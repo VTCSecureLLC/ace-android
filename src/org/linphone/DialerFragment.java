@@ -139,6 +139,17 @@ public class DialerFragment extends Fragment {
 
 
 		mCall = (CallButton) view.findViewById(R.id.Call);
+
+		//Make text to right of call button clickable.
+		TextView call_button_text = (TextView)view.findViewById(R.id.call_button_text);
+		call_button_text.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mCall.performClick();
+
+			}
+		});
+
 		mCall.setAddressWidget(mAddress);
 		if (LinphoneActivity.isInstanciated() && LinphoneManager.getLc().getCallsNb() > 0) {
 			if (isCallTransferOngoing) {
