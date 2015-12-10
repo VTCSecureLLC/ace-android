@@ -175,7 +175,7 @@ public class Numpad extends LinearLayout implements AddressAware {
 	public void techify(View view, int id, String s){
 		view.findViewById(id).setBackgroundResource(R.drawable.numpad_generic_tech);
 		view.findViewById(id).getBackground().setAlpha(127);
-		((Button)view.findViewById(id)).setTextSize(50);
+		((Button)view.findViewById(id)).setTextSize(44);
 
 		SpannableString ss;
 		ss=  new SpannableString(s);
