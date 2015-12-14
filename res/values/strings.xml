@@ -4,6 +4,7 @@
 
 
   <string name="importServiceMsg">Importing VCards</string>
+  <string name="logOutMessage">Logout Now?</string>
 
   <string name="exportServiceMsg">Exporting VCards</string>
 
