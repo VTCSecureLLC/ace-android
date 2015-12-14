@@ -46,7 +46,7 @@ cache:
   - submodules/externals/build/openh264/arm
   - submodules/externals/build/openh264/x86
   - obj
- before_install:
+- before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
   -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
   -O ndk.bin ; fi
