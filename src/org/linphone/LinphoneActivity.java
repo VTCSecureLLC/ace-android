@@ -766,35 +766,47 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (id == R.id.history) {
 			changeCurrentFragment(FragmentsAvailable.HISTORY, null);
 			history.setSelected(true);
+			history.setBackgroundColor(Color.argb(180, 0, 155, 160));
 			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
 		} else if (id == R.id.contacts) {
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
+			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.dialer) {
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			dialer.setSelected(true);
+			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.settings) {
 			changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
 			settings.setSelected(true);
+			settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.about_chat) {
 			Bundle b = new Bundle();
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
 			aboutChat.setSelected(true);
+			aboutChat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.chat) {
 			changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
 			chat.setSelected(true);
+			chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		}
 	}
 
 	private void resetSelection() {
 		history.setSelected(false);
+		history.setBackgroundColor(Color.TRANSPARENT);
 		contacts.setSelected(false);
+		contacts.setBackgroundColor(Color.TRANSPARENT);
 		dialer.setSelected(false);
+		dialer.setBackgroundColor(Color.TRANSPARENT);
 		settings.setSelected(false);
+		settings.setBackgroundColor(Color.TRANSPARENT);
 		chat.setSelected(false);
+		chat.setBackgroundColor(Color.TRANSPARENT);
 		aboutChat.setSelected(false);
+		aboutChat.setBackgroundColor(Color.TRANSPARENT);
 	}
 
 	@SuppressWarnings("incomplete-switch")
