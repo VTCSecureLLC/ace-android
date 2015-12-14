@@ -30,8 +30,7 @@ public class LoginProviderActivity extends Fragment implements OnClickListener {
 		v.findViewById(R.id.btn_login_1).setOnClickListener(this);
 		v.findViewById(R.id.btn_login_2).setOnClickListener(this);
 		v.findViewById(R.id.btn_login_3).setOnClickListener(this);
-		
-		
+
 		v.findViewById(R.id.btn_prv_login).setOnClickListener(this);
 		
 		et_login = (EditText) v.findViewById(R.id.et_prv_user);
@@ -39,19 +38,13 @@ public class LoginProviderActivity extends Fragment implements OnClickListener {
 		sp_provider = (Spinner) v.findViewById(R.id.sp_prv);
 		
 		sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem, new String[]{ "asd", "asd2"}));
-		
 		return v;
 	}
 
 	@Override
 	public void onClick(View arg0) {
-		
 		((SetupActivity)getActivity()).onClick(arg0);
-	
-		
 	}
-	
-	
 	
 	class SpinnerAdapter extends ArrayAdapter<String> {
 
