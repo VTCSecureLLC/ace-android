@@ -912,9 +912,10 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				//Todo: VATRP-1022 -- Add foreground / background color picker
-
-				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
-						Color.WHITE, Color.YELLOW};
+								//Black, blue, cyan, grey, green, magenda
+				int[] colors = {Color.argb(220, 0, 0, 0), Color.argb(200, 0, 50, 150), Color.argb(200, 0, 160, 160), Color.argb(200, 50, 50, 50),
+						Color.argb(200, 0, 160, 50), Color.argb(200, 160, 0, 150), Color.argb(200, 160, 0, 0),
+						Color.argb(200, 255, 255, 255), Color.argb(200, 160, 160, 0)};
 
 				int selectedColor = prefs.getInt(getString(R.string.pref_theme_foreground_color_setting_key), Color.RED);
 				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_foreground_title,
@@ -923,6 +924,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					@Override
 					public void onColorSelected(int color) {
 						prefs.edit().putInt(getString(R.string.pref_theme_foreground_color_setting_key), color).commit();
+						LinphoneActivity.instance().setColorTheme(getActivity());
 					}
 				});
 				dialog.show(getFragmentManager(), "COLOR_PICKER");
@@ -933,9 +935,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		((Preference)findPreference(getString(R.string.pref_theme_background_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				//VATRP-1022 -- Add foreground / background color picker
-				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
-						Color.WHITE, Color.YELLOW};
+				//Black, blue, cyan, grey, green, magenda
+				int[] colors = {Color.argb(220, 0, 0, 0), Color.argb(200, 0, 50, 150), Color.argb(200, 0, 160, 160), Color.argb(200, 10, 10, 10),
+						Color.argb(200, 0, 160, 50), Color.argb(200, 160, 0, 150), Color.argb(200, 160, 0, 0),
+						Color.argb(200, 255, 255, 255), Color.argb(200, 160, 160, 0)};
 
 				int selectedColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.RED);
 				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_background_title,
@@ -944,6 +947,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					@Override
 					public void onColorSelected(int color) {
 						prefs.edit().putInt(getString(R.string.pref_theme_background_color_setting_key), color).commit();
+						LinphoneActivity.instance().setBackgroundColorTheme(getActivity());
 					}
 				});
 				dialog.show(getFragmentManager(), "COLOR_PICKER");
