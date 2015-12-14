@@ -21,27 +21,27 @@
        	android:layout_gravity="center">
        	<!-- focusable/focusableInTouchMode are set to true to prevent the keyboard to be displayed automatically -->
 
-	    <org.linphone.ui.AddressText
-	        android:id="@+id/Adress"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_toLeftOf="@+id/Erase"
-	        android:background="@color/transparent"
-	        android:gravity="center"
-	        android:hint="@string/addressHint"
-	        android:inputType="textEmailAddress"
-	        android:paddingLeft="20dp"
-	        android:paddingRight="20dp"
-	        android:textColor="@android:color/white"
-	        android:textSize="30sp" />
-
+		<LinearLayout android:id="@+id/address_holder" android:layout_width="match_parent" android:layout_height="wrap_content"  android:background="@drawable/border_ltr" android:paddingLeft="2dp" android:paddingTop="2dp" android:paddingRight="2dp">
+			<org.linphone.ui.AddressText
+				android:id="@+id/Adress"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@drawable/dialer_address_background_new"
+				android:gravity="center"
+				android:hint="@string/addressHint"
+				android:inputType="textEmailAddress"
+				android:paddingLeft="20dp"
+				android:paddingRight="20dp"
+				android:textColor="@android:color/white" />
+		</LinearLayout>
 		<ImageView android:contentDescription="@string/content_description_add_contact"
 			android:id="@+id/addContact"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignBottom="@+id/Adress"
-			android:layout_alignTop="@+id/Adress"
-			android:layout_alignLeft="@+id/Adress"
+			android:layout_alignBottom="@+id/address_holder"
+			android:layout_alignTop="@+id/address_holder"
+			android:layout_alignLeft="@+id/address_holder"
+			android:paddingLeft="10dp"
 			android:paddingTop="20dp"
 			android:paddingBottom="20dp"
 			android:src="@drawable/add_contact_circle"
@@ -50,6 +50,7 @@
 		<org.linphone.ui.EraseButton
 			android:contentDescription="@string/content_description_backspace"
 			android:id="@+id/Erase"
+			android:paddingRight="10dp"
 			android:paddingTop="20dp"
 			android:paddingBottom="20dp"
 			android:layout_width="wrap_content"
@@ -67,7 +68,8 @@
 			android:gravity="center"
 			android:text="domain"
 			android:textColor="@android:color/white"
-			android:layout_alignBottom="@+id/Adress">
+			android:layout_alignBottom="@+id/address_holder"
+			android:paddingBottom="2dp">
 		</TextView>
         
     </RelativeLayout>
@@ -93,7 +95,7 @@
 			android:layout_width="400dp"
 			android:layout_height="90dp">
 			<TableRow android:layout_weight="1">
-				<LinearLayout android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent"  android:background="@drawable/border_ltb">
+				<LinearLayout android:paddingLeft="2dp" android:paddingTop="2dp" android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent"  android:background="@drawable/border_left_top">
 					<LinearLayout android:id="@+id/provider_spinner_box" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent"  android:background="@color/border_color" android:gravity="center">
 						<Spinner
 							android:id="@+id/sipDomainSpinner"
@@ -111,6 +113,7 @@
 							android:layout_weight="1"
 							android:src="@drawable/call_button_new" />
 						<TextView
+							android:id="@+id/call_button_text"
 							android:textColor="@color/text_color"
 							android:text="CALL"
 							android:layout_width="match_parent"

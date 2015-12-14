@@ -4,44 +4,7 @@
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res/org.linphone">
-    
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true">
 
-        <LinearLayout
-            android:id="@+id/fragmentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" />
-	
-		<TableLayout 
-	        android:id="@+id/calls"
-	    	android:paddingTop="20dp"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="top" />
-
-        <TextView
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:id="@+id/incomingRTTMinimized"
-            android:layout_gravity="center"
-            android:background="#010000"
-            android:textColor="#ffffff"
-            android:enabled="true"
-            android:maxLines="3"
-            android:visibility="gone"/>
-
-        <fragment
-            android:id="@+id/status"
-            android:name="org.linphone.StatusFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/status" />
-        
-    </FrameLayout>
 
     <ImageView
         android:id="@+id/switchCamera"
