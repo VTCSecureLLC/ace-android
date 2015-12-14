@@ -861,7 +861,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-
+		if(isRTTMaximized){
+			hideRTTinterface();
+			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+			isRTTMaximized = false;
+		}
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			displayVideoCallControlsIfHidden();
 		}
