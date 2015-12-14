@@ -981,10 +981,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		Log.d("RTT: initTextSettings()");
 		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
 
-		if (prefs.contains(getString(R.string.pref_text_enable_key))) {
-			Log.d("RTT: RTT enabled from earlier? " + prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
-			enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
-		}
+		boolean isRTTEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
+		Log.d("RTT: RTT enabled from earlier? " + isRTTEnabled);
+		enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
+
 		enableTextCb.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object value) {
