@@ -48,7 +48,7 @@ cache:
   - obj
   - bin
 before_install:
-- git clone https://github.com/urho3d/android-ndk.git $HOME/android-ndk
+- git clone https://github.com/urho3d/android-ndk.git $HOME/android-ndk --depth 1
 - export ANDROID_NDK=$PWD/android-ndk
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - export NDK_CACHE=ccache
