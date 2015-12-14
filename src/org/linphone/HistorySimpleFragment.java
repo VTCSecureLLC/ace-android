@@ -21,6 +21,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
@@ -355,14 +356,15 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
 			} else {
 				view = mInflater.inflate(R.layout.history_cell_simple, parent,false);
 			}
-			
+
+			view.setBackgroundColor(Color.GRAY);
 			final LinphoneCallLog log = mLogs.get(position);
 			long timestamp = log.getTimestamp();
 			final LinphoneAddress address;
 			
 			TextView contact = (TextView) view.findViewById(R.id.sipUri);
 			contact.setSelected(true); // For automated horizontal scrolling of long texts
-			
+			contact.setTextColor(Color.WHITE);
 			ImageView detail = (ImageView) view.findViewById(R.id.detail);
 			ImageView delete = (ImageView) view.findViewById(R.id.delete);
 			ImageView callDirection = (ImageView) view.findViewById(R.id.icon);
