@@ -67,7 +67,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private boolean isNewAccount=false;
 	private LinphonePreferences mPrefs;
 
-
+	public static boolean isAdvancedSettings = false;
 
 	private static final int WIZARD_INTENT = 1;
 	private Handler mHandler = new Handler();
@@ -87,9 +87,6 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		editor = prefs.edit();
-
-
-
 
 		// Init the settings page interface
 		initSettings();
@@ -128,15 +125,16 @@ public class SettingsFragment extends PreferencesListFragment {
 		initGeneralSettings();
 		initAudioVideoSettings();
 		initThemeSettings();
-
-		initTunnelSettings();
-		initAudioSettings();
-		initVideoSettings();
 		initTextSettings();
-		initCallSettings();
-		initNetworkSettings();
-		initAdvancedSettings();
 
+		if(isAdvancedSettings) {
+			initTunnelSettings();
+			initAudioSettings();
+			initVideoSettings();
+			initCallSettings();
+			initNetworkSettings();
+			initAdvancedSettings();
+		}
 		// Add action on About button
 		findPreference(getString(R.string.menu_about_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
@@ -172,18 +170,32 @@ public class SettingsFragment extends PreferencesListFragment {
 		setGeneralPreferencesListener();
 		setAudioVideoPreferencesListener();
 		setThemePreferencesListener();
-
-		setTunnelPreferencesListener();
-		setAudioPreferencesListener();
-		setVideoPreferencesListener();
-		setCallPreferencesListener();
-		setNetworkPreferencesListener();
-		setBackgroundThemePreferencesListener();
-		setAdvancedPreferencesListener();
+		if(isAdvancedSettings) {
+			setTunnelPreferencesListener();
+			setAudioPreferencesListener();
+			setVideoPreferencesListener();
+			setCallPreferencesListener();
+			setNetworkPreferencesListener();
+			setBackgroundThemePreferencesListener();
+			setAdvancedPreferencesListener();
+		}
 	}
 
 	// Read the values set in resources and hides the settings accordingly
 	private void hideSettings() {
+		if(!isAdvancedSettings) {
+			emptyAndHidePreferenceCategory(R.string.pref_preferences);
+			hidePreference(R.string.pref_video_enable_key);
+
+			emptyAndHidePreferenceCategory(R.string.pref_tunnel_key);
+
+			emptyAndHidePreferenceScreen(R.string.pref_audio);
+			emptyAndHidePreferenceScreen(R.string.pref_video_key);
+			emptyAndHidePreferenceScreen(R.string.call);
+			emptyAndHidePreferenceScreen(R.string.pref_advanced);
+			emptyAndHidePreferenceScreen(R.string.pref_network_title);
+		}
+
 		if (!getResources().getBoolean(R.bool.display_about_in_settings)) {
 			hidePreference(R.string.menu_about_key);
 		}
@@ -285,7 +297,9 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void hidePreference(Preference preference) {
-		preference.setLayoutResource(R.layout.hidden);
+		if(preference != null) {
+			preference.setLayoutResource(R.layout.hidden);
+		}
 	}
 
 	private void setPreferenceDefaultValueAndSummary(int pref, String value) {
@@ -817,12 +831,11 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void setAudioVideoPreferencesListener(){
-		//Todo: VATRP-1017 -- Add global speaker and mic mute logic
+		//VATRP-1017 -- Add global speaker and mic mute logic
 		findPreference(getString(R.string.pref_av_speaker_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
-				LinphoneManager.getLc().enableSpeaker(value);
 				prefs.edit().putBoolean(getString(R.string.pref_av_speaker_mute_key), value).commit();
 				return true;
 			}
@@ -899,9 +912,10 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				//Todo: VATRP-1022 -- Add foreground / background color picker
-
-				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
-						Color.WHITE, Color.YELLOW};
+								//Black, blue, cyan, grey, green, magenda
+				int[] colors = {Color.argb(220, 0, 0, 0), Color.argb(200, 0, 50, 150), Color.argb(200, 0, 160, 160), Color.argb(200, 50, 50, 50),
+						Color.argb(200, 0, 160, 50), Color.argb(200, 160, 0, 150), Color.argb(200, 160, 0, 0),
+						Color.argb(200, 255, 255, 255), Color.argb(200, 160, 160, 0)};
 
 				int selectedColor = prefs.getInt(getString(R.string.pref_theme_foreground_color_setting_key), Color.RED);
 				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_foreground_title,
@@ -910,6 +924,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					@Override
 					public void onColorSelected(int color) {
 						prefs.edit().putInt(getString(R.string.pref_theme_foreground_color_setting_key), color).commit();
+						LinphoneActivity.instance().setColorTheme(getActivity());
 					}
 				});
 				dialog.show(getFragmentManager(), "COLOR_PICKER");
@@ -920,9 +935,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		((Preference)findPreference(getString(R.string.pref_theme_background_color_setting_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				//VATRP-1022 -- Add foreground / background color picker
-				int[] colors = {Color.BLACK, Color.BLUE, Color.CYAN, Color.DKGRAY, Color.GREEN, Color.MAGENTA, Color.RED,
-						Color.WHITE, Color.YELLOW};
+				//Black, blue, cyan, grey, green, magenda
+				int[] colors = {Color.argb(220, 0, 0, 0), Color.argb(200, 0, 50, 150), Color.argb(200, 0, 160, 160), Color.argb(200, 10, 10, 10),
+						Color.argb(200, 0, 160, 50), Color.argb(200, 160, 0, 150), Color.argb(200, 160, 0, 0),
+						Color.argb(200, 255, 255, 255), Color.argb(200, 160, 160, 0)};
 
 				int selectedColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.RED);
 				ColorPickerDialog dialog = ColorPickerDialog.newInstance(R.string.color_picker_background_title,
@@ -931,6 +947,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					@Override
 					public void onColorSelected(int color) {
 						prefs.edit().putInt(getString(R.string.pref_theme_background_color_setting_key), color).commit();
+						LinphoneActivity.instance().setBackgroundColorTheme(getActivity());
 					}
 				});
 				dialog.show(getFragmentManager(), "COLOR_PICKER");
@@ -968,10 +985,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		Log.d("RTT: initTextSettings()");
 		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
 
-		if (prefs.contains(getString(R.string.pref_text_enable_key))) {
-			Log.d("RTT: RTT enabled from earlier? " + prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
-			enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
-		}
+		boolean isRTTEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
+		Log.d("RTT: RTT enabled from earlier? " + isRTTEnabled);
+		enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
+
 		enableTextCb.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object value) {

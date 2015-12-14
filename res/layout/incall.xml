@@ -5,43 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true">
-
-        <LinearLayout
-            android:id="@+id/fragmentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" />
-
-		<TableLayout
-	        android:id="@+id/calls"
-	    	android:paddingTop="40dp"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="top" />
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:layout_height="50dp"
-                    android:id="@+id/incomingRTTMinimized"
-                    android:layout_gravity="center"
-                    android:background="#010000"
-                    android:textColor="#ffffff"
-                    android:enabled="true"
-                    android:maxLines="3"
-                    android:visibility="gone"/>
-
-        <fragment
-            android:id="@+id/status"
-            android:name="org.linphone.StatusFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/status" />
-
-    </FrameLayout>
 
     <ImageView
         android:id="@+id/switchCamera"
@@ -65,15 +28,16 @@
         android:layout_centerVertical="true"/>
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="500dp"
+        android:layout_height="fill_parent"
         android:id="@+id/rtt_scrollview"
         android:layout_below="@+id/switchCamera"
         android:visibility="gone"
-        android:layout_above="@+id/menu">
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true">
         <LinearLayout
             android:id="@+id/rtt_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true">

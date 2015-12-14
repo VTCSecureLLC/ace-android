@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -115,9 +116,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private StatusFragment statusFragment;
 	private TextView missedCalls, missedChats;
-	public static ImageView dialer;
 	private LinearLayout menu, mark;
-	public static RelativeLayout contacts, history, settings, chat, aboutChat, aboutSettings;
+	public static RelativeLayout contacts, history, settings, dialer, chat, aboutChat;
 	private FragmentsAvailable currentFragment, nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
@@ -324,14 +324,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		history.setOnClickListener(this);
 		contacts = (RelativeLayout) findViewById(R.id.contacts);
 		contacts.setOnClickListener(this);
-		dialer = (ImageView) findViewById(R.id.dialer);
+		dialer = (RelativeLayout) findViewById(R.id.dialer);
 		dialer.setOnClickListener(this);
 		settings = (RelativeLayout) findViewById(R.id.settings);
 		settings.setOnClickListener(this);
 		chat = (RelativeLayout) findViewById(R.id.chat);
 		chat.setOnClickListener(this);
 		aboutChat = (RelativeLayout) findViewById(R.id.about_chat);
-		aboutSettings = (RelativeLayout) findViewById(R.id.about_settings);
 
 		if (getResources().getBoolean(R.bool.replace_chat_by_about)) {
 			chat.setVisibility(View.GONE);
@@ -343,8 +342,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (getResources().getBoolean(R.bool.replace_settings_by_about)) {
 			settings.setVisibility(View.GONE);
 			settings.setOnClickListener(null);
-			aboutSettings.setVisibility(View.VISIBLE);
-			aboutSettings.setOnClickListener(this);
 		}
 
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
@@ -354,65 +351,25 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		setBackgroundColorTheme(this);
 	}
 
-	public static void setColorTheme(Context context){
+	public void setColorTheme(Context context){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String color_theme = prefs.getString(context.getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 
-		if(color_theme.equals("Red")) {
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_red);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_red);
-				dialer.setImageResource(R.drawable.dialer_red);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_red);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_red);
-		}else if(color_theme.equals("Yellow")) {
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_yellow);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_yellow);
-				dialer.setImageResource(R.drawable.dialer_yellow);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_yellow);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_yellow);
-		}else if(color_theme.equals("Gray")) {
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_gray);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_gray);
-				dialer.setImageResource(R.drawable.dialer_gray);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_gray);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_gray);
-		}else if(color_theme.equals("High Visibility")) {
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_hivis);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_hivis);
-				dialer.setImageResource(R.drawable.dialer_hivis);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_hivis);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resource_hivis);
-		}else{
-				((ImageView)history.findViewById(R.id.image)).setImageResource(R.drawable.history_new);
-				((ImageView)contacts.findViewById(R.id.image)).setImageResource(R.drawable.contacts_new);
-				dialer.setImageResource(R.drawable.dialer_new);
-				((ImageView)settings.findViewById(R.id.image)).setImageResource(R.drawable.settings_new);
-				((ImageView)chat.findViewById(R.id.image)).setImageResource(R.drawable.resources_new);
+		int foregroundColor = prefs.getInt(getString(R.string.pref_theme_foreground_color_setting_key), Color.TRANSPARENT);
+		((ImageView)history.findViewById(R.id.image)).setColorFilter(foregroundColor);
 
-		}
-
-
-
-
+		((ImageView)contacts.findViewById(R.id.image)).setColorFilter(foregroundColor);
+		((ImageView)dialer.findViewById(R.id.image)).setColorFilter(foregroundColor);
+		((ImageView)settings.findViewById(R.id.image)).setColorFilter(foregroundColor);
+		((ImageView)chat.findViewById(R.id.image)).setColorFilter(foregroundColor);
 	}
 
 
-	public static void setBackgroundColorTheme(Context context){
+	public void setBackgroundColorTheme(Context context){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-		String background_color_theme=prefs.getString(context.getResources().getString(R.string.pref_theme_background_color_key), "default");
+		int backgroundColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.TRANSPARENT);
 		//set background color independent
 		if(topLayout!=null) {
-			if (background_color_theme.equals("Red")) {
-				topLayout.setBackgroundResource(R.drawable.background_theme_red);
-			} else if (background_color_theme.equals("Yellow")) {
-				topLayout.setBackgroundResource(R.drawable.background_theme_yellow);
-			} else if (background_color_theme.equals("Gray")) {
-				topLayout.setBackgroundResource(R.drawable.background_theme_gray);
-			} else if (background_color_theme.equals("High Visibility")) {
-				topLayout.setBackgroundResource(R.drawable.background_theme_hivis);
-			} else {
-				topLayout.setBackgroundResource(R.drawable.background_theme_new);
-			}
+				topLayout.setBackgroundColor(backgroundColor);
 		}
 	}
 	public boolean isTablet() {
@@ -809,41 +766,47 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (id == R.id.history) {
 			changeCurrentFragment(FragmentsAvailable.HISTORY, null);
 			history.setSelected(true);
+			history.setBackgroundColor(Color.argb(180, 0, 155, 160));
 			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
 		} else if (id == R.id.contacts) {
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
+			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.dialer) {
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			dialer.setSelected(true);
+			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.settings) {
 			changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
 			settings.setSelected(true);
+			settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.about_chat) {
 			Bundle b = new Bundle();
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
 			aboutChat.setSelected(true);
-		} else if (id == R.id.about_settings) {
-			Bundle b = new Bundle();
-			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_SETTINGS);
-			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_SETTINGS, b);
-			aboutSettings.setSelected(true);
+			aboutChat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.chat) {
 			changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
 			chat.setSelected(true);
+			chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		}
 	}
 
 	private void resetSelection() {
 		history.setSelected(false);
+		history.setBackgroundColor(Color.TRANSPARENT);
 		contacts.setSelected(false);
+		contacts.setBackgroundColor(Color.TRANSPARENT);
 		dialer.setSelected(false);
+		dialer.setBackgroundColor(Color.TRANSPARENT);
 		settings.setSelected(false);
+		settings.setBackgroundColor(Color.TRANSPARENT);
 		chat.setSelected(false);
+		chat.setBackgroundColor(Color.TRANSPARENT);
 		aboutChat.setSelected(false);
-		aboutSettings.setSelected(false);
+		aboutChat.setBackgroundColor(Color.TRANSPARENT);
 	}
 
 	@SuppressWarnings("incomplete-switch")
@@ -870,9 +833,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		case ABOUT_INSTEAD_OF_CHAT:
 			aboutChat.setSelected(true);
-			break;
-		case ABOUT_INSTEAD_OF_SETTINGS:
-			aboutSettings.setSelected(true);
 			break;
 		case CHATLIST:
 		case CHAT:
@@ -1278,7 +1238,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		 	//Release
 			checkForCrashes();
 		}
-		//checkForUpdates();
 	}
 
 	@Override

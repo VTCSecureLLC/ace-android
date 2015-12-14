@@ -2,26 +2,34 @@
 <RelativeLayout
 	android:id="@+id/chat"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/background_color">
     
     <ImageView
+        android:paddingLeft="-80dp"
         android:id="@+id/image"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:adjustViewBounds="true"
 		android:contentDescription="@string/content_description_resource"
-		android:src="@drawable/resource" />
+		android:scaleType="fitXY"
+		android:src="@drawable/resources_new" />
+
+    <View android:id="@+id/dummy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@id/image"
-        android:paddingBottom="10dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/dummy"
         android:textColor="@drawable/text_color"
         android:text="@string/button_resource"
-        android:textSize="12sp" />
+        android:textSize="18dp" />
     
 </RelativeLayout>

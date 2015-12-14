@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-	android:id="@+id/chat"
+	android:id="@+id/dialer"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_weight="0.2"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/background_color">
     
     <ImageView
+        android:paddingLeft="-80dp"
         android:id="@+id/image"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:adjustViewBounds="true"
-		android:contentDescription="@string/content_description_chat_button"
+		android:contentDescription="@string/content_description_dialer"
 		android:scaleType="fitXY"
-		android:src="@drawable/chat" />
+		android:src="@drawable/dialer_new" />
+
+    <View android:id="@+id/dummy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="20dp"
+        android:layout_toRightOf="@+id/dummy"
         android:textColor="@drawable/text_color"
-        android:text="@string/button_chat"
+        android:text="@string/button_dialpad"
         android:textSize="18dp" />
     
 </RelativeLayout>

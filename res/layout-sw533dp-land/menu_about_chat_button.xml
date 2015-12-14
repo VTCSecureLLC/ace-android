@@ -5,7 +5,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_weight="0.2"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/background_color">
     
     <ImageView
         android:id="@+id/image"
@@ -21,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_alignBottom="@id/image"
         android:textColor="@drawable/text_color"
         android:text="@string/button_about"
         android:textSize="18dp" />

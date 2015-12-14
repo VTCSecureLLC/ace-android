@@ -104,17 +104,16 @@ public class DialerFragment extends Fragment {
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
-					if(dialer_view != null) {
-						View providerSpinnerBox = dialer_view.findViewById(R.id.provider_spinner_box);
-						if(providerSpinnerBox != null){
-							if (position == 0) {
-								//set background gray because we are using the @ symbol
-								providerSpinnerBox.setBackgroundColor(getResources().getColor(R.color.background_color));
-							} else {
-								providerSpinnerBox.setBackgroundColor(getResources().getColor(R.color.text_color));
-							}
+				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
+					try {
+						if (position == 0) {
+							//set background gray because we are using the @ symbol
+							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
+						} else {
+							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
 						}
+					}catch(Throwable e){
+						//crashing on tablets because dialer_view or provider_spinner_box is missing
 					}
 					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
 					else sipDomainTextView.setText("");
@@ -140,6 +139,17 @@ public class DialerFragment extends Fragment {
 
 
 		mCall = (CallButton) view.findViewById(R.id.Call);
+
+		//Make text to right of call button clickable.
+		TextView call_button_text = (TextView)view.findViewById(R.id.call_button_text);
+		call_button_text.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mCall.performClick();
+
+			}
+		});
+
 		mCall.setAddressWidget(mAddress);
 		if (LinphoneActivity.isInstanciated() && LinphoneManager.getLc().getCallsNb() > 0) {
 			if (isCallTransferOngoing) {

@@ -23,26 +23,31 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
+import org.linphone.ui.EnterTextPopUpFragment;
 
 /**
  * @author Sylvain Berfini
  */
-public class AboutFragment extends Fragment implements OnClickListener {
+public class AboutFragment extends Fragment implements OnClickListener, EnterTextPopUpFragment.EnterTextPopupListener {
 	private FragmentsAvailable about = FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT;
 	View exitButton = null;
 	View sendLogButton = null;
 	View resetLogButton = null;
 
+	EnterTextPopUpFragment passwordPopUp;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		if (getArguments() != null && getArguments().getSerializable("About") != null) {
@@ -81,7 +86,15 @@ public class AboutFragment extends Fragment implements OnClickListener {
 		exitButton.setOnClickListener(this);
 		exitButton.setVisibility(View.VISIBLE);
 
-
+		((Button)view.findViewById(R.id.unlock_advanced_settings)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				FragmentManager fm = LinphoneActivity.instance().getSupportFragmentManager();
+				passwordPopUp = new EnterTextPopUpFragment();
+				passwordPopUp.show(fm, "password_entry_popup");
+				passwordPopUp.attachListener(AboutFragment.this);
+			}
+		});
 
 		return view;
 	}
@@ -130,5 +143,16 @@ public class AboutFragment extends Fragment implements OnClickListener {
 		super.onDestroy();
 	}
 
-	
+	//If you are looking at this source code you are (should be) smart enough to handle these settings
+	private static String advancedSettingsPW = "1234";
+	@Override
+	public void onPasswordSubmitted(String input) {
+		if(input.equals(advancedSettingsPW)){
+			SettingsFragment.isAdvancedSettings = true;
+			Toast.makeText(getActivity(), "Advanced settings unlocked", Toast.LENGTH_SHORT).show();
+		}
+		else{
+			Toast.makeText(getActivity(), "Incorrect password", Toast.LENGTH_SHORT).show();
+		}
+	}
 }
