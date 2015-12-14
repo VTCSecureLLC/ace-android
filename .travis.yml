@@ -38,7 +38,15 @@ cache:
   ccache: true
   directories:
   - $HOME/.ccache
-before_install:
+  - submodules/externals/build/cunit/CUnit
+  - submodules/externals/build/ffmpeg/arm
+  - submodules/externals/build/ffmpeg/x86
+  - submodules/externals/build/libvpx/arm
+  - submodules/externals/build/libvpx/x86
+  - submodules/externals/build/openh264/arm
+  - submodules/externals/build/openh264/x86
+  - obj
+ before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
   -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
   -O ndk.bin ; fi
@@ -46,6 +54,7 @@ before_install:
 - export ANDROID_NDK=$PWD/android-ndk-r10e
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - export NDK_CACHE=ccache
+- export LINPHONE_CCACHE=ccache
 - export ANDROID_MOST_RECENT_TARGET=android-19
 - which bundler || gem install bundler
 - bundle install
