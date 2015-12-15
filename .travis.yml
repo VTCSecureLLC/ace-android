@@ -54,7 +54,7 @@ before_install:
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - export NDK_CACHE=ccache
 - export LINPHONE_CCACHE=ccache
-- ccache -M 50G
+- ccache -M 5G
 - export ANDROID_MOST_RECENT_TARGET=android-22
 - which bundler || gem install bundler
 - bundle install
@@ -87,7 +87,6 @@ before_script:
 script:
 - ./Tools/git_version.sh
 - ./Tools/travis_script.sh
-- cat /tmp/make.out
 after_success:
 - ./Tools/release.sh
 notifications:
