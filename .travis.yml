@@ -55,6 +55,7 @@ before_install:
 - export CCACHE_DIR=$HOME/.ccache
 - export NDK_CCACHE=ccache
 - export LINPHONE_CCACHE=ccache
+- CCACHE_SLOPPINESS=pch_defines,time_macros
 - ccache -M 5G
 - ccache -s 
 - export ANDROID_MOST_RECENT_TARGET=android-22
