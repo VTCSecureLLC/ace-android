@@ -85,9 +85,9 @@ before_script:
 script:
 - ./Tools/git_version.sh
 - ./Tools/travis_script.sh
+- cat /tmp/make.out
 after_success:
 - ./Tools/release.sh
-- cat /tmp/
 notifications:
   flowdock:
     secure: eD1JpGzIf8paOU14pFK1G3VUXDLBiybGHf0WHX8spmvfSo3O5n3xFEq0qrcc6bAuXxrhSVRqt9k2fKQshRf/rfgkRjmcwXtvyLYH6gND3RxnMbicAUJCNXFMSEEPKPEGtWXUM2soDgNm7q0vc32wpRJLq+iDjZAHuBYgaJXIW6wI4Ny3HSiHzIBNF7sKpH6uVDCSwVYotfuT8zqQRUHw9C1Ed+Cs10/w7eH0F2l79RsNhepxaV2F3bQQzsMfHffAtMg+j1lzGayQlOObi0qrI0TkRHLqgp6H0F/cFq+QBFXtQqyhdO3VTYNW2Iju8dJCx55Ns9a3fzXyejvXAPmqmKEH+BHj0Yde9KaRVVHW0+os1ZPBOLyUm9jOUcpFaz13jMmQNigazszq9+AYyrvIQYewDr306W5t8ELbz6GDVRNcxVwU8djwL1Qi1OQb5emawgV3NOnsWD4x+aBI7V+QJZr5epweUwfkxnf+4IiCO0mAvlcB3bfNbO0G/M4R+l0UMc2llrbYpy94NCj3qackkghxI7E6KL6ByzOCcHBDBGW2uhGwu4mlLjv5WFutS7R5wX1yzNSD0sbJDV7UOonGgPQIXrgUeGCijEaNm/NB70VX4YRJbaxDDzkZTB29E/psigIqJf72hJB6zho/p72wPAWFzLeWlnoHLQCJqG0M+2w=
