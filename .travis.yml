@@ -53,7 +53,7 @@ before_install:
 - export ANDROID_NDK=$HOME/android-ndk
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - export CCACHE_DIR=$HOME/.ccache
-- export NDK_CACHE=ccache
+- export NDK_CCACHE=ccache
 - export LINPHONE_CCACHE=ccache
 - ccache -M 5G
 - ccache -s 
