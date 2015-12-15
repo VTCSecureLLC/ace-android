@@ -94,7 +94,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private static InCallActivity instance;
 
 	private boolean camera_mute_enabled=false;
-
+	private int unreadMessages = 0;
 	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
 	private ImageView switchCamera;
@@ -185,7 +185,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				Log.d("RTT incall", "isComposingReceived cr=" + cr.toString());
 				Log.d("RTT incall","isRTTMaximaized"+isRTTMaximized);
 				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
-
 				try {
 					if (!cr.isRemoteComposing()) {
 						Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
@@ -488,9 +487,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void updateIncomingTextView(final long character) {
 		runOnUiThread(new Runnable(){
 			public void run() {
-				if(rtt_scrollview.getVisibility()!=View.VISIBLE){
-					showRTTinterface();
-				}
 				if(!incoming_chat_initiated){
 					incomingTextView=create_new_incoming_bubble();
 					incoming_chat_initiated=true;
@@ -538,7 +534,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(rttOutgoingBubbleCount==0){
+				if (rttOutgoingBubbleCount == 0) {
 					create_new_outgoing_bubble(null);
 				}
 			}
@@ -553,6 +549,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 		rttIncomingBubbleCount++;
+
+		if(!isRTTMaximized){
+			unreadMessages++;
+			pause.setText(String.valueOf(unreadMessages));
+		}
 		return tv;
 	}
 	private void showRTTinterface() {
@@ -560,6 +561,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void run() {
 				isRTTMaximized = true;
 				rtt_scrollview.setVisibility(View.VISIBLE);
+				unreadMessages = 0;
+				pause.setText("");
 			}
 		});
 	}
@@ -1565,8 +1568,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		startActivity(new Intent(this, IncomingCallActivity.class));
 	}
 
-	
-	
 	private void showAcceptCallUpdateDialog() {
         FragmentManager fm = getSupportFragmentManager();
         callUpdateDialog = new AcceptCallUpdateDialogFragment();
