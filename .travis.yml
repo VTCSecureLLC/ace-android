@@ -27,6 +27,7 @@ addons:
     - rsync
     - autoconf
     - automake
+    - ccache
     - libtool
     - pkg-config
     - bc
@@ -59,6 +60,7 @@ before_install:
 android:
   components:
   - build-tools-22.0.1
+  - android-19
   - android-22
   - extra-google-google_play_services
   - extra-google-m2repository
