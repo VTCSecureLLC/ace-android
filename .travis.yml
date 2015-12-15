@@ -54,6 +54,7 @@ before_install:
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
 - export NDK_CACHE=ccache
 - export LINPHONE_CCACHE=ccache
+- ccache -M 50G
 - export ANDROID_MOST_RECENT_TARGET=android-22
 - which bundler || gem install bundler
 - bundle install
