@@ -205,7 +205,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		topLayout=findViewById(R.id.topLayout);
 
 
-
 		instance = this;
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
 		initButtons();
@@ -775,6 +774,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.dialer) {
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
+			if(!isTablet()) {
+				if(DialerFragment.instance() != null) {
+						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().SELF_VIEW_INDEX) {
+							DialerFragment.instance().cameraPreview.setVisibility(View.GONE);
+							DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
+							DialerFragment.instance().dialer_content.setEnabled(true);
+							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
+						} else {
+							DialerFragment.instance().cameraPreview.setVisibility(View.VISIBLE);
+							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
+							DialerFragment.instance().dialer_content.setEnabled(false);
+							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+						}
+					}
+			}
 			dialer.setSelected(true);
 			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.settings) {
@@ -826,6 +840,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		case DIALER:
 			dialer.setSelected(true);
+			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 			break;
 		case SETTINGS:
 		case ACCOUNT_SETTINGS:
@@ -1045,7 +1060,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	private int mAlwaysChangingPhoneAngle = -1;
-
+	private int lastDeviceAngle = 270;
+	public int getDeviceOrientation(){
+		return lastDeviceAngle;
+	}
 	private class LocalOrientationEventListener extends OrientationEventListener {
 		public LocalOrientationEventListener(Context context) {
 			super(context);
@@ -1071,6 +1089,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			mAlwaysChangingPhoneAngle = degrees;
 
 			Log.d("Phone orientation changed to ", degrees);
+			lastDeviceAngle = degrees;
 			int rotation = (360 - degrees) % 360;
 			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 			if (lc != null) {
