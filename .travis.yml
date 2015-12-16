@@ -11,7 +11,7 @@ env:
   - secure: p7yLO55lpR3XTPIfafqQYjVviM2s01tr3bD3POVDSyAnz+trgbIgUUquofFw5M5Apet9zbBbylHgyuVWK9F11c30EH6KsHo5yy/pXH6QUfjCftErJl7ewwK+eCM5SPUi6PA6OrPjHclacPNil0e3zCxfqp/qikguqEZ02DY0wyNRgIdt7I0qb27fVktXgSotwoJ7jdAOg1MvGd3McRmW/xbHsoQJHiB1d8HwUnJ76NnntWXFI1KCEPHBUjkYcwjEWhLGryDdRCl9toGQTcO/L+Eh3221KNyhiYPTBFpSmtNxGdyv1bjXRio7K0/qyuHvrBEuTUWe3udUsa2e+F2DW9kyHCvoB3vdFnbCrjup7WuPbxBViDHlZ1Y1CIwB7WcJzN5An4aD7a9gCZ8tHWYX1ZMVmMMo5GJAM5o904EoMj8cHgMPVsTm9bScyRGLKishoFSKaR7DAjyCai4mGLCB7H/mxZLHZJdRsUtBfytO9Tz3bn5SlEUb336NaOHabYDtICnuZW7LKWM1qVFJaOP/17OoeKjXBw4b4MH6K9xa75X5ZezVjBclISc7vFeJ8v6dRcPiiWNit23lJhDIxROiey1PPtHOALeRBkng9pbyg9o5eIvN4ddIrm+ZS+uzHCxPX7VpquDKX9HqxNLYSsDi5iUAfbrgji7S+GXKms8LWe0=
   - secure: 21h4HegHyzyBvM3faewMzhnopuiIE0iBEdA/IsEhXv5jlVGqOSNgqjnsIQgecYQYlFF79tmESBeA0I0xtA9BPrtHt0UVUhbO2dkAthw14ibSEWU1l3ZzNpvWhTYR2YYEQ0LY4mrDfKQe0yFwFK8C/uxzBeEElN+tWgxCkr71rIw62hTVnfFTwo1B+h+XKjuWukU5Uywg3LEF2ipT7EW3s+sMFV/0HF28DyT3xSNSTXDN+Ua3hxl5GQ3zdgsHjstXkRk/qKI733sZ+6oymbX1pOWqj6YJT0D9p3uTC6g7wJxk0FBrWU0KGAPZo4F4isfIfdoytqtj+cz8lC/hFHn9DTtgrytcy/na09HLWDUmErfV6Gu4dzZVhlLNYznS1G3v+8gDw8toPSGH8pLQDz66USRz+33E5KhygO0QrKVwgNcGh3mNliZnIQUKVkaIkULn8S96rih0U6sbMoHTivepBHpJG1OjUBIBk9Xcm5Lo0UAcPkgrDzGTw2UESzvOXU8OVerqrnRaQ0w/IKdEtjMAzItxe1vFe6KAvaAk/R+hWTraN+z9BXzAQTU2IXF2NkPBq/StPjijGaehEdfGooa6YHBrSrA96RzE4+1/EfU+vtaEasoP7FHQkkWMWG3qVeswu9r+jC9xfSSHPVnzufGh9maoJXnmbw8pRvKKn3esrHg=
   matrix:
-  - ANDROID_SDKS=android-19,sysimg-19 ANDROID_TARGET=android-19 ANDROID_ABI=armeabi-v7a
+  - ANDROID_SDKS=android-22,sysimg-22 ANDROID_TARGET=android-22 ANDROID_ABI=armeabi-v7a
     ENABLE_GPL_THIRD_PARTIES=0 BUILD_VIDEO=1 BUILD_OPENH264=1 ENABLE_OPENH264_DECODER=1
     BUILD_X264=0 BUILD_AMRNB=full BUILD_AMRWB=1 BUILD_ZRTP=1 BUILD_SILK=1 BUILD_G729=1
     BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1
@@ -27,6 +27,7 @@ addons:
     - rsync
     - autoconf
     - automake
+    - ccache
     - libtool
     - pkg-config
     - bc
@@ -38,6 +39,15 @@ cache:
   ccache: true
   directories:
   - $HOME/.ccache
+  - submodules/externals/build/cunit/CUnit
+  - submodules/externals/build/ffmpeg/arm
+  - submodules/externals/build/ffmpeg/x86
+  - submodules/externals/build/libvpx/arm
+  - submodules/externals/build/libvpx/x86
+  - submodules/externals/build/openh264/arm
+  - submodules/externals/build/openh264/x86
+  - obj
+  - bin
 before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
   -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
@@ -45,23 +55,23 @@ before_install:
 - chmod 755 ndk.bin ; ./ndk.bin 2>&1 | grep -v Extracting
 - export ANDROID_NDK=$PWD/android-ndk-r10e
 - export PATH=${ANDROID_NDK}:${ANDROID_NDK}/ndk-build:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:$PATH
-- export NDK_CACHE=ccache
-- export ANDROID_MOST_RECENT_TARGET=android-19
+- export CCACHE_DIR=$HOME/.ccache
+- export NDK_CCACHE=ccache
+- export LINPHONE_CCACHE=ccache
+- export CCACHE_SLOPPINESS=pch_defines,time_macros,include_file_mtime,include_file_ctime,file_macro
+- export CCACHE_COMPILERCHECK=content
+- ccache -M 5G
+- ccache -s 
+- export ANDROID_MOST_RECENT_TARGET=android-22
 - which bundler || gem install bundler
 - bundle install
 android:
   components:
-  - build-tools-19.1.0
-  - build-tools-20.0.0
   - build-tools-22.0.1
-  - android-19
-  - android-20
   - android-22
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
-  - addon-google_apis-google-19
-  - addon-google_apis-google-20
   - addon-google_apis-google-22
 before_script:
 - echo "Starting to update submodules"
@@ -84,6 +94,7 @@ before_script:
 script:
 - ./Tools/git_version.sh
 - ./Tools/travis_script.sh
+- ccache -s 
 after_success:
 - ./Tools/release.sh
 notifications:

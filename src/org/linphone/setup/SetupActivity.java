@@ -352,7 +352,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		AccountBuilder builder = new AccountBuilder(LinphoneManager.getLc())
 		.setUsername(username)
 		.setDomain(domain)
-		.setPassword(password);
+		.setPassword(password)
+		.setExpires("3600");
 		
 		if (isMainAccountLinphoneDotOrg && useLinphoneDotOrgCustomPorts) {
 			//if (getResources().getBoolean(R.bool.disable_all_security_features_for_markets)) {
@@ -364,8 +365,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			//	.setTransport(TransportType.LinphoneTransportTls);
 			//}
 
-			builder.setExpires("604800")
-			.setProxy(domain + ":5060")
+			builder.setProxy(domain + ":5060")
 			.setTransport(TransportType.LinphoneTransportTcp)
 			.setOutboundProxyEnabled(true)
 			.setAvpfEnabled(true)
@@ -385,8 +385,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 //				.setOutboundProxyEnabled(true)
 //				.setAvpfRRInterval(5);
 //			}
-			builder.setExpires("604800")
-					.setProxy(domain + ":5060")
+					builder.setProxy(domain + ":5060")
 					.setTransport(TransportType.LinphoneTransportTcp)
 					.setOutboundProxyEnabled(true)
 					.setAvpfEnabled(false)
