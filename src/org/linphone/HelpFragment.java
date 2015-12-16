@@ -96,10 +96,10 @@ public class HelpFragment extends PreferencesListFragment {
         }
 
         if(feedback != null) {
+            ///storage/emulated/0/ACE/hockeyAppFeedback.txt
 	        File crashFeedbackFile = new File(Environment.getExternalStorageDirectory() +"/ACE/hockeyAppCrashFeedback.txt");
 	        if(crashFeedbackFile.exists() && crashFeedbackFile.isFile())
-		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback),
-		            Uri.parse(new File(Environment.getExternalStorageDirectory() +"/ACE/hockeyAppCrashFeedback.txt").toString()));
+		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback), Uri.fromFile(crashFeedbackFile));
 	        else
 		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback));
         }
