@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -351,10 +352,11 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 			} else {
 				view = mInflater.inflate(R.layout.contact_cell, parent, false);
 			}
-			
+
+			view.setBackgroundColor(Color.DKGRAY);
 			TextView name = (TextView) view.findViewById(R.id.name);
 			name.setText(contact.getName());
-			
+			name.setTextColor(Color.WHITE);
 			TextView separator = (TextView) view.findViewById(R.id.separator);
 			LinearLayout layout = (LinearLayout) view.findViewById(R.id.layout);
 			if (getPositionForSection(getSectionForPosition(position)) != position) {
