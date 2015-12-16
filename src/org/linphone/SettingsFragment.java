@@ -19,6 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -149,9 +151,21 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.setup_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				deleteAll();
-				Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
-				startActivityForResult(intent, WIZARD_INTENT);
+				new AlertDialog.Builder(getActivity())
+						.setTitle(R.string.logOutMessage)
+						.setPositiveButton(R.string.yes,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int whichButton) {
+										deleteAll();
+										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+										startActivityForResult(intent, WIZARD_INTENT);
+									}
+								}
+						)
+						.setNegativeButton(R.string.no,
+								null
+						)
+						.create().show();
 				return true;
 			}
 		});
