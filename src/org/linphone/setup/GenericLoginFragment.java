@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,9 +48,9 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.login_provider, container, false);
-		
 		login = (EditText) view.findViewById(R.id.et_prv_user);
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
+		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
 
 		port = (EditText)view.findViewById(R.id.et_prv_port);
@@ -80,10 +81,12 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					advancedLoginPanel.setVisibility(View.VISIBLE);
 					((Button) v).setText("-");
 					isAdvancedLogin = true;
+					password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
 				} else {
 					advancedLoginPanel.setVisibility(View.GONE);
 					((Button) v).setText("+");
 					isAdvancedLogin = false;
+					password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 				}
 			}
 		});
