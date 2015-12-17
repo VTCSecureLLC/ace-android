@@ -353,7 +353,7 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 				view = mInflater.inflate(R.layout.contact_cell, parent, false);
 			}
 
-			view.setBackgroundColor(Color.DKGRAY);
+			view.setBackgroundColor(Color.GRAY);
 			TextView name = (TextView) view.findViewById(R.id.name);
 			name.setText(contact.getName());
 			name.setTextColor(Color.WHITE);
