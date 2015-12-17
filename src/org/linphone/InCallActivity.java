@@ -105,7 +105,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private StatusFragment status;
 	private AudioCallFragment audioCallFragment;
 	private VideoCallFragment videoCallFragment;
-	private boolean isSpeakerMuted, isMicMuted = false, isTransferAllowed, isAnimationDisabled, isRTTEnabled=false;
+	private boolean isSpeakerMuted, isMicMuted = false, isTransferAllowed, isAnimationDisabled,
+			isRTTLocallyEnabled = false, isRTTEnabled=false;
 	private ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
@@ -133,7 +134,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public int rttIncomingBubbleCount=0;
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
-
 	private SharedPreferences prefs;
 	private TextView incomingTextView;
 	View mFragmentHolder;
@@ -168,7 +168,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 		//if (params.realTimeTextEnabled()) { // Does not work, always false
-		isRTTEnabled=LinphoneManager.getInstance().getRttPreference();
+		isRTTLocallyEnabled=LinphoneManager.getInstance().getRttPreference();
 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
@@ -237,6 +237,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 
         		if (state == State.StreamsRunning) {
+					if(isRTTLocallyEnabled) {
+						isRTTEnabled = call.getRemoteParams().realTimeTextEnabled();
+					}
+					else{
+						isRTTEnabled = false;
+					}
+
         			switchVideo(isVideoEnabled(call));
 					//Check media in progress
 					if(LinphonePreferences.instance().isVideoEnabled() && !call.mediaInProgress()){
@@ -906,7 +913,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			goBackToDialer();
 		} 
 		else if (id == R.id.toggleChat) {
-			toggle_chat();
+			if(isRTTEnabled) {
+				toggle_chat();
+			}
+			else{
+				Toast.makeText(InCallActivity.this, "RTT has been disabled for this call", Toast.LENGTH_SHORT).show();
+			}
 		}
 
 		else if (id == R.id.hangUp) {
