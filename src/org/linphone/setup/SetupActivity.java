@@ -448,6 +448,17 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		mPrefs.firstLaunchSuccessful();
 		LinphoneActivity.instance().isNewProxyConfig();
 		setResult(Activity.RESULT_OK);
+		JsonConfig.refreshConfig(null, new JsonConfig.ConfigListener() {
+			@Override
+			public void onFinished() {
+				Toast.makeText(LinphoneManager.getInstance().getContext(), "Config set", Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onFailed(String reason) {
+				Toast.makeText(LinphoneManager.getInstance().getContext(), "Getting config failed", Toast.LENGTH_LONG).show();
+			}
+		});
 		finish();
 	}
 }

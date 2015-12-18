@@ -1401,6 +1401,17 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 
 
+	public void setRttEnabled(boolean enabled)
+	{
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+
+			SharedPreferences.Editor editor = prefs.edit();
+			// Enable by default
+			editor.putBoolean(getString(R.string.pref_text_enable_key), enabled);
+			editor.commit();
+
+	}
 	public void setDefaultRttPreference() {
 		Log.d("RTT: setDefaultRttPreference");
 		SharedPreferences prefs = PreferenceManager.
