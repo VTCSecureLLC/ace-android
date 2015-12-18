@@ -4,6 +4,10 @@
 					android:title="Deaf/HoH Resource Page">
 					<Preference android:key="emailace" android:title="Tech Support"/>
 					<Preference android:key="instantfeedbackace" android:title="Instant Feedback"/>
-					<Preference android:key="websiteace" android:title="Deaf / Hard of Hearing Resources" />
+					<PreferenceScreen
+						android:title="Deaf / Hard of Hearing Resources"
+						android:key="websiteace">
+					</PreferenceScreen>
+
 				</PreferenceCategory>
 </PreferenceScreen>
