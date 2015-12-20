@@ -18,27 +18,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -46,9 +42,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.linphone.core.LinphoneCore;
-import org.linphone.core.VideoSize;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.ui.AddressAware;
@@ -64,25 +60,31 @@ import java.util.List;
  * @author Sylvain Berfini
  */
 public class DialerFragment extends Fragment {
+
+
+	private Camera mCamera;
+	public static Camera.Size optimal_preview_size;
+
 	private static DialerFragment instance;
 	private static boolean isCallTransferOngoing = false;
-
+	private CameraPreview mPreview;
+	private Context myContext;
 	public boolean mVisible;
 	private AddressText mAddress;
 	private CallButton mCall;
 	private ImageView mAddContact;
-	public SurfaceView cameraPreview;
+	public LinearLayout cameraPreview;
 	private AndroidVideoWindowImpl androidVideoWindowImpl;
 	private OnClickListener addContactListener, cancelListener, transferListener;
 	private boolean shouldEmptyAddressField = true;
 	private boolean userInteraction = false;
-	private Camera camera;
+	//private Camera camera;
 	public View dialer_content;
 	public int VIEW_INDEX = 0;
 	String color_theme;
 	String background_color_theme;
 	View dialer_view;
-
+	private boolean cameraFront = false;
 	int SELF_VIEW_INDEX = 0, DIALER_INDEX = 1;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -276,86 +278,101 @@ public class DialerFragment extends Fragment {
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
-
-		try {
-			if (!LinphoneActivity.instance().isTablet()) {
-				isPreviewEnabled = true;
-			}
-		}catch(Throwable e){
-			Log.e("Trying to check if device is tablet, but linphoneactivity isn't instanciated yet\n"+e.getMessage());
-		}
-		if(isPreviewEnabled) {
-			if(LinphoneActivity.instance().isTablet()) {
-				cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
-			}
-			else{
-				cameraPreview = (SurfaceView) view.findViewById(R.id.phoneDialerCameraPreview);
-			}
-			if (cameraPreview != null) {
-				LinphoneManager.getLc().enableVideo(true, true);
-				LinphoneManager.getLc().setPreviewWindow(cameraPreview);
-
-					androidVideoWindowImpl = new AndroidVideoWindowImpl(cameraPreview, cameraPreview, new AndroidVideoWindowImpl.VideoWindowListener() {
-						@Override
-						public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-							LinphoneManager.getLc().setVideoWindow(vw);
-						}
-
-						@Override
-						public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-							LinphoneCore lc = LinphoneManager.getLc();
-							if (lc != null) {
-								lc.setVideoWindow(null);
-							}
-						}
-						@Override
-						public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-							try {
-								camera = Camera.open(1);
-								cameraPreview = surface;
-								cameraPreview.setZOrderMediaOverlay(true);
-								cameraPreview.setZOrderOnTop(false);
-								cameraPreview.getHolder().setFormat(PixelFormat.RGBA_8888);
-								if(LinphoneActivity.instance().isTablet()) {
-									cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
-								}
-								else{
-									cameraPreview = (SurfaceView) view.findViewById(R.id.phoneDialerCameraPreview);
-								}
-								Camera.Parameters params = camera.getParameters();
-								List<int[]> supportedPreviewFPS = params.getSupportedPreviewFpsRange();
-								int previewFPSIndex = (supportedPreviewFPS.size() > 1) ? supportedPreviewFPS.size() -1 : 0;
-								int[] previewFPS = supportedPreviewFPS.get(previewFPSIndex);
-								if(previewFPS != null) {
-									params.setPreviewFpsRange(previewFPS[1], previewFPS[0]);
-								}
-								VideoSize videoSize = LinphoneManager.getLc().getPreferredVideoSize();
-								params.setPreviewSize(videoSize.width, videoSize.height);
-								if(Build.VERSION.SDK_INT > 14 ) {
-									params.setRecordingHint(true);
-								}
-								camera.setParameters(params);
-								camera.setDisplayOrientation(LinphoneActivity.instance().getDeviceOrientation());
-								camera.setPreviewDisplay(cameraPreview.getHolder());
-								camera.startPreview();
-								LinphoneManager.getLc().setVideoDevice(LinphoneManager.getLc().getVideoDevice());
-							}
-							catch (Exception exc) {
-								exc.printStackTrace();
-							}
-						}
-
-						@Override
-						public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-							// Remove references kept in jni code and restart camera
-							LinphoneManager.getLc().setPreviewWindow(null);
-						}
-					});
-				}
-			}
+		isPreviewEnabled = true;
+//		try {
+//			if (!LinphoneActivity.instance().isTablet()) {
+//				isPreviewEnabled = true;
+//			}
+//		}catch(Throwable e){
+//			Log.e("Trying to check if device is tablet, but linphoneactivity isn't instanciated yet\n"+e.getMessage());
+//		}
+		getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		myContext = getActivity().getApplication().getBaseContext();
+		initialize_camera(view);
 		return view;
 	}
+	private int findFrontFacingCamera() {
+		int cameraId = -1;
+		// Search for the front facing camera
+		int numberOfCameras = Camera.getNumberOfCameras();
+		for (int i = 0; i < numberOfCameras; i++) {
+			Camera.CameraInfo info = new Camera.CameraInfo();
+			Camera.getCameraInfo(i, info);
+			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				cameraId = i;
+				cameraFront = true;
+				break;
+			}
+		}
+		return cameraId;
+	}
 
+	public void initialize_camera(View view) {
+		cameraPreview = (LinearLayout) view.findViewById(R.id.camera_preview);
+		mPreview = new CameraPreview(myContext, mCamera);
+		cameraPreview.addView(mPreview);
+		Log.d("Preview size" + mPreview.getWidth() + " " + mPreview.getHeight());
+		ViewTreeObserver viewTreeObserver = view.getViewTreeObserver();
+		if (viewTreeObserver.isAlive()) {
+			viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+				@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+				@Override
+				public void onGlobalLayout() {
+					mPreview.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+					List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+					int viewWidth = mPreview.getWidth();
+					int viewHeight = mPreview.getHeight();
+					Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
+					Camera.Parameters parameters = mCamera.getParameters();
+					optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
+					parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
+					mCamera.setParameters(parameters);
+
+				}
+			});
+		}
+	}
+		//	@Override
+//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+//		final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+//		setMeasuredDimension(width, height);
+//
+//		if (mSupportedPreviewSizes != null) {
+//			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
+//		}
+//	}
+		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+			final double ASPECT_TOLERANCE = 0.1;
+			double targetRatio=(double)h / w;
+
+			if (sizes == null) return null;
+
+			Camera.Size optimalSize = null;
+			double minDiff = Double.MAX_VALUE;
+
+			int targetHeight = h;
+
+			for (Camera.Size size : sizes) {
+				double ratio = (double) size.width / size.height;
+				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+				if (Math.abs(size.height - targetHeight) < minDiff) {
+					optimalSize = size;
+					minDiff = Math.abs(size.height - targetHeight);
+				}
+			}
+
+			if (optimalSize == null) {
+				minDiff = Double.MAX_VALUE;
+				for (Camera.Size size : sizes) {
+					if (Math.abs(size.height - targetHeight) < minDiff) {
+						optimalSize = size;
+						minDiff = Math.abs(size.height - targetHeight);
+					}
+				}
+			}
+			return optimalSize;
+		}
 	/**
 	 * @return null if not ready yet
 	 */
@@ -366,6 +383,7 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		//releaseCamera();
 		if (androidVideoWindowImpl != null) {
 			synchronized (androidVideoWindowImpl) {
 				/*
@@ -373,17 +391,21 @@ public class DialerFragment extends Fragment {
 				 * androidVideoWindowImpl
 				 */
 				LinphoneManager.getLc().setVideoWindow(null);
-				if(camera != null) {
-					camera.release();
-				}
 			}
+		}
+	}
+	private void releaseCamera() {
+		// stop and release camera
+		if (mCamera != null) {
+			mCamera.release();
+			mCamera = null;
 		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
 			LinphoneActivity.instance().updateDialerFragment(this);
@@ -395,26 +417,39 @@ public class DialerFragment extends Fragment {
 		} else {
 			shouldEmptyAddressField = true;
 		}
-
-		if (androidVideoWindowImpl != null) {
-			synchronized (androidVideoWindowImpl) {
-				LinphoneManager.getLc().setVideoWindow(androidVideoWindowImpl);
-			}
+		if (!hasCamera(myContext)) {
+			Toast toast = Toast.makeText(myContext, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
+			toast.show();
 		}
+
+		mCamera = Camera.open(findFrontFacingCamera());
+
+		if(optimal_preview_size!=null){
+			Camera.Parameters parameters = mCamera.getParameters();
+			parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
+			mCamera.setParameters(parameters);
+		}
+		mPreview.refreshCamera(mCamera);
+
+
 		resetLayout(isCallTransferOngoing);
 	}
-
+	private boolean hasCamera(Context context) {
+		//check if the device has camera
+		if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		if(camera != null) {
-			camera.release();
-		}
-		cameraPreview = null;
+		//releaseCamera();
+		//cameraPreview = null;
 		if (androidVideoWindowImpl != null) {
 			// Prevent linphone from crashing if correspondent hang up while you are rotating
 			androidVideoWindowImpl.release();
-
 			androidVideoWindowImpl = null;
 		}
 	}
