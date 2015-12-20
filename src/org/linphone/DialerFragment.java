@@ -422,15 +422,18 @@ public class DialerFragment extends Fragment {
 			toast.show();
 		}
 
-		mCamera = Camera.open(findFrontFacingCamera());
+		try {
+			mCamera = Camera.open(findFrontFacingCamera());
 
-		if(optimal_preview_size!=null){
-			Camera.Parameters parameters = mCamera.getParameters();
-			parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
-			mCamera.setParameters(parameters);
+			if(optimal_preview_size!=null){
+				Camera.Parameters parameters = mCamera.getParameters();
+				parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
+				mCamera.setParameters(parameters);
+			}
+			mPreview.refreshCamera(mCamera);
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
-		mPreview.refreshCamera(mCamera);
-
 
 		resetLayout(isCallTransferOngoing);
 	}
