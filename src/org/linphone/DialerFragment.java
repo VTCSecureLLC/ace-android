@@ -118,27 +118,28 @@ public class DialerFragment extends Fragment {
 			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
 			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
-					try {
-						if (position == 0) {
-							//set background gray because we are using the @ symbol
-							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
-						} else {
-							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
-						}
-					}catch(Throwable e){
-						//crashing on tablets because dialer_view or provider_spinner_box is missing
-					}
-					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
-					else sipDomainTextView.setText("");
-					mAddress.setTag(sipDomainTextView.getText());
-				}
-				public void onNothingSelected(AdapterView<?> arg0) {}  
-			});
+//			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+//				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
+//					try {
+//						if (position == 0) {
+//							//set background gray because we are using the @ symbol
+//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
+//						} else {
+//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+//						}
+//					} catch (Throwable e) {
+//						//crashing on tablets because dialer_view or provider_spinner_box is missing
+//					}
+//					if (position != 0) sipDomainTextView.setText("@" + adapter.getItem(position));
+//					else sipDomainTextView.setText("");
+//					mAddress.setTag(sipDomainTextView.getText());
+//				}
+//
+//				public void onNothingSelected(AdapterView<?> arg0) {
+//				}
+//			});
 			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					new String[]{ "","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
+					new String[]{"Available in General Release","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
 					new int[]{R.drawable.atbutton_new,R.drawable.provider_logo_sorenson,
 							R.drawable.provider_logo_zvrs,
 							R.drawable.provider_logo_caag,//caag
@@ -565,7 +566,6 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
 		View mySpinner = inflater.inflate(R.layout.provider_spinner_image_only, parent,
 				false);
-
 //		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 //		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
@@ -574,13 +574,16 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		return mySpinner;
 	}
 
+	@Override //Disable until General Release
+	public boolean isEnabled(int position) {
+		return false;
+	}
 
 	public View getCustomViewSpinner(int position, View convertView,
 									 ViewGroup parent) {
 		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
 		View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
 				false);
-
 		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
