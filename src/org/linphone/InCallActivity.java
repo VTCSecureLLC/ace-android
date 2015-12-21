@@ -351,10 +351,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 			LinphoneCallParams params = call.getCurrentParamsCopy();
+			initRTT();
 
-			if(isRTTEnabled){
-				initRTT();
-			}
 			if(isRTTMaximized){
 				showRTTinterface();
 			}
@@ -401,7 +399,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 	}
-				/** Initializes the views and other components needed for RTT in a call */
+	/** Initializes the views and other components needed for RTT in a call */
 	private void initRTT(){
 		rttContainerView = findViewById(R.id.rtt_container);
 		rttContainerView.setOnClickListener(this);
