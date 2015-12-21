@@ -752,9 +752,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			startActivityForResult(intent, CHAT_ACTIVITY);
 		}
 
-		LinphoneService.instance().resetMessageNotifCount();
-		LinphoneService.instance().removeMessageNotification();
-		displayMissedChats(getChatStorage().getUnreadMessageCount());
+//		LinphoneService.instance().resetMessageNotifCount();
+//		LinphoneService.instance().removeMessageNotification();
+//		displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	@Override
