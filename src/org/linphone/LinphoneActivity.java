@@ -226,7 +226,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				if(!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
 					cr.markAsRead();
 				}
-		        displayMissedChats(getChatStorage().getUnreadMessageCount());
+		        //displayMissedChats(getChatStorage().getUnreadMessageCount());
 		        if (messageListFragment != null && messageListFragment.isVisible()) {
 		            ((ChatListFragment) messageListFragment).refresh();
 		        }
@@ -754,7 +754,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		LinphoneService.instance().resetMessageNotifCount();
 		LinphoneService.instance().removeMessageNotification();
-		displayMissedChats(getChatStorage().getUnreadMessageCount());
+		//displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	@Override
@@ -924,7 +924,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 	public void updateMissedChatCount() {
-		displayMissedChats(getChatStorage().getUnreadMessageCount());
+		//displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	public int onMessageSent(String to, String message) {
@@ -961,7 +961,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedCalls.setVisibility(View.GONE);
 		}
 	}
-
+/*
 	private void displayMissedChats(final int missedChatCount) {
 		if (missedChatCount > 0) {
 			missedChats.setText(missedChatCount + "");
@@ -978,7 +978,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedChats.clearAnimation();
 			missedChats.setVisibility(View.GONE);
 		}
-	}
+	}*/
 
 	public void displayCustomToast(final String message, final int duration) {
 		LayoutInflater inflater = getLayoutInflater();
