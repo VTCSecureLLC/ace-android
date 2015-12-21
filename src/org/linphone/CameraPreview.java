@@ -19,6 +19,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 	public CameraPreview(Context context, Camera camera) {
 		super(context);
+		Log.d("CameraPreview constructor","constructor");
 		mCamera = camera;
 		mHolder = getHolder();
 		mHolder.addCallback(this);
@@ -27,10 +28,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
+		Log.d("surfaceCreated","surfaceCreated");
 		try {
 			// create the surface and start camera preview
+			Log.d("mCamera",String.valueOf(mCamera));
 			if (mCamera == null) {
-				mCamera.setPreviewDisplay(holder);
+				mCamera.setPreviewDisplay(mHolder);
 				mCamera.startPreview();
 			}
 		} catch (Throwable e) {
@@ -39,20 +42,25 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 	public void refreshCamera(Camera camera) {
-		if (mHolder.getSurface() == null) {
+		Log.d("refreshCamera","refreshCamera");
+			if (mHolder.getSurface() == null) {
+				Log.d("mHolder.getSurface() == null","preview surface does not exist");
 			// preview surface does not exist
 			return;
 		}
 		// stop preview before making changes
 		try {
 			mCamera.stopPreview();
+			Log.d("mCamera.stopPreview()", "mCamera.stopPreview()");
 		} catch (Exception e) {
 			// ignore: tried to stop a non-existent preview
+			e.printStackTrace();
 		}
 		// set preview size and make any resize, rotate or
 		// reformatting changes here
 		// start preview with new settings
 
+		Log.d("setCamera","setCamera");
 		setCamera(camera);
 		try {
 			//mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
@@ -85,7 +93,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			}
 
 			mCamera.setDisplayOrientation(degrees);
+			Log.d("mHolder", mHolder.toString());
+			Log.d("mHolder.getSurface()",mHolder.getSurface().toString());
 			mCamera.setPreviewDisplay(mHolder);
+			Log.d("mCamera.setPreviewDisplay(mHolder);", "mCamera.setPreviewDisplay(mHolder);");
 			mCamera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
@@ -135,17 +146,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 		// If your preview can change or rotate, take care of those events here.
 		// Make sure to stop the preview before resizing or reformatting it.
+		Log.d("surfaceChanged","surfaceChanged");
 		refreshCamera(mCamera);
 	}
 
 	public void setCamera(Camera camera) {
 		//method to set a camera instance
+		Log.d("setCamera","setCamera");
 		mCamera = camera;
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		Log.d("Camera surface destroyed","destroyed");
 		if (mCamera != null) {
+			Log.d("Camera surface destroyed","destroyed");
 			mCamera.stopPreview();
 			mCamera.release();
 			mCamera = null;
