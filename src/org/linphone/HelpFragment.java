@@ -4,17 +4,20 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.Preference;
-import android.widget.EditText;
+import android.preference.PreferenceScreen;
 import android.widget.Toast;
 
 import net.hockeyapp.android.Constants;
 import net.hockeyapp.android.FeedbackManager;
-import net.hockeyapp.android.views.FeedbackView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.linphone.mediastream.Log;
 import org.linphone.ui.PreferencesListFragment;
 
 import java.io.BufferedReader;
@@ -22,6 +25,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * A fragment representing a list of Items.
@@ -58,8 +63,47 @@ public class HelpFragment extends PreferencesListFragment {
                 return false;
             }
         });
+        new LoadWebPageASYNC().execute();
     }
+    public void populate_deaf_and_hard_of_hearing_preference() throws JSONException {
+        String textjson;
+        try {
+           textjson=getText("http://cdn.vatrp.net/numbers.json");
+            Log.d("textjson="+textjson);
+        } catch (Exception e) {
+            e.printStackTrace();
+            textjson="[\n" +
+                    "  {\"name\":\"SBA ASL Line\", \"address\":\"+18554404960\"},\n" +
+                    "  {\"name\":\"FCC ASL Line\", \"address\":\"+18444322275\"}\n" +
+                    "]";
+        }
 
+        JSONArray reader = new JSONArray(textjson);
+
+
+        PreferenceScreen hoh_screen=(PreferenceScreen)findPreference("websiteace");
+        for(int i=0; i<reader.length(); i++){
+            Preference pref=new Preference(getActivity());
+            pref.setKey("hoh_item" + String.valueOf(i));
+            pref.setTitle(((JSONObject) reader.get(i)).getString("name"));
+            pref.setSummary(((JSONObject) reader.get(i)).getString("address"));
+            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    if (LinphoneActivity.isInstanciated()) {
+
+                        LinphoneManager.getInstance().newOutgoingCall(preference.getSummary().toString(),preference.getTitle().toString());
+
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            hoh_screen.addPreference(pref);
+        }
+
+
+    };
     public void showFeedbackActivity() {
         FeedbackManager.register(LinphoneActivity.ctx, "d6280d4d277d6876c709f4143964f0dc", null);
 
@@ -108,7 +152,23 @@ public class HelpFragment extends PreferencesListFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
      }
+    public static String getText(String url) throws Exception {
+        URL website = new URL(url);
+        URLConnection connection = website.openConnection();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        connection.getInputStream()));
 
+        StringBuilder response = new StringBuilder();
+        String inputLine;
+
+        while ((inputLine = in.readLine()) != null)
+            response.append(inputLine);
+
+        in.close();
+
+        return response.toString();
+    }
     @Override
     public void onDetach() {
         super.onDetach();
@@ -147,6 +207,24 @@ public class HelpFragment extends PreferencesListFragment {
 	    }
 
         return feedbackLogs.substring(startOfLastThousandLines);
+    }
+    private class LoadWebPageASYNC extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                populate_deaf_and_hard_of_hearing_preference();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
     }
 
 }
