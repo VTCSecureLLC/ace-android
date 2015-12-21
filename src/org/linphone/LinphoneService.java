@@ -18,23 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCore.GlobalState;
-import org.linphone.core.LinphoneCore.RegistrationState;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneCoreFactory;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.mediastream.Log;
-import org.linphone.mediastream.Version;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -57,7 +40,22 @@ import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
-import org.linphone.R;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCore.GlobalState;
+import org.linphone.core.LinphoneCore.RegistrationState;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * 
@@ -111,9 +109,9 @@ public final class LinphoneService extends Service {
 
 	private Notification mNotif;
 	private Notification mIncallNotif;
-	private Notification mMsgNotif;
+	//private Notification mMsgNotif;
 	private Notification mCustomNotif;
-	private int mMsgNotifCount;
+	//private int mMsgNotifCount;
 	private PendingIntent mNotifContentIntent;
 	private PendingIntent mkeepAlivePendingIntent;
 	private String mNotificationTitle;
@@ -121,13 +119,13 @@ public final class LinphoneService extends Service {
 	private LinphoneCoreListenerBase mListener;
 	public static int notifcationsPriority = (Version.sdkAboveOrEqual(Version.API16_JELLY_BEAN_41) ? Notification.PRIORITY_DEFAULT : 0);
 
-	public int getMessageNotifCount() {
-		return mMsgNotifCount;
-	}
-	
-	public void resetMessageNotifCount() {
-		mMsgNotifCount = 0;
-	}
+//	public int getMessageNotifCount() {
+//		return mMsgNotifCount;
+//	}
+//
+//	public void resetMessageNotifCount() {
+//		mMsgNotifCount = 0;
+//	}
 
 	@Override
 	public void onCreate() {
@@ -387,11 +385,11 @@ public final class LinphoneService extends Service {
 			fromName = fromSipUri;
 		}
 		
-		if (mMsgNotif == null) {
-			mMsgNotifCount = 1;
-		} else {
-			mMsgNotifCount++;
-		}
+//		if (mMsgNotif == null) {
+//			mMsgNotifCount = 1;
+//		} else {
+//			mMsgNotifCount++;
+//		}
 		
 		Uri pictureUri = null;
 		try {
@@ -412,9 +410,9 @@ public final class LinphoneService extends Service {
 		} else {
 			bm = BitmapFactory.decodeResource(getResources(), R.drawable.unknown_small);
 		}
-		mMsgNotif = Compatibility.createMessageNotification(getApplicationContext(), mMsgNotifCount, fromName, message, bm, notifContentIntent);
+		//mMsgNotif = Compatibility.createMessageNotification(getApplicationContext(), mMsgNotifCount, fromName, message, bm, notifContentIntent);
 		
-		notifyWrapper(MESSAGE_NOTIF_ID, mMsgNotif);
+		//notifyWrapper(MESSAGE_NOTIF_ID, mMsgNotif);
 	}
 	
 	public void removeMessageNotification() {
