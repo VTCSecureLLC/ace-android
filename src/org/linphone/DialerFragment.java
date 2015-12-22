@@ -19,10 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +33,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -86,6 +90,8 @@ public class DialerFragment extends Fragment {
 	private boolean cameraFront = false;
 	int SELF_VIEW_INDEX = 0, DIALER_INDEX = 1;
 	public int VIEW_INDEX = DIALER_INDEX;
+
+	private boolean isSpinnerOpen = false;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
@@ -106,7 +112,7 @@ public class DialerFragment extends Fragment {
 		mAddress.setDialerFragment(this);
 
 		// VTCSecure SIP Domain selection 
-		Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
+		final Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
 
 		final TextView sipDomainTextView = (TextView)view.findViewById(R.id.sipDomainTextView);
 		sipDomainTextView.setText("");
@@ -117,6 +123,27 @@ public class DialerFragment extends Fragment {
 			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
 			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			sipDomainSpinner.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if(event.getAction() == MotionEvent.ACTION_DOWN){
+						isSpinnerOpen = !isSpinnerOpen;
+						if(isSpinnerOpen){
+							new AlertDialog.Builder(DialerFragment.this.getActivity())
+									.setTitle("")
+									.setMessage("Available in General Release")
+									.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											isSpinnerOpen = false;
+										}
+									}).show();
+						}
+					}
+					return false;
+				}
+			});
+
 //			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 //				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
 //					try {
@@ -138,7 +165,7 @@ public class DialerFragment extends Fragment {
 //				}
 //			});
 			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					new String[]{"Available in General Release","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
+					new String[]{"","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
 					new int[]{R.drawable.atbutton_new,R.drawable.provider_logo_sorenson,
 							R.drawable.provider_logo_zvrs,
 							R.drawable.provider_logo_caag,//caag
@@ -314,7 +341,9 @@ public class DialerFragment extends Fragment {
 		cameraPreview.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dialer_content.setVisibility(View.VISIBLE);
+				if(dialer_content != null) {
+					dialer_content.setVisibility(View.VISIBLE);
+				}
 				VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
 			}
 		});
@@ -589,9 +618,7 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 	}
 
 	@Override //Disable until General Release
-	public boolean isEnabled(int position) {
-		return false;
-	}
+	public boolean isEnabled(int position) { return false; }
 
 	public View getCustomViewSpinner(int position, View convertView,
 									 ViewGroup parent) {
@@ -602,7 +629,11 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
 		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
-
+		if(!isEnabled(position)){
+			mySpinner.setBackgroundColor(Color.DKGRAY);
+			left_icon.setColorFilter(Color.GRAY);
+			main_text.setTextColor(Color.WHITE);
+		}
 		return mySpinner;
 	}
 
