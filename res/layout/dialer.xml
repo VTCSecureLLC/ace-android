@@ -78,7 +78,8 @@
                 android:layout_height="90dp">
                 <TableRow android:layout_weight="1">
                     <LinearLayout android:paddingLeft="2dp" android:paddingTop="2dp" android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent"  android:background="@drawable/border_left_top">
-                        <LinearLayout android:id="@+id/provider_spinner_box" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent"  android:background="@color/border_color" android:gravity="center">
+                        <LinearLayout android:id="@+id/provider_spinner_box" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent"  android:background="@color/border_color" android:gravity="center"
+                            android:clickable="false">
                             <Spinner
                                 android:id="@+id/sipDomainSpinner"
                                 android:layout_width="match_parent"
