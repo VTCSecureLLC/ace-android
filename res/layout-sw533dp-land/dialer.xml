@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 	android:id="@+id/dialer_background"
-	android:background="@drawable/background">
+	android:background="@drawable/background"
+	android:clickable="false">
 
 	<LinearLayout
 		android:id="@+id/camera_preview"
