@@ -28,7 +28,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
-		Log.d("surfaceCreated","surfaceCreated");
+		Log.d("surfaceCreated", "surfaceCreated");
 		try {
 			// create the surface and start camera preview
 			Log.d("mCamera",String.valueOf(mCamera));
@@ -40,7 +40,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			Log.d(VIEW_LOG_TAG, "Error setting camera preview: " + e.getMessage());
 		}
 	}
-
+	private int findFrontFacingCamera() {
+		int cameraId = -1;
+		// Search for the front facing camera
+		int numberOfCameras = Camera.getNumberOfCameras();
+		for (int i = 0; i < numberOfCameras; i++) {
+			Camera.CameraInfo info = new Camera.CameraInfo();
+			Camera.getCameraInfo(i, info);
+			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				cameraId = i;
+				//cameraFront = true;
+				break;
+			}
+		}
+		return cameraId;
+	}
 	public void refreshCamera(Camera camera) {
 		Log.d("refreshCamera","refreshCamera");
 			if (mHolder.getSurface() == null) {
@@ -50,12 +64,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		}
 		// stop preview before making changes
 		try {
-			mCamera.stopPreview();
-			Log.d("mCamera.stopPreview()", "mCamera.stopPreview()");
-		} catch (Exception e) {
-			// ignore: tried to stop a non-existent preview
-			e.printStackTrace();
+			camera = Camera.open(findFrontFacingCamera());
+		}catch(Throwable e){
+
 		}
+		camera.stopPreview();
+		Log.d("mCamera.stopPreview()", "mCamera.stopPreview()");
+
 		// set preview size and make any resize, rotate or
 		// reformatting changes here
 		// start preview with new settings
@@ -92,12 +107,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 			}
 
-			mCamera.setDisplayOrientation(degrees);
+			camera.setDisplayOrientation(degrees);
 			Log.d("mHolder", mHolder.toString());
 			Log.d("mHolder.getSurface()",mHolder.getSurface().toString());
-			mCamera.setPreviewDisplay(mHolder);
+			camera.setPreviewDisplay(mHolder);
 			Log.d("mCamera.setPreviewDisplay(mHolder);", "mCamera.setPreviewDisplay(mHolder);");
-			mCamera.startPreview();
+			camera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
 		}
