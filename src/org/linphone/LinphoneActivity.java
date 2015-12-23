@@ -776,16 +776,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			if(!isTablet()) {
 				if(DialerFragment.instance() != null) {
-						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().SELF_VIEW_INDEX) {
-							DialerFragment.instance().cameraPreview.setVisibility(View.GONE);
+						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
 							DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
-							DialerFragment.instance().dialer_content.setEnabled(true);
-							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
-						} else {
-							DialerFragment.instance().cameraPreview.setVisibility(View.VISIBLE);
-							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
-							DialerFragment.instance().dialer_content.setEnabled(false);
 							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+						} else {
+							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
+							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
 						}
 					}
 			}
