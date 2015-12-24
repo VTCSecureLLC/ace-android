@@ -35,6 +35,14 @@ SRTP_C_INCLUDE= \
 	$(linphone-root-dir)/submodules/externals/srtp/crypto/include
 endif
 
+#belr and belcard
+ifeq ($(BUILD_VCARD),1)
+VCARD_C_INCLUDE = \
+	$(linphone-root-dir)/submodules/belr/include \
+	$(linphone-root-dir)/submodules/belcard/include
+include $(linphone-root-dir)/submodules/belr/build/android/Android.mk
+include $(linphone-root-dir)/submodules/belcard/build/android/Android.mk
+endif
 
 #sqlite
 ifeq ($(BUILD_SQLITE),1)
