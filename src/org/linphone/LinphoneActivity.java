@@ -136,6 +136,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	static final boolean isInstanciated() {
 		return instance != null;
 	}
+	public LinphoneActivity()
+	{
+		instance = this;
+	}
 
 	public static final LinphoneActivity instance() {
 		if (instance != null)
@@ -148,9 +152,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		super.onCreate(savedInstanceState);
 //		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
 //		LoginManager.verifyLogin(this, getIntent());
-		checkForUpdates();
 		ctx=this;
 		act=this;
+		instance = this;
+		checkForUpdates();
+
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
 		        .setTitle(getString(R.string.location_for_911_disabled_title))
@@ -208,7 +214,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		topLayout=findViewById(R.id.topLayout);
 
 
-		instance = this;
+
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
 		initButtons();
 
