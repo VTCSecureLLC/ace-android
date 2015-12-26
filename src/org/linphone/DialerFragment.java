@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -48,6 +49,7 @@ import android.widget.Toast;
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
@@ -277,7 +279,8 @@ public class DialerFragment extends Fragment {
 
 
 		try {
-			initialize_camera(view);
+			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA))
+				initialize_camera(view);
 		}catch(Throwable e){
 
 		}
@@ -330,7 +333,8 @@ public class DialerFragment extends Fragment {
 		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
 			@Override
 			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-
+				if(mCamera==null)
+					return;
 				try {
 					cameraPreview = (LinearLayout) dialer_view.findViewById(R.id.camera_preview);
 					cameraPreview.setOnClickListener(new OnClickListener() {

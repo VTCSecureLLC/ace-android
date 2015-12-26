@@ -85,7 +85,16 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	@Override
 	public void onCreate(Bundle bundle) {
+		if(mPrefs.getContext()==null)
+			mPrefs.setContext(getActivity());
+		if(LinphoneActivity.ctx == null)
+			LinphoneActivity.ctx = getContext();
 		super.onCreate(bundle);
+		if(!LinphoneActivity.isInstanciated() || !LinphoneManager.isInstanciated())
+		{
+			return;
+		}
+
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		editor = prefs.edit();
