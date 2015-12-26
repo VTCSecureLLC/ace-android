@@ -392,6 +392,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public void newOutgoingCall(AddressType address) {
+		if(!ApplicationPermissionManager.askPermissionifnotGranted(LinphoneActivity.instance(), Manifest.permission.RECORD_AUDIO, 4))
+			return;
 		String to = address.getText().toString();
 		newOutgoingCall(to, address.getDisplayedName());
 	}
