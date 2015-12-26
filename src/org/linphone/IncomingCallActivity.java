@@ -29,17 +29,21 @@ import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.LinphoneSliders;
 import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
+import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -157,7 +161,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		// May be greatly sped up using a drawable cache
 		Contact contact = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), address);
 		LinphoneUtils.setImagePictureFromUri(this, mPictureView.getView(), contact != null ? contact.getPhotoUri() : null,
-                contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
+				contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
 
 		// To be done after findUriPictureOfContactAndSetDisplayName called
 		mNameView.setText(contact != null ? contact.getName() : "");
@@ -321,8 +325,22 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 
 	@Override
 	public void onLeftHandleTriggered() {
-		answer();
-		finish();
+		if(ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.RECORD_AUDIO)) {
+			answer();
+			finish();
+		}
+		else {
+			new AlertDialog.Builder(this)
+					.setMessage("Microphone permission is not granted")
+					.setTitle("Doesn't have permission")
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							decline();
+							finish();
+						}
+					}).show();
+		}
 	}
 
 	@Override
