@@ -139,6 +139,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	View mFragmentHolder;
 	View mViewsHolder;
 	RelativeLayout mainLayout;
+	final float mute_db = -1000.0f;
 
 	public static InCallActivity instance() {
 		return instance;
@@ -177,7 +178,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		boolean isMicMutedPref = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
 		LinphoneManager.getLc().muteMic(isMicMutedPref);
 
-		isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		boolean isSpeakerMutedPref = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		if (isSpeakerMutedPref) {
+			LinphoneManager.getLc().setPlaybackGain(mute_db);
+		} else {
+			LinphoneManager.getLc().setPlaybackGain(0);
+		}
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
@@ -251,6 +257,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						video.setEnabled(true);
 					}
         			isMicMuted = lc.isMicMuted();
+					isSpeakerMuted = lc.getPlaybackGain()==mute_db;
+
         			enableAndRefreshInCallActions();
         			
         			if (status != null) {
@@ -322,6 +330,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             	// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
 				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
             	isMicMuted = savedInstanceState.getBoolean("Mic");
+				isSpeakerMuted = savedInstanceState.getBoolean("Speaker");
             	isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
             	refreshInCallActions();
             	return;
@@ -673,6 +682,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean("isRTTMaximized", isRTTMaximized);
 		outState.putBoolean("Mic", LinphoneManager.getLc().isMicMuted());
+		outState.putBoolean("Speaker", LinphoneManager.getLc().getPlaybackGain()==mute_db);
 		outState.putBoolean("VideoCallPaused", isVideoCallPaused);
 		
 		super.onSaveInstanceState(outState);
@@ -903,6 +913,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} 
 		else if (id == R.id.speaker) {
 			toggleSpeaker(!isSpeakerMuted);
+
 		} 
 		else if (id == R.id.addCall) {
 			goBackToDialer();
@@ -1079,7 +1090,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} catch (Exception e) {
 		}
 	}
-	
+
 	private void toggleMicro() {
 		LinphoneCore lc = LinphoneManager.getLc();
 		isMicMuted = !isMicMuted;
@@ -1651,6 +1662,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			mControlsHandler.removeCallbacks(mControls);
 		}
 		mControls = null;
+
 
 		if (!isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			LinphoneManager.stopProximitySensorForActivity(this);

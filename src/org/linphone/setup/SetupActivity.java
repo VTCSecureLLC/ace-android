@@ -66,6 +66,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		setContentView(R.layout.setup);
 		firstFragment = getResources().getBoolean(R.bool.setup_use_linphone_as_first_fragment) ?
 				SetupFragmentsEnum.LINPHONE_LOGIN : SetupFragmentsEnum.MENU;
+		firstFragment = SetupFragmentsEnum.GENERIC_LOGIN;
         if (findViewById(R.id.fragmentContainer) != null) {
             if (savedInstanceState == null) {
             	display(firstFragment);
@@ -195,7 +196,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-		if(currentFragment == SetupFragmentsEnum.MENU)
+		if(currentFragment == SetupFragmentsEnum.MENU || currentFragment == SetupFragmentsEnum.GENERIC_LOGIN)
 			return;
 		if (currentFragment == firstFragment) {
 			LinphonePreferences.instance().firstLaunchSuccessful();
@@ -281,6 +282,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			break;
 		case MENU : 
 			displayMenu();
+			break;
+		case GENERIC_LOGIN:
+			displayLoginGeneric();
 			break;
 		default:
 			throw new IllegalStateException("Can't handle " + fragment);
