@@ -198,7 +198,8 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		if (searchCursor != null) {
 			searchCursor.close();
 		}
-		
+		if(ContactsManager.getInstance().getAllContactsCursor()==null)
+			return;
 		if (onlyDisplayLinphoneContacts) {
 			searchCursor = Compatibility.getSIPContactsCursor(getActivity().getContentResolver(), search, ContactsManager.getInstance().getContactsId());
 			indexer = new AlphabetIndexer(searchCursor, Compatibility.getCursorDisplayNameColumnIndex(searchCursor), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");

@@ -18,6 +18,7 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,6 +36,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.Fragment.SavedState;
 import android.support.v4.app.FragmentActivity;
@@ -80,6 +82,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
@@ -772,6 +775,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
 			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			if(!ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_CONTACTS))
+			{
+				ApplicationPermissionManager.askPermission(this, Manifest.permission.WRITE_CONTACTS, REQUEST_CONTACTS_PERMISSION);
+
+			}
 		} else if (id == R.id.dialer) {
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			if(!isTablet()) {
@@ -1468,6 +1476,45 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private void unregisterManagers() {
 		UpdateManager.unregister();
 		// unregister other managers if necessary...
+	}
+
+
+
+
+	void onPermissionGrandted(int permission_code)
+	{
+		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+		if(permission_code==REQUEST_CONTACTS_PERMISSION && currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+		{
+			//((ContactsFragment)fragment2).invalidate();
+		}
+		//if contacts and currentfragment is contact
+		//reload contacts
+
+
+
+	}
+
+	public final static int REQUEST_CAMERA_PERMISSION = 1;
+	public final static int REQUEST_CONTACTS_PERMISSION = 2;
+	public final static int REQUEST_STORAGE_PERMISSION = 3;
+	public final static int REQUEST_MIC_PERMISSION = 4;
+
+
+
+
+
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+										   @NonNull int[] grantResults)
+	{
+		Log.d("permission result jan");
+		if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			onPermissionGrandted(requestCode);
+		}
+
+
 	}
 }
 
