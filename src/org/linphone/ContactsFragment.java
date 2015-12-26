@@ -215,11 +215,12 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		if (searchCursor != null) {
 			searchCursor.close();
 		}
-		if(ContactsManager.getInstance().getAllContactsCursor()==null)
-			return;
+
 		
 		Cursor allContactsCursor = ContactsManager.getInstance().getAllContactsCursor();
 		Cursor sipContactsCursor = ContactsManager.getInstance().getSIPContactsCursor();
+		if(ContactsManager.getInstance().getAllContactsCursor()==null)
+			return;
 
 		noSipContact.setVisibility(View.GONE);
 		noContact.setVisibility(View.GONE);
