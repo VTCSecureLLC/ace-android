@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -91,6 +92,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
 			parameters.setPreviewSize(size.width, size.height);
 			camera.setParameters(parameters);
+
+			if(LinphoneActivity.instance().isTablet()){
+				int aspect_width=layoutWidth;
+				int aspect_height=size.height*aspect_width/size.width;
+				this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width,aspect_height));
+			}
+
 			camera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
