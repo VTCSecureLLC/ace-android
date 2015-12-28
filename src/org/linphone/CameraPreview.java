@@ -78,48 +78,46 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Log.d("setCamera","setCamera");
 		setCamera(camera);
 		try {
+			int layoutWidth = this.getWidth();
+			int layoutHeight = this.getHeight();
 
-			setCameraDisplayOrientation(LinphoneActivity.instance(),findFrontFacingCamera(),camera);
-			Log.d("mHolder", mHolder.toString());
-			Log.d("mHolder.getSurface()",mHolder.getSurface().toString());
+
+
+
+			setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), camera);
+
 			camera.setPreviewDisplay(mHolder);
-			Log.d("mCamera.setPreviewDisplay(mHolder);", "mCamera.setPreviewDisplay(mHolder);");
+			Camera.Parameters parameters = camera.getParameters();
+			Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
+			parameters.setPreviewSize(size.width, size.height);
+			camera.setParameters(parameters);
 			camera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
 		}
 	}
-	private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
-		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio=(double)h / w;
+	private Camera.Size getBestPreviewSize(int width, int height)
+	{
+		Camera.Size result=null;
+		Camera.Parameters p = mCamera.getParameters();
+		for (Camera.Size size : p.getSupportedPreviewSizes()) {
+			if (size.width<=width && size.height<=height) {
+				if (result==null) {
+					result=size;
+				} else {
+					int resultArea=result.width*result.height;
+					int newArea=size.width*size.height;
 
-		if (sizes == null) return null;
-
-		Camera.Size optimalSize = null;
-		double minDiff = Double.MAX_VALUE;
-
-		int targetHeight = h;
-
-		for (Camera.Size size : sizes) {
-			double ratio = (double) size.width / size.height;
-			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-			if (Math.abs(size.height - targetHeight) < minDiff) {
-				optimalSize = size;
-				minDiff = Math.abs(size.height - targetHeight);
-			}
-		}
-
-		if (optimalSize == null) {
-			minDiff = Double.MAX_VALUE;
-			for (Camera.Size size : sizes) {
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
+					if (newArea>resultArea) {
+						result=size;
+					}
 				}
 			}
 		}
-		return optimalSize;
+		return result;
+
 	}
+
 
 	public void setCameraDisplayOrientation(Activity activity , int icameraId , Camera camera)
 	{
