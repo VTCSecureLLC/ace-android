@@ -289,6 +289,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (lc != null) {
 			lc.addListener(mListener);
 		}
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.this);
+		//Initialize RTCP feedback preference
+		String rtcpFeedback = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
+		if(rtcpFeedback.compareToIgnoreCase("Off") == 0){
+			LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
+		}
+		else if(rtcpFeedback.compareToIgnoreCase("Implicit") == 0){
+			LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+		}
+		else if(rtcpFeedback.compareToIgnoreCase("Explicit") == 0){
+			LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+		}
 
 		int missedCalls = getLc().getMissedCallsCount();
 		displayMissedCalls(missedCalls);
