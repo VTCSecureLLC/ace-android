@@ -1,13 +1,12 @@
 package org.linphone;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
-import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.WindowManager;
 
 import java.util.List;
 
@@ -55,9 +54,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		}
 		return cameraId;
 	}
-	public void refreshCamera(Camera camera) {
+	public void refreshCamera(SurfaceHolder holder, Camera camera) {
 		Log.d("refreshCamera","refreshCamera");
-			if (mHolder.getSurface() == null) {
+		mHolder=holder;
+		if (mHolder.getSurface() == null) {
 				Log.d("mHolder.getSurface() == null","preview surface does not exist");
 			// preview surface does not exist
 			return;
@@ -78,36 +78,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Log.d("setCamera","setCamera");
 		setCamera(camera);
 		try {
-			//mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-//			Camera.Parameters parameters = mCamera.getParameters();
-//			parameters.setPreviewSize(100, 100);
-//			mCamera.setParameters(parameters);
-			Display display = ((WindowManager) LinphoneActivity.instance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-			int rotation = display.getRotation();
-			int degrees=0;
-			Log.d("rotation", "rotation" + rotation);
-			switch (rotation){
-				case Surface.ROTATION_0:
-					//tested on phone
-					degrees=90;
-					break;
-				case Surface.ROTATION_90:
-					//tested on nexus tab
-					degrees=0;
-					break;
-				case Surface.ROTATION_180:
-					//these are guesses
-					degrees=180;
-					break;
-				case Surface.ROTATION_270:
-					//these are guesses
-					degrees=270;
-					break;
 
-
-			}
-
-			camera.setDisplayOrientation(degrees);
+			setCameraDisplayOrientation(LinphoneActivity.instance(),findFrontFacingCamera(),camera);
 			Log.d("mHolder", mHolder.toString());
 			Log.d("mHolder.getSurface()",mHolder.getSurface().toString());
 			camera.setPreviewDisplay(mHolder);
@@ -148,6 +120,55 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		}
 		return optimalSize;
 	}
+
+	public void setCameraDisplayOrientation(Activity activity , int icameraId , Camera camera)
+	{
+		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+
+		Camera.getCameraInfo(icameraId, cameraInfo);
+
+		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+
+		int degrees = 0; // k
+
+		switch (rotation)
+		{
+			case Surface.ROTATION_0:
+				degrees = 0;
+				break;
+			case Surface.ROTATION_90:
+				degrees = 90;
+				break;
+			case Surface.ROTATION_180:
+				degrees = 180;
+				break;
+			case Surface.ROTATION_270:
+				degrees = 270;
+				break;
+
+		}
+
+		int result;
+
+		if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+		{
+			// cameraType=CAMERATYPE.FRONT;
+
+			result = (cameraInfo.orientation + degrees) % 360;
+			result = (360 - result) % 360; // compensate the mirror
+
+		}
+		else
+		{ // back-facing
+
+			result = (cameraInfo.orientation - degrees + 360) % 360;
+
+		}
+		// displayRotate=result;
+		camera.setDisplayOrientation(result);
+
+
+	}
 //	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
@@ -162,7 +183,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		// If your preview can change or rotate, take care of those events here.
 		// Make sure to stop the preview before resizing or reformatting it.
 		Log.d("surfaceChanged","surfaceChanged");
-		refreshCamera(mCamera);
+		refreshCamera(holder, mCamera);
 	}
 
 	public void setCamera(Camera camera) {
