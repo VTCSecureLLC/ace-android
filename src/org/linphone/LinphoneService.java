@@ -27,6 +27,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
@@ -37,6 +38,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
@@ -213,6 +215,22 @@ public final class LinphoneService extends Service {
 				if (!mDisableRegistrationStatus) {
 					if (state == RegistrationState.RegistrationOk && LinphoneManager.getLc().getDefaultProxyConfig() != null && LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) {
 						sendNotification(IC_LEVEL_ORANGE, R.string.notification_registered);
+						final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.this);
+						//Initialize RTCP feedback preference
+						String rtcpFeedback = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
+						if(rtcpFeedback.compareToIgnoreCase("Off") == 0){
+							LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
+						}
+						else if(rtcpFeedback.compareToIgnoreCase("Implicit") == 0){
+							LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+						}
+						else if(rtcpFeedback.compareToIgnoreCase("Explicit") == 0){
+							LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
+							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+						}
+
 					}
 			
 					if ((state == RegistrationState.RegistrationFailed || state == RegistrationState.RegistrationCleared) && (LinphoneManager.getLc().getDefaultProxyConfig() == null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered())) {
