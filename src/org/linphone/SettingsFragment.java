@@ -48,6 +48,7 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.LpConfig;
 import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
@@ -815,6 +816,8 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initAudioVideoSettings(){
+		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
+		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
 		// VATRP-1017 -- Add global speaker and mic mute logic
 		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
@@ -845,6 +848,25 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void setAudioVideoPreferencesListener(){
+		findPreference(getString(R.string.pref_av_rtcp_feedback_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String value = (String)newValue;
+				if(value.compareToIgnoreCase("Off") == 0){
+					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
+				}
+				else if(value.compareToIgnoreCase("Implicit") == 0){
+					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				else if(value.compareToIgnoreCase("Explicit") == 0){
+					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
+					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				return true;
+			}
+		});
 		//VATRP-1017 -- Add global speaker and mic mute logic
 		findPreference(getString(R.string.pref_av_speaker_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
