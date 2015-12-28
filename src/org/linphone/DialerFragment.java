@@ -315,64 +315,59 @@ public class DialerFragment extends Fragment {
 			}
 		});
 
-		try {
-			mCamera = Camera.open(findFrontFacingCamera());
-		}catch(Throwable e){
-			e.printStackTrace();
-			Log.d("couldn't open front camera");
-		}
+
 		Log.d("mCamera" + mCamera);
 
 		mPreview = new CameraPreview(myContext, mCamera);
 		cameraPreview.addView(mPreview);
-		cameraPreview.addOnLayoutChangeListener(camera_view_listener());
+		//cameraPreview.addOnLayoutChangeListener(camera_view_listener());
 
 	}
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public View.OnLayoutChangeListener camera_view_listener(){
-		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
-			@Override
-			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-				if(mCamera==null)
-					return;
-				try {
-					cameraPreview = (LinearLayout) dialer_view.findViewById(R.id.camera_preview);
-					cameraPreview.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							if (dialer_content != null) {
-								dialer_content.setVisibility(View.VISIBLE);
-							}
-							VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
-						}
-					});
 
-					try {
-						mCamera = Camera.open(findFrontFacingCamera());
-					} catch (Throwable e) {
-						e.printStackTrace();
-						Log.d("couldn't open front camera");
-					}
-					Log.d("mCamera" + mCamera);
-
-					mPreview = new CameraPreview(myContext, mCamera);
-					cameraPreview.addView(mPreview);
-					cameraPreview.addOnLayoutChangeListener(camera_view_listener());
-					List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-					int viewWidth = mPreview.getWidth();
-					int viewHeight = mPreview.getHeight();
-					Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
-					Camera.Parameters parameters = mCamera.getParameters();
-					optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
-					parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
-					mCamera.setParameters(parameters);
-				}catch(Throwable e){
-					e.printStackTrace();
-				}
-			}
-		};
-		return camera_view_listener;
-	};
+//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+//	public View.OnLayoutChangeListener camera_view_listener(){
+//		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
+//			@Override
+//			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//
+//				try {
+//					cameraPreview = (LinearLayout) dialer_view.findViewById(R.id.camera_preview);
+//					cameraPreview.setOnClickListener(new OnClickListener() {
+//						@Override
+//						public void onClick(View v) {
+//							if (dialer_content != null) {
+//								dialer_content.setVisibility(View.VISIBLE);
+//							}
+//							VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+//						}
+//					});
+//
+//					try {
+//						mCamera = Camera.open(findFrontFacingCamera());
+//					} catch (Throwable e) {
+//						e.printStackTrace();
+//						Log.d("couldn't open front camera");
+//					}
+//					Log.d("mCamera" + mCamera);
+//
+//					mPreview = new CameraPreview(myContext, mCamera);
+//					cameraPreview.addView(mPreview);
+//					cameraPreview.addOnLayoutChangeListener(camera_view_listener());
+//					List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+//					int viewWidth = mPreview.getWidth();
+//					int viewHeight = mPreview.getHeight();
+//					Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
+//					Camera.Parameters parameters = mCamera.getParameters();
+//					optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
+//					parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
+//					mCamera.setParameters(parameters);
+//				}catch(Throwable e){
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//		return camera_view_listener;
+//	};
 		//	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);

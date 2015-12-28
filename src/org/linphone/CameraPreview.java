@@ -1,13 +1,12 @@
 package org.linphone;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
-import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.WindowManager;
 
 import java.util.List;
 
@@ -55,9 +54,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		}
 		return cameraId;
 	}
-	public void refreshCamera(Camera camera) {
+	public void refreshCamera(SurfaceHolder holder, Camera camera) {
 		Log.d("refreshCamera","refreshCamera");
-			if (mHolder.getSurface() == null) {
+		mHolder=holder;
+		if (mHolder.getSurface() == null) {
 				Log.d("mHolder.getSurface() == null","preview surface does not exist");
 			// preview surface does not exist
 			return;
@@ -78,75 +78,94 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Log.d("setCamera","setCamera");
 		setCamera(camera);
 		try {
-			//mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-//			Camera.Parameters parameters = mCamera.getParameters();
-//			parameters.setPreviewSize(100, 100);
-//			mCamera.setParameters(parameters);
-			Display display = ((WindowManager) LinphoneActivity.instance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-			int rotation = display.getRotation();
-			int degrees=0;
-			Log.d("rotation", "rotation" + rotation);
-			switch (rotation){
-				case Surface.ROTATION_0:
-					//tested on phone
-					degrees=90;
-					break;
-				case Surface.ROTATION_90:
-					//tested on nexus tab
-					degrees=0;
-					break;
-				case Surface.ROTATION_180:
-					//these are guesses
-					degrees=180;
-					break;
-				case Surface.ROTATION_270:
-					//these are guesses
-					degrees=270;
-					break;
+			int layoutWidth = this.getWidth();
+			int layoutHeight = this.getHeight();
 
 
-			}
 
-			camera.setDisplayOrientation(degrees);
-			Log.d("mHolder", mHolder.toString());
-			Log.d("mHolder.getSurface()",mHolder.getSurface().toString());
+
+			setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), camera);
+
 			camera.setPreviewDisplay(mHolder);
-			Log.d("mCamera.setPreviewDisplay(mHolder);", "mCamera.setPreviewDisplay(mHolder);");
+			Camera.Parameters parameters = camera.getParameters();
+			Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
+			parameters.setPreviewSize(size.width, size.height);
+			camera.setParameters(parameters);
 			camera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
 		}
 	}
-	private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
-		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio=(double)h / w;
+	private Camera.Size getBestPreviewSize(int width, int height)
+	{
+		Camera.Size result=null;
+		Camera.Parameters p = mCamera.getParameters();
+		for (Camera.Size size : p.getSupportedPreviewSizes()) {
+			if (size.width<=width && size.height<=height) {
+				if (result==null) {
+					result=size;
+				} else {
+					int resultArea=result.width*result.height;
+					int newArea=size.width*size.height;
 
-		if (sizes == null) return null;
-
-		Camera.Size optimalSize = null;
-		double minDiff = Double.MAX_VALUE;
-
-		int targetHeight = h;
-
-		for (Camera.Size size : sizes) {
-			double ratio = (double) size.width / size.height;
-			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-			if (Math.abs(size.height - targetHeight) < minDiff) {
-				optimalSize = size;
-				minDiff = Math.abs(size.height - targetHeight);
-			}
-		}
-
-		if (optimalSize == null) {
-			minDiff = Double.MAX_VALUE;
-			for (Camera.Size size : sizes) {
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
+					if (newArea>resultArea) {
+						result=size;
+					}
 				}
 			}
 		}
-		return optimalSize;
+		return result;
+
+	}
+
+
+	public void setCameraDisplayOrientation(Activity activity , int icameraId , Camera camera)
+	{
+		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+
+		Camera.getCameraInfo(icameraId, cameraInfo);
+
+		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+
+		int degrees = 0; // k
+
+		switch (rotation)
+		{
+			case Surface.ROTATION_0:
+				degrees = 0;
+				break;
+			case Surface.ROTATION_90:
+				degrees = 90;
+				break;
+			case Surface.ROTATION_180:
+				degrees = 180;
+				break;
+			case Surface.ROTATION_270:
+				degrees = 270;
+				break;
+
+		}
+
+		int result;
+
+		if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+		{
+			// cameraType=CAMERATYPE.FRONT;
+
+			result = (cameraInfo.orientation + degrees) % 360;
+			result = (360 - result) % 360; // compensate the mirror
+
+		}
+		else
+		{ // back-facing
+
+			result = (cameraInfo.orientation - degrees + 360) % 360;
+
+		}
+		// displayRotate=result;
+		camera.setDisplayOrientation(result);
+
+
 	}
 //	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -162,7 +181,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		// If your preview can change or rotate, take care of those events here.
 		// Make sure to stop the preview before resizing or reformatting it.
 		Log.d("surfaceChanged","surfaceChanged");
-		refreshCamera(mCamera);
+		refreshCamera(holder, mCamera);
 	}
 
 	public void setCamera(Camera camera) {
