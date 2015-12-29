@@ -23,6 +23,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
@@ -60,8 +63,12 @@ public class LinphoneLauncherActivity extends Activity {
         } else {
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-		setContentView(R.layout.splash_screen);
-        
+		//setContentView(R.layout.splash_screen);
+		View view=LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
+		setContentView(view);
+		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.bounce));
+
+
 		mHandler = new Handler();
 		
 		if (LinphoneService.isReady()) {

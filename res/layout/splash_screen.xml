@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:background="#003858"
-    android:orientation="vertical" >
-    
+    android:orientation="horizontal"
+    android:weightSum="100">
+
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="35"
         android:src="@drawable/vatrp_logo" />
 
 </LinearLayout>
