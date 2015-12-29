@@ -335,6 +335,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initTunnelSettings() {
+
 		setPreferenceDefaultValueAndSummary(R.string.pref_tunnel_host_key, mPrefs.getTunnelHost());
 		setPreferenceDefaultValueAndSummary(R.string.pref_tunnel_port_key, String.valueOf(mPrefs.getTunnelPort()));
 		ListPreference tunnelModePref = (ListPreference) findPreference(getString(R.string.pref_tunnel_mode_key));
@@ -1505,13 +1506,17 @@ public class SettingsFragment extends PreferencesListFragment {
 	public void onResume() {
 		super.onResume();
 		initAccounts();
-
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.SETTINGS);
 
 			if (getResources().getBoolean(R.bool.show_statusbar_only_on_dialer)) {
 				LinphoneActivity.instance().hideStatusBar();
 			}
+		}
+
+		if(isAdvancedSettings){
+			setPreferenceScreen(null);
+			addPreferencesFromResource(R.xml.preferences);
 		}
 	}
 
