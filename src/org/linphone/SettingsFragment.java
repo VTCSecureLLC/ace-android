@@ -1505,13 +1505,17 @@ public class SettingsFragment extends PreferencesListFragment {
 	public void onResume() {
 		super.onResume();
 		initAccounts();
-
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.SETTINGS);
 
 			if (getResources().getBoolean(R.bool.show_statusbar_only_on_dialer)) {
 				LinphoneActivity.instance().hideStatusBar();
 			}
+		}
+
+		if(isAdvancedSettings){
+			setPreferenceScreen(null);
+			addPreferencesFromResource(R.xml.preferences);
 		}
 	}
 
