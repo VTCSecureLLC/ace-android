@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -38,8 +39,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,6 +49,7 @@ import android.widget.Toast;
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
@@ -200,18 +200,7 @@ public class DialerFragment extends Fragment {
 				mCall.setImageResource(R.drawable.add_call);
 			}
 		} else {
-
-			if(color_theme.equals("Red")) {
-					mCall.setImageResource(R.drawable.call_red);
-			}else if(color_theme.equals("Yellow")) {
-					mCall.setImageResource(R.drawable.call_yellow);
-			}else if(color_theme.equals("Gray")) {
-					mCall.setImageResource(R.drawable.call_gray);
-			}else if(color_theme.equals("High Visibility")) {
-					mCall.setImageResource(R.drawable.call_hivis);
-			}else{
-					mCall.setImageResource(R.drawable.call_button_new);
-			}
+			mCall.setImageResource(R.drawable.call_button_new);
 		}
 
 		AddressAware numpad = (AddressAware) view.findViewById(R.id.Dialer);
@@ -263,45 +252,17 @@ public class DialerFragment extends Fragment {
 			}
 		}
 
-		if(color_theme.equals("Red")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_red);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_red);
-				erase.setImageResource(R.drawable.backspace_red);
-				mAddContact.setImageResource(R.drawable.add_contact_red);
-		}else if(color_theme.equals("Yellow")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_yellow);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_yellow);
-				erase.setImageResource(R.drawable.backspace_yellow);
-				mAddContact.setImageResource(R.drawable.add_contact_yellow);
-		}else if(color_theme.equals("Gray")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_gray);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_gray);
-				erase.setImageResource(R.drawable.backspace_gray);
-				mAddContact.setImageResource(R.drawable.add_contact_gray);
-		}else if(color_theme.equals("High Visibility")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_hivis);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_hivis);
-				erase.setImageResource(R.drawable.backspace_hivis);
-				mAddContact.setImageResource(R.drawable.add_contact_hivis);
-		}else{
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_new);
-				//sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
-				erase.setImageResource(R.drawable.backspace_new);
-				mAddContact.setImageResource(R.drawable.add_contact_new);
-		}
+
+		mAddress.setBackgroundResource(R.drawable.dialer_address_background_new);
+		//sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
+		erase.setImageResource(R.drawable.backspace_new);
+		mAddContact.setImageResource(R.drawable.add_contact_new);
+
 
 		//set background color independent
-		if(background_color_theme.equals("Red")) {
-			view.setBackgroundResource(R.drawable.background_theme_red);
-		}else if(background_color_theme.equals("Yellow")) {
-			view.setBackgroundResource(R.drawable.background_theme_yellow);
-		}else if(background_color_theme.equals("Gray")) {
-			view.setBackgroundResource(R.drawable.background_theme_gray);
-		}else if(background_color_theme.equals("High Visibility")) {
-			view.setBackgroundResource(R.drawable.background_theme_hivis);
-		}else{
-			view.setBackgroundResource(R.drawable.background_theme_new);
-		}
+
+		view.setBackgroundResource(R.drawable.background_theme_new);
+
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
@@ -316,7 +277,13 @@ public class DialerFragment extends Fragment {
 		getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		myContext = getActivity().getApplication().getBaseContext();
 
-		initialize_camera(view);
+
+		try {
+			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA))
+				initialize_camera(view);
+		}catch(Throwable e){
+
+		}
 		return view;
 	}
 	private int findFrontFacingCamera() {
@@ -347,46 +314,60 @@ public class DialerFragment extends Fragment {
 				VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
 			}
 		});
-		releaseCamera();
-		try {
-			mCamera = Camera.open(findFrontFacingCamera());
-		}catch(Throwable e){
-			e.printStackTrace();
-			Log.d("couldn't open front camera");
-		}
+
+
 		Log.d("mCamera" + mCamera);
 
 		mPreview = new CameraPreview(myContext, mCamera);
 		cameraPreview.addView(mPreview);
-		cameraPreview.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-			@Override
-			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-				List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-				int viewWidth = mPreview.getWidth();
-				int viewHeight = mPreview.getHeight();
-				Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
-				Camera.Parameters parameters = mCamera.getParameters();
-				optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
-				parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
-				mCamera.setParameters(parameters);
-			}
-		});
-		Log.d("Preview size" + mPreview.getWidth() + " " + mPreview.getHeight());
-		//Log.d("optimal_preview_size"+optimal_preview_size.width+" "+optimal_preview_size.height);
+		//cameraPreview.addOnLayoutChangeListener(camera_view_listener());
 
-		try{
-			List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-			int viewWidth = mPreview.getWidth();
-			int viewHeight = mPreview.getHeight();
-			Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
-			Camera.Parameters parameters = mCamera.getParameters();
-			optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
-			parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
-			mCamera.setParameters(parameters);
-		}catch(Throwable e){
-			e.printStackTrace();
-		}
 	}
+
+//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+//	public View.OnLayoutChangeListener camera_view_listener(){
+//		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
+//			@Override
+//			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//
+//				try {
+//					cameraPreview = (LinearLayout) dialer_view.findViewById(R.id.camera_preview);
+//					cameraPreview.setOnClickListener(new OnClickListener() {
+//						@Override
+//						public void onClick(View v) {
+//							if (dialer_content != null) {
+//								dialer_content.setVisibility(View.VISIBLE);
+//							}
+//							VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+//						}
+//					});
+//
+//					try {
+//						mCamera = Camera.open(findFrontFacingCamera());
+//					} catch (Throwable e) {
+//						e.printStackTrace();
+//						Log.d("couldn't open front camera");
+//					}
+//					Log.d("mCamera" + mCamera);
+//
+//					mPreview = new CameraPreview(myContext, mCamera);
+//					cameraPreview.addView(mPreview);
+//					cameraPreview.addOnLayoutChangeListener(camera_view_listener());
+//					List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+//					int viewWidth = mPreview.getWidth();
+//					int viewHeight = mPreview.getHeight();
+//					Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
+//					Camera.Parameters parameters = mCamera.getParameters();
+//					optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
+//					parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
+//					mCamera.setParameters(parameters);
+//				}catch(Throwable e){
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//		return camera_view_listener;
+//	};
 		//	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
@@ -522,23 +503,11 @@ public class DialerFragment extends Fragment {
 		} else {
 			mAddContact.setEnabled(true);
 
-			if(color_theme.equals("Red")) {
-					mCall.setImageResource(R.drawable.call_red);
-					mAddContact.setImageResource(R.drawable.add_contact_red);
-			}else if(color_theme.equals("Yellow")) {
-					mCall.setImageResource(R.drawable.call_yellow);
-					mAddContact.setImageResource(R.drawable.add_contact_yellow);
-			}else if(color_theme.equals("Gray")) {
-					mCall.setImageResource(R.drawable.call_gray);
-					mAddContact.setImageResource(R.drawable.add_contact_gray);
-			}else if(color_theme.equals("High Visibility")) {
-					mCall.setImageResource(R.drawable.call_hivis);
-					mAddContact.setImageResource(R.drawable.add_contact_hivis);
-			}else{
-					mCall.setImageResource(R.drawable.call_button_new);
-					mAddContact.setImageResource(R.drawable.add_contact_new);
 
-			}
+			mCall.setImageResource(R.drawable.call_button_new);
+			mAddContact.setImageResource(R.drawable.add_contact_new);
+
+
 
 			mAddContact.setOnClickListener(addContactListener);
 			enableDisableAddContact();

@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,6 +57,28 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 
 		port = (EditText)view.findViewById(R.id.et_prv_port);
 		transport = (EditText)view.findViewById(R.id.et_prv_transport);
+		transport.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				String transport = s.toString();
+				if(transport.toLowerCase().equals("tcp")){
+					port.setText("5060");
+				}
+				else if(transport.toLowerCase().equals("tls")){
+					port.setText("5061");
+				}
+			}
+		});
 		userid = (EditText)view.findViewById(R.id.et_prv_userid);
 
 		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
