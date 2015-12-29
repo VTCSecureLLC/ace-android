@@ -18,6 +18,8 @@ gen
 liblinphone-junit-report.xml
 liblinphonetester_*.zip
 libs
+!libs/android-support-v4.jar
+!libs/android-support-v7-appcompat.jar
 linphone-android.iml
 linphone-junit-report*.xml
 linphonetester_*.zip
