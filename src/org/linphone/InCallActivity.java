@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -106,7 +105,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private AudioCallFragment audioCallFragment;
 	private VideoCallFragment videoCallFragment;
 	private boolean isSpeakerMuted, isMicMuted = false, isTransferAllowed, isAnimationDisabled,
-			isRTTLocallyEnabled = false, isRTTEnabled=false;
+			isRTTLocallyEnabled = false, isRTTEnabled=true;
 	private ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
