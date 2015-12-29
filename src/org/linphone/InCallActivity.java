@@ -104,8 +104,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private StatusFragment status;
 	private AudioCallFragment audioCallFragment;
 	private VideoCallFragment videoCallFragment;
-	private boolean isSpeakerMuted, isMicMuted = false, isTransferAllowed, isAnimationDisabled,
+	private boolean isMicMuted = false, isTransferAllowed, isAnimationDisabled,
 			isRTTLocallyEnabled = false, isRTTEnabled=true;
+	private static boolean isSpeakerMuted;
 	private ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
@@ -1614,6 +1615,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		refreshCallList(getResources());
 		
 		handleViewIntent();
+
+		toggleSpeaker(isSpeakerMuted);
 	}
 	
 	private void handleViewIntent() {
