@@ -17,7 +17,6 @@ doc
 gen
 liblinphone-junit-report.xml
 liblinphonetester_*.zip
-libs
 linphone-android.iml
 linphone-junit-report*.xml
 linphonetester_*.zip
