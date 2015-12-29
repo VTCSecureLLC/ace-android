@@ -1,5 +1,6 @@
 package org.linphone;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.linphone.mediastream.Log;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.PreferencesListFragment;
 
 import java.io.BufferedReader;
@@ -83,6 +85,8 @@ public class HelpFragment extends PreferencesListFragment {
 
         PreferenceScreen hoh_screen=(PreferenceScreen)findPreference("websiteace");
         for(int i=0; i<reader.length(); i++){
+            if(getActivity()==null)
+                continue;
             Preference pref=new Preference(getActivity());
             pref.setKey("hoh_item" + String.valueOf(i));
             pref.setTitle(((JSONObject) reader.get(i)).getString("name"));
@@ -142,10 +146,18 @@ public class HelpFragment extends PreferencesListFragment {
         if(feedback != null) {
             ///storage/emulated/0/ACE/hockeyAppFeedback.txt
 	        File crashFeedbackFile = new File(Environment.getExternalStorageDirectory() +"/ACE/hockeyAppCrashFeedback.txt");
-	        if(crashFeedbackFile.exists() && crashFeedbackFile.isFile())
-		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback), Uri.fromFile(crashFeedbackFile));
-	        else
-		        FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback));
+            if(ApplicationPermissionManager.isPermissionGranted(LinphoneActivity.ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                if (crashFeedbackFile.exists() && crashFeedbackFile.isFile())
+                    FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback), Uri.fromFile(crashFeedbackFile));
+                else if (feedback.exists() && feedback.isFile())
+                    FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx, Uri.fromFile(feedback));
+                else
+                    FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx);
+            }
+            else
+            {
+                FeedbackManager.showFeedbackActivity(LinphoneActivity.ctx);
+            }
         }
     }
     @Override

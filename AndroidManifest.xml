@@ -4,7 +4,7 @@
       android:versionCode="1"
       android:versionName="0.1.6-1-1ed3b52"
       android:installLocation="auto">
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="23"/>
 
     <!-- Permissions for Push Notification -->
     <!--  <permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" android:protectionLevel="signature" />  Change package ! -->
