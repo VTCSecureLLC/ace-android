@@ -62,13 +62,13 @@ before_install:
 - export CCACHE_COMPILERCHECK=content
 - ccache -M 5G
 - ccache -s 
-- export ANDROID_MOST_RECENT_TARGET=android-22
+- export ANDROID_MOST_RECENT_TARGET=android-23
 - which bundler || gem install bundler
 - bundle install
 android:
   components:
-  - build-tools-22.0.1
-  - android-22
+  - build-tools-23.1.1
+  - android-23
   - extra-google-google_play_services
   - extra-google-m2repository
   - extra-android-m2repository
