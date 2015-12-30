@@ -209,12 +209,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
 			requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
 			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
-		} else {
-			// Android version is lesser than 6.0 or the permission is already granted.
-			handlecontacts();
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO }, PERMISSIONS_REQUEST_AUDIO);
+			requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_AUDIO);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
 		}
 
 
@@ -625,8 +633,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			Log.e("Cannot display history details",e);
 			return;
 		}
-		Contact c = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
+		Contact c= null;
+		if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)) {
 
+			c = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
+		}
 		String displayName = c != null ? c.getName() : null;
 		String pictureUri = c != null && c.getPhotoUri() != null ? c.getPhotoUri().toString() : null;
 
@@ -1235,14 +1246,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 			requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
 		}
 
+
 		// Attempt to update user location
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+		//	requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
 		} else {
 			// Android version is lesser than 6.0 or the permission is already granted.
@@ -1255,7 +1266,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-			requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+			//requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
 			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
 		} else {
 			// Android version is lesser than 6.0 or the permission is already granted.

@@ -30,13 +30,16 @@ import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 
 import org.linphone.R;
@@ -355,6 +358,9 @@ public class ContactsManager {
 	}
 
 	public Contact findContactWithAddress(ContentResolver contentResolver, LinphoneAddress address){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && LinphoneActivity.instance().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			return null;
+		}
 		String sipUri = address.asStringUriOnly();
 		if (sipUri.startsWith("sip:"))
 			sipUri = sipUri.substring(4);

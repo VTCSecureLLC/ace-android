@@ -17,11 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
@@ -400,8 +403,11 @@ public class HistorySimpleFragment extends Fragment implements OnClickListener, 
 				address = log.getTo();
 				callDirection.setImageBitmap(outgoingCall);
 			}
+			Contact c= null;
 
-			Contact c = ContactsManager.getInstance().findContactWithAddress(getActivity().getContentResolver(), address);
+			if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && LinphoneActivity.instance().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)) {
+				c = ContactsManager.getInstance().findContactWithAddress(getActivity().getContentResolver(), address);
+			}
 			String displayName = null;
 			final String sipUri = address.asStringUriOnly();
 			if(c != null){
