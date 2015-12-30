@@ -1515,16 +1515,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	void onPermissionGrandted(int permission_code)
 	{
-		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
-		if(permission_code==REQUEST_CONTACTS_PERMISSION && currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+//		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+		if(permission_code==REQUEST_CONTACTS_PERMISSION )///&& currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
 		{
-			//((ContactsFragment)fragment2).invalidate();
+			handlecontacts();
 		}
-		//if contacts and currentfragment is contact
-		//reload contacts
-
-
-
+		if(permission_code==PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)///&& currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+		{
+			handlegps();
+		}
 	}
 
 	public final static int REQUEST_CAMERA_PERMISSION = 1;
@@ -1539,15 +1538,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-										   @NonNull int[] grantResults)
-	{
+										   @NonNull int[] grantResults) {
 		Log.d("permission result jan");
 		if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			onPermissionGrandted(requestCode);
 		}
-
-		handlecontacts();
-		handlegps();
 
 	}
 	public void handlegps(){
