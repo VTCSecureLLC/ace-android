@@ -19,7 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.Manifest;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -85,7 +88,11 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 					if(address != null && address.asString().equals(cfg.getIdentity()) ) {
 						if (state == RegistrationState.RegistrationOk) {
 							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-								launchEchoCancellerCalibration(true);
+								if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED)) {
+                                    launchEchoCancellerCalibration(true);
+                                } else {
+									isEchoCalibrationFinished();
+								}
 							}
 						} else if (state == RegistrationState.RegistrationFailed) {
 							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
@@ -252,7 +259,11 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
         saveCreatedAccount(username, password, domain);
 
 		if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-			launchEchoCancellerCalibration(sendEcCalibrationResult);
+            if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED)) {
+                launchEchoCancellerCalibration(sendEcCalibrationResult);
+             } else {
+				isEchoCalibrationFinished();
+			}
 		}
 	}
 	
@@ -440,7 +451,11 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	public void isAccountVerified(String username) {
 		Toast.makeText(this, getString(R.string.setup_account_validated), Toast.LENGTH_LONG).show();
 		LinphoneManager.getLcIfManagerNotDestroyedOrNull().refreshRegisters();
-		launchEchoCancellerCalibration(true);
+        if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED)) {
+            launchEchoCancellerCalibration(true);
+		} else{
+			isEchoCalibrationFinished();
+		}
 	}
 
 	public void isEchoCalibrationFinished() {

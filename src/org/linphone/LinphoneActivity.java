@@ -138,7 +138,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 	private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
 	private static final int PERMISSIONS_REQUEST_CAMERA = 102;
-
+	private static final int PERMISSIONS_REQUEST_AUDIO = 103;
 
 	static final boolean isInstanciated() {
 		return instance != null;
@@ -213,6 +213,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			// Android version is lesser than 6.0 or the permission is already granted.
 			handlecontacts();
 		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO }, PERMISSIONS_REQUEST_AUDIO);
+		}
+
 
 
 
@@ -1226,6 +1230,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		super.onPause();
 		unregisterManagers();
 	}
+
 
 	@Override
 	protected void onResume() {
