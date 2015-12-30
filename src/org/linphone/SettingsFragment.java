@@ -19,11 +19,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
@@ -728,8 +731,12 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceClick(Preference preference) {
 				synchronized (SettingsFragment.this) {
 					try {
-						LinphoneManager.getInstance().startEcCalibration(mListener);
-						preference.setSummary(R.string.ec_calibrating);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && LinphoneActivity.instance().checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED) {
+							preference.setSummary(R.string.error_unauthorized);
+						} else{
+							LinphoneManager.getInstance().startEcCalibration(mListener);
+							preference.setSummary(R.string.ec_calibrating);
+						}
 					} catch (LinphoneCoreException e) {
 						Log.w(e, "Cannot calibrate EC");
 					}
@@ -909,8 +916,12 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceClick(Preference preference) {
 				synchronized (SettingsFragment.this) {
 					try {
-						LinphoneManager.getInstance().startEcCalibration(mListener);
-						preference.setSummary(R.string.ec_calibrating);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && LinphoneActivity.instance().checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED) {
+							preference.setSummary(R.string.error_unauthorized);
+						} else{
+							LinphoneManager.getInstance().startEcCalibration(mListener);
+							preference.setSummary(R.string.ec_calibrating);
+						}
 					} catch (LinphoneCoreException e) {
 						Log.w(e, "Cannot calibrate EC");
 					}

@@ -18,6 +18,7 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,6 +33,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -133,6 +135,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public static View topLayout;
 
+	private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+	private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
+	private static final int PERMISSIONS_REQUEST_CAMERA = 102;
+	private static final int PERMISSIONS_REQUEST_AUDIO = 103;
+
 	static final boolean isInstanciated() {
 		return instance != null;
 	}
@@ -198,16 +205,29 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		}
 
-		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
-			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());
-		} else {
-				ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO ) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_AUDIO);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
 		}
 
-	 	if(!LinphonePreferences.instance().isContactsMigrationDone()){
-			ContactsManager.getInstance().migrateContacts();
-			LinphonePreferences.instance().contactsMigrationDone();
-		}
+
+
+
 
 		setContentView(R.layout.main);
 
@@ -613,8 +633,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			Log.e("Cannot display history details",e);
 			return;
 		}
-		Contact c = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
+		Contact c= null;
+		if (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)) {
 
+			c = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
+		}
 		String displayName = c != null ? c.getName() : null;
 		String pictureUri = c != null && c.getPhotoUri() != null ? c.getPhotoUri().toString() : null;
 
@@ -1219,23 +1242,37 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		unregisterManagers();
 	}
 
+
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+			requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAMERA);
+		}
+
 
 		// Attempt to update user location
-		boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-		if (hasGps) {
-			LinphoneLocationManager.instance(this).updateLocation();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+		//	requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
 		} else {
-			Log.d("TAG", "NO GPS");
+			// Android version is lesser than 6.0 or the permission is already granted.
+			handlegps();
 		}
 
 		if (!LinphoneService.isReady())  {
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}
 
-		ContactsManager.getInstance().prepareContactsInBackground();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			//requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+			//After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
+		} else {
+			// Android version is lesser than 6.0 or the permission is already granted.
+			handlecontacts();
+		}
+
 
 		updateMissedChatCount();
 
@@ -1489,16 +1526,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	void onPermissionGrandted(int permission_code)
 	{
-		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
-		if(permission_code==REQUEST_CONTACTS_PERMISSION && currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+//		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+		if(permission_code==REQUEST_CONTACTS_PERMISSION )///&& currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
 		{
-			//((ContactsFragment)fragment2).invalidate();
+			handlecontacts();
 		}
-		//if contacts and currentfragment is contact
-		//reload contacts
-
-
-
+		if(permission_code==PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)///&& currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+		{
+			handlegps();
+		}
 	}
 
 	public final static int REQUEST_CAMERA_PERMISSION = 1;
@@ -1513,16 +1549,37 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-										   @NonNull int[] grantResults)
-	{
+										   @NonNull int[] grantResults) {
 		Log.d("permission result jan");
 		if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 			onPermissionGrandted(requestCode);
 		}
 
+	}
+	public void handlegps(){
+		boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+		if (hasGps) {
+			LinphoneLocationManager.instance(this).updateLocation();
+		} else {
+			Log.d("TAG", "NO GPS");
+		}
+	}
+	public void handlecontacts(){
+		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
+			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());
+		} else {
+			ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
+		}
 
+		if(!LinphonePreferences.instance().isContactsMigrationDone()){
+			ContactsManager.getInstance().migrateContacts();
+			LinphonePreferences.instance().contactsMigrationDone();
+		}
+		ContactsManager.getInstance().prepareContactsInBackground();
 	}
 }
+
+
 
 interface ContactPicked {
 	void setAddresGoToDialerAndCall(String number, String name, Uri photo);

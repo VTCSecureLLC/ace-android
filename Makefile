@@ -14,7 +14,7 @@ SEMVER_MAJOR_MINOR_PATCH=$(bundle exec semver format '%M.%m.%p')
 LINPHONE_ANDROID_DEBUG_VERSION="$(bundle exec semver format '%M.%m.%p')-${TRAVIS_BUILD_NUMBER:-1}-${short_sha1}"
 BELLESIP_VERSION_SCRIPT:=cat submodules/belle-sip/configure.ac | grep "AC_INIT(" | sed -e "s/.*belle-sip\]//" | sed -e "s/].*//" | sed -e "s/.*\[//"
 BELLESIP_VERSION=$(shell $(BELLESIP_VERSION_SCRIPT))
-ANDROID_MOST_RECENT_TARGET=$(shell android list target -c | grep -E 'android-[0-9]+' | grep -v 'android-2[34]' | tail -n1)
+ANDROID_MOST_RECENT_TARGET=$(shell android list target -c | grep -E 'android-[0-9]+' | grep -v 'android-2[0-9]+' | tail -n1)
 #We force target 19 because 21 creates binaries incompatible with older versions due to rand() function no longer inline (congrats to Google's developers)
 NDKBUILD_TARGET=android-19
 #The NDK target used to compile external third parties (ffmpeg, x264)
