@@ -1504,7 +1504,6 @@ public class SettingsFragment extends PreferencesListFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		initAccounts();
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.SETTINGS);
 
@@ -1516,7 +1515,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		if(isAdvancedSettings){
 			setPreferenceScreen(null);
 			addPreferencesFromResource(R.xml.preferences);
+			initSettings();
+			setListeners();
+			hideSettings();
 		}
+
+		initAccounts();
 	}
 
 
