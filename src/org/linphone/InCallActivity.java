@@ -135,6 +135,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
 	private SharedPreferences prefs;
+	private TextView outgoingEditText;
 	private TextView incomingTextView;
 	View mFragmentHolder;
 	View mViewsHolder;
@@ -485,6 +486,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 		hold_cursor_at_end_of_edit_text(et);
+		outgoingEditText=et;
 		((LinearLayout) rttContainerView).addView(et);
 
 		et.requestFocus();
@@ -554,11 +556,22 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void onClick(View v) {
 				if(rttOutgoingBubbleCount==0){
 					create_new_outgoing_bubble(null);
+				}else{
+					outgoingEditText.requestFocus();
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 				}
 			}
 		});
 		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
+
+		// Check if no view has focus:
+		View view = this.getCurrentFocus();
+		if (view != null) {
+			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		}
 
 		rtt_scrollview.post(new Runnable() {
 			@Override
