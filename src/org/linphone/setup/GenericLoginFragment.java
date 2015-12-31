@@ -18,7 +18,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +38,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.linphone.LegalRelease;
+import org.linphone.LinphoneActivity;
 import org.linphone.R;
 /**
  * @author Sylvain Berfini
@@ -46,6 +51,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	Button advancedLoginPanelToggle;
 	boolean isAdvancedLogin = false;
 	Spinner sp_provider;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -55,66 +61,70 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
 
-		port = (EditText)view.findViewById(R.id.et_prv_port);
-		transport = (EditText)view.findViewById(R.id.et_prv_transport);
-		transport.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+		final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
+		if(!pref.getBoolean("accepted_legal_release", false)){
+			Intent intent = new Intent(LinphoneActivity.ctx, LegalRelease.class);
+			LinphoneActivity.ctx.startActivity(intent);
+		}
+			port = (EditText) view.findViewById(R.id.et_prv_port);
+			transport = (EditText) view.findViewById(R.id.et_prv_transport);
+			transport.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				String transport = s.toString();
-				if(transport.toLowerCase().equals("tcp")){
-					port.setText("5060");
 				}
-				else if(transport.toLowerCase().equals("tls")){
-					port.setText("5061");
-				}
-			}
-		});
-		userid = (EditText)view.findViewById(R.id.et_prv_userid);
 
-		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
-		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
-		
-		sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem, 
-				new String[]{ "Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
-				new int[]{R.drawable.provider_logo_sorenson,
-			R.drawable.provider_logo_zvrs,
-			R.drawable.provider_logo_caag,//caag
-			R.drawable.provider_logo_purplevrs,
-			R.drawable.provider_logo_globalvrs,//global
-			R.drawable.provider_logo_convorelay}));
-		
-		view.findViewById(R.id.ab_back).setOnClickListener(this);
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-		advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
-		advancedLoginPanel.setVisibility(View.GONE);
-		advancedLoginPanelToggle = (Button)view.findViewById(R.id.toggleAdvancedLoginPanel);
-		advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (!isAdvancedLogin) {
-					advancedLoginPanel.setVisibility(View.VISIBLE);
-					((Button) v).setText("-");
-					isAdvancedLogin = true;
-					password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-				} else {
-					advancedLoginPanel.setVisibility(View.GONE);
-					((Button) v).setText("+");
-					isAdvancedLogin = false;
-					password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 				}
-			}
-		});
-		
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					String transport = s.toString();
+					if (transport.toLowerCase().equals("tcp")) {
+						port.setText("5060");
+					} else if (transport.toLowerCase().equals("tls")) {
+						port.setText("5061");
+					}
+				}
+			});
+			userid = (EditText) view.findViewById(R.id.et_prv_userid);
+
+			view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
+			sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
+
+			sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
+					new String[]{"Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS", "Convo Relay"},
+					new int[]{R.drawable.provider_logo_sorenson,
+							R.drawable.provider_logo_zvrs,
+							R.drawable.provider_logo_caag,//caag
+							R.drawable.provider_logo_purplevrs,
+							R.drawable.provider_logo_globalvrs,//global
+							R.drawable.provider_logo_convorelay}));
+
+			view.findViewById(R.id.ab_back).setOnClickListener(this);
+
+			advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
+			advancedLoginPanel.setVisibility(View.GONE);
+			advancedLoginPanelToggle = (Button) view.findViewById(R.id.toggleAdvancedLoginPanel);
+			advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (!isAdvancedLogin) {
+						advancedLoginPanel.setVisibility(View.VISIBLE);
+						((Button) v).setText("-");
+						isAdvancedLogin = true;
+						password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+					} else {
+						advancedLoginPanel.setVisibility(View.GONE);
+						((Button) v).setText("+");
+						isAdvancedLogin = false;
+						password.setImeOptions(EditorInfo.IME_ACTION_DONE);
+					}
+				}
+			});
+
 		return view;
 	}
 
@@ -134,8 +144,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		else if(id == R.id.ab_back)
 			getActivity().onBackPressed();
 	}
-	
-	
 
 	
 	class SpinnerAdapter extends ArrayAdapter<String> {
@@ -171,8 +179,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 
 			return mySpinner;
 		}
-		
-	
+
 		public View getCustomViewSpinner(int position, View convertView,
 				ViewGroup parent) {
 			LayoutInflater inflater = getActivity().getLayoutInflater();

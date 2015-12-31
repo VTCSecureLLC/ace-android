@@ -19,7 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -28,6 +31,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import org.linphone.LegalRelease;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
@@ -101,11 +105,18 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.addListener(mListener);
 		}
+
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
+		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
+		if(!hasAcceptedRelease){
+			Intent intent = new Intent(LinphoneActivity.ctx, LegalRelease.class);
+			LinphoneActivity.ctx.startActivity(intent);
+		}
+
 	}
 	
 	@Override
