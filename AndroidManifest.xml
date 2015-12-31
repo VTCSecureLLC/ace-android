@@ -152,7 +152,11 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
          </activity>
-         
+
+        <activity android:name="org.linphone.LegalRelease"
+                android:screenOrientation="nosensor">
+        </activity>
+
         <activity android:name="org.linphone.setup.RemoteProvisioningActivity"
             android:theme="@style/NoTitle"
             android:screenOrientation="nosensor">
