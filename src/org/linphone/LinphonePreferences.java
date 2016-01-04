@@ -591,7 +591,7 @@ public class LinphonePreferences {
 		try {
 			LinphoneProxyConfig prxCfg = getProxyConfig(n);
 			prxCfg.edit();
-			prxCfg.setExpires(Integer.parseInt(expire));
+			prxCfg.setExpires(280);
 			prxCfg.done();
 		} catch (NumberFormatException nfe) { }
 	}
