@@ -23,6 +23,11 @@
 	android:title="@string/pref_audio_video_settings"
 	android:key="@string/pref_audio_video_settings_key"
 	android:shouldDisableView="true">
+	<ListPreference
+		android:title="@string/pref_av_rtcp_feedback"
+		android:key="@string/pref_av_rtcp_feedback_key"
+		android:entries="@array/rtcp_feedback_entries"
+		android:entryValues="@array/rtcp_feedback_entries" />
 	<CheckBoxPreference
 		android:title="@string/pref_av_speaker_mute"
 		android:key="@string/pref_av_speaker_mute_key"/>

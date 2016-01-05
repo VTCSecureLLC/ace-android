@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -90,6 +91,7 @@ import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import java.io.ByteArrayInputStream;
@@ -390,6 +392,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public void newOutgoingCall(AddressType address) {
+		if(!ApplicationPermissionManager.askPermissionifnotGranted(LinphoneActivity.instance(), Manifest.permission.RECORD_AUDIO, 4))
+			return;
 		String to = address.getText().toString();
 		newOutgoingCall(to, address.getDisplayedName());
 	}
@@ -439,6 +443,12 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	private void resetCameraFromPreferences() {
+		if(LinphoneActivity.ctx==null)
+			return;
+		if(!ApplicationPermissionManager.isPermissionGranted(LinphoneActivity.ctx, Manifest.permission.CAMERA))
+		{
+			return;
+		}
 		boolean useFrontCam = mPrefs.useFrontCam();
 
 		int camId = 0;
@@ -851,11 +861,11 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				if (LinphoneActivity.isInstanciated() && !LinphoneActivity.instance().displayChatMessageNotification(from.asStringUriOnly())) {
 					return;
 				} else {
-					if (contact != null) {
-						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
-					} else {
-						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
-					}
+//					if (contact != null) {
+//						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
+//					} else {
+//						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
+//					}
 				}
 			}
 		} catch (Exception e) {

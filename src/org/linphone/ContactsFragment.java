@@ -198,7 +198,6 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		if (searchCursor != null) {
 			searchCursor.close();
 		}
-		
 		if (onlyDisplayLinphoneContacts) {
 			searchCursor = Compatibility.getSIPContactsCursor(getActivity().getContentResolver(), search, ContactsManager.getInstance().getContactsId());
 			indexer = new AlphabetIndexer(searchCursor, Compatibility.getCursorDisplayNameColumnIndex(searchCursor), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -216,9 +215,12 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		if (searchCursor != null) {
 			searchCursor.close();
 		}
+
 		
 		Cursor allContactsCursor = ContactsManager.getInstance().getAllContactsCursor();
 		Cursor sipContactsCursor = ContactsManager.getInstance().getSIPContactsCursor();
+		if(ContactsManager.getInstance().getAllContactsCursor()==null)
+			return;
 
 		noSipContact.setVisibility(View.GONE);
 		noContact.setVisibility(View.GONE);
@@ -316,8 +318,8 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 			contacts = contactsList;
 			cursor = c;
 
-			margin = LinphoneUtils.pixelsToDpi(LinphoneActivity.instance().getResources(), 10);
-			bitmapUnknown = BitmapFactory.decodeResource(LinphoneActivity.instance().getResources(), R.drawable.unknown_small);
+			margin = LinphoneUtils.pixelsToDpi(getActivity().getResources(), 10);
+			bitmapUnknown = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.unknown_small);
 		}
 		
 		public int getCount() {
@@ -353,7 +355,7 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 				view = mInflater.inflate(R.layout.contact_cell, parent, false);
 			}
 
-			view.setBackgroundColor(Color.DKGRAY);
+			view.setBackgroundColor(Color.GRAY);
 			TextView name = (TextView) view.findViewById(R.id.name);
 			name.setText(contact.getName());
 			name.setTextColor(Color.WHITE);

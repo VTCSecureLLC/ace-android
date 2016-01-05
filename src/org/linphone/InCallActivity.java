@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -94,7 +93,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private static InCallActivity instance;
 
 	private boolean camera_mute_enabled=false;
-	private int unreadMessages = 0;
+
 	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
 	private ImageView switchCamera;
@@ -105,7 +104,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private StatusFragment status;
 	private AudioCallFragment audioCallFragment;
 	private VideoCallFragment videoCallFragment;
-	private boolean isSpeakerMuted, isMicMuted = false, isTransferAllowed, isAnimationDisabled, isRTTEnabled=false;
+	private boolean isMicMuted = false, isTransferAllowed, isAnimationDisabled,
+			isRTTLocallyEnabled = false, isRTTEnabled=true;
+	private static boolean isSpeakerMuted;
 	private ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
@@ -133,12 +134,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public int rttIncomingBubbleCount=0;
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
-
 	private SharedPreferences prefs;
+	private TextView outgoingEditText;
 	private TextView incomingTextView;
 	View mFragmentHolder;
 	View mViewsHolder;
 	RelativeLayout mainLayout;
+	final float mute_db = -1000.0f;
 
 	public static InCallActivity instance() {
 		return instance;
@@ -168,7 +170,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 		//if (params.realTimeTextEnabled()) { // Does not work, always false
-		isRTTEnabled=LinphoneManager.getInstance().getRttPreference();
+		isRTTLocallyEnabled=LinphoneManager.getInstance().getRttPreference();
 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
@@ -177,7 +179,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		boolean isMicMutedPref = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
 		LinphoneManager.getLc().muteMic(isMicMutedPref);
 
-		isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		boolean isSpeakerMutedPref = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		if (isSpeakerMutedPref) {
+			LinphoneManager.getLc().setPlaybackGain(mute_db);
+		} else {
+			LinphoneManager.getLc().setPlaybackGain(0);
+		}
         mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
@@ -185,6 +192,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				Log.d("RTT incall", "isComposingReceived cr=" + cr.toString());
 				Log.d("RTT incall","isRTTMaximaized"+isRTTMaximized);
 				Log.d("RTT", "incoming_chat_initiated" + incoming_chat_initiated);
+
 				try {
 					if (!cr.isRemoteComposing()) {
 						Log.d("RTT incall: remote is not composing, getChar() returns: " + cr.getChar());
@@ -237,12 +245,21 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 
         		if (state == State.StreamsRunning) {
+					if(isRTTLocallyEnabled) {
+						isRTTEnabled = call.getRemoteParams().realTimeTextEnabled();
+					}
+					else{
+						isRTTEnabled = false;
+					}
+
         			switchVideo(isVideoEnabled(call));
 					//Check media in progress
 					if(LinphonePreferences.instance().isVideoEnabled() && !call.mediaInProgress()){
 						video.setEnabled(true);
 					}
         			isMicMuted = lc.isMicMuted();
+					isSpeakerMuted = lc.getPlaybackGain()==mute_db;
+
         			enableAndRefreshInCallActions();
         			
         			if (status != null) {
@@ -314,6 +331,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             	// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
 				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
             	isMicMuted = savedInstanceState.getBoolean("Mic");
+				isSpeakerMuted = savedInstanceState.getBoolean("Speaker");
             	isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
             	refreshInCallActions();
             	return;
@@ -343,10 +361,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 			LinphoneCallParams params = call.getCurrentParamsCopy();
+			initRTT();
 
-			if(isRTTEnabled){
-				initRTT();
-			}
 			if(isRTTMaximized){
 				showRTTinterface();
 			}
@@ -393,7 +409,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 	}
-				/** Initializes the views and other components needed for RTT in a call */
+	/** Initializes the views and other components needed for RTT in a call */
 	private void initRTT(){
 		rttContainerView = findViewById(R.id.rtt_container);
 		rttContainerView.setOnClickListener(this);
@@ -470,6 +486,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 		hold_cursor_at_end_of_edit_text(et);
+		outgoingEditText=et;
 		((LinearLayout) rttContainerView).addView(et);
 
 		et.requestFocus();
@@ -487,6 +504,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void updateIncomingTextView(final long character) {
 		runOnUiThread(new Runnable(){
 			public void run() {
+				if(rtt_scrollview.getVisibility()!=View.VISIBLE){
+					showRTTinterface();
+				}
 				if(!incoming_chat_initiated){
 					incomingTextView=create_new_incoming_bubble();
 					incoming_chat_initiated=true;
@@ -534,13 +554,24 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (rttOutgoingBubbleCount == 0) {
+				if(rttOutgoingBubbleCount==0){
 					create_new_outgoing_bubble(null);
+				}else{
+					outgoingEditText.requestFocus();
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 				}
 			}
 		});
 		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
+
+		// Check if no view has focus:
+		View view = this.getCurrentFocus();
+		if (view != null) {
+			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+		}
 
 		rtt_scrollview.post(new Runnable() {
 			@Override
@@ -549,11 +580,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 		rttIncomingBubbleCount++;
-
-		if(!isRTTMaximized){
-			unreadMessages++;
-			pause.setText(String.valueOf(unreadMessages));
-		}
 		return tv;
 	}
 	private void showRTTinterface() {
@@ -561,8 +587,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void run() {
 				isRTTMaximized = true;
 				rtt_scrollview.setVisibility(View.VISIBLE);
-				unreadMessages = 0;
-				pause.setText("");
 			}
 		});
 	}
@@ -671,6 +695,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean("isRTTMaximized", isRTTMaximized);
 		outState.putBoolean("Mic", LinphoneManager.getLc().isMicMuted());
+		outState.putBoolean("Speaker", LinphoneManager.getLc().getPlaybackGain()==mute_db);
 		outState.putBoolean("VideoCallPaused", isVideoCallPaused);
 		
 		super.onSaveInstanceState(outState);
@@ -901,12 +926,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} 
 		else if (id == R.id.speaker) {
 			toggleSpeaker(!isSpeakerMuted);
+
 		} 
 		else if (id == R.id.addCall) {
 			goBackToDialer();
 		} 
 		else if (id == R.id.toggleChat) {
-			toggle_chat();
+			if(isRTTEnabled) {
+				toggle_chat();
+			}
+			else{
+				Toast.makeText(InCallActivity.this, "RTT has been disabled for this call", Toast.LENGTH_SHORT).show();
+			}
 		}
 
 		else if (id == R.id.hangUp) {
@@ -1072,7 +1103,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} catch (Exception e) {
 		}
 	}
-	
+
 	private void toggleMicro() {
 		LinphoneCore lc = LinphoneManager.getLc();
 		isMicMuted = !isMicMuted;
@@ -1568,6 +1599,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		startActivity(new Intent(this, IncomingCallActivity.class));
 	}
 
+	
+	
 	private void showAcceptCallUpdateDialog() {
         FragmentManager fm = getSupportFragmentManager();
         callUpdateDialog = new AcceptCallUpdateDialogFragment();
@@ -1595,6 +1628,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		refreshCallList(getResources());
 		
 		handleViewIntent();
+
+		toggleSpeaker(isSpeakerMuted);
 	}
 	
 	private void handleViewIntent() {
@@ -1642,6 +1677,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			mControlsHandler.removeCallbacks(mControls);
 		}
 		mControls = null;
+
 
 		if (!isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			LinphoneManager.stopProximitySensorForActivity(this);

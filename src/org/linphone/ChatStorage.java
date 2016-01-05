@@ -58,8 +58,15 @@ public class ChatStorage {
 	private static final String DRAFT_TABLE_NAME = "chat_draft";
 
 	public synchronized static final ChatStorage getInstance() {
-		if (instance == null)
-			instance = new ChatStorage(LinphoneService.instance().getApplicationContext());
+		if (instance == null) {
+				Context context;
+				// workarround to crash when service is not ready
+				if(LinphoneService.isReady())
+					context = LinphoneService.instance().getApplicationContext();
+				else
+					context = LinphoneActivity.ctx;
+				instance = new ChatStorage(context);
+		}
 		return instance;
 	}
 
@@ -81,7 +88,7 @@ public class ChatStorage {
 	private ChatStorage(Context c) {
 	    context = c;
 	    boolean useLinphoneStorage = c.getResources().getBoolean(R.bool.use_linphone_chat_storage);
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.instance());
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
 		boolean updateNeeded = prefs.getBoolean(c.getString(R.string.pref_first_time_linphone_chat_storage), !LinphonePreferences.instance().isFirstLaunch());
 		updateNeeded = updateNeeded && !isVersionUsingNewChatStorage();
 	    useNativeAPI = useLinphoneStorage && !updateNeeded;

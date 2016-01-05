@@ -190,6 +190,13 @@
 		<item>Simple</item>
 		<item>Stateful</item>
 	</string-array>
+
+	<string-array name="rtcp_feedback_entries">
+		<item>Implicit</item>
+		<item>Explicit</item>
+		<item>Off</item>
+	</string-array>
+
 	<string name="pref_video_codec_vp8_title">VP8</string>
 	<string name="media_encryption_srtp">SRTP</string>
 	<string name="media_encryption_zrtp">ZRTP</string>

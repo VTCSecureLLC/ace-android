@@ -18,39 +18,38 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.linphone.core.LinphoneCore;
-import org.linphone.core.VideoSize;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
@@ -64,36 +63,44 @@ import java.util.List;
  * @author Sylvain Berfini
  */
 public class DialerFragment extends Fragment {
+
+
+	private Camera mCamera;
+	public static Camera.Size optimal_preview_size;
+
 	private static DialerFragment instance;
 	private static boolean isCallTransferOngoing = false;
-
+	private CameraPreview mPreview;
+	private Context myContext;
 	public boolean mVisible;
 	private AddressText mAddress;
 	private CallButton mCall;
 	private ImageView mAddContact;
-	public SurfaceView cameraPreview;
+	public LinearLayout cameraPreview;
 	private AndroidVideoWindowImpl androidVideoWindowImpl;
 	private OnClickListener addContactListener, cancelListener, transferListener;
 	private boolean shouldEmptyAddressField = true;
 	private boolean userInteraction = false;
-	private Camera camera;
+	//private Camera camera;
 	public View dialer_content;
-	public int VIEW_INDEX = 0;
+
 	String color_theme;
 	String background_color_theme;
 	View dialer_view;
-
+	private boolean cameraFront = false;
 	int SELF_VIEW_INDEX = 0, DIALER_INDEX = 1;
+	public int VIEW_INDEX = DIALER_INDEX;
+
+	private boolean isSpinnerOpen = false;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
 		instance = this;
 		final View view = inflater.inflate(R.layout.dialer, container, false);
-		if(!LinphoneActivity.instance().isTablet()){
-			dialer_content = view.findViewById(R.id.dialerContent);
-			dialer_content.setVisibility(View.INVISIBLE);
-			dialer_content.setEnabled(false);
-		}
+
+		dialer_content = view.findViewById(R.id.dialerContent);
+
+
 
 		dialer_view=view;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
@@ -105,7 +112,7 @@ public class DialerFragment extends Fragment {
 		mAddress.setDialerFragment(this);
 
 		// VTCSecure SIP Domain selection 
-		Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
+		final Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
 
 		final TextView sipDomainTextView = (TextView)view.findViewById(R.id.sipDomainTextView);
 		sipDomainTextView.setText("");
@@ -116,27 +123,49 @@ public class DialerFragment extends Fragment {
 			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
 			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {  
-					try {
-						if (position == 0) {
-							//set background gray because we are using the @ symbol
-							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
-						} else {
-							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+			sipDomainSpinner.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if(event.getAction() == MotionEvent.ACTION_DOWN){
+						isSpinnerOpen = !isSpinnerOpen;
+						if(isSpinnerOpen){
+							new AlertDialog.Builder(DialerFragment.this.getActivity())
+									.setTitle("")
+									.setMessage("Available in General Release")
+									.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											isSpinnerOpen = false;
+										}
+									}).show();
 						}
-					}catch(Throwable e){
-						//crashing on tablets because dialer_view or provider_spinner_box is missing
 					}
-					if (position != 0) sipDomainTextView.setText("@"+adapter.getItem(position));
-					else sipDomainTextView.setText("");
-					mAddress.setTag(sipDomainTextView.getText());
+					return false;
 				}
-				public void onNothingSelected(AdapterView<?> arg0) {}  
 			});
+
+//			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+//				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
+//					try {
+//						if (position == 0) {
+//							//set background gray because we are using the @ symbol
+//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
+//						} else {
+//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+//						}
+//					} catch (Throwable e) {
+//						//crashing on tablets because dialer_view or provider_spinner_box is missing
+//					}
+//					if (position != 0) sipDomainTextView.setText("@" + adapter.getItem(position));
+//					else sipDomainTextView.setText("");
+//					mAddress.setTag(sipDomainTextView.getText());
+//				}
+//
+//				public void onNothingSelected(AdapterView<?> arg0) {
+//				}
+//			});
 			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					new String[]{ "","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
+					new String[]{"","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
 					new int[]{R.drawable.atbutton_new,R.drawable.provider_logo_sorenson,
 							R.drawable.provider_logo_zvrs,
 							R.drawable.provider_logo_caag,//caag
@@ -171,18 +200,7 @@ public class DialerFragment extends Fragment {
 				mCall.setImageResource(R.drawable.add_call);
 			}
 		} else {
-
-			if(color_theme.equals("Red")) {
-					mCall.setImageResource(R.drawable.call_red);
-			}else if(color_theme.equals("Yellow")) {
-					mCall.setImageResource(R.drawable.call_yellow);
-			}else if(color_theme.equals("Gray")) {
-					mCall.setImageResource(R.drawable.call_gray);
-			}else if(color_theme.equals("High Visibility")) {
-					mCall.setImageResource(R.drawable.call_hivis);
-			}else{
-					mCall.setImageResource(R.drawable.call_button_new);
-			}
+			mCall.setImageResource(R.drawable.call_button_new);
 		}
 
 		AddressAware numpad = (AddressAware) view.findViewById(R.id.Dialer);
@@ -234,128 +252,163 @@ public class DialerFragment extends Fragment {
 			}
 		}
 
-		if(color_theme.equals("Red")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_red);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_red);
-				erase.setImageResource(R.drawable.backspace_red);
-				mAddContact.setImageResource(R.drawable.add_contact_red);
-		}else if(color_theme.equals("Yellow")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_yellow);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_yellow);
-				erase.setImageResource(R.drawable.backspace_yellow);
-				mAddContact.setImageResource(R.drawable.add_contact_yellow);
-		}else if(color_theme.equals("Gray")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_gray);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_gray);
-				erase.setImageResource(R.drawable.backspace_gray);
-				mAddContact.setImageResource(R.drawable.add_contact_gray);
-		}else if(color_theme.equals("High Visibility")) {
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_theme_hivis);
-				sipDomainSpinner.setBackgroundResource(R.drawable.atbutton_theme_hivis);
-				erase.setImageResource(R.drawable.backspace_hivis);
-				mAddContact.setImageResource(R.drawable.add_contact_hivis);
-		}else{
-				mAddress.setBackgroundResource(R.drawable.dialer_address_background_new);
-				//sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
-				erase.setImageResource(R.drawable.backspace_new);
-				mAddContact.setImageResource(R.drawable.add_contact_new);
-		}
+
+		mAddress.setBackgroundResource(R.drawable.dialer_address_background_new);
+		//sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
+		erase.setImageResource(R.drawable.backspace_new);
+		mAddContact.setImageResource(R.drawable.add_contact_new);
+
 
 		//set background color independent
-		if(background_color_theme.equals("Red")) {
-			view.setBackgroundResource(R.drawable.background_theme_red);
-		}else if(background_color_theme.equals("Yellow")) {
-			view.setBackgroundResource(R.drawable.background_theme_yellow);
-		}else if(background_color_theme.equals("Gray")) {
-			view.setBackgroundResource(R.drawable.background_theme_gray);
-		}else if(background_color_theme.equals("High Visibility")) {
-			view.setBackgroundResource(R.drawable.background_theme_hivis);
-		}else{
-			view.setBackgroundResource(R.drawable.background_theme_new);
-		}
+
+		view.setBackgroundResource(R.drawable.background_theme_new);
+
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
+		isPreviewEnabled = true;
+//		try {
+//			if (!LinphoneActivity.instance().isTablet()) {
+//				isPreviewEnabled = true;
+//			}
+//		}catch(Throwable e){
+//			Log.e("Trying to check if device is tablet, but linphoneactivity isn't instanciated yet\n"+e.getMessage());
+//		}
+		getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		myContext = getActivity().getApplication().getBaseContext();
+
 
 		try {
-			if (!LinphoneActivity.instance().isTablet()) {
-				isPreviewEnabled = true;
-			}
+			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA))
+				initialize_camera(view);
 		}catch(Throwable e){
-			Log.e("Trying to check if device is tablet, but linphoneactivity isn't instanciated yet\n"+e.getMessage());
+
 		}
-		if(isPreviewEnabled) {
-			if(LinphoneActivity.instance().isTablet()) {
-				cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
-			}
-			else{
-				cameraPreview = (SurfaceView) view.findViewById(R.id.phoneDialerCameraPreview);
-			}
-			if (cameraPreview != null) {
-				LinphoneManager.getLc().enableVideo(true, true);
-				LinphoneManager.getLc().setPreviewWindow(cameraPreview);
-
-					androidVideoWindowImpl = new AndroidVideoWindowImpl(cameraPreview, cameraPreview, new AndroidVideoWindowImpl.VideoWindowListener() {
-						@Override
-						public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-							LinphoneManager.getLc().setVideoWindow(vw);
-						}
-
-						@Override
-						public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-							LinphoneCore lc = LinphoneManager.getLc();
-							if (lc != null) {
-								lc.setVideoWindow(null);
-							}
-						}
-						@Override
-						public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-							try {
-								camera = Camera.open(1);
-								cameraPreview = surface;
-								cameraPreview.setZOrderMediaOverlay(true);
-								cameraPreview.setZOrderOnTop(false);
-								cameraPreview.getHolder().setFormat(PixelFormat.RGBA_8888);
-								if(LinphoneActivity.instance().isTablet()) {
-									cameraPreview = (SurfaceView) view.findViewById(R.id.dialerCameraPreview);
-								}
-								else{
-									cameraPreview = (SurfaceView) view.findViewById(R.id.phoneDialerCameraPreview);
-								}
-								Camera.Parameters params = camera.getParameters();
-								List<int[]> supportedPreviewFPS = params.getSupportedPreviewFpsRange();
-								int previewFPSIndex = (supportedPreviewFPS.size() > 1) ? supportedPreviewFPS.size() -1 : 0;
-								int[] previewFPS = supportedPreviewFPS.get(previewFPSIndex);
-								if(previewFPS != null) {
-									params.setPreviewFpsRange(previewFPS[1], previewFPS[0]);
-								}
-								VideoSize videoSize = LinphoneManager.getLc().getPreferredVideoSize();
-								params.setPreviewSize(videoSize.width, videoSize.height);
-								if(Build.VERSION.SDK_INT > 14 ) {
-									params.setRecordingHint(true);
-								}
-								camera.setParameters(params);
-								camera.setDisplayOrientation(LinphoneActivity.instance().getDeviceOrientation());
-								camera.setPreviewDisplay(cameraPreview.getHolder());
-								camera.startPreview();
-								LinphoneManager.getLc().setVideoDevice(LinphoneManager.getLc().getVideoDevice());
-							}
-							catch (Exception exc) {
-								exc.printStackTrace();
-							}
-						}
-
-						@Override
-						public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-							// Remove references kept in jni code and restart camera
-							LinphoneManager.getLc().setPreviewWindow(null);
-						}
-					});
-				}
-			}
 		return view;
 	}
+	private int findFrontFacingCamera() {
+		int cameraId = -1;
+		// Search for the front facing camera
+		int numberOfCameras = Camera.getNumberOfCameras();
+		for (int i = 0; i < numberOfCameras; i++) {
+			Camera.CameraInfo info = new Camera.CameraInfo();
+			Camera.getCameraInfo(i, info);
+			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+				cameraId = i;
+				cameraFront = true;
+				break;
+			}
+		}
+		return cameraId;
+	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public void initialize_camera(View view) {
+		cameraPreview = (LinearLayout) view.findViewById(R.id.camera_preview);
+		cameraPreview.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(dialer_content != null) {
+					dialer_content.setVisibility(View.VISIBLE);
+				}
+				VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+			}
+		});
+
+
+		Log.d("mCamera" + mCamera);
+
+		mPreview = new CameraPreview(myContext, mCamera);
+		cameraPreview.addView(mPreview);
+		//cameraPreview.addOnLayoutChangeListener(camera_view_listener());
+
+	}
+
+//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+//	public View.OnLayoutChangeListener camera_view_listener(){
+//		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
+//			@Override
+//			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+//
+//				try {
+//					cameraPreview = (LinearLayout) dialer_view.findViewById(R.id.camera_preview);
+//					cameraPreview.setOnClickListener(new OnClickListener() {
+//						@Override
+//						public void onClick(View v) {
+//							if (dialer_content != null) {
+//								dialer_content.setVisibility(View.VISIBLE);
+//							}
+//							VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+//						}
+//					});
+//
+//					try {
+//						mCamera = Camera.open(findFrontFacingCamera());
+//					} catch (Throwable e) {
+//						e.printStackTrace();
+//						Log.d("couldn't open front camera");
+//					}
+//					Log.d("mCamera" + mCamera);
+//
+//					mPreview = new CameraPreview(myContext, mCamera);
+//					cameraPreview.addView(mPreview);
+//					cameraPreview.addOnLayoutChangeListener(camera_view_listener());
+//					List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+//					int viewWidth = mPreview.getWidth();
+//					int viewHeight = mPreview.getHeight();
+//					Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
+//					Camera.Parameters parameters = mCamera.getParameters();
+//					optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
+//					parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
+//					mCamera.setParameters(parameters);
+//				}catch(Throwable e){
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//		return camera_view_listener;
+//	};
+		//	@Override
+//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+//		final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+//		setMeasuredDimension(width, height);
+//
+//		if (mSupportedPreviewSizes != null) {
+//			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
+//		}
+//	}
+		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+			final double ASPECT_TOLERANCE = 0.1;
+			double targetRatio=(double)h / w;
+
+			if (sizes == null) return null;
+
+			Camera.Size optimalSize = null;
+			double minDiff = Double.MAX_VALUE;
+
+			int targetHeight = h;
+
+			for (Camera.Size size : sizes) {
+				double ratio = (double) size.width / size.height;
+				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+				if (Math.abs(size.height - targetHeight) < minDiff) {
+					optimalSize = size;
+					minDiff = Math.abs(size.height - targetHeight);
+				}
+			}
+
+			if (optimalSize == null) {
+				minDiff = Double.MAX_VALUE;
+				for (Camera.Size size : sizes) {
+					if (Math.abs(size.height - targetHeight) < minDiff) {
+						optimalSize = size;
+						minDiff = Math.abs(size.height - targetHeight);
+					}
+				}
+			}
+			return optimalSize;
+		}
 	/**
 	 * @return null if not ready yet
 	 */
@@ -366,24 +419,29 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		if (androidVideoWindowImpl != null) {
-			synchronized (androidVideoWindowImpl) {
-				/*
-				 * this call will destroy native opengl renderer which is used by
-				 * androidVideoWindowImpl
-				 */
-				LinphoneManager.getLc().setVideoWindow(null);
-				if(camera != null) {
-					camera.release();
-				}
-			}
+		//releaseCamera();
+//		if (androidVideoWindowImpl != null) {
+//			synchronized (androidVideoWindowImpl) {
+//				/*
+//				 * this call will destroy native opengl renderer which is used by
+//				 * androidVideoWindowImpl
+//				 */
+//				LinphoneManager.getLc().setVideoWindow(null);
+//			}
+//		}
+	}
+	private void releaseCamera() {
+		// stop and release camera
+		if (mCamera != null) {
+			mCamera.release();
+			mCamera = null;
 		}
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
 			LinphoneActivity.instance().updateDialerFragment(this);
@@ -395,28 +453,33 @@ public class DialerFragment extends Fragment {
 		} else {
 			shouldEmptyAddressField = true;
 		}
-
-		if (androidVideoWindowImpl != null) {
-			synchronized (androidVideoWindowImpl) {
-				LinphoneManager.getLc().setVideoWindow(androidVideoWindowImpl);
-			}
+		if (!hasCamera(myContext)) {
+			Toast toast = Toast.makeText(myContext, "Sorry, your phone does not have a camera!", Toast.LENGTH_LONG);
+			toast.show();
 		}
+
+
+
 		resetLayout(isCallTransferOngoing);
 	}
-
+	private boolean hasCamera(Context context) {
+		//check if the device has camera
+		if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		if(camera != null) {
-			camera.release();
-		}
-		cameraPreview = null;
-		if (androidVideoWindowImpl != null) {
-			// Prevent linphone from crashing if correspondent hang up while you are rotating
-			androidVideoWindowImpl.release();
-
-			androidVideoWindowImpl = null;
-		}
+		//releaseCamera();
+		//cameraPreview = null;
+//		if (androidVideoWindowImpl != null) {
+//			// Prevent linphone from crashing if correspondent hang up while you are rotating
+//			androidVideoWindowImpl.release();
+//			androidVideoWindowImpl = null;
+//		}
 	}
 
 	public void resetLayout(boolean callTransfer) {
@@ -440,23 +503,11 @@ public class DialerFragment extends Fragment {
 		} else {
 			mAddContact.setEnabled(true);
 
-			if(color_theme.equals("Red")) {
-					mCall.setImageResource(R.drawable.call_red);
-					mAddContact.setImageResource(R.drawable.add_contact_red);
-			}else if(color_theme.equals("Yellow")) {
-					mCall.setImageResource(R.drawable.call_yellow);
-					mAddContact.setImageResource(R.drawable.add_contact_yellow);
-			}else if(color_theme.equals("Gray")) {
-					mCall.setImageResource(R.drawable.call_gray);
-					mAddContact.setImageResource(R.drawable.add_contact_gray);
-			}else if(color_theme.equals("High Visibility")) {
-					mCall.setImageResource(R.drawable.call_hivis);
-					mAddContact.setImageResource(R.drawable.add_contact_hivis);
-			}else{
-					mCall.setImageResource(R.drawable.call_button_new);
-					mAddContact.setImageResource(R.drawable.add_contact_new);
 
-			}
+			mCall.setImageResource(R.drawable.call_button_new);
+			mAddContact.setImageResource(R.drawable.add_contact_new);
+
+
 
 			mAddContact.setOnClickListener(addContactListener);
 			enableDisableAddContact();
@@ -527,7 +578,6 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
 		View mySpinner = inflater.inflate(R.layout.provider_spinner_image_only, parent,
 				false);
-
 //		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 //		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
@@ -536,18 +586,23 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		return mySpinner;
 	}
 
+	@Override //Disable until General Release
+	public boolean isEnabled(int position) { return false; }
 
 	public View getCustomViewSpinner(int position, View convertView,
 									 ViewGroup parent) {
 		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
 		View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
 				false);
-
 		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
 		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
-
+		if(!isEnabled(position)){
+			mySpinner.setBackgroundColor(Color.DKGRAY);
+			left_icon.setColorFilter(Color.GRAY);
+			main_text.setTextColor(Color.WHITE);
+		}
 		return mySpinner;
 	}
 
