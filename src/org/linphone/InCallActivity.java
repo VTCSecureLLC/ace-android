@@ -360,13 +360,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
-			LinphoneCallParams params = call.getCurrentParamsCopy();
-			initRTT();
+			if(call != null) {
+				LinphoneCallParams params = call.getCurrentParamsCopy();
+				initRTT();
 
-			if(isRTTMaximized){
-				showRTTinterface();
+				if (isRTTMaximized) {
+					showRTTinterface();
+				}
 			}
-
         }
 	}
 
@@ -1757,8 +1758,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         // Control Row and Image Row
     	LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
         LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
-		callView.setId(index+1);
-		setContactName(callView, lAddress, sipUri, resources);
+		//callView.setId(index+1);
+
+		setContactName(imageView, lAddress, sipUri, resources);
 		displayCallStatusIconAndReturnCallPaused(callView, imageView, call);
 		setRowBackground(callView, index);
 		registerCallDurationTimer(callView, call);
