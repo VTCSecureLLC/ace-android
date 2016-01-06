@@ -166,7 +166,7 @@ public class SettingsFragment extends PreferencesListFragment {
 						.setPositiveButton(R.string.yes,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int whichButton) {
-										deleteAll();
+										deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
 										startActivityForResult(intent, WIZARD_INTENT);
 									}
@@ -388,6 +388,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		for (int i = 0; i < nbAccounts; i++) {
 			LinphonePreferences.instance().deleteAccount(i);
 		}
+	}
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
 	}
 	private void initAccounts() {
 		PreferenceCategory accounts = (PreferenceCategory) findPreference(getString(R.string.pref_sipaccounts_key));
