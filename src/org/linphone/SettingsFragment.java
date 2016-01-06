@@ -48,7 +48,6 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.LpConfig;
 import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
@@ -390,7 +389,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 	}
 	private void deleteDefaultAccount(){
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
 		LinphonePreferences mPrefs = LinphonePreferences.instance();
 		int n= mPrefs.getDefaultAccountIndex();
 		mPrefs.deleteAccount(n);
