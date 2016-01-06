@@ -162,7 +162,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		        .setMessage(getString(R.string.location_for_911_disabled_message))
 		        .setPositiveButton(R.string.button_ok,null)
 		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) { 
+		            public void onClick(DialogInterface dialog, int which) {
 		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
 		            }
 		         })
@@ -261,6 +261,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
 					}
+					deleteDefaultAccount();
+					Log.d("Restarting Login because registration failed");
+					Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+					startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
 				}
 			}
 
@@ -322,7 +326,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		updateAnimationsState();
 	}
-
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
+	}
 	private void initButtons() {
 		menu = (LinearLayout) findViewById(R.id.menu);
 		mark = (LinearLayout) findViewById(R.id.mark);
