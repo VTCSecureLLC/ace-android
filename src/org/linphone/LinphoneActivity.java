@@ -162,7 +162,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		        .setMessage(getString(R.string.location_for_911_disabled_message))
 		        .setPositiveButton(R.string.button_ok,null)
 		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) { 
+		            public void onClick(DialogInterface dialog, int which) {
 		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
 		            }
 		         })
@@ -252,15 +252,35 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 				if(state.equals(RegistrationState.RegistrationFailed) && newProxyConfig) {
 					newProxyConfig = false;
+
+
 					if (proxy.getError() == Reason.BadCredentials) {
 						displayCustomToast(getString(R.string.error_bad_credentials), Toast.LENGTH_LONG);
+						go_back_to_login();
 					}
 					if (proxy.getError() == Reason.Unauthorized) {
 						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
 					}
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
+						//Potential Issues that through this flag
+						//bad port
+						//no internet connection
+						//bad server address
+						//mismatch transport proto-call and port number
+
+
+						//throw them back to log-in
+
+
 					}
+
+
+
+
+
+
+
 				}
 			}
 
@@ -322,7 +342,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		updateAnimationsState();
 	}
+	private void go_back_to_login(){
+		deleteDefaultAccount();
+		Log.d("Restarting Login because registration failed");
+		Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+		startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
+	}
 
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
+	}
 	private void initButtons() {
 		menu = (LinearLayout) findViewById(R.id.menu);
 		mark = (LinearLayout) findViewById(R.id.mark);
