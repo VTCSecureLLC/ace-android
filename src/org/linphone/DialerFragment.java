@@ -264,8 +264,6 @@ public class DialerFragment extends Fragment {
 		view.setBackgroundResource(R.drawable.background_theme_new);
 
 
-		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
-		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 
 //		try {
 //			if (!LinphoneActivity.instance().isTablet()) {
@@ -278,30 +276,19 @@ public class DialerFragment extends Fragment {
 		myContext = getActivity().getApplication().getBaseContext();
 
 
+	return view;
+}
+	public void  initialize_camera(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
+		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 		try {
 			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled)
-				initialize_camera(view);
+				initialize_camera(dialer_view);
 		}catch(Throwable e){
 
 		}
-		return view;
 	}
-	private int findFrontFacingCamera() {
-		int cameraId = -1;
-		// Search for the front facing camera
-		int numberOfCameras = Camera.getNumberOfCameras();
-		for (int i = 0; i < numberOfCameras; i++) {
-			Camera.CameraInfo info = new Camera.CameraInfo();
-			Camera.getCameraInfo(i, info);
-			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				cameraId = i;
-				cameraFront = true;
-				break;
-			}
-		}
-		return cameraId;
-	}
-
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void initialize_camera(View view) {
 		cameraPreview = (LinearLayout) view.findViewById(R.id.camera_preview);
@@ -324,7 +311,7 @@ public class DialerFragment extends Fragment {
 
 	}
 
-//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 //	public View.OnLayoutChangeListener camera_view_listener(){
 //		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
 //			@Override
@@ -368,7 +355,7 @@ public class DialerFragment extends Fragment {
 //		};
 //		return camera_view_listener;
 //	};
-		//	@Override
+	//	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
 //		final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
@@ -378,37 +365,37 @@ public class DialerFragment extends Fragment {
 //			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 //		}
 //	}
-		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
-			final double ASPECT_TOLERANCE = 0.1;
-			double targetRatio=(double)h / w;
+	private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+		final double ASPECT_TOLERANCE = 0.1;
+		double targetRatio=(double)h / w;
 
-			if (sizes == null) return null;
+		if (sizes == null) return null;
 
-			Camera.Size optimalSize = null;
-			double minDiff = Double.MAX_VALUE;
+		Camera.Size optimalSize = null;
+		double minDiff = Double.MAX_VALUE;
 
-			int targetHeight = h;
+		int targetHeight = h;
 
+		for (Camera.Size size : sizes) {
+			double ratio = (double) size.width / size.height;
+			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+			if (Math.abs(size.height - targetHeight) < minDiff) {
+				optimalSize = size;
+				minDiff = Math.abs(size.height - targetHeight);
+			}
+		}
+
+		if (optimalSize == null) {
+			minDiff = Double.MAX_VALUE;
 			for (Camera.Size size : sizes) {
-				double ratio = (double) size.width / size.height;
-				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
 				if (Math.abs(size.height - targetHeight) < minDiff) {
 					optimalSize = size;
 					minDiff = Math.abs(size.height - targetHeight);
 				}
 			}
-
-			if (optimalSize == null) {
-				minDiff = Double.MAX_VALUE;
-				for (Camera.Size size : sizes) {
-					if (Math.abs(size.height - targetHeight) < minDiff) {
-						optimalSize = size;
-						minDiff = Math.abs(size.height - targetHeight);
-					}
-				}
-			}
-			return optimalSize;
 		}
+		return optimalSize;
+	}
 	/**
 	 * @return null if not ready yet
 	 */
@@ -419,6 +406,9 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		if(mPreview!=null){
+		mPreview.surfaceDestroyed(null);
+		}
 		//releaseCamera();
 //		if (androidVideoWindowImpl != null) {
 //			synchronized (androidVideoWindowImpl) {
@@ -430,17 +420,18 @@ public class DialerFragment extends Fragment {
 //			}
 //		}
 	}
-	private void releaseCamera() {
+	/*private void releaseCamera() {
 		// stop and release camera
 		if (mCamera != null) {
 			mCamera.release();
 			mCamera = null;
 		}
 	}
-
+*/
 	@Override
 	public void onResume() {
 		super.onResume();
+
 
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
@@ -459,7 +450,7 @@ public class DialerFragment extends Fragment {
 		}
 
 
-
+		initialize_camera();
 		resetLayout(isCallTransferOngoing);
 	}
 	private boolean hasCamera(Context context) {
