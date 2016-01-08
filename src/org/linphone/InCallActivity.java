@@ -1758,6 +1758,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			lAddress= LinphoneCoreFactory.instance().createLinphoneAddress("uknown","unknown","unkonown");
 		}
 
+		boolean hide_additional_info = showCallListInVideo && isVideoEnabled(LinphoneManager.getLc().getCurrentCall());
         // Control Row and Image Row
     	LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
         LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
@@ -1765,32 +1766,35 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		setContactName(imageView, lAddress, sipUri, resources);
 		displayCallStatusIconAndReturnCallPaused(callView, imageView, call);
-		setRowBackground(callView, index);
+		if(!hide_additional_info)
+			setRowBackground(callView, index);
 		registerCallDurationTimer(callView, call);
     	callsList.addView(callView);
 
-        Contact contact  = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
-		if(contact != null) {
-			displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
-		} else {
-			displayOrHideContactPicture(imageView, null, null, false);
-		}
-    	callsList.addView(imageView);
-    	
-    	callView.setTag(imageView);
-    	callView.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (v.getTag() != null) {
-					View imageView = (View) v.getTag();
-					if (imageView.getVisibility() == View.VISIBLE)
-						imageView.setVisibility(View.GONE);
-					else
-						imageView.setVisibility(View.VISIBLE);
-					callsList.invalidate();
-				}
+		if(!hide_additional_info) {
+			Contact contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
+			if (contact != null) {
+				displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
+			} else {
+				displayOrHideContactPicture(imageView, null, null, false);
 			}
-		});
+			callsList.addView(imageView);
+
+			callView.setTag(imageView);
+			callView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (v.getTag() != null) {
+						View imageView = (View) v.getTag();
+						if (imageView.getVisibility() == View.VISIBLE)
+							imageView.setVisibility(View.GONE);
+						else
+							imageView.setVisibility(View.VISIBLE);
+						callsList.invalidate();
+					}
+				}
+			});
+		}
 	}
 	
 	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
