@@ -360,13 +360,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
-			LinphoneCallParams params = call.getCurrentParamsCopy();
-			initRTT();
+			if(call != null) {
+				LinphoneCallParams params = call.getCurrentParamsCopy();
+				initRTT();
 
-			if(isRTTMaximized){
-				showRTTinterface();
+				if (isRTTMaximized) {
+					showRTTinterface();
+				}
 			}
-
         }
 	}
 
@@ -591,9 +592,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		});
 	}
 	@Override
-	public void onBackPressed()
-	{
-		super.onBackPressed();  // optional depending on your needs
+	public void onBackPressed() {
+		super.onBackPressed();
+		mControlsLayout.setVisibility(View.VISIBLE);
 	}
 
 	/** Called when backspace is pressed in an RTT conversation.
@@ -894,6 +895,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 			isRTTMaximized = false;
+			mControlsLayout.setVisibility(View.VISIBLE);
 		}
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			displayVideoCallControlsIfHidden();
@@ -1001,6 +1003,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		Log.d("RTT", "toggleChat clicked");
 		Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
 		mControlsLayout.setVisibility(View.GONE);
+
 		if(isRTTMaximized){
 			hideRTTinterface();
 		} else{
@@ -1015,6 +1018,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(rtt_scrollview!=null) {
 			rtt_scrollview.setVisibility(View.GONE);
 			isRTTMaximized=false;
+			mControlsLayout.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -1757,8 +1761,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         // Control Row and Image Row
     	LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
         LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
-		callView.setId(index+1);
-		setContactName(callView, lAddress, sipUri, resources);
+		//callView.setId(index+1);
+
+		setContactName(imageView, lAddress, sipUri, resources);
 		displayCallStatusIconAndReturnCallPaused(callView, imageView, call);
 		setRowBackground(callView, index);
 		registerCallDurationTimer(callView, call);

@@ -41,6 +41,8 @@ import android.widget.Toast;
 import org.linphone.LegalRelease;
 import org.linphone.LinphoneActivity;
 import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+
 /**
  * @author Sylvain Berfini
  */
@@ -83,9 +85,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				public void afterTextChanged(Editable s) {
 					String transport = s.toString();
 					if (transport.toLowerCase().equals("tcp")) {
-						port.setText("5060");
+						//port.setText("5060");
+						port.setText(port.getText().toString().replace("5061", "5060"));
 					} else if (transport.toLowerCase().equals("tls")) {
-						port.setText("5061");
+						//port.setText("5061");
+						port.setText(port.getText().toString().replace("5060", "5061"));
 					}
 				}
 			});
@@ -137,8 +141,20 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
 				return;
 			}
-			SetupActivity.instance().genericLogIn(login.getText().toString().replaceAll("\\s", ""),
-					password.getText().toString().replaceAll("\\s", ""), domain.getText().toString().replaceAll("\\s", ""));
+
+			//set default transport to tcp
+			LinphoneAddress.TransportType transport_type = null;
+			if (transport.getText().toString().toLowerCase().equals("tcp")) {
+				transport_type= LinphoneAddress.TransportType.LinphoneTransportTcp;
+			} else if (transport.getText().toString().toLowerCase().equals("tls")) {
+				transport_type= LinphoneAddress.TransportType.LinphoneTransportTls;
+			}
+			SetupActivity.instance().genericLogIn(
+					login.getText().toString().replaceAll("\\s", ""),
+					password.getText().toString().replaceAll("\\s", ""),
+					domain.getText().toString().replaceAll("\\s", ""),
+					transport_type,
+					port.getText().toString().replaceAll("\\s", ""));
 			
 		}
 		else if(id == R.id.ab_back)

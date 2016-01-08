@@ -266,7 +266,7 @@ public class DialerFragment extends Fragment {
 
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
-		isPreviewEnabled = true;
+
 //		try {
 //			if (!LinphoneActivity.instance().isTablet()) {
 //				isPreviewEnabled = true;
@@ -279,7 +279,7 @@ public class DialerFragment extends Fragment {
 
 
 		try {
-			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA))
+			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled)
 				initialize_camera(view);
 		}catch(Throwable e){
 
