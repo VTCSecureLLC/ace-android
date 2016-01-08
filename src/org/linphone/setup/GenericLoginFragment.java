@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,17 +44,21 @@ import org.linphone.LinphoneActivity;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Sylvain Berfini
  */
 public class GenericLoginFragment extends Fragment implements OnClickListener {
-	private EditText login, password, domain, port, transport, userid;;
+	private EditText login, password, domain, port, userid;
+	private Spinner transport;
 	private ImageView apply;
 	View advancedLoginPanel;
 	Button advancedLoginPanelToggle;
 	boolean isAdvancedLogin = false;
 	Spinner sp_provider;
-
+	List<String> transportOptions = new ArrayList<String>();
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -64,30 +69,32 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
 		
 			port = (EditText) view.findViewById(R.id.et_prv_port);
-			transport = (EditText) view.findViewById(R.id.et_prv_transport);
-			transport.addTextChangedListener(new TextWatcher() {
+			transport = (Spinner) view.findViewById(R.id.spin_prv_transport);
+
+			transportOptions.add("TCP");
+			transportOptions.add("TLS");
+			ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
+				android.R.layout.simple_spinner_item, transportOptions);
+			dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			transport.setAdapter(dataAdapter);
+			transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-				}
-
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-				}
-
-				@Override
-				public void afterTextChanged(Editable s) {
-					String transport = s.toString();
-					if (transport.toLowerCase().equals("tcp")) {
-						//port.setText("5060");
+				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+					if(transportOptions.get(position).equals("TCP")){
+						port.setText("5060");
 						port.setText(port.getText().toString().replace("5061", "5060"));
-					} else if (transport.toLowerCase().equals("tls")) {
-						//port.setText("5061");
+					} else if(transportOptions.get(position).equals("TLS")){
+						port.setText("5061");
 						port.setText(port.getText().toString().replace("5060", "5061"));
 					}
 				}
+
+				@Override
+				public void onNothingSelected(AdapterView<?> parent) {
+
+				}
 			});
+
 			userid = (EditText) view.findViewById(R.id.et_prv_userid);
 
 			view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
@@ -139,9 +146,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 
 			//set default transport to tcp
 			LinphoneAddress.TransportType transport_type = null;
-			if (transport.getText().toString().toLowerCase().equals("tcp")) {
+
+			String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
+			if (selectedTransport.toLowerCase().equals("tcp")) {
 				transport_type= LinphoneAddress.TransportType.LinphoneTransportTcp;
-			} else if (transport.getText().toString().toLowerCase().equals("tls")) {
+			} else if (selectedTransport.toLowerCase().equals("tls")) {
 				transport_type= LinphoneAddress.TransportType.LinphoneTransportTls;
 			}
 			SetupActivity.instance().genericLogIn(
