@@ -113,13 +113,6 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			lc.addListener(mListener);
 		}
 
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
-		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
-		if(!hasAcceptedRelease){
-			Intent intent = new Intent(LinphoneActivity.ctx, LegalRelease.class);
-			LinphoneActivity.ctx.startActivity(intent);
-		}
-
 	}
 	
 	@Override
