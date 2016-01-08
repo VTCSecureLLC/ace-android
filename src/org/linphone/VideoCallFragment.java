@@ -70,6 +70,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
 
+        LinphoneManager.getLc().setVideoDevice(CameraPreview.findFrontFacingCamera());
 		prefs = PreferenceManager.
 				getDefaultSharedPreferences(LinphoneActivity.instance());
 		isSelfViewEnabled = prefs.getBoolean(getString(R.string.pref_av_show_self_view_key), true);
