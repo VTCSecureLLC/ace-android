@@ -139,7 +139,7 @@
          
         <activity android:name="org.linphone.setup.SetupActivity"
 		    android:theme="@style/NoTitle"
-            android:screenOrientation="sensorPortrait">
+            android:screenOrientation="behind">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
