@@ -40,7 +40,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			Log.d(VIEW_LOG_TAG, "Error setting camera preview: " + e.getMessage());
 		}
 	}
-	private int findFrontFacingCamera() {
+	public int findFrontFacingCamera() {
 		int cameraId = -1;
 		// Search for the front facing camera
 		int numberOfCameras = Camera.getNumberOfCameras();
@@ -64,12 +64,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			return;
 		}
 		// stop preview before making changes
+		try{
+			camera.stopPreview();
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+
 		try {
 			camera = Camera.open(findFrontFacingCamera());
 		}catch(Throwable e){
-
+			e.printStackTrace();
 		}
-		camera.stopPreview();
+
 		Log.d("mCamera.stopPreview()", "mCamera.stopPreview()");
 
 		// set preview size and make any resize, rotate or
@@ -127,14 +133,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 
-	public void setCameraDisplayOrientation(Activity activity , int icameraId , Camera camera)
+	public static void setCameraDisplayOrientation(Activity activity, int icameraId, Camera camera)
 	{
+
 		Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
 
 		Camera.getCameraInfo(icameraId, cameraInfo);
 
 		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-
+		Log.d("setting camera display orientation",String.valueOf(rotation));
 		int degrees = 0; // k
 
 		switch (rotation)
