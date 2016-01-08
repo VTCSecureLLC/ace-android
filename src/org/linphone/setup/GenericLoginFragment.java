@@ -62,12 +62,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
 		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
-
-		final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
-		if(!pref.getBoolean("accepted_legal_release", false)){
-			Intent intent = new Intent(LinphoneActivity.ctx, LegalRelease.class);
-			LinphoneActivity.ctx.startActivity(intent);
-		}
+		
 			port = (EditText) view.findViewById(R.id.et_prv_port);
 			transport = (EditText) view.findViewById(R.id.et_prv_transport);
 			transport.addTextChangedListener(new TextWatcher() {
