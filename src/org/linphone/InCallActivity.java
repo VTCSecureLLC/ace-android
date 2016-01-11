@@ -515,6 +515,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 				if (incomingTextView == null) return;
 
+				if(!incomingTextView.isShown()){
+					incomingTextView=create_new_incoming_bubble();
+				}
+
 				String currentText = incomingTextView.getText().toString();
 				if (character == 8) {// backspace
 					incomingTextView.setText(currentText.substring(0, currentText.length() - 1));
@@ -532,6 +536,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					}
 					incomingTextView.setText(currentText + (char)character);
 				}
+				rtt_scrollview.post(new Runnable() {
+					@Override
+					public void run() {
+						rtt_scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+					}
+				});
 
 			}
 		});
@@ -541,7 +551,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
 	}
 	public TextView create_new_incoming_bubble(){
-
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
 		lp1.gravity = Gravity.RIGHT;
@@ -560,19 +569,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}else{
 					outgoingEditText.requestFocus();
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 				}
 			}
 		});
 		incomingTextView=tv;
 		((LinearLayout)rttContainerView).addView(tv);
-
-		// Check if no view has focus:
-		View view = this.getCurrentFocus();
-		if (view != null) {
-			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-		}
 
 		rtt_scrollview.post(new Runnable() {
 			@Override
@@ -584,6 +586,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		return tv;
 	}
 	private void showRTTinterface() {
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		runOnUiThread(new Runnable() {
 			public void run() {
 				isRTTMaximized = true;
