@@ -35,6 +35,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -64,13 +65,13 @@ import java.util.List;
  */
 public class DialerFragment extends Fragment {
 
-
-	private Camera mCamera;
+	public OrientationEventListener mOrientationHelper;
+	public Camera mCamera;
 	public static Camera.Size optimal_preview_size;
 
 	private static DialerFragment instance;
 	private static boolean isCallTransferOngoing = false;
-	private CameraPreview mPreview;
+	public CameraPreview mPreview;
 	private Context myContext;
 	public boolean mVisible;
 	private AddressText mAddress;
@@ -289,6 +290,8 @@ public class DialerFragment extends Fragment {
 		}catch(Throwable e){
 
 		}
+		startOrientationSensor();
+
 		return view;
 	}
 	private int findFrontFacingCamera() {
@@ -383,37 +386,37 @@ public class DialerFragment extends Fragment {
 //			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 //		}
 //	}
-		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
-			final double ASPECT_TOLERANCE = 0.1;
-			double targetRatio=(double)h / w;
-
-			if (sizes == null) return null;
-
-			Camera.Size optimalSize = null;
-			double minDiff = Double.MAX_VALUE;
-
-			int targetHeight = h;
-
-			for (Camera.Size size : sizes) {
-				double ratio = (double) size.width / size.height;
-				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
-				}
-			}
-
-			if (optimalSize == null) {
-				minDiff = Double.MAX_VALUE;
-				for (Camera.Size size : sizes) {
-					if (Math.abs(size.height - targetHeight) < minDiff) {
-						optimalSize = size;
-						minDiff = Math.abs(size.height - targetHeight);
-					}
-				}
-			}
-			return optimalSize;
-		}
+//		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+//			final double ASPECT_TOLERANCE = 0.1;
+//			double targetRatio=(double)h / w;
+//
+//			if (sizes == null) return null;
+//
+//			Camera.Size optimalSize = null;
+//			double minDiff = Double.MAX_VALUE;
+//
+//			int targetHeight = h;
+//
+//			for (Camera.Size size : sizes) {
+//				double ratio = (double) size.width / size.height;
+//				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+//				if (Math.abs(size.height - targetHeight) < minDiff) {
+//					optimalSize = size;
+//					minDiff = Math.abs(size.height - targetHeight);
+//				}
+//			}
+//
+//			if (optimalSize == null) {
+//				minDiff = Double.MAX_VALUE;
+//				for (Camera.Size size : sizes) {
+//					if (Math.abs(size.height - targetHeight) < minDiff) {
+//						optimalSize = size;
+//						minDiff = Math.abs(size.height - targetHeight);
+//					}
+//				}
+//			}
+//			return optimalSize;
+//		}
 	/**
 	 * @return null if not ready yet
 	 */
@@ -435,11 +438,66 @@ public class DialerFragment extends Fragment {
 //			}
 //		}
 	}
-	private void releaseCamera() {
-		// stop and release camera
-		if (mCamera != null) {
-			mCamera.release();
-			mCamera = null;
+//	private void releaseCamera() {
+//		// stop and release camera
+//		if (mCamera != null) {
+//			mCamera.release();
+//			mCamera = null;
+//		}
+//	}
+
+	private synchronized void startOrientationSensor() {
+		if (mOrientationHelper == null) {
+			mOrientationHelper = new LocalOrientationEventListener(LinphoneActivity.instance());
+		}
+		mOrientationHelper.enable();
+	}
+	private class LocalOrientationEventListener extends OrientationEventListener {
+		public LocalOrientationEventListener(Context context) {
+			super(context);
+		}
+
+		@Override
+		public void onOrientationChanged(final int o) {
+
+			if (o == OrientationEventListener.ORIENTATION_UNKNOWN) {
+				return;
+			}
+
+
+			//alpha is the distance from each axis we want to allow a rotation.
+			int degrees;
+
+			degrees = LinphoneActivity.instance().lastDeviceAngle;
+
+			int sensativity = 10;
+
+
+			if (o < 0 + sensativity || o > 360 - sensativity)// when o is around 0, we set degrees to zero
+				degrees = 0;
+			else if (o > 90 - sensativity && o < 90 + sensativity)//when o is around 90, we set the degrees to 90
+				degrees = 90;
+			else if (o > 180 - sensativity && o < 180 + sensativity)//when o is around 180 we set the degrees to 180
+				degrees = 180;
+			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
+				degrees = 270;
+
+			Log.d("onOrientationChanged", o);
+			Log.d("degrees", degrees);
+			Log.d("mAlwaysChangingPhoneAngle", LinphoneActivity.instance().mAlwaysChangingPhoneAngle);
+
+			if (LinphoneActivity.instance().mAlwaysChangingPhoneAngle == degrees) {
+				return;
+			}
+			LinphoneActivity.instance().mAlwaysChangingPhoneAngle = degrees;
+
+
+			Log.d("Phone orientation changed to ", degrees);
+			LinphoneActivity.instance().lastDeviceAngle = degrees;
+			cameraPreview.removeAllViews();
+			mPreview.surfaceDestroyed(mPreview.getHolder());
+			mPreview = new CameraPreview(myContext, mCamera);
+			cameraPreview.addView(mPreview);
 		}
 	}
 
@@ -594,6 +652,9 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 	@Override //Disable until General Release
 	public boolean isEnabled(int position) { return false; }
 
+
+
+
 	public View getCustomViewSpinner(int position, View convertView,
 									 ViewGroup parent) {
 		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
@@ -602,14 +663,16 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
+		left_icon.setImageResource(this.drawables[position]/*R.drawable.provider_logo_sorenson*/);
 		if(!isEnabled(position)){
 			mySpinner.setBackgroundColor(Color.DKGRAY);
 			left_icon.setColorFilter(Color.GRAY);
 			main_text.setTextColor(Color.WHITE);
 		}
 		return mySpinner;
-	}
 
+
+
+	}
 
 }

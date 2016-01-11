@@ -128,7 +128,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private SavedState dialerSavedState;
 	private boolean newProxyConfig;
 	private boolean isAnimationDisabled = false, preferLinphoneContacts = false;
-	private OrientationEventListener mOrientationHelper;
+	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
 
 	public static View topLayout;
@@ -169,8 +169,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		         .show();
 		}
 
-		if (isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		if (isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         } else if (!isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
@@ -341,6 +341,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		mAlwaysChangingPhoneAngle = rotation;
 
 		updateAnimationsState();
+		startOrientationSensor();
 	}
 	private void go_back_to_login(){
 		deleteDefaultAccount();
@@ -788,7 +789,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				intent.putExtra("PictureUri", pictureUri);
 				intent.putExtra("ThumbnailUri", thumbnailUri);
 			}
-			startOrientationSensor();
+			//
+			// startOrientationSensor();
 			startActivityForResult(intent, CHAT_ACTIVITY);
 		}
 
@@ -1063,14 +1065,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public void startVideoActivity(LinphoneCall currentCall) {
 		Intent intent = new Intent(this, InCallActivity.class);
 		intent.putExtra("VideoEnabled", true);
-		startOrientationSensor();
+		//startOrientationSensor();
 		startActivityForResult(intent, CALL_ACTIVITY);
 	}
 
 	public void startIncallActivity(LinphoneCall currentCall) {
 		Intent intent = new Intent(this, InCallActivity.class);
 		intent.putExtra("VideoEnabled", false);
-		startOrientationSensor();
+		//startOrientationSensor();
 		startActivityForResult(intent, CALL_ACTIVITY);
 	}
 
@@ -1100,8 +1102,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		mOrientationHelper.enable();
 	}
 
-	private int mAlwaysChangingPhoneAngle = -1;
-	private int lastDeviceAngle = 270;
+	public int mAlwaysChangingPhoneAngle = -1;
+	public int lastDeviceAngle = 0;
 	public int getDeviceOrientation(){
 		return lastDeviceAngle;
 	}
@@ -1112,28 +1114,47 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		@Override
 		public void onOrientationChanged(final int o) {
+
 			if (o == OrientationEventListener.ORIENTATION_UNKNOWN) {
 				return;
 			}
 
-			int degrees = 270;
-			if (o < 45 || o > 315)
+
+			//alpha is the distance from each axis we want to allow a rotation.
+			int degrees;
+
+			degrees=lastDeviceAngle;
+
+			int sensativity=10;
+
+
+
+			if (o < 0+sensativity || o > 360-sensativity)// when o is around 0, we set degrees to zero
 				degrees = 0;
-			else if (o < 135)
+			else if (o > 90-sensativity && o<90+sensativity)//when o is around 90, we set the degrees to 90
 				degrees = 90;
-			else if (o < 225)
+			else if (o > 180-sensativity && o<180+sensativity)//when o is around 180 we set the degrees to 180
 				degrees = 180;
+			else if (o > 270-sensativity && o<270+sensativity)//when o is around 270 we set the degrees to 270
+				degrees = 270;
+
+			Log.d("onOrientationChanged",o);
+			Log.d("degrees",degrees);
+			Log.d("mAlwaysChangingPhoneAngle",mAlwaysChangingPhoneAngle);
 
 			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;
 			}
 			mAlwaysChangingPhoneAngle = degrees;
 
+
 			Log.d("Phone orientation changed to ", degrees);
 			lastDeviceAngle = degrees;
 			int rotation = (360 - degrees) % 360;
 			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 			if (lc != null) {
+				Log.d("setting device rotation");
+
 				lc.setDeviceRotation(rotation);
 				LinphoneCall currentCall = lc.getCurrentCall();
 				if (currentCall != null && currentCall.cameraEnabled() && currentCall.getCurrentParamsCopy().getVideoEnabled()) {
