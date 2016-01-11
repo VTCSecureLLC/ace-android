@@ -1,9 +1,11 @@
 package org.linphone;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.DragEvent;
@@ -134,7 +136,12 @@ public class LegalRelease extends Activity {
                 prefs.edit().putBoolean("accepted_legal_release", false).commit();
                 LegalRelease.this.finish();
                 if(LinphoneActivity.isInstanciated()) {
-                    LegalRelease.this.finish();
+                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                    if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
+                        LegalRelease.this.finishAffinity();
+                    } else{
+                        LegalRelease.this.finish();
+                    }
                 }
             }
         });
