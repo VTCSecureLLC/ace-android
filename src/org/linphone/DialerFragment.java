@@ -111,6 +111,11 @@ public class DialerFragment extends Fragment {
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
 		mAddress.setDialerFragment(this);
 
+		int camera = findFrontFacingCamera();
+		if(camera == -1){
+			camera = 0;
+		}
+		LinphoneManager.getLc().setVideoDevice(camera);
 		// VTCSecure SIP Domain selection 
 		final Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
 

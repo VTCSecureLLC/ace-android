@@ -1261,13 +1261,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 		// Attempt to update user location
-		boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-		if (hasGps) {
-			LinphoneLocationManager.instance(this).updateLocation();
-		} else {
-			Log.d("TAG", "NO GPS");
+		try {
+			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+			if (hasGps) {
+				LinphoneLocationManager.instance(this).updateLocation();
+			} else {
+				Log.d("TAG", "NO GPS");
+			}
 		}
-
+		catch(NullPointerException e){
+			Log.e("E", "Device does not have GPS support");
+		}
 		if (!LinphoneService.isReady())  {
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}
