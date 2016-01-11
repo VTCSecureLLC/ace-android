@@ -5,7 +5,7 @@
   <string name="messages_date_format">HH:mm d MMM</string>
   <string name="today_date_format">HH:mm</string>
   <string name="picture_name_format">vtcsecure-mms-%s.jpg</string>
-  <string name="app_name">Ace</string>
+  <string name="app_name">ACE</string>
   <string name="service_name">Ace Service</string>
   <string name="addressbook_label">VTCSecure</string>
   <string name="sync_account_type">org.linphone</string>
