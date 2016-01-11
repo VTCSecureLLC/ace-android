@@ -55,7 +55,7 @@
 	<bool name="use_linphone_tag">true</bool>
 
 	<bool name="display_call_stats">true</bool>
-	<bool name="show_current_calls_above_video">false</bool>
+	<bool name="show_current_calls_above_video">true</bool>
 	<bool name="disable_options_in_call">false</bool>
 
 	<!-- Behavior Settings -->
