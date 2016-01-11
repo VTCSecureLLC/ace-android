@@ -25,6 +25,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,28 +75,34 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 
 			transportOptions.add("TCP");
 			transportOptions.add("TLS");
-			ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
-				android.R.layout.simple_spinner_item, transportOptions);
-			dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			transport.setAdapter(dataAdapter);
-			transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					if(transportOptions.get(position).equals("TCP")){
-						port.setText("5060");
-						port.setText(port.getText().toString().replace("5061", "5060"));
-					} else if(transportOptions.get(position).equals("TLS")){
-						port.setText("5061");
-						port.setText(port.getText().toString().replace("5060", "5061"));
+
+			try {
+				ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
+						android.R.layout.simple_spinner_item, transportOptions);
+				dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				transport.setAdapter(dataAdapter);
+				transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+						if (transportOptions.get(position).equals("TCP")) {
+							port.setText("5060");
+							port.setText(port.getText().toString().replace("5061", "5060"));
+						} else if (transportOptions.get(position).equals("TLS")) {
+							port.setText("5061");
+							port.setText(port.getText().toString().replace("5060", "5061"));
+						}
 					}
-				}
 
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
 
-				}
-			});
+					}
+				});
+			}
 
+			catch(Exception e){
+				Log.e("E", "Spinner is not supported by default on this device. Defaulting to TCP transport.");
+			}
 			userid = (EditText) view.findViewById(R.id.et_prv_userid);
 
 			view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
@@ -146,12 +154,20 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 
 			//set default transport to tcp
 			LinphoneAddress.TransportType transport_type = null;
+			try {
+				String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
+				if (selectedTransport.toLowerCase().equals("tcp")) {
+					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+				} else if (selectedTransport.toLowerCase().equals("tls")) {
+					transport_type = LinphoneAddress.TransportType.LinphoneTransportTls;
+				} else {
+					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+				}
+			}
 
-			String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
-			if (selectedTransport.toLowerCase().equals("tcp")) {
-				transport_type= LinphoneAddress.TransportType.LinphoneTransportTcp;
-			} else if (selectedTransport.toLowerCase().equals("tls")) {
-				transport_type= LinphoneAddress.TransportType.LinphoneTransportTls;
+			catch(Exception e){
+				Log.e("E", "Transport could not be found, defaulting to TCP");
+				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
 			}
 			SetupActivity.instance().genericLogIn(
 					login.getText().toString().replaceAll("\\s", ""),

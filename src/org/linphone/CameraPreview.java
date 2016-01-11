@@ -75,7 +75,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		}catch(Throwable e){
 			e.printStackTrace();
 		}
-
+		if(camera != null){
+			camera.stopPreview();
+		}
 		Log.d("mCamera.stopPreview()", "mCamera.stopPreview()");
 
 		// set preview size and make any resize, rotate or
