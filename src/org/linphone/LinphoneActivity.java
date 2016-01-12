@@ -1114,47 +1114,28 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		@Override
 		public void onOrientationChanged(final int o) {
-
 			if (o == OrientationEventListener.ORIENTATION_UNKNOWN) {
 				return;
 			}
 
-
-			//alpha is the distance from each axis we want to allow a rotation.
-			int degrees;
-
-			degrees=lastDeviceAngle;
-
-			int sensativity=10;
-
-
-
-			if (o < 0+sensativity || o > 360-sensativity)// when o is around 0, we set degrees to zero
+			int degrees = 270;
+			if (o < 45 || o > 315)
 				degrees = 0;
-			else if (o > 90-sensativity && o<90+sensativity)//when o is around 90, we set the degrees to 90
+			else if (o < 135)
 				degrees = 90;
-			else if (o > 180-sensativity && o<180+sensativity)//when o is around 180 we set the degrees to 180
+			else if (o < 225)
 				degrees = 180;
-			else if (o > 270-sensativity && o<270+sensativity)//when o is around 270 we set the degrees to 270
-				degrees = 270;
-
-			Log.d("onOrientationChanged",o);
-			Log.d("degrees",degrees);
-			Log.d("mAlwaysChangingPhoneAngle",mAlwaysChangingPhoneAngle);
 
 			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;
 			}
 			mAlwaysChangingPhoneAngle = degrees;
 
-
 			Log.d("Phone orientation changed to ", degrees);
 			lastDeviceAngle = degrees;
 			int rotation = (360 - degrees) % 360;
 			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 			if (lc != null) {
-				Log.d("setting device rotation");
-
 				lc.setDeviceRotation(rotation);
 				LinphoneCall currentCall = lc.getCurrentCall();
 				if (currentCall != null && currentCall.cameraEnabled() && currentCall.getCurrentParamsCopy().getVideoEnabled()) {
