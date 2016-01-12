@@ -20,10 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -32,7 +29,6 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import org.linphone.LegalRelease;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
@@ -48,6 +44,11 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.custom.LoginMainActivity;
 import org.linphone.mediastream.Log;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
 
 /**
  * @author Sylvain Berfini
@@ -103,6 +104,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
         };
         
         instance = this;
+		String query = "_rueconfig._tcp.aceconnect.vatrp.net";
+		srvLookup(query);
 	};
 	
 	@Override
@@ -134,7 +137,25 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	public static SetupActivity instance() {
 		return instance;
 	}
-	
+
+
+	private void srvLookup(String query){
+		try {
+			Record[] records = new Lookup(query, Type.SRV).run();
+
+			for (Record record : records) {
+				SRVRecord srv = (SRVRecord) record;
+
+				String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
+				int port = srv.getPort();
+				System.out.println(hostname + ":" + port);
+				Toast.makeText(SetupActivity.this, hostname, Toast.LENGTH_SHORT).show();
+			}
+		} catch (TextParseException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void initUI() {
 		/*back = (RelativeLayout) findViewById(R.id.setup_back);
 		back.setOnClickListener(this);
