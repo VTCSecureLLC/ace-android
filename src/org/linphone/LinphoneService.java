@@ -160,6 +160,7 @@ public final class LinphoneService extends Service {
 		mNotif = Compatibility.createNotification(this, mNotificationTitle, "", R.drawable.status_level, IC_LEVEL_OFFLINE, bm, mNotifContentIntent, true,notifcationsPriority);
 
 		LinphoneManager.createAndStart(LinphoneService.this);
+		LinphoneManager.getInstance().setAudioPayloadsOrder();
 
 		instance = this; // instance is ready once linphone manager has been created
 		LinphoneManager.getLc().addListener(mListener = new LinphoneCoreListenerBase(){

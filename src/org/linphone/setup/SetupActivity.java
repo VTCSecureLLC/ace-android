@@ -97,7 +97,6 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
         };
         
         instance = this;
-
 	};
 	
 	@Override
