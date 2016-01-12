@@ -439,11 +439,15 @@ public class DialerFragment extends Fragment {
 //	}
 
 	private synchronized void startOrientationSensor() {
+		//Disable global orientation change listener, and initiate only dialer listener
+		LinphoneActivity.instance().mOrientationHelper.disable();
 		if (mOrientationHelper == null) {
 			mOrientationHelper = new LocalOrientationEventListener(LinphoneActivity.instance());
 		}
 		mOrientationHelper.enable();
 	}
+	public int mAlwaysChangingPhoneAngle = -1;
+	public int lastDeviceAngle = 0;
 	private class LocalOrientationEventListener extends OrientationEventListener {
 		public LocalOrientationEventListener(Context context) {
 			super(context);
@@ -460,7 +464,7 @@ public class DialerFragment extends Fragment {
 			//alpha is the distance from each axis we want to allow a rotation.
 			int degrees;
 
-			degrees = LinphoneActivity.instance().lastDeviceAngle;
+			degrees = lastDeviceAngle;
 
 			int sensativity = 10;
 
@@ -474,18 +478,18 @@ public class DialerFragment extends Fragment {
 			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
 				degrees = 270;
 
-			Log.d("onOrientationChanged", o);
+			Log.d("onOrientationChanged_Dialer", o);
 			Log.d("degrees", degrees);
-			Log.d("mAlwaysChangingPhoneAngle", LinphoneActivity.instance().mAlwaysChangingPhoneAngle);
+			Log.d("mAlwaysChangingPhoneAngle", mAlwaysChangingPhoneAngle);
 
-			if (LinphoneActivity.instance().mAlwaysChangingPhoneAngle == degrees) {
+			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;
 			}
-			LinphoneActivity.instance().mAlwaysChangingPhoneAngle = degrees;
+			mAlwaysChangingPhoneAngle = degrees;
 
 
 			Log.d("Phone orientation changed to ", degrees);
-			LinphoneActivity.instance().lastDeviceAngle = degrees;
+			lastDeviceAngle = degrees;
 			cameraPreview.removeAllViews();
 			mPreview.surfaceDestroyed(mPreview.getHolder());
 			mPreview = new CameraPreview(myContext, mCamera);
@@ -497,7 +501,8 @@ public class DialerFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 
-
+		mOrientationHelper.enable();
+		LinphoneActivity.instance().mOrientationHelper.disable();
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
 			LinphoneActivity.instance().updateDialerFragment(this);
