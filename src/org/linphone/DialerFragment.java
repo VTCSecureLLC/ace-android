@@ -112,6 +112,11 @@ public class DialerFragment extends Fragment {
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
 		mAddress.setDialerFragment(this);
 
+		int camera = CameraPreview.findFrontFacingCamera();
+		if(camera == -1){
+			camera = 0;
+		}
+		LinphoneManager.getLc().setVideoDevice(camera);
 		// VTCSecure SIP Domain selection 
 		final Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
 
@@ -265,8 +270,6 @@ public class DialerFragment extends Fragment {
 		view.setBackgroundResource(R.drawable.background_theme_new);
 
 
-		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
-		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 
 //		try {
 //			if (!LinphoneActivity.instance().isTablet()) {
@@ -277,34 +280,22 @@ public class DialerFragment extends Fragment {
 //		}
 		getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		myContext = getActivity().getApplication().getBaseContext();
+        
+        startOrientationSensor();
 
-
+	return view;
+}
+	public void  initialize_camera(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
+		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 		try {
 			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled)
-				initialize_camera(view);
+				initialize_camera(dialer_view);
 		}catch(Throwable e){
 
 		}
-		startOrientationSensor();
-
-		return view;
 	}
-	private int findFrontFacingCamera() {
-		int cameraId = -1;
-		// Search for the front facing camera
-		int numberOfCameras = Camera.getNumberOfCameras();
-		for (int i = 0; i < numberOfCameras; i++) {
-			Camera.CameraInfo info = new Camera.CameraInfo();
-			Camera.getCameraInfo(i, info);
-			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				cameraId = i;
-				cameraFront = true;
-				break;
-			}
-		}
-		return cameraId;
-	}
-
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void initialize_camera(View view) {
 		cameraPreview = (LinearLayout) view.findViewById(R.id.camera_preview);
@@ -327,7 +318,7 @@ public class DialerFragment extends Fragment {
 
 	}
 
-//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 //	public View.OnLayoutChangeListener camera_view_listener(){
 //		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
 //			@Override
@@ -371,7 +362,7 @@ public class DialerFragment extends Fragment {
 //		};
 //		return camera_view_listener;
 //	};
-		//	@Override
+	//	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
 //		final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
@@ -381,6 +372,7 @@ public class DialerFragment extends Fragment {
 //			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 //		}
 //	}
+
 //		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
 //			final double ASPECT_TOLERANCE = 0.1;
 //			double targetRatio=(double)h / w;
@@ -412,7 +404,8 @@ public class DialerFragment extends Fragment {
 //			}
 //			return optimalSize;
 //		}
-	/**
+
+    /**
 	 * @return null if not ready yet
 	 */
 	public static DialerFragment instance() { 
@@ -422,6 +415,9 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		if(mPreview!=null){
+		mPreview.surfaceDestroyed(null);
+		}
 		//releaseCamera();
 //		if (androidVideoWindowImpl != null) {
 //			synchronized (androidVideoWindowImpl) {
@@ -433,6 +429,7 @@ public class DialerFragment extends Fragment {
 //			}
 //		}
 	}
+
 //	private void releaseCamera() {
 //		// stop and release camera
 //		if (mCamera != null) {
@@ -493,12 +490,13 @@ public class DialerFragment extends Fragment {
 			mPreview.surfaceDestroyed(mPreview.getHolder());
 			mPreview = new CameraPreview(myContext, mCamera);
 			cameraPreview.addView(mPreview);
+
 		}
 	}
-
 	@Override
 	public void onResume() {
 		super.onResume();
+
 
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
@@ -517,7 +515,7 @@ public class DialerFragment extends Fragment {
 		}
 
 
-
+		initialize_camera();
 		resetLayout(isCallTransferOngoing);
 	}
 	private boolean hasCamera(Context context) {

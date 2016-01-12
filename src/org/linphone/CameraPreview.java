@@ -31,7 +31,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Log.d("surfaceCreated", "surfaceCreated");
 		try {
 			// create the surface and start camera preview
-			Log.d("mCamera",String.valueOf(mCamera));
+			Log.d("mCamera", String.valueOf(mCamera));
 			if (mCamera == null) {
 				mCamera.setPreviewDisplay(mHolder);
 				mCamera.startPreview();
@@ -40,8 +40,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			Log.d(VIEW_LOG_TAG, "Error setting camera preview: " + e.getMessage());
 		}
 	}
-	public int findFrontFacingCamera() {
-		int cameraId = -1;
+	 public static int findFrontFacingCamera() {
+
+		 //Set to zero initially, some devices for some reason can't use the locate camera functions, but zero still works.
+		 int cameraId = 0;
 		// Search for the front facing camera
 		int numberOfCameras = Camera.getNumberOfCameras();
 		for (int i = 0; i < numberOfCameras; i++) {
@@ -55,7 +57,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		}
 		return cameraId;
 	}
-	public void refreshCamera(SurfaceHolder holder, Camera camera) {
+	public void refreshCamera(SurfaceHolder holder) {
 		Log.d("refreshCamera","refreshCamera");
 		mHolder=holder;
 		if (mHolder.getSurface() == null) {
@@ -64,18 +66,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			return;
 		}
 		// stop preview before making changes
+
 		try{
-			camera.stopPreview();
+            if( mCamera!= null)
+                mCamera.stopPreview();
 		}catch(Throwable e){
 			e.printStackTrace();
 		}
 
 		try {
-			camera = Camera.open(findFrontFacingCamera());
+            if( mCamera == null)
+                mCamera = Camera.open(findFrontFacingCamera());
 		}catch(Throwable e){
 			e.printStackTrace();
 		}
-
+		if(mCamera != null){
+			mCamera.stopPreview();
+		}
 		Log.d("mCamera.stopPreview()", "mCamera.stopPreview()");
 
 		// set preview size and make any resize, rotate or
@@ -83,7 +90,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		// start preview with new settings
 
 		Log.d("setCamera","setCamera");
-		setCamera(camera);
+		//setCamera(mCamera);
 		try {
 			int layoutWidth = this.getWidth();
 			int layoutHeight = this.getHeight();
@@ -91,13 +98,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
 
 
-			setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), camera);
+			setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), mCamera);
 
-			camera.setPreviewDisplay(mHolder);
-			Camera.Parameters parameters = camera.getParameters();
+			mCamera.setPreviewDisplay(mHolder);
+			Camera.Parameters parameters = mCamera.getParameters();
 			Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
 			parameters.setPreviewSize(size.width, size.height);
-			camera.setParameters(parameters);
+			mCamera.setParameters(parameters);
 
 			if(LinphoneActivity.instance().isTablet()){
 				int aspect_width=layoutWidth;
@@ -105,7 +112,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width,aspect_height));
 			}
 
-			camera.startPreview();
+			mCamera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
 		}
@@ -196,7 +203,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		// If your preview can change or rotate, take care of those events here.
 		// Make sure to stop the preview before resizing or reformatting it.
 		Log.d("surfaceChanged","surfaceChanged");
-		refreshCamera(holder, mCamera);
+		refreshCamera(holder);
 	}
 
 	public void setCamera(Camera camera) {
@@ -206,14 +213,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	}
 
 	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.d("Camera surface destroyed","destroyed");
+	public void surfaceDestroyed(SurfaceHolder holder)  {
+		Log.w("Camera surface destroy", "destroyed");
 		if (mCamera != null) {
-			Log.d("Camera surface destroyed","destroyed");
+			Log.w("Camera surface destroy", "destroyed");
 			mCamera.stopPreview();
 			mCamera.release();
 			mCamera = null;
 		}
-
 	}
 }
