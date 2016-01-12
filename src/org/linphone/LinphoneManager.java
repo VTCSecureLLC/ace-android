@@ -953,7 +953,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
 
 
-		if (state == State.IncomingReceived && auto_answer) {
+		if (state == State.IncomingReceived && auto_answer && lc.getCalls().length == 1) {
 			try {
 				mLc.acceptCall(call);
 			} catch (LinphoneCoreException e) {
