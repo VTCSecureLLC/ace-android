@@ -104,8 +104,12 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
         };
         
         instance = this;
-		String query = "_rueconfig._tcp.aceconnect.vatrp.net";
-		srvLookup(query);
+		try {
+			String query = "_rueconfig._tcp.aceconnect.vatrp.net";
+			srvLookup(query);
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
 	};
 	
 	@Override
