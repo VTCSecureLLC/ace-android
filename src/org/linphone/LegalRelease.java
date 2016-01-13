@@ -120,8 +120,7 @@ public class LegalRelease extends Activity {
             public void onClick(View v) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LegalRelease.this);
                 prefs.edit().putBoolean("accepted_legal_release", true).commit();
-                LinphonePreferences.instance().firstLaunchSuccessful();
-                startActivity(new Intent().setClass(LegalRelease.this, LinphoneLauncherActivity.class));
+                startActivity(new Intent().setClass(LegalRelease.this, LinphoneActivity.class));
                 LegalRelease.this.finish();
             }
         });
