@@ -1,5 +1,6 @@
 package org.linphone;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -119,7 +120,7 @@ public class LegalRelease extends Activity {
             public void onClick(View v) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LegalRelease.this);
                 prefs.edit().putBoolean("accepted_legal_release", true).commit();
-                LegalRelease.this.startActivity(new Intent(LegalRelease.this, LinphoneLauncherActivity.class));
+                LegalRelease.this.startActivity(new Intent(LegalRelease.this, LinphoneActivity.class));
                 LegalRelease.this.finish();
             }
         });
@@ -127,24 +128,26 @@ public class LegalRelease extends Activity {
         ((Button)findViewById(R.id.declineLegalButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(LinphoneActivity.isInstanciated()) {
-                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-                    if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
-                        LegalRelease.this.finishAffinity();
-                    } else{
-                        LegalRelease.this.finish();
-                    }
+                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
+                    api14AppClose();
+                } else{
+                    LegalRelease.this.finish();
                 }
             }
         });
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    protected void api14AppClose(){
+        LegalRelease.this.finishAffinity();
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
-            LegalRelease.this.finishAffinity();
+            api14AppClose();
         } else{
             LegalRelease.this.finish();
         }

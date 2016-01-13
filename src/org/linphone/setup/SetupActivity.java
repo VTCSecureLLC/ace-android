@@ -146,7 +146,6 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	private void srvLookup(String query){
 		try {
 			Record[] records = new Lookup(query, Type.SRV).run();
-
 			for (Record record : records) {
 				SRVRecord srv = (SRVRecord) record;
 
