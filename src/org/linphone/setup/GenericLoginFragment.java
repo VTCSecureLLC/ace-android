@@ -157,9 +157,9 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		retrieveProviderTask.execute();
 		return view;
 	}
-
+	//Helper function to lookup an SRV record given a URL String representation
 	protected void srvLookup(String query){
-		try {
+		try { //Perform lookup on URL and iterate through all records returned, printing hostname:port to stdout
 			Record[] records = new Lookup(query, Type.SRV).run();
 			if (records != null) {
 				for (Record record : records) {
@@ -278,10 +278,12 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		else if(id == R.id.ab_back)
 			getActivity().onBackPressed();
 	}
-
+	//Helper class to pull all available providers and perform an SRV lookup asynchronously
 	private class ProviderNetworkOperation extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected Void doInBackground(Void... params) {
+			//To perform an SRV lookup simply pass a URL to the srvLookup(String query) function.
+			//Until our requirements are better defined for interop we are hardcoding to the Ace-Connect RUE Config address
 			String query = "_rueconfig._tcp.aceconnect.vatrp.net";
 			srvLookup(query);
 			loadProviderDomainsFromCache();
