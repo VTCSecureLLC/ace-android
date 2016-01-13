@@ -191,11 +191,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
 			startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
 		} else if (LinphonePreferences.instance().isFirstLaunch()) {
-			if (LinphonePreferences.instance().getAccountCount() > 0) {
-				LinphonePreferences.instance().firstLaunchSuccessful();
-			} else {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
-			}
+				LinphonePreferences.instance().firstLaunchSuccessful();
 		}
 
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
@@ -1248,9 +1245,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (LinphonePreferences.instance().getAccountCount() == 0) {
-			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
-		}
+//		if (LinphonePreferences.instance().getAccountCount() == 0) {
+//			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
+//		}
 		// Attempt to update user location
 		try {
 			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
