@@ -326,10 +326,29 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					false);
 
 			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			main_text.setText(domains.get(position));
+			String providerName = domains.get(position);
+			main_text.setText(providerName);
 			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if(position < drawables.length) {
-				left_icon.setImageResource(this.drawables[position]/*R.drawable.provider_logo_sorenson*/);
+			if(providerName.toLowerCase().contains("sorenson")) {
+				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
+			}
+			else if(providerName.toLowerCase().contains("zvrs")) {
+				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
+			}
+			else if(providerName.toLowerCase().contains("star")) {
+				left_icon.setImageResource(R.drawable.provider_logo_caag);
+			}
+			else if(providerName.toLowerCase().contains("convo")){
+				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
+			}
+			else if(providerName.toLowerCase().contains("global")){
+				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
+			}
+			else if(providerName.toLowerCase().contains("purple")){
+				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
+			}
+			else if(providerName.toLowerCase().contains("ace")){
+				left_icon.setImageResource(R.drawable.ic_launcher);
 			}
 			return mySpinner;
 		}
@@ -341,10 +360,29 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					false);
 
 			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			main_text.setText(domains.get(position));
+			String providerName = domains.get(position);
+			main_text.setText(providerName);
 			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if(position < drawables.length) {
-				left_icon.setImageResource(this.drawables[position]/*R.drawable.provider_logo_sorenson*/);
+			if(providerName.toLowerCase().contains("sorenson")) {
+				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
+			}
+			else if(providerName.toLowerCase().contains("zvrs")) {
+				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
+			}
+			else if(providerName.toLowerCase().contains("star")) {
+				left_icon.setImageResource(R.drawable.provider_logo_caag);
+			}
+			else if(providerName.toLowerCase().contains("convo")){
+				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
+			}
+			else if(providerName.toLowerCase().contains("global")){
+				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
+			}
+			else if(providerName.toLowerCase().contains("purple")){
+				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
+			}
+			else if(providerName.toLowerCase().contains("ace")){
+				left_icon.setImageResource(R.drawable.ic_launcher);
 			}
 			return mySpinner;
 		}
