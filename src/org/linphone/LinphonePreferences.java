@@ -56,6 +56,11 @@ public class LinphonePreferences {
 
 	public void setContext(Context c) {
 		mContext = c;
+
+	}
+	public Context  getContext()
+	{
+		return mContext;
 	}
 
 	private String getString(int key) {
@@ -68,7 +73,8 @@ public class LinphonePreferences {
 
 	private LinphoneCore getLc() {
 		if (!LinphoneManager.isInstanciated()){
-			LinphoneManager.createAndStart(LinphoneActivity.ctx);
+			//LinphoneManager.createAndStart(LinphoneActivity.ctx);
+			return null;
 		}
 
 		return LinphoneManager.getLcIfManagerNotDestroyedOrNull();
@@ -585,7 +591,7 @@ public class LinphonePreferences {
 		try {
 			LinphoneProxyConfig prxCfg = getProxyConfig(n);
 			prxCfg.edit();
-			prxCfg.setExpires(Integer.parseInt(expire));
+			prxCfg.setExpires(280);
 			prxCfg.done();
 		} catch (NumberFormatException nfe) { }
 	}

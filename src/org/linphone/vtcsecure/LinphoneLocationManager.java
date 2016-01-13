@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 
 public class LinphoneLocationManager implements LocationListener {
     LocationManager mLocationManager;
@@ -30,14 +31,18 @@ public class LinphoneLocationManager implements LocationListener {
     }
 
     public void updateLocation() {
-
+    try {
         Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if(location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
-        	userLocation = location;
-        }
-        else {
+        if (location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+            userLocation = location;
+        } else {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         }
+    }
+
+    catch(Exception e){
+        Log.e("E", "Trying to update location but GPS is not available on this device.");
+    }
     }
 
     public void onLocationChanged(Location location) {

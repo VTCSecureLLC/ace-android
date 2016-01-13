@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -90,6 +91,7 @@ import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import java.io.ByteArrayInputStream;
@@ -390,6 +392,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public void newOutgoingCall(AddressType address) {
+		if(!ApplicationPermissionManager.askPermissionifnotGranted(LinphoneActivity.instance(), Manifest.permission.RECORD_AUDIO, 4))
+			return;
 		String to = address.getText().toString();
 		newOutgoingCall(to, address.getDisplayedName());
 	}
@@ -439,6 +443,12 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	private void resetCameraFromPreferences() {
+		if(LinphoneActivity.ctx==null)
+			return;
+		if(!ApplicationPermissionManager.isPermissionGranted(LinphoneActivity.ctx, Manifest.permission.CAMERA))
+		{
+			return;
+		}
 		boolean useFrontCam = mPrefs.useFrontCam();
 
 		int camId = 0;
@@ -851,11 +861,11 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				if (LinphoneActivity.isInstanciated() && !LinphoneActivity.instance().displayChatMessageNotification(from.asStringUriOnly())) {
 					return;
 				} else {
-					if (contact != null) {
-						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
-					} else {
-						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
-					}
+//					if (contact != null) {
+//						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
+//					} else {
+//						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
+//					}
 				}
 			}
 		} catch (Exception e) {
@@ -943,7 +953,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
 
 
-		if (state == State.IncomingReceived && auto_answer) {
+		if (state == State.IncomingReceived && auto_answer && lc.getCalls().length == 1) {
 			try {
 				mLc.acceptCall(call);
 			} catch (LinphoneCoreException e) {
@@ -1540,6 +1550,30 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 					}
 				}
 			}
+
+	}
+	public void setAudioPayloadsOrder() {
+		LinphoneCore lc = getLcIfManagerNotDestroyedOrNull();
+		if (lc == null)
+			return;
+		PayloadType currentPayloadType[] = lc.getAudioCodecs();
+		int currentPayloadCount = currentPayloadType.length;
+		PayloadType orderedPayloadType[] = new PayloadType[5];
+
+		for (int i = 0; i < currentPayloadCount; i++) {
+			String key = currentPayloadType[i].getMime() + "/" + currentPayloadType[i].getRate();
+			if (key.equals("G722/8000"))
+				orderedPayloadType[0] = currentPayloadType[i];
+			else if (key.equals("PCMU/8000"))
+				orderedPayloadType[1] = currentPayloadType[i];
+			else if (key.equals("PCMA/8000"))
+				orderedPayloadType[2] = currentPayloadType[i];
+			else if (key.equals("speex/32000"))
+				orderedPayloadType[3] = currentPayloadType[i];
+			else if (key.equals("speex/8000"))
+				orderedPayloadType[4] = currentPayloadType[i];
+		}
+		lc.setAudioCodecs(orderedPayloadType);
 
 	}
 

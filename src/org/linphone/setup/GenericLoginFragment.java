@@ -18,32 +18,49 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.linphone.LegalRelease;
+import org.linphone.LinphoneActivity;
 import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Sylvain Berfini
  */
 public class GenericLoginFragment extends Fragment implements OnClickListener {
-	private EditText login, password, domain, port, transport, userid;;
+	private EditText login, password, domain, port, userid;
+	private Spinner transport;
 	private ImageView apply;
 	View advancedLoginPanel;
 	Button advancedLoginPanelToggle;
 	boolean isAdvancedLogin = false;
 	Spinner sp_provider;
+	List<String> transportOptions = new ArrayList<String>();
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -52,45 +69,76 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
 		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
-
-		port = (EditText)view.findViewById(R.id.et_prv_port);
-		transport = (EditText)view.findViewById(R.id.et_prv_transport);
-		userid = (EditText)view.findViewById(R.id.et_prv_userid);
-
-		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
-		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
 		
-		sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem, 
-				new String[]{ "Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
-				new int[]{R.drawable.provider_logo_sorenson,
-			R.drawable.provider_logo_zvrs,
-			R.drawable.provider_logo_caag,//caag
-			R.drawable.provider_logo_purplevrs,
-			R.drawable.provider_logo_globalvrs,//global
-			R.drawable.provider_logo_convorelay}));
-		
-		view.findViewById(R.id.ab_back).setOnClickListener(this);
+			port = (EditText) view.findViewById(R.id.et_prv_port);
+			transport = (Spinner) view.findViewById(R.id.spin_prv_transport);
 
-		advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
-		advancedLoginPanel.setVisibility(View.GONE);
-		advancedLoginPanelToggle = (Button)view.findViewById(R.id.toggleAdvancedLoginPanel);
-		advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (!isAdvancedLogin) {
-					advancedLoginPanel.setVisibility(View.VISIBLE);
-					((Button) v).setText("-");
-					isAdvancedLogin = true;
-					password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-				} else {
-					advancedLoginPanel.setVisibility(View.GONE);
-					((Button) v).setText("+");
-					isAdvancedLogin = false;
-					password.setImeOptions(EditorInfo.IME_ACTION_DONE);
-				}
+			transportOptions.add("TCP");
+			transportOptions.add("TLS");
+
+			try {
+				ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
+						android.R.layout.simple_spinner_item, transportOptions);
+				dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				transport.setAdapter(dataAdapter);
+				transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+						if (transportOptions.get(position).equals("TCP")) {
+							port.setText("5060");
+							port.setText(port.getText().toString().replace("5061", "5060"));
+						} else if (transportOptions.get(position).equals("TLS")) {
+							port.setText("5061");
+							port.setText(port.getText().toString().replace("5060", "5061"));
+						}
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+
+					}
+				});
 			}
-		});
-		
+
+			catch(Exception e){
+				Log.e("E", "Spinner is not supported by default on this device. Defaulting to TCP transport.");
+			}
+			userid = (EditText) view.findViewById(R.id.et_prv_userid);
+
+			view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
+			sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
+
+			sp_provider.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
+					new String[]{"Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS", "Convo Relay"},
+					new int[]{R.drawable.provider_logo_sorenson,
+							R.drawable.provider_logo_zvrs,
+							R.drawable.provider_logo_caag,//caag
+							R.drawable.provider_logo_purplevrs,
+							R.drawable.provider_logo_globalvrs,//global
+							R.drawable.provider_logo_convorelay}));
+
+			view.findViewById(R.id.ab_back).setOnClickListener(this);
+
+			advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
+			advancedLoginPanel.setVisibility(View.GONE);
+			advancedLoginPanelToggle = (Button) view.findViewById(R.id.toggleAdvancedLoginPanel);
+			advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (!isAdvancedLogin) {
+						advancedLoginPanel.setVisibility(View.VISIBLE);
+						((Button) v).setText("-");
+						isAdvancedLogin = true;
+						password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+					} else {
+						advancedLoginPanel.setVisibility(View.GONE);
+						((Button) v).setText("+");
+						isAdvancedLogin = false;
+						password.setImeOptions(EditorInfo.IME_ACTION_DONE);
+					}
+				}
+			});
+
 		return view;
 	}
 
@@ -103,15 +151,35 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
 				return;
 			}
-			SetupActivity.instance().genericLogIn(login.getText().toString().replaceAll("\\s", ""),
-					password.getText().toString().replaceAll("\\s", ""), domain.getText().toString().replaceAll("\\s", ""));
+
+			//set default transport to tcp
+			LinphoneAddress.TransportType transport_type = null;
+			try {
+				String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
+				if (selectedTransport.toLowerCase().equals("tcp")) {
+					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+				} else if (selectedTransport.toLowerCase().equals("tls")) {
+					transport_type = LinphoneAddress.TransportType.LinphoneTransportTls;
+				} else {
+					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+				}
+			}
+
+			catch(Exception e){
+				Log.e("E", "Transport could not be found, defaulting to TCP");
+				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+			}
+			SetupActivity.instance().genericLogIn(
+					login.getText().toString().replaceAll("\\s", ""),
+					password.getText().toString().replaceAll("\\s", ""),
+					domain.getText().toString().replaceAll("\\s", ""),
+					transport_type,
+					port.getText().toString().replaceAll("\\s", ""));
 			
 		}
 		else if(id == R.id.ab_back)
 			getActivity().onBackPressed();
 	}
-	
-	
 
 	
 	class SpinnerAdapter extends ArrayAdapter<String> {
@@ -147,8 +215,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 
 			return mySpinner;
 		}
-		
-	
+
 		public View getCustomViewSpinner(int position, View convertView,
 				ViewGroup parent) {
 			LayoutInflater inflater = getActivity().getLayoutInflater();

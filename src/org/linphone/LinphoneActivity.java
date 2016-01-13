@@ -18,6 +18,7 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,6 +36,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.Fragment.SavedState;
 import android.support.v4.app.FragmentActivity;
@@ -80,6 +82,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
+import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
@@ -125,7 +128,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private SavedState dialerSavedState;
 	private boolean newProxyConfig;
 	private boolean isAnimationDisabled = false, preferLinphoneContacts = false;
-	private OrientationEventListener mOrientationHelper;
+	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
 
 	public static View topLayout;
@@ -133,28 +136,33 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	static final boolean isInstanciated() {
 		return instance != null;
 	}
+	public LinphoneActivity()
+	{
+		instance = this;
+	}
 
 	public static final LinphoneActivity instance() {
 		if (instance != null)
 			return instance;
 		throw new RuntimeException("LinphoneActivity not instantiated yet");
 	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 //		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
 //		LoginManager.verifyLogin(this, getIntent());
-		checkForUpdates();
 		ctx=this;
 		act=this;
+		instance = this;
+		checkForUpdates();
+
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
 		        .setTitle(getString(R.string.location_for_911_disabled_title))
 		        .setMessage(getString(R.string.location_for_911_disabled_message))
 		        .setPositiveButton(R.string.button_ok,null)
 		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) { 
+		            public void onClick(DialogInterface dialog, int which) {
 		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
 		            }
 		         })
@@ -205,7 +213,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		topLayout=findViewById(R.id.topLayout);
 
 
-		instance = this;
+
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
 		initButtons();
 
@@ -226,7 +234,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				if(!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
 					cr.markAsRead();
 				}
-		        displayMissedChats(getChatStorage().getUnreadMessageCount());
+		        //displayMissedChats(getChatStorage().getUnreadMessageCount());
 		        if (messageListFragment != null && messageListFragment.isVisible()) {
 		            ((ChatListFragment) messageListFragment).refresh();
 		        }
@@ -244,15 +252,35 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 				if(state.equals(RegistrationState.RegistrationFailed) && newProxyConfig) {
 					newProxyConfig = false;
+
+
 					if (proxy.getError() == Reason.BadCredentials) {
 						displayCustomToast(getString(R.string.error_bad_credentials), Toast.LENGTH_LONG);
+						go_back_to_login();
 					}
 					if (proxy.getError() == Reason.Unauthorized) {
 						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
 					}
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
+						//Potential Issues that through this flag
+						//bad port
+						//no internet connection
+						//bad server address
+						//mismatch transport proto-call and port number
+
+
+						//throw them back to log-in
+
+
 					}
+
+
+
+
+
+
+
 				}
 			}
 
@@ -313,8 +341,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		mAlwaysChangingPhoneAngle = rotation;
 
 		updateAnimationsState();
+		startOrientationSensor();
+	}
+	private void go_back_to_login(){
+		deleteDefaultAccount();
+		Log.d("Restarting Login because registration failed");
+		Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+		startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
 	}
 
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
+	}
 	private void initButtons() {
 		menu = (LinearLayout) findViewById(R.id.menu);
 		mark = (LinearLayout) findViewById(R.id.mark);
@@ -748,13 +789,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				intent.putExtra("PictureUri", pictureUri);
 				intent.putExtra("ThumbnailUri", thumbnailUri);
 			}
-			startOrientationSensor();
+			//
+			// startOrientationSensor();
 			startActivityForResult(intent, CHAT_ACTIVITY);
 		}
 
-		LinphoneService.instance().resetMessageNotifCount();
-		LinphoneService.instance().removeMessageNotification();
-		displayMissedChats(getChatStorage().getUnreadMessageCount());
+		//LinphoneService.instance().resetMessageNotifCount();
+		//LinphoneService.instance().removeMessageNotification();
+		//displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	@Override
@@ -772,20 +814,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
 			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			if(!ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_CONTACTS))
+			{
+				ApplicationPermissionManager.askPermission(this, Manifest.permission.WRITE_CONTACTS, REQUEST_CONTACTS_PERMISSION);
+
+			}
 		} else if (id == R.id.dialer) {
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			if(!isTablet()) {
 				if(DialerFragment.instance() != null) {
-						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().SELF_VIEW_INDEX) {
-							DialerFragment.instance().cameraPreview.setVisibility(View.GONE);
+						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
 							DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
-							DialerFragment.instance().dialer_content.setEnabled(true);
-							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
-						} else {
-							DialerFragment.instance().cameraPreview.setVisibility(View.VISIBLE);
-							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
-							DialerFragment.instance().dialer_content.setEnabled(false);
 							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+						} else {
+							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
+							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
 						}
 					}
 			}
@@ -924,7 +967,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 	public void updateMissedChatCount() {
-		displayMissedChats(getChatStorage().getUnreadMessageCount());
+		//displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	public int onMessageSent(String to, String message) {
@@ -961,7 +1004,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedCalls.setVisibility(View.GONE);
 		}
 	}
-
+/*
 	private void displayMissedChats(final int missedChatCount) {
 		if (missedChatCount > 0) {
 			missedChats.setText(missedChatCount + "");
@@ -978,7 +1021,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedChats.clearAnimation();
 			missedChats.setVisibility(View.GONE);
 		}
-	}
+	}*/
 
 	public void displayCustomToast(final String message, final int duration) {
 		LayoutInflater inflater = getLayoutInflater();
@@ -1022,14 +1065,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public void startVideoActivity(LinphoneCall currentCall) {
 		Intent intent = new Intent(this, InCallActivity.class);
 		intent.putExtra("VideoEnabled", true);
-		startOrientationSensor();
+		//startOrientationSensor();
 		startActivityForResult(intent, CALL_ACTIVITY);
 	}
 
 	public void startIncallActivity(LinphoneCall currentCall) {
 		Intent intent = new Intent(this, InCallActivity.class);
 		intent.putExtra("VideoEnabled", false);
-		startOrientationSensor();
+		//startOrientationSensor();
 		startActivityForResult(intent, CALL_ACTIVITY);
 	}
 
@@ -1059,8 +1102,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		mOrientationHelper.enable();
 	}
 
-	private int mAlwaysChangingPhoneAngle = -1;
-	private int lastDeviceAngle = 270;
+	public int mAlwaysChangingPhoneAngle = -1;
+	public int lastDeviceAngle = 0;
 	public int getDeviceOrientation(){
 		return lastDeviceAngle;
 	}
@@ -1212,15 +1255,25 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		// Attempt to update user location
-		boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-		if (hasGps) {
-			LinphoneLocationManager.instance(this).updateLocation();
-		} else {
-			Log.d("TAG", "NO GPS");
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
+		if(!hasAcceptedRelease){
+			Intent intent = new Intent(ctx, LegalRelease.class);
+			ctx.startActivity(intent);
 		}
 
+		// Attempt to update user location
+		try {
+			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+			if (hasGps) {
+				LinphoneLocationManager.instance(this).updateLocation();
+			} else {
+				Log.d("TAG", "NO GPS");
+			}
+		}
+		catch(NullPointerException e){
+			Log.e("E", "Device does not have GPS support");
+		}
 		if (!LinphoneService.isReady())  {
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}
@@ -1472,6 +1525,45 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private void unregisterManagers() {
 		UpdateManager.unregister();
 		// unregister other managers if necessary...
+	}
+
+
+
+
+	void onPermissionGrandted(int permission_code)
+	{
+		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+		if(permission_code==REQUEST_CONTACTS_PERMISSION && currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+		{
+			//((ContactsFragment)fragment2).invalidate();
+		}
+		//if contacts and currentfragment is contact
+		//reload contacts
+
+
+
+	}
+
+	public final static int REQUEST_CAMERA_PERMISSION = 1;
+	public final static int REQUEST_CONTACTS_PERMISSION = 2;
+	public final static int REQUEST_STORAGE_PERMISSION = 3;
+	public final static int REQUEST_MIC_PERMISSION = 4;
+
+
+
+
+
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+										   @NonNull int[] grantResults)
+	{
+		Log.d("permission result jan");
+		if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			onPermissionGrandted(requestCode);
+		}
+
+
 	}
 }
 

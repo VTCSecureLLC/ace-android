@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.Contacts;
+import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
 import org.linphone.R;
@@ -145,16 +146,23 @@ public class VCardIO extends Service {
         if (text == null) {
         	mNM.cancelAll();
         } else {
+
+			PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+					new Intent(this, App.class), 0);
+			NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+			builder.setSmallIcon(R.drawable.status_icon);
+			builder.setContentTitle("VCard IO");
+			builder.setContentText(detailedText);
+			builder.setContentIntent(contentIntent);
+
+
         	// Set the icon, scrolling text and timestamp
-        	Notification notification = new Notification(R.drawable.status_icon, text,
-        			System.currentTimeMillis());
+        	Notification notification = builder.build();
 
         	// The PendingIntent to launch our activity if the user selects this notification
-        	PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-        			new Intent(this, App.class), 0);
+
 
         	// Set the info for the views that show in the notification panel.
-        	notification.setLatestEventInfo(this, "VCard IO", detailedText, contentIntent);
 
         	// Send the notification.
         	// We use a layout id because it is a unique number.  We use it later to cancel.

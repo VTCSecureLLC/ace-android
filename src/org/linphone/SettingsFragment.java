@@ -85,7 +85,16 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	@Override
 	public void onCreate(Bundle bundle) {
+		if(mPrefs.getContext()==null)
+			mPrefs.setContext(getActivity());
+		if(LinphoneActivity.ctx == null)
+			LinphoneActivity.ctx = getContext();
 		super.onCreate(bundle);
+		if(!LinphoneActivity.isInstanciated() || !LinphoneManager.isInstanciated())
+		{
+			return;
+		}
+
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		editor = prefs.edit();
@@ -156,7 +165,7 @@ public class SettingsFragment extends PreferencesListFragment {
 						.setPositiveButton(R.string.yes,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int whichButton) {
-										deleteAll();
+										deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
 										startActivityForResult(intent, WIZARD_INTENT);
 									}
@@ -378,6 +387,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		for (int i = 0; i < nbAccounts; i++) {
 			LinphonePreferences.instance().deleteAccount(i);
 		}
+	}
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
 	}
 	private void initAccounts() {
 		PreferenceCategory accounts = (PreferenceCategory) findPreference(getString(R.string.pref_sipaccounts_key));
@@ -815,6 +830,8 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initAudioVideoSettings(){
+		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
+		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
 		// VATRP-1017 -- Add global speaker and mic mute logic
 		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
@@ -845,6 +862,25 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void setAudioVideoPreferencesListener(){
+		findPreference(getString(R.string.pref_av_rtcp_feedback_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String value = (String)newValue;
+				if(value.compareToIgnoreCase("Off") == 0){
+					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
+				}
+				else if(value.compareToIgnoreCase("Implicit") == 0){
+					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
+					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				else if(value.compareToIgnoreCase("Explicit") == 0){
+					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
+					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				return true;
+			}
+		});
 		//VATRP-1017 -- Add global speaker and mic mute logic
 		findPreference(getString(R.string.pref_av_speaker_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
@@ -1473,8 +1509,6 @@ public class SettingsFragment extends PreferencesListFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		initAccounts();
-
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.SETTINGS);
 
@@ -1482,6 +1516,16 @@ public class SettingsFragment extends PreferencesListFragment {
 				LinphoneActivity.instance().hideStatusBar();
 			}
 		}
+
+		if(isAdvancedSettings){
+			setPreferenceScreen(null);
+			addPreferencesFromResource(R.xml.preferences);
+			initSettings();
+			setListeners();
+			hideSettings();
+		}
+
+		initAccounts();
 	}
 
 

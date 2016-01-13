@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/dialer_background"
-    android:background="@drawable/background">
+    android:background="@drawable/background"
+    android:clickable="false">
 
-        <SurfaceView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:focusable="false"
-            android:keepScreenOn="true"
-            android:id="@+id/phoneDialerCameraPreview" />
+    <LinearLayout
+        android:id="@+id/camera_preview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+    </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/dialerContent"
