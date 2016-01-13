@@ -478,10 +478,10 @@ public class DialerFragment extends Fragment {
 			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
 				degrees = 270;
 
-			Log.d("onOrientationChanged_Dialer", o);
+			/*Log.d("onOrientationChanged_Dialer", o);
 			Log.d("degrees", degrees);
 			Log.d("mAlwaysChangingPhoneAngle", mAlwaysChangingPhoneAngle);
-
+			*/
 			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;
 			}
