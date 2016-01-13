@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import org.linphone.LegalRelease;
 import org.linphone.LinphoneActivity;
+import org.linphone.LinphonePreferences;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 
