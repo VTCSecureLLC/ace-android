@@ -166,6 +166,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					login.getText().toString().replaceAll("\\s", ""),
 					password.getText().toString().replaceAll("\\s", ""),
 					domain.getText().toString().replaceAll("\\s", ""),
+					userid.getText().toString().replaceAll("\\s", ""),
 					transport_type,
 					port.getText().toString().replaceAll("\\s", ""));
 			
