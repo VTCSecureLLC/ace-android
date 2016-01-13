@@ -547,7 +547,7 @@ public class StatusFragment extends Fragment {
 									dl.setText(String.valueOf((int) videoStats.getDownloadBandwidth()) + " / " + (int) audioStats.getDownloadBandwidth() + " kbits/s");
 									ul.setText(String.valueOf((int) videoStats.getUploadBandwidth()) +  " / " + (int) audioStats.getUploadBandwidth() + " kbits/s");
 									ice.setText(videoStats.getIceState().toString());
-									
+
 									videoResolutionLayout.setVisibility(View.VISIBLE);
 									videoResolution.setText("\u2191 " + params.getSentVideoSize().toDisplayableString() + " / \u2193 " + params.getReceivedVideoSize().toDisplayableString());
 									sentFpsRate.setText(String.valueOf(params.getSentFPSRate()));
@@ -576,7 +576,7 @@ public class StatusFragment extends Fragment {
 									dl.setText(String.valueOf((int) audioStats.getDownloadBandwidth()) + " kbits/s");
 									ul.setText(String.valueOf((int) audioStats.getUploadBandwidth()) + " kbits/s");
 									ice.setText(audioStats.getIceState().toString());
-									
+
 									videoResolutionLayout.setVisibility(View.GONE);
 								}
 							}
