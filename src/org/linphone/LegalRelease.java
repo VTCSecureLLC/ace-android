@@ -2,22 +2,16 @@ package org.linphone;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.linphone.R;
 
 public class LegalRelease extends Activity {
 
@@ -26,7 +20,6 @@ public class LegalRelease extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_legal_release);
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final TextView legalTextView = ((TextView)findViewById(R.id.legalTextView));
         final ScrollView scrollView = ((ScrollView)findViewById(R.id.legalScrollView));
 
@@ -125,7 +118,9 @@ public class LegalRelease extends Activity {
         ((Button)findViewById(R.id.acceptLegalButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LegalRelease.this);
                 prefs.edit().putBoolean("accepted_legal_release", true).commit();
+                LegalRelease.this.startActivity(new Intent(LegalRelease.this, LinphoneActivity.class));
                 LegalRelease.this.finish();
             }
         });
@@ -133,23 +128,29 @@ public class LegalRelease extends Activity {
         ((Button)findViewById(R.id.declineLegalButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                prefs.edit().putBoolean("accepted_legal_release", false).commit();
-                LegalRelease.this.finish();
-                if(LinphoneActivity.isInstanciated()) {
-                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-                    if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
-                        LegalRelease.this.finishAffinity();
-                    } else{
-                        LegalRelease.this.finish();
-                    }
+                int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
+                    api14AppClose();
+                } else{
+                    LegalRelease.this.finish();
                 }
             }
         });
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    protected void api14AppClose(){
+        LegalRelease.this.finishAffinity();
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        this.finish();
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
+            api14AppClose();
+        } else{
+            LegalRelease.this.finish();
+        }
     }
 }
+

@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -243,7 +242,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-		
 		if (id == R.id.btn_prv_login) {
 			if (login.getText() == null || login.length() == 0 || password.getText() == null || password.length() == 0 || domain.getText() == null || domain.length() == 0) {
 				Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
