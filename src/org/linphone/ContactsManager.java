@@ -546,7 +546,7 @@ public class ContactsManager {
 
 						contact.refresh(contentResolver);
 						//Add tag to Linphone contact if it not existed
-						if (LinphoneActivity.isInstanciated() && LinphoneActivity.instance().getResources().getBoolean(R.bool.use_linphone_tag)) {
+						if (LinphoneActivity.isInstanciated()) {
 							if (!isContactHasLinphoneTag(contact, contentResolver)) {
 								Compatibility.createLinphoneContactTag(context, contentResolver, contact,
 										findRawContactID(contentResolver, String.valueOf(contact.getID())));

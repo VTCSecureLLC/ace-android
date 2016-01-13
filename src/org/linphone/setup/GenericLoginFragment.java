@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.linphone.LinphoneActivity;
+import org.linphone.LinphonePreferences;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.xbill.DNS.Lookup;
@@ -269,6 +270,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					login.getText().toString().replaceAll("\\s", ""),
 					password.getText().toString().replaceAll("\\s", ""),
 					domain.getText().toString().replaceAll("\\s", ""),
+					userid.getText().toString().replaceAll("\\s", ""),
 					transport_type,
 					port.getText().toString().replaceAll("\\s", ""));
 			
