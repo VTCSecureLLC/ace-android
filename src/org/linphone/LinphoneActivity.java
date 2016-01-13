@@ -1255,13 +1255,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
-		if(!hasAcceptedRelease){
-			Intent intent = new Intent(ctx, LegalRelease.class);
-			ctx.startActivity(intent);
-		}
-
 		// Attempt to update user location
 		try {
 			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
