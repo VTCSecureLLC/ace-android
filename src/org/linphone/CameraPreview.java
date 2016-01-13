@@ -43,16 +43,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	 public static int findFrontFacingCamera() {
 
 		 //Set to zero initially, some devices for some reason can't use the locate camera functions, but zero still works.
-		 int cameraId = 0;
+		 int cameraId = -1;
 		// Search for the front facing camera
 		int numberOfCameras = Camera.getNumberOfCameras();
 		for (int i = 0; i < numberOfCameras; i++) {
 			Camera.CameraInfo info = new Camera.CameraInfo();
-			Camera.getCameraInfo(i, info);
-			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				cameraId = i;
-				//cameraFront = true;
-				break;
+			try {
+				Camera.getCameraInfo(i, info);
+				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+					cameraId = i;
+					//cameraFront = true;
+					break;
+				}
+			}
+			catch(Exception e){
+				e.printStackTrace();
 			}
 		}
 		return cameraId;
