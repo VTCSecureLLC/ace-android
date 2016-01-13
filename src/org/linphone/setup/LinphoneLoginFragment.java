@@ -63,7 +63,7 @@ public class LinphoneLoginFragment extends Fragment implements OnClickListener {
 		SetupActivity.instance().linphoneLogIn(
 				login.getText().toString(),
 				password.getText().toString(),
-				getResources().getString(R.string.default_domain),
+				getResources().getString(R.string.default_domain), "",
 				LinphoneAddress.TransportType.LinphoneTransportTcp,
 				getResources().getString(R.string.default_port),
 				getResources().getBoolean(R.bool.setup_account_validation_mandatory));

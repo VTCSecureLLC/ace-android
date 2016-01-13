@@ -274,33 +274,33 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		}		
 	}
 
-	private void logIn(String username, String password, String domain, TransportType transport_type, String port, boolean sendEcCalibrationResult) {
+	private void logIn(String username, String password, String domain, String userId, TransportType transport_type, String port, boolean sendEcCalibrationResult) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm != null && getCurrentFocus() != null) {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 		}
 
-        saveCreatedAccount(username, password, domain, transport_type ,port);
+        saveCreatedAccount(username, password, domain, userId, transport_type ,port);
 
 		if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
 			launchEchoCancellerCalibration(sendEcCalibrationResult);
 		}
 	}
 	
-	public void checkAccount(String username, String password, String domain, TransportType transport_type, String port) {
-		saveCreatedAccount(username, password, domain, transport_type, port);
+	public void checkAccount(String username, String password, String domain, String userId, TransportType transport_type, String port) {
+		saveCreatedAccount(username, password, domain, userId, transport_type, port);
 	}
 
-	public void linphoneLogIn(String username, String password, String domain, TransportType transport_type, String port, boolean validate) {
+	public void linphoneLogIn(String username, String password, String domain, String userId, TransportType transport_type, String port, boolean validate) {
 		if (validate) {
-			checkAccount(username, password, domain, transport_type, port);
+			checkAccount(username, password, domain, userId, transport_type, port);
 		} else {
-			logIn(username, password, domain, transport_type, port, true);
+			logIn(username, password, domain, userId, transport_type, port, true);
 		}
 	}
 
-	public void genericLogIn(String username, String password, String domain, TransportType transport_type, String port) {
-		logIn(username, password, domain, transport_type, port, false);
+	public void genericLogIn(String username, String password, String domain, String userId, TransportType transport_type, String port) {
+		logIn(username, password, domain, userId, transport_type, port, false);
 	}
 
 	private void display(SetupFragmentsEnum fragment) {
@@ -361,7 +361,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		currentFragment = SetupFragmentsEnum.REMOTE_PROVISIONING;
 	}
 	
-	public void saveCreatedAccount(String username, String password, String domain, TransportType transport_type, String port) {
+	public void saveCreatedAccount(String username, String password, String domain, String userId, TransportType transport_type, String port) {
 		if (accountCreated)
 			return;
 
@@ -401,6 +401,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		AccountBuilder builder = new AccountBuilder(LinphoneManager.getLc())
 		.setUsername(username)
 		.setDomain(domain)
+		.setUserId(userId)
 		.setPassword(password)
 		.setExpires("3600");
 		Log.d("isMainAccountLinphoneDotOrg=" + isMainAccountLinphoneDotOrg);

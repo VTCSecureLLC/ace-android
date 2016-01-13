@@ -257,7 +257,7 @@ public class WizardFragment extends Fragment {
 	    		Runnable runOk = new Runnable() {
     				public void run() {
 						Log.d("in wizard fragment saving created account");
-						SetupActivity.instance().saveCreatedAccount(username, password, context.getString(R.string.default_domain), LinphoneAddress.TransportType.LinphoneTransportTcp,context.getString(R.string.default_port));
+						SetupActivity.instance().saveCreatedAccount(username, password, context.getString(R.string.default_domain), "", LinphoneAddress.TransportType.LinphoneTransportTcp,context.getString(R.string.default_port));
     					SetupActivity.instance().displayWizardConfirm(username);
 					}
 	    		};
