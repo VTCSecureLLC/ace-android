@@ -42,13 +42,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	}
 	 public static int findFrontFacingCamera() {
 
-		 /*Return -1 if no front facing camera is found. Sanity check should always be performed on this function.*/
-		 int cameraId = -1;
+		 /*Return 0 if no front facing camera is found. 
+		 Going forward we should return -1 if no front facing camera is found 
+		 and then proceed to check for a back camera.*/
+		 int cameraId = 0;
 		// Search for the front facing camera
 		int numberOfCameras = Camera.getNumberOfCameras();
 		for (int i = 0; i < numberOfCameras; i++) {
 			Camera.CameraInfo info = new Camera.CameraInfo();
-			try { /*Try to retrieve CameraInfo, if camera is locked or exception is thrown this function will return -1 and the app will not crash*/
+			try { /*Catch any camera lock exceptions. Going forward we should return some value indicating an error
+				and then proceed to check for a back facing camera.*/
 				Camera.getCameraInfo(i, info);
 				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
 					cameraId = i;
