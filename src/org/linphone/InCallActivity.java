@@ -123,7 +123,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private LinphoneCoreListenerBase mListener;
 	private Timer outgoingRingCountTimer = null;
 
+
+
 	// RTT views
+	private int TEXT_MODE;
+	private int NO_TEXT=-1;
+	private int RTT=0;
+	private int SIP_SIMPLE=1;
 	private TextWatcher rttTextWatcher;
 	private ScrollView rtt_scrollview;
 	private View rttContainerView;
@@ -135,7 +141,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
 	private SharedPreferences prefs;
-	private TextView outgoingEditText;
+	private EditText previousoutgoingEditText;
+	private EditText outgoingEditText;
 	private TextView incomingTextView;
 	View mFragmentHolder;
 	View mViewsHolder;
@@ -176,7 +183,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
         isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
         cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
 
-		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+
+		getTextMode();
+
+
 		boolean isMicMutedPref = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
 		LinphoneManager.getLc().muteMic(isMicMutedPref);
 
@@ -400,7 +410,23 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//handleViewIntent();
 	}
 
-
+	public void getTextMode(){
+		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		Log.d("Text Send Mode" + prefs.getString(getString(R.string.pref_text_settings_send_mode_key), "RTT"));
+		switch(prefs.getString(getString(R.string.pref_text_settings_send_mode_key), "RTT"))
+		{
+			case "SIP_SIMPLE":
+				TEXT_MODE=SIP_SIMPLE;
+				break;
+			case "RTT":
+				TEXT_MODE=RTT;
+				break;
+			default:
+				TEXT_MODE=RTT;
+				break;
+		}
+		Log.d("TEXT_MODE ", TEXT_MODE);
+	}
 	public void hold_cursor_at_end_of_edit_text(final EditText et){
 		et.setCursorVisible(false);
 		et.setOnClickListener(new OnClickListener() {
@@ -419,7 +445,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 		rttTextWatcher = new TextWatcher() {
-
+			boolean enter_pressed;
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -427,18 +453,57 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				Log.d("RTT", " onTextChanged sequence"+s);
+				enter_pressed=false;
 
-				if (count > before) { // Text added
-					CharSequence added = s.subSequence(start + before, start + count);
-					sendRttCharacterSequence(added);
-				}else{
-					sendRttCharacter((char) 8); // backspace);
+
+
+				if (s.length()>0 && s.subSequence(s.length()-1, s.length()).toString().equalsIgnoreCase("\n")) {
+					enter_pressed=true;
 				}
+
+				char enter_button=(char) 10;
+				char back_space_button=(char) 8;
+
+				if(TEXT_MODE==RTT){
+					if(enter_pressed){
+						previousoutgoingEditText=outgoingEditText;
+						sendRttCharacter(enter_button);
+						create_new_outgoing_bubble(outgoingEditText);
+					}else if(count > before){
+
+						CharSequence last_letter_of_sequence = s.subSequence(start + before, start + count);
+						Log.d("last_letter_of_sequence="+last_letter_of_sequence);
+
+						int numeric_value=Character.getNumericValue(last_letter_of_sequence.charAt(0));
+						Log.d("numeric value="+numeric_value);
+
+						sendRttCharacterSequence(last_letter_of_sequence);
+					}else if(count < before){
+						sendRttCharacter(back_space_button); // backspace);
+					}
+				}else if(TEXT_MODE==SIP_SIMPLE){
+					previousoutgoingEditText=outgoingEditText;
+					if(enter_pressed) {
+						//send preceding new line character to force other end to drop a line.
+						if(rttOutgoingBubbleCount>1){
+							sendRttCharacterSequence("\n"+String.valueOf(s.subSequence(0,s.length()-1)));
+						}else{
+							sendRttCharacterSequence(String.valueOf(s.subSequence(0,s.length()-1)));
+						}
+						create_new_outgoing_bubble(outgoingEditText);
+					}
+				}
+
 			}
 
 			@Override
-			public void afterTextChanged(Editable s) {}
+			public void afterTextChanged(Editable s) {
+				//REMOVE EXTRA LINE FROM ENTER PRESS
+				if(enter_pressed) {
+					previousoutgoingEditText.removeTextChangedListener(rttTextWatcher);
+					previousoutgoingEditText.setText(previousoutgoingEditText.getText().toString().subSequence(0,previousoutgoingEditText.getText().toString().length()-1));
+				}
+			}
 		};
 
 	}
@@ -471,22 +536,32 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		et.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 		standardize_bubble_view(et);
 
-		et.addTextChangedListener(rttTextWatcher);
+		//if(TEXT_MODE==RTT) {
+			et.addTextChangedListener(rttTextWatcher);
+		//}
 
 		et.setMovementMethod(null);
-		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-						//sendRttCharacter((char) 10);
-						sendRttCharacter((char) 10);
-						create_new_outgoing_bubble((EditText) v);
-					}
-				}
-				return false;
-			}
-		});
+//		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
+//			@Override
+//			public boolean onKey(View v, int keyCode, KeyEvent event) {
+//				if (event.getAction() == KeyEvent.ACTION_DOWN) {
+//					if (keyCode == KeyEvent.KEYCODE_ENTER) {
+//						Log.d("ENTER BUTTON PRESSED");
+//						if(TEXT_MODE==RTT){
+//							sendRttCharacter((char) 10);
+//							create_new_outgoing_bubble((EditText) v);
+//						}else if(TEXT_MODE==SIP_SIMPLE){
+//							String current_message=((EditText) v).getText().toString();
+//							sendRttCharacterSequence(current_message+(char) 10);
+//							create_new_outgoing_bubble((EditText) v);
+//						}
+//
+//
+//					}
+//				}
+//				return false;
+//			}
+//		});
 		hold_cursor_at_end_of_edit_text(et);
 		outgoingEditText=et;
 		((LinearLayout) rttContainerView).addView(et);

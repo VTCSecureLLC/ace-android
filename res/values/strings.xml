@@ -430,7 +430,7 @@
  <string name="gpsdenied">not authorized by user</string> 
  <string name="gpsnolocation">user location could not be established</string> 
  <string name="leave_empty">Leave empty</string>
-  <string name="pref_text_enable_title">Enable text (RTT)</string>
+  <string name="pref_text_enable_title">Enable Text</string>
   <string name="pref_text_enable_key">pref_text_enable_key</string>
 
   <string name="pref_usm_general_settings">pref_usm_general_settings</string>
@@ -468,7 +468,7 @@
   <string name="pref_text_settings_send_mode_title">Text Send-Mode</string>
   <!--do not change order without changing corresponding entry_values in non_localizable_strings.xml-->
   <string-array name="pref_text_settings_send_mode_entries">
-    <item>RTT</item>
+    <item>Real Time Text (RTT)</item>
     <item>SIP SIMPLE</item>
   </string-array>
 

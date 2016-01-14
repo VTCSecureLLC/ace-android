@@ -15,10 +15,8 @@
 
 
 	<string-array name="pref_text_settings_send_mode_entry_values">
-		<item>@string/tunnel_mode_entry_value_disabled</item>
-		<item >@string/tunnel_mode_entry_value_3G_only</item>
-		<item>@string/tunnel_mode_entry_value_always</item>
-		<item>@string/tunnel_mode_entry_value_auto</item>
+		<item>RTT</item>
+		<item >SIP_SIMPLE</item>
 	</string-array>
 
 	<string-array name="tunnel_mode_entry_values">
