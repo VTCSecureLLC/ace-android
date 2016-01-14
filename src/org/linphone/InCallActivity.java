@@ -413,17 +413,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void getTextMode(){
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 		Log.d("Text Send Mode" + prefs.getString(getString(R.string.pref_text_settings_send_mode_key), "RTT"));
-		switch(prefs.getString(getString(R.string.pref_text_settings_send_mode_key), "RTT"))
-		{
-			case "SIP_SIMPLE":
-				TEXT_MODE=SIP_SIMPLE;
-				break;
-			case "RTT":
-				TEXT_MODE=RTT;
-				break;
-			default:
-				TEXT_MODE=RTT;
-				break;
+		String text_mode=prefs.getString(getString(R.string.pref_text_settings_send_mode_key), "RTT");
+		if(text_mode.equals("SIP_SIMPLE")) {
+			TEXT_MODE=SIP_SIMPLE;
+		}else if(text_mode.equals("RTT")) {
+			TEXT_MODE=RTT;
+
 		}
 		Log.d("TEXT_MODE ", TEXT_MODE);
 	}
