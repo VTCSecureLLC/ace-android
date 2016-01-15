@@ -253,7 +253,7 @@ public class JsonConfig {
 
 	public final static String json = "{\n" +
 			"  \"version\": 1,\n" +
-			"  \"expiration_time\": 3600,\n" +
+			"  \"expiration_time\": 280,\n" +
 			"  \"configuration_auth_password\": \"\",\n" +
 			"  \"configuration_auth_expiration\": -1,\n" +
 			"  \"sip_registration_maximum_threshold\": 10,\n" +
