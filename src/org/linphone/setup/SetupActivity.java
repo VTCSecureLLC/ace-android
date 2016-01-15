@@ -470,7 +470,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		.setDomain(domain)
 		.setUserId(userId)
 		.setPassword(password)
-		.setExpires("3600");
+		.setExpires("280");
 		Log.d("isMainAccountLinphoneDotOrg=" + isMainAccountLinphoneDotOrg);
 		Log.d("useLinphoneDotOrgCustomPorts=" + useLinphoneDotOrgCustomPorts);
 		if (isMainAccountLinphoneDotOrg && useLinphoneDotOrgCustomPorts) {
