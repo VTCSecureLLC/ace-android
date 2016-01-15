@@ -110,7 +110,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static Context ctx;
 	public static Activity act;
 	private static final int SETTINGS_ACTIVITY = 123;
-	private static final int FIRST_LOGIN_ACTIVITY = 101;
+	public static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
 	private static final int CALL_ACTIVITY = 19;
     private static final int CHAT_ACTIVITY = 21;
@@ -183,18 +183,16 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return;
 		}
 
-		boolean useFirstLoginActivity = getResources().getBoolean(R.bool.display_account_wizard_at_first_start);
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+
 		if (LinphonePreferences.instance().isProvisioningLoginViewEnabled()) {
 			Intent wizard = new Intent();
 			wizard.setClass(this, RemoteProvisioningLoginActivity.class);
 			wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
 			startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
-		} else if (useFirstLoginActivity && LinphonePreferences.instance().isFirstLaunch()) {
-			if (LinphonePreferences.instance().getAccountCount() > 0) {
-				LinphonePreferences.instance().firstLaunchSuccessful();
-			} else {
+		} else if (LinphonePreferences.instance().isFirstLaunch()) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
-			}
+				LinphonePreferences.instance().firstLaunchSuccessful();
 		}
 
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
@@ -274,13 +272,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 					}
-
-
-
-
-
-
-
 				}
 			}
 
@@ -313,7 +304,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		};
 
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.addListener(mListener);
 		}
@@ -1255,13 +1245,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
-		if(!hasAcceptedRelease){
-			Intent intent = new Intent(ctx, LegalRelease.class);
-			ctx.startActivity(intent);
-		}
-
+//		if (LinphonePreferences.instance().getAccountCount() == 0) {
+//			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
+//		}
 		// Attempt to update user location
 		try {
 			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);

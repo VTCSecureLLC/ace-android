@@ -132,7 +132,6 @@ public final class LinphoneService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		// In case restart after a crash. Main in LinphoneActivity
 		mNotificationTitle = getString(R.string.service_name);
 

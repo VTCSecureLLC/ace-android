@@ -102,7 +102,6 @@ public class DialerFragment extends Fragment {
 		dialer_content = view.findViewById(R.id.dialerContent);
 
 
-
 		dialer_view=view;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
 		color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_app_color_key), "Tech");
@@ -478,10 +477,10 @@ public class DialerFragment extends Fragment {
 			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
 				degrees = 270;
 
-			Log.d("onOrientationChanged_Dialer", o);
+			/*Log.d("onOrientationChanged_Dialer", o);
 			Log.d("degrees", degrees);
 			Log.d("mAlwaysChangingPhoneAngle", mAlwaysChangingPhoneAngle);
-
+			*/
 			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;
 			}
