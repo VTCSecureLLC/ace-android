@@ -152,12 +152,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		loadProviderDomainsFromCache();
 		return view;
 	}
-	//URL format for registrar lookup
-	final String registrarSRVLookupFormat="_sip._tcp.%domain%";
-	final String registrarSRVLookupFormatTLS="_sips._tcp.%domain%";
-	//URL format for autoConfig lookup
-	final String autoConfigSRVLookupFormat="_rueconfig._tcp.%domain%";
-
 	/**
 	 * @param query URL to perform service lookup
 	 * @param key Key to save record to SharedPreferences as, pass "" or null to not persist
@@ -182,7 +176,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			e.printStackTrace();
 		}
 	}
-	final String cdnProviderList = "http://cdn.vatrp.net/domains.json";
+	final String cdnProviderList = "http://cdn.vatrp.net/new-domains.json";
 	public List<String> domains = new ArrayList<String>();
 	public static String getText(String url) throws Exception {
 		URL website = new URL(url);
@@ -214,20 +208,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		try {
 			reader = new JSONArray(textjson);
 			for (int i = 0; i < reader.length(); i++) {
+				//Store CDN providers and their domains in SharedPreferences
 				sharedPreferences.edit().
 						putString("provider" + String.valueOf(i),((JSONObject) reader.get(i)).getString("name")).commit();
-
-				//SRV lookup of registrar by passing formatted URL to the srvLookup(String query) function and replacing %domain% with host.
-
-				String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
-				String query;
-				if(selectedTransport.toLowerCase().equals("tls")){
-					query = registrarSRVLookupFormatTLS.replace("%domain%", ((JSONObject) reader.get(i)).getString("domain"));
-				}
-				else {
-					query = registrarSRVLookupFormat.replace("%domain%", ((JSONObject) reader.get(i)).getString("domain"));
-				}
-				srvLookup(query, "provider" + String.valueOf(i) + "domain");
+				sharedPreferences.edit().
+						putString("provider" + String.valueOf(i)+"domain",((JSONObject) reader.get(i)).getString("domain")).commit();
 				domains.add(((JSONObject)reader.get(i)).getString("name"));
 			}
 		}
@@ -237,6 +222,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	}
 
 	protected void loadProviderDomainsFromCache(){
+		//Load cached providers and their domains
 		String name = sharedPreferences.getString("provider1", "-1");
 		domains = new ArrayList<String>();
 		for (int i = 0; !name.equals("-1"); i++) {
@@ -265,18 +251,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	 */
 	protected void populateRegistrationInfo(String providerDomainKey){
 		String domainString = sharedPreferences.getString(providerDomainKey, "");
-		String[] registrar = domainString.split("::");
-		if(registrar.length > 0) {
-			//Not all providers have SRV service setup. Fallback to port 5060 in case of error
-			domain.setText(registrar[0]);
-
-			if(registrar.length > 1) {
-				port.setText(registrar[1]);
-			}
-			else{
-				port.setText("5060");
-			}
-		}
+		domain.setText(domainString);
 	}
 
 	@Override
@@ -317,9 +292,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		else if(id == R.id.ab_back)
 			getActivity().onBackPressed();
 	}
-	//Helper class to pull all available providers and perform an SRV lookup asynchronously
-	//Going forward must add params to do single lookup rather than on all providers,
-	//and migrate this logic to an extensible singleton
+	//Helper class to pull all provider domains from the CDN, pass into setup.login for autoconfig
 	private class ProviderNetworkOperation extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -333,7 +306,9 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				if (sp_provider != null && sp_provider.getAdapter() != null && sp_provider.getAdapter().getCount() != domains.size()) {
 					setProviderData(domains);
 				}
-				populateRegistrationInfo("provider" + String.valueOf(sp_provider.getSelectedItemPosition()) + "domain");
+				if(sp_provider != null) {
+					populateRegistrationInfo("provider" + String.valueOf(sp_provider.getSelectedItemPosition()) + "domain");
+				}
 				super.onPostExecute(aVoid);
 			}
 		}
