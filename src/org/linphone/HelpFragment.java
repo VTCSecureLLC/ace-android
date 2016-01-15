@@ -2,6 +2,7 @@ package org.linphone;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
 
@@ -50,11 +52,11 @@ public class HelpFragment extends PreferencesListFragment {
     public HelpFragment() {
         super(R.xml.help);
     }
-
+    SharedPreferences prefs;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         findPreference("instantfeedbackace").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -63,6 +65,15 @@ public class HelpFragment extends PreferencesListFragment {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        findPreference("videomail").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                LinphoneManager.getInstance().
+                        newOutgoingCall(prefs.getString(getString(R.string.pref_voice_mail_key), ""), preference.getTitle().toString());
+                return true;
             }
         });
         new LoadWebPageASYNC().execute();

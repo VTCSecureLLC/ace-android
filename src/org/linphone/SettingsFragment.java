@@ -1257,6 +1257,8 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_voice_mail_key, mPrefs.getVoiceMailUri());
+		setPreferenceDefaultValueAndSummary(R.string.pref_mail_waiting_indicator_key,
+				prefs.getString(getString(R.string.pref_mail_waiting_indicator_key), ""));
 	}
 
 	private void setCallPreferencesListener() {
@@ -1283,6 +1285,16 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
+		findPreference(getString(R.string.pref_mail_waiting_indicator_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				EditTextPreference mwiUri= (EditTextPreference) findPreference(getString(R.string.pref_mail_waiting_indicator_key));
+				mwiUri.setSummary(newValue.toString());
+				mwiUri.setText(newValue.toString());
+				prefs.edit().putString(getString(R.string.pref_mail_waiting_indicator_key), newValue.toString()).commit();
+				return true;
+			}
+		});
 		findPreference(getString(R.string.pref_sipinfo_dtmf_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
