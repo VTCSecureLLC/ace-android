@@ -7,10 +7,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
