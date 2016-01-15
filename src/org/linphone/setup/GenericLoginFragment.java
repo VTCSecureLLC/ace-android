@@ -96,13 +96,8 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 					@Override
 					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						if (transportOptions.get(position).equals("TCP")) {
-							port.setText("5060");
-							port.setText(port.getText().toString().replace("5061", "5060"));
-						} else if (transportOptions.get(position).equals("TLS")) {
-							port.setText("5061");
-							port.setText(port.getText().toString().replace("5060", "5061"));
-						}
+						retrieveProviderTask = new ProviderNetworkOperation();
+						retrieveProviderTask.execute();
 					}
 
 					@Override
@@ -122,8 +117,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					String domainValue = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
-					domain.setText(domainValue);
+					populateRegistrationInfo("provider" + String.valueOf(position) + "domain");
 				}
 
 				@Override
@@ -155,20 +149,33 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		retrieveProviderTask = new ProviderNetworkOperation();
 		retrieveProviderTask.execute();
+		loadProviderDomainsFromCache();
 		return view;
 	}
+	//URL format for registrar lookup
+	final String registrarSRVLookupFormat="_sip._tcp.%domain%";
+	final String registrarSRVLookupFormatTLS="_sips._tcp.%domain%";
+	//URL format for autoConfig lookup
+	final String autoConfigSRVLookupFormat="_rueconfig._tcp.%domain%";
+
+	/**
+	 * @param query URL to perform service lookup
+	 * @param key Key to save record to SharedPreferences as, pass "" or null to not persist
+	 */
 	//Helper function to lookup an SRV record given a URL String representation
-	protected void srvLookup(String query){
+	protected void srvLookup(String query, String key){
 		try { //Perform lookup on URL and iterate through all records returned, printing hostname:port to stdout
 			Record[] records = new Lookup(query, Type.SRV).run();
+			String value;
 			if (records != null) {
 				for (Record record : records) {
 					SRVRecord srv = (SRVRecord) record;
-
 					String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
 					int port = srv.getPort();
-					System.out.println(hostname + ":" + port);
-					Toast.makeText(getContext(), hostname, Toast.LENGTH_SHORT).show();
+					value = hostname + "::" + String.valueOf(port);
+					if(key != null && !key.equals("")) {
+						sharedPreferences.edit().putString(key, value).apply();
+					}
 				}
 			}
 		}catch(TextParseException e){
@@ -209,9 +216,18 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			for (int i = 0; i < reader.length(); i++) {
 				sharedPreferences.edit().
 						putString("provider" + String.valueOf(i),((JSONObject) reader.get(i)).getString("name")).commit();
-				sharedPreferences.edit().
-						putString("provider" + String.valueOf(i) + "domain", ((JSONObject) reader.get(i)).
-								getString("domain")).commit();
+
+				//SRV lookup of registrar by passing formatted URL to the srvLookup(String query) function and replacing %domain% with host.
+
+				String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
+				String query;
+				if(selectedTransport.toLowerCase().equals("tls")){
+					query = registrarSRVLookupFormatTLS.replace("%domain%", ((JSONObject) reader.get(i)).getString("domain"));
+				}
+				else {
+					query = registrarSRVLookupFormat.replace("%domain%", ((JSONObject) reader.get(i)).getString("domain"));
+				}
+				srvLookup(query, "provider" + String.valueOf(i) + "domain");
 				domains.add(((JSONObject)reader.get(i)).getString("name"));
 			}
 		}
@@ -227,17 +243,40 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			domains.add(name);
 			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
 		}
+
+		setProviderData(domains);
+		//Load default provider registration info if cached
+		populateRegistrationInfo("provider" + String.valueOf(0) + "domain");
 	}
 
 	protected void setProviderData(List<String> data){
 		String[] mData = new String[data.size()];
 		sp_provider.setAdapter(new SpinnerAdapter(SetupActivity.instance(), R.layout.spiner_ithem,
-					mData, new int[]{R.drawable.provider_logo_sorenson,
-						R.drawable.provider_logo_zvrs,
-						R.drawable.provider_logo_caag,//caag
-						R.drawable.provider_logo_purplevrs,
-						R.drawable.provider_logo_globalvrs,//global
-						R.drawable.provider_logo_convorelay}));
+				mData, new int[]{R.drawable.provider_logo_sorenson,
+				R.drawable.provider_logo_zvrs,
+				R.drawable.provider_logo_caag,//caag
+				R.drawable.provider_logo_purplevrs,
+				R.drawable.provider_logo_globalvrs,//global
+				R.drawable.provider_logo_convorelay}));
+	}
+
+	/**
+	 * @param providerDomainKey Key that was used to store registrar in SharedPreferences
+	 */
+	protected void populateRegistrationInfo(String providerDomainKey){
+		String domainString = sharedPreferences.getString(providerDomainKey, "");
+		String[] registrar = domainString.split("::");
+		if(registrar.length > 0) {
+			//Not all providers have SRV service setup. Fallback to port 5060 in case of error
+			domain.setText(registrar[0]);
+
+			if(registrar.length > 1) {
+				port.setText(registrar[1]);
+			}
+			else{
+				port.setText("5060");
+			}
+		}
 	}
 
 	@Override
@@ -279,24 +318,24 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			getActivity().onBackPressed();
 	}
 	//Helper class to pull all available providers and perform an SRV lookup asynchronously
+	//Going forward must add params to do single lookup rather than on all providers,
+	//and migrate this logic to an extensible singleton
 	private class ProviderNetworkOperation extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected Void doInBackground(Void... params) {
-			//To perform an SRV lookup simply pass a URL to the srvLookup(String query) function.
-			//Until our requirements are better defined for interop we are hardcoding to the Ace-Connect RUE Config address
-			String query = "_rueconfig._tcp.aceconnect.vatrp.net";
-			srvLookup(query);
-			loadProviderDomainsFromCache();
 			reloadProviderDomains();
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void aVoid) {
-			if(domains != null) {
-				setProviderData(domains);
+			if (domains != null && domains.size() > 0) {
+				if (sp_provider != null && sp_provider.getAdapter() != null && sp_provider.getAdapter().getCount() != domains.size()) {
+					setProviderData(domains);
+				}
+				populateRegistrationInfo("provider" + String.valueOf(sp_provider.getSelectedItemPosition()) + "domain");
+				super.onPostExecute(aVoid);
 			}
-			super.onPostExecute(aVoid);
 		}
 	}
 	class SpinnerAdapter extends ArrayAdapter<String> {
@@ -326,8 +365,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					false);
 
 			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = domains.get(position);
-			main_text.setText(providerName);
+			String providerName = "";
+			if(domains != null && domains.size() > 0) {
+				providerName = domains.get(position);
+				main_text.setText(providerName);
+			}
 			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
 			if(providerName.toLowerCase().contains("sorenson")) {
 				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
@@ -350,6 +392,9 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			else if(providerName.toLowerCase().contains("ace")){
 				left_icon.setImageResource(R.drawable.ic_launcher);
 			}
+			else{
+				left_icon.setImageResource(R.drawable.ic_launcher);
+			}
 			return mySpinner;
 		}
 
@@ -360,8 +405,16 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					false);
 
 			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = domains.get(position);
-			main_text.setText(providerName);
+			String providerName = "";
+			if(domains != null && domains.size() > 0) {
+				try {
+					providerName = domains.get(position);
+					main_text.setText(providerName);
+				}
+				catch(IndexOutOfBoundsException e){
+					main_text.setText("");
+				}
+			}
 			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
 			if(providerName.toLowerCase().contains("sorenson")) {
 				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
