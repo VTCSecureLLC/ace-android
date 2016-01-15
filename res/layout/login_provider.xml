@@ -270,7 +270,7 @@
                     android:layout_height="match_parent"
                     android:background="#809cac"
                     android:textColorHint="#787878"
-                    android:text="userid"
+                    android:text=""
                     android:hint="Address:userid"
                     android:paddingLeft="30dp"
                     android:singleLine="true"
