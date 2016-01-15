@@ -5,6 +5,12 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +22,11 @@ import org.linphone.R;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.PayloadType;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SRVRecord;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,12 +36,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.ProtocolException;
+import java.net.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import de.timroes.axmlrpc.AuthenticationManager;
+
 
 /**
  * Created by Vardan on 12/17/2015.
@@ -45,6 +65,16 @@ public class JsonConfig {
     private String _configuration_auth_expiration;
     private int _sip_registration_maximum_threshold;
     private String[] _sip_register_usernames;
+
+
+    public String getSipAuthUsername() {
+        return _sip_auth_username;
+    }
+
+    public String getSipAuthPassword() {
+        return _sip_auth_password;
+    }
+
     private String _sip_auth_username;
     private String _sip_auth_password;
     private String _sip_register_domain;
@@ -72,6 +102,8 @@ public class JsonConfig {
         applyVideoCodecs();
         applyOtherConfig();
     }
+
+
 
     public void saveFile()
     {
@@ -130,9 +162,9 @@ public class JsonConfig {
         int n = mPrefs.getDefaultAccountIndex();
         if (n < 0)
             return;
-        if (_sip_register_transport.length() > 0)
-            mPrefs.setAccountTransport(n, _sip_register_transport);
-        if (_sip_register_domain.length() > 0)
+        if (_sip_register_transport!=null && _sip_register_transport.length() > 0)
+            mPrefs.setAccountTransport(n, _sip_register_transport);// need to be chacked
+        if (_sip_register_domain!=null && _sip_register_domain.length() > 0)
             mPrefs.setAccountDomain(n, _sip_register_domain);
         if (_expiration_time > 0)
             mPrefs.setExpires(n, _expiration_time + "");
@@ -146,55 +178,78 @@ public class JsonConfig {
         mPrefs.enableVideo(_enable_video);
         LinphoneManager.getInstance().setRttEnabled(_enable_rtt);
         mPrefs.enableAdaptiveRateControl(_enable_adaptive_rate);
-        if(_enable_stun)
+        if(_enable_stun && _stun_server !=null)
             mPrefs.setStunServer(_stun_server);
         else
             mPrefs.setStunServer("");
         mPrefs.setIceEnabled(_enable_ice);
-        if (_logging.toLowerCase().equals("debug"))
+        if (_logging!= null &&_logging.toLowerCase().equals("debug"))
             mPrefs.setDebugEnabled(true);
 
         mPrefs.setPreferredVideoSize(_video_resolution_maximum);
+
+        LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+        if (lc != null) {
+            if(_upload_bandwidth>0)
+                lc.setUploadBandwidth(_upload_bandwidth);
+            if(_download_bandwidth>0)
+                lc.setDownloadBandwidth(_download_bandwidth);
+            if(_bwLimit!= null)
+                lc.setVideoPreset(_bwLimit);
+        }
     }
 
 
 
 
-    private static JsonConfig parseJson(String json, String _request_url)
+    private static JsonConfig parseJson(String json, String _request_url) throws JSONException
     {
 
-        try {
             JsonConfig config = new JsonConfig();
             JSONObject ob = new JSONObject(json);
             config._json = json;
             config._request_url = _request_url;
             config._version = ob.getInt("version");
             config._expiration_time = ob.getInt("expiration_time");
+        if(!ob.isNull("configuration_auth_password"))
             config._configuration_auth_password = ob.getString("configuration_auth_password");
+        if(!ob.isNull("configuration_auth_expiration"))
             config._configuration_auth_expiration = ob.getString("configuration_auth_expiration");
-            config._sip_registration_maximum_threshold = ob.getInt("sip_registration_maximum_threshold");
+
+            if(!ob.isNull("sip_registration_maximum_threshold"))
+                config._sip_registration_maximum_threshold = ob.getInt("sip_registration_maximum_threshold");
+        if(!ob.isNull("sip_auth_username"))
             config._sip_auth_username = ob.getString("sip_auth_username");
+        if(!ob.isNull("sip_auth_password"))
             config._sip_auth_password = ob.getString("sip_auth_password");
+        if(!ob.isNull("sip_register_domain"))
             config._sip_register_domain = ob.getString("sip_register_domain");
+
             config._sip_register_port = ob.getInt("sip_register_port");
+        if(!ob.isNull("sip_register_transport"))
             config._sip_register_transport = ob.getString("sip_register_transport");
             config._enable_echo_cancellation = ob.getBoolean("enable_echo_cancellation");
             config._enable_video = ob.getBoolean("enable_video");
             config._enable_rtt = ob.getBoolean("enable_rtt");
             config._enable_adaptive_rate = ob.getBoolean("enable_adaptive_rate");
+        if(!ob.isNull("bwLimit"))// is not used
             config._bwLimit = ob.getString("bwLimit");
             config._upload_bandwidth = ob.getInt("upload_bandwidth");
             config._download_bandwidth = ob.getInt("download_bandwidth");
             config._enable_stun = ob.getBoolean("enable_stun");
             config._stun_server = ob.getString("stun_server");
             config._enable_ice = ob.getBoolean("enable_ice");
-            config._logging = ob.getString("logging");
+        if(!ob.isNull("logging"))
+            config._logging = ob.getString("logging"); // enabled debug
+        if(!ob.isNull("sip_mwi_uri"))
             config._sip_mwi_uri = ob.getString("sip_mwi_uri");
+        if(!ob.isNull("sip_videomail_uri")) // not used
             config._sip_videomail_uri = ob.getString("sip_videomail_uri");
-            config._video_resolution_maximum = ob.getString("video_resolution_maximum");
+        if(!ob.isNull("video_resolution_maximum"))
+            config._video_resolution_maximum = ob.getString("video_resolution_maximum");//prefared res
 
-            JSONArray jsonArray = ob.getJSONArray("sip_register_usernames");
-            config._sip_register_usernames = new String[jsonArray.length()];
+            JSONArray jsonArray = ob.getJSONArray("sip_register_usernames");// not used
+            config._sip_register_usernames = new String[jsonArray.length()];// codec mapping is required
             for (int i = 0; i < jsonArray.length(); i++)
                 config._sip_register_usernames[i] = jsonArray.getString(i);
 
@@ -204,18 +259,15 @@ public class JsonConfig {
                 config._enabled_codecs.add(jsonArray.getString(i));
 
             return config;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+
     }
 
-    public static void refreshConfig(String _request_url, ConfigListener listener)
+    public static void refreshConfig(String dns_srv_uri, String username, String password, ConfigListener listener)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new ConfigUpdater(_request_url, listener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new ConfigUpdater(dns_srv_uri, username, password, listener).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            new ConfigUpdater(_request_url, listener).execute();
+            new ConfigUpdater(dns_srv_uri, username, password, listener).execute();
         }
     }
 
@@ -255,46 +307,48 @@ public class JsonConfig {
 
         ConfigListener listener;
         String request_url;
-        public ConfigUpdater(String url, ConfigListener listener)
+        String query_url;
+        String username, password;
+        String errorMsg;
+        public ConfigUpdater(String url, String username, String password, ConfigListener listener)
         {
+            this.username = username;
+            this.password = password;
             this.listener = listener;
-            request_url = url;
+            query_url = url;
+            errorMsg = "Failed to Login";
         }
         @Override
         protected JsonConfig doInBackground(Void... params) {
-
-            if(request_url==null)
-            {
-                return  parseJson(json, request_url);
+            Record[] records;// = new Record[0];
+            try {
+                records = new Lookup(query_url, Type.SRV).run();
+            } catch (TextParseException e) {
+                e.printStackTrace();
+                return null;
             }
 
+            for (Record record : records) {
+                SRVRecord srv = (SRVRecord) record;
 
-                HttpURLConnection conn = null;
+                String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
+
+                request_url ="https://" +hostname + "/config/v1/config.json";
+
+            }
+            if(request_url==null)
+            {
+                try {
+                    return  parseJson(json, request_url);
+                } catch (JSONException e) {
+                    return null;
+                }
+            }
 
                 try {
-                    URL url = new URL(request_url);
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
 
-                    conn.setRequestProperty("Content-type", "application/json");
-                    InputStream is; // = conn.getInputStream();
-
-                    if (conn.getResponseCode() == 200) {
-                        is = conn.getInputStream();
-                        BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-                        String line;
-                        StringBuffer response = new StringBuffer();
-                        while ((line = rd.readLine()) != null) {
-                            response.append(line);
-                        }
-                        rd.close();
-                        is.close();
-
-                        return  parseJson(response.toString(), request_url);
-
-
-                    }
+                    String reponse_str = getFromHttpURLConnection();
+                    return  parseJson(reponse_str, request_url);
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -302,8 +356,11 @@ public class JsonConfig {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                return null;
+                } catch (JSONException e) {
+                    errorMsg = "Config is incorrect";
+                e.printStackTrace();
+            }
+            return null;
             }
 
 
@@ -313,21 +370,69 @@ public class JsonConfig {
             if(res != null) {
                 res.applySettings();
                 if (listener!=null)
-                    listener.onFinished();
+                    listener.onParsed(res);
             }
             else
             {
                 if (listener!=null)
-                    listener.onFailed("Not determined");
+                    listener.onFailed(errorMsg);
             }
 
+        }
+
+
+        String getFromHttpURLConnection() throws ProtocolException, IOException{
+
+
+            HttpURLConnection conn = null;
+
+
+                URL url = new URL(request_url);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+
+                conn.setRequestProperty("Content-type", "application/json");
+            AuthenticationManager authenticationManager = new AuthenticationManager();
+            authenticationManager.setAuthData(username, password);
+            authenticationManager.setAuthentication(conn);
+
+                InputStream is; // = conn.getInputStream();
+
+                if (conn.getResponseCode() == 200) {
+                    is = conn.getInputStream();
+                    BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+                    String line;
+                    StringBuffer response = new StringBuffer();
+                    while ((line = rd.readLine()) != null) {
+                        response.append(line);
+                    }
+                    rd.close();
+                    is.close();
+
+                    return response.toString();
+                }
+            else
+                {
+                    errorMsg = "UnAuthorized";
+                }
+
+
+            return "";
+        }
+
+        String downloadDigest(URL url){
+            return "";
         }
     }
 
     public static interface ConfigListener
     {
-        public void onFinished();
+        public void onParsed(JsonConfig config);
         public void onFailed(String reason);
 
     }
+
+
+
 }
