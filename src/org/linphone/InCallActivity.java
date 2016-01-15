@@ -136,6 +136,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	String contactName = "";
 
+	int OUTGOING=0;
+	int INCOMING=1;
+
 	private boolean isRTTMaximized = false;
 	public int rttIncomingBubbleCount=0;
 	private int rttOutgoingBubbleCount=0;
@@ -160,6 +163,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("onCreate()");
 		instance = this;
 		DialerFragment.instance().mOrientationHelper.disable();
 		LinphoneActivity.instance().mOrientationHelper.enable();
@@ -339,12 +343,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
             }
             
             if (savedInstanceState != null) { 
+            	Log.d("getting savedInstanceState");
             	// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
 				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
             	isMicMuted = savedInstanceState.getBoolean("Mic");
 				isSpeakerMuted = savedInstanceState.getBoolean("Speaker");
             	isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
-            	refreshInCallActions();
+				refreshInCallActions();
+
+
             	return;
             }
             
@@ -463,7 +470,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					if(enter_pressed){
 						previousoutgoingEditText=outgoingEditText;
 						sendRttCharacter(enter_button);
-						create_new_outgoing_bubble(outgoingEditText);
+						create_new_outgoing_bubble(outgoingEditText, true);
 					}else if(count > before){
 
 						CharSequence last_letter_of_sequence = s.subSequence(start + before, start + count);
@@ -485,7 +492,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						}else{
 							sendRttCharacterSequence(String.valueOf(s.subSequence(0,s.length()-1)));
 						}
-						create_new_outgoing_bubble(outgoingEditText);
+						create_new_outgoing_bubble(outgoingEditText, true);
 					}
 				}
 
@@ -518,7 +525,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextAppearance(this, R.style.RttTextStyle);
 		tv.getBackground().setAlpha(180);
 	}
-	public void create_new_outgoing_bubble(EditText old_bubble){
+	public void create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
 		if(old_bubble!=null){
 			disable_bubble_editing(old_bubble);
 		}
@@ -532,7 +539,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		standardize_bubble_view(et);
 
 		//if(TEXT_MODE==RTT) {
+		if(is_current_editable_bubble) {
 			et.addTextChangedListener(rttTextWatcher);
+		}
 		//}
 
 		et.setMovementMethod(null);
@@ -636,7 +645,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			@Override
 			public void onClick(View v) {
 				if(rttOutgoingBubbleCount==0){
-					create_new_outgoing_bubble(null);
+					create_new_outgoing_bubble(null, true);
 				}else{
 					outgoingEditText.requestFocus();
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -770,12 +779,58 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean("isRTTMaximized", isRTTMaximized);
 		outState.putBoolean("Mic", LinphoneManager.getLc().isMicMuted());
-		outState.putBoolean("Speaker", LinphoneManager.getLc().getPlaybackGain()==mute_db);
+		outState.putBoolean("Speaker", LinphoneManager.getLc().getPlaybackGain() == mute_db);
 		outState.putBoolean("VideoCallPaused", isVideoCallPaused);
-		
+
 		super.onSaveInstanceState(outState);
 	}
-	
+
+	public void save_messages(){
+
+		Log.d("saving RTT view");
+		//Store RTT or SIP SIMPLE text log
+		int number_of_messages=((LinearLayout) rttContainerView).getChildCount();
+		LinphoneActivity.instance().message_directions=new int[number_of_messages];
+		LinphoneActivity.instance().message_texts=new String[number_of_messages];
+		for(int j=0; j<number_of_messages; j++){
+			View view=((LinearLayout) rttContainerView).getChildAt(j);
+			if(view instanceof EditText){
+				LinphoneActivity.instance().message_directions[j]=OUTGOING;
+			}else{
+				LinphoneActivity.instance().message_directions[j]=INCOMING;
+			}
+			LinphoneActivity.instance().message_texts[j]=((TextView)view).getText().toString();
+		}
+	}
+
+	public void populate_messages(){
+		int[] direction=LinphoneActivity.instance().message_directions;
+		String[] messages=LinphoneActivity.instance().message_texts;
+		Log.d("openning saved RTT view");
+		for(int i=0; i<messages.length; i++){
+
+			if(direction[i]==OUTGOING){
+				Log.d("OUTGOING: "+messages[i]);
+				create_new_outgoing_bubble(null, false);
+				outgoingEditText.setText(messages[i]);
+				if(i==messages.length-1){
+					outgoingEditText.addTextChangedListener(rttTextWatcher);
+				}
+			}else{
+				Log.d("INCOMING: "+messages[i]);
+				create_new_incoming_bubble();
+				incomingTextView.setText(messages[i]);
+			}
+
+		}
+
+	}
+
+	public void delete_messages(){
+		LinphoneActivity.instance().message_directions=null;
+		LinphoneActivity.instance().message_texts=null;
+	}
+
 	private boolean isTablet() {
 		return getResources().getBoolean(R.bool.isTablet);
 	}
@@ -1081,10 +1136,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(isRTTMaximized){
 			hideRTTinterface();
 		} else{
+			Log.d("rttOutgoingBubbleCount"+rttOutgoingBubbleCount);
 			if(rttOutgoingBubbleCount==0){
-				create_new_outgoing_bubble(null);
+				create_new_outgoing_bubble(null, true);
 			}
 			showRTTinterface();
+			((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+					.showSoftInput(outgoingEditText, InputMethodManager.SHOW_FORCED);
 		}
 
 	}
@@ -1252,6 +1310,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} else {
 			lc.terminateAllCalls();
 		}
+		delete_messages();
+
 	}
 	
 	private void enterConference() {
@@ -1687,6 +1747,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	@Override
 	protected void onResume() {
+		try {
+			populate_messages();
+		}catch(Throwable e){
+			//No messages to populate
+			e.printStackTrace();
+		}
+		Log.d("onResume()");
 		instance = this;
 		
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
@@ -1744,6 +1811,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	
 	@Override
 	protected void onPause() {
+		Log.d("onPause()");
+
+		save_messages();
+
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
@@ -1764,6 +1835,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	
 	@Override
 	protected void onDestroy() {
+		Log.d("onDestroy()");
 		LinphoneManager.getInstance().changeStatusToOnline();
 		
 		if (mControlsHandler != null && mControls != null) {
