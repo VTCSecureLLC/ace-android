@@ -1,20 +1,14 @@
 package org.linphone.setup;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.widget.Toast;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
-import org.linphone.R;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.PayloadType;
@@ -26,24 +20,16 @@ import org.xbill.DNS.Type;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.ProtocolException;
-import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import de.timroes.axmlrpc.AuthenticationManager;
 
@@ -267,7 +253,7 @@ public class JsonConfig {
 
 	public final static String json = "{\n" +
 			"  \"version\": 1,\n" +
-			"  \"expiration_time\": 3600,\n" +
+			"  \"expiration_time\": 280,\n" +
 			"  \"configuration_auth_password\": \"\",\n" +
 			"  \"configuration_auth_expiration\": -1,\n" +
 			"  \"sip_registration_maximum_threshold\": 10,\n" +
@@ -320,37 +306,37 @@ public class JsonConfig {
 				e.printStackTrace();
 				return null;
 			}
+			if(records != null && records.length > 0) {
+				for (Record record : records) {
+					SRVRecord srv = (SRVRecord) record;
 
-			for (Record record : records) {
-				SRVRecord srv = (SRVRecord) record;
+					String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
 
-				String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
+					request_url = "https://" + hostname + "/config/v1/config.json";
 
-				request_url = "https://" + hostname + "/config/v1/config.json";
-
-			}
-			if (request_url == null) {
-				try {
-					return parseJson(json, request_url);
-				} catch (JSONException e) {
-					return null;
 				}
-			}
+//				if (request_url == null) {
+//					try {
+//						return parseJson(json, request_url);
+//					} catch (JSONException e) {
+//						return null;
+//					}
+//				}
 
-			try {
+				try {
+					String reponse_str = getFromHttpURLConnection();
+					return parseJson(reponse_str, request_url);
 
-				String reponse_str = getFromHttpURLConnection();
-				return parseJson(reponse_str, request_url);
-
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (ProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				errorMsg = "Config is incorrect";
-				e.printStackTrace();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (ProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					errorMsg = "Config is incorrect";
+					e.printStackTrace();
+				}
 			}
 			return null;
 		}
