@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="history_detail_date_format">EEEE d MMM HH:mm</string>
-  <string name="app_name">Ace</string>
+  <string name="app_name">ACE</string>
   <string name="addressbook_label">Linphone</string>
   <string name="notification_title">Linphone</string>
   <string name="wait_dialog_text">Загружается</string>

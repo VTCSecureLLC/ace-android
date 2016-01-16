@@ -213,16 +213,14 @@
 
 
             <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
-            <EditText
-                android:id="@+id/et_prv_transport"
+            <Spinner
+                android:id="@+id/spin_prv_transport"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#809cac"
                 android:textColorHint="#787878"
-                android:text="TCP"
                 android:hint="Address:Transport"
                 android:paddingLeft="30dp"
-                android:singleLine="true"
                 android:imeOptions="actionNext"/>
                 </LinearLayout>
 
@@ -272,7 +270,7 @@
                     android:layout_height="match_parent"
                     android:background="#809cac"
                     android:textColorHint="#787878"
-                    android:text="userid"
+                    android:text=""
                     android:hint="Address:userid"
                     android:paddingLeft="30dp"
                     android:singleLine="true"

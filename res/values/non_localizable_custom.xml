@@ -8,6 +8,7 @@
 	<string name="push_sender_id">101236867627</string>
 
 	<string name="default_domain">bc1.vatrp.net</string>
+	<string name="default_port">5060</string>
 	<string name="default_stun">stun.linphone.org</string>
 	<bool name="override_domain_using_default_one">false</bool> <!-- Replace the domain for outgoing calls by the one above -->
 	<string name="wizard_url">https://www.linphone.org/wizard.php</string>
@@ -54,7 +55,7 @@
 	<bool name="use_linphone_tag">true</bool>
 
 	<bool name="display_call_stats">true</bool>
-	<bool name="show_current_calls_above_video">false</bool>
+	<bool name="show_current_calls_above_video">true</bool>
 	<bool name="disable_options_in_call">false</bool>
 
 	<!-- Behavior Settings -->

@@ -48,7 +48,6 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.LpConfig;
 import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
@@ -166,7 +165,7 @@ public class SettingsFragment extends PreferencesListFragment {
 						.setPositiveButton(R.string.yes,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int whichButton) {
-										deleteAll();
+										deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
 										startActivityForResult(intent, WIZARD_INTENT);
 									}
@@ -388,6 +387,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		for (int i = 0; i < nbAccounts; i++) {
 			LinphonePreferences.instance().deleteAccount(i);
 		}
+	}
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
 	}
 	private void initAccounts() {
 		PreferenceCategory accounts = (PreferenceCategory) findPreference(getString(R.string.pref_sipaccounts_key));
@@ -937,7 +942,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
 
-					SharedPreferences prefs = PreferenceManager.
+				SharedPreferences prefs = PreferenceManager.
 						getDefaultSharedPreferences(LinphoneActivity.instance());
 				String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 				prefs.edit().putBoolean(previewIsEnabledKey, value).commit();
@@ -1030,8 +1035,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		Log.d("RTT: initTextSettings()");
 		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
 
-		boolean isRTTEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
-		Log.d("RTT: RTT enabled from earlier? " + isRTTEnabled);
+		boolean isTextEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
+		Log.d("RTT: RTT enabled from earlier? " + isTextEnabled);
 		enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
 
 		enableTextCb.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -1043,6 +1048,23 @@ public class SettingsFragment extends PreferencesListFragment {
 				return true;
 			}
 		});
+
+		//ListPreference
+		ListPreference text_send_type_pref = (ListPreference)findPreference(getString(R.string.pref_text_settings_send_mode_key));
+
+		//Values accepted are RTT or SIP_SIMPLE
+		text_send_type_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object value) {
+				Log.d("text_send_type_pref value", value);
+				editor.putString(getString(R.string.pref_text_settings_send_mode_key), value.toString());
+				return true;
+			}
+		});
+
+		String value=text_send_type_pref.getValue();
+		Log.d("text_send_type_pref value", value);
+
 	}
 
 	private void initVideoSettings() {
@@ -1504,7 +1526,6 @@ public class SettingsFragment extends PreferencesListFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		initAccounts();
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.SETTINGS);
 
@@ -1516,7 +1537,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		if(isAdvancedSettings){
 			setPreferenceScreen(null);
 			addPreferencesFromResource(R.xml.preferences);
+			initSettings();
+			setListeners();
+			hideSettings();
 		}
+
+		initAccounts();
 	}
 
 

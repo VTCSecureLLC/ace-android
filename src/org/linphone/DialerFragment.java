@@ -35,6 +35,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -64,13 +65,13 @@ import java.util.List;
  */
 public class DialerFragment extends Fragment {
 
-
-	private Camera mCamera;
+	public OrientationEventListener mOrientationHelper;
+	public Camera mCamera;
 	public static Camera.Size optimal_preview_size;
 
 	private static DialerFragment instance;
 	private static boolean isCallTransferOngoing = false;
-	private CameraPreview mPreview;
+	public CameraPreview mPreview;
 	private Context myContext;
 	public boolean mVisible;
 	private AddressText mAddress;
@@ -101,7 +102,6 @@ public class DialerFragment extends Fragment {
 		dialer_content = view.findViewById(R.id.dialerContent);
 
 
-
 		dialer_view=view;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
 		color_theme = prefs.getString(LinphoneActivity.ctx.getResources().getString(R.string.pref_theme_app_color_key), "Tech");
@@ -111,6 +111,11 @@ public class DialerFragment extends Fragment {
 		mAddress = (AddressText) view.findViewById(R.id.Adress); 
 		mAddress.setDialerFragment(this);
 
+		int camera = CameraPreview.findFrontFacingCamera();
+		if(camera == -1){
+			camera = 0;
+		}
+		LinphoneManager.getLc().setVideoDevice(camera);
 		// VTCSecure SIP Domain selection 
 		final Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
 
@@ -264,9 +269,7 @@ public class DialerFragment extends Fragment {
 		view.setBackgroundResource(R.drawable.background_theme_new);
 
 
-		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
-		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
-		isPreviewEnabled = true;
+
 //		try {
 //			if (!LinphoneActivity.instance().isTablet()) {
 //				isPreviewEnabled = true;
@@ -276,32 +279,22 @@ public class DialerFragment extends Fragment {
 //		}
 		getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		myContext = getActivity().getApplication().getBaseContext();
+        
+        startOrientationSensor();
 
-
+	return view;
+}
+	public void  initialize_camera(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
+		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 		try {
-			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA))
-				initialize_camera(view);
+			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled)
+				initialize_camera(dialer_view);
 		}catch(Throwable e){
 
 		}
-		return view;
 	}
-	private int findFrontFacingCamera() {
-		int cameraId = -1;
-		// Search for the front facing camera
-		int numberOfCameras = Camera.getNumberOfCameras();
-		for (int i = 0; i < numberOfCameras; i++) {
-			Camera.CameraInfo info = new Camera.CameraInfo();
-			Camera.getCameraInfo(i, info);
-			if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-				cameraId = i;
-				cameraFront = true;
-				break;
-			}
-		}
-		return cameraId;
-	}
-
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void initialize_camera(View view) {
 		cameraPreview = (LinearLayout) view.findViewById(R.id.camera_preview);
@@ -324,7 +317,7 @@ public class DialerFragment extends Fragment {
 
 	}
 
-//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 //	public View.OnLayoutChangeListener camera_view_listener(){
 //		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
 //			@Override
@@ -368,7 +361,7 @@ public class DialerFragment extends Fragment {
 //		};
 //		return camera_view_listener;
 //	};
-		//	@Override
+	//	@Override
 //	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
 //		final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
@@ -378,38 +371,40 @@ public class DialerFragment extends Fragment {
 //			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 //		}
 //	}
-		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
-			final double ASPECT_TOLERANCE = 0.1;
-			double targetRatio=(double)h / w;
 
-			if (sizes == null) return null;
+//		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
+//			final double ASPECT_TOLERANCE = 0.1;
+//			double targetRatio=(double)h / w;
+//
+//			if (sizes == null) return null;
+//
+//			Camera.Size optimalSize = null;
+//			double minDiff = Double.MAX_VALUE;
+//
+//			int targetHeight = h;
+//
+//			for (Camera.Size size : sizes) {
+//				double ratio = (double) size.width / size.height;
+//				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+//				if (Math.abs(size.height - targetHeight) < minDiff) {
+//					optimalSize = size;
+//					minDiff = Math.abs(size.height - targetHeight);
+//				}
+//			}
+//
+//			if (optimalSize == null) {
+//				minDiff = Double.MAX_VALUE;
+//				for (Camera.Size size : sizes) {
+//					if (Math.abs(size.height - targetHeight) < minDiff) {
+//						optimalSize = size;
+//						minDiff = Math.abs(size.height - targetHeight);
+//					}
+//				}
+//			}
+//			return optimalSize;
+//		}
 
-			Camera.Size optimalSize = null;
-			double minDiff = Double.MAX_VALUE;
-
-			int targetHeight = h;
-
-			for (Camera.Size size : sizes) {
-				double ratio = (double) size.width / size.height;
-				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
-				}
-			}
-
-			if (optimalSize == null) {
-				minDiff = Double.MAX_VALUE;
-				for (Camera.Size size : sizes) {
-					if (Math.abs(size.height - targetHeight) < minDiff) {
-						optimalSize = size;
-						minDiff = Math.abs(size.height - targetHeight);
-					}
-				}
-			}
-			return optimalSize;
-		}
-	/**
+    /**
 	 * @return null if not ready yet
 	 */
 	public static DialerFragment instance() { 
@@ -419,6 +414,9 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		if(mPreview!=null){
+		mPreview.surfaceDestroyed(null);
+		}
 		//releaseCamera();
 //		if (androidVideoWindowImpl != null) {
 //			synchronized (androidVideoWindowImpl) {
@@ -430,18 +428,82 @@ public class DialerFragment extends Fragment {
 //			}
 //		}
 	}
-	private void releaseCamera() {
-		// stop and release camera
-		if (mCamera != null) {
-			mCamera.release();
-			mCamera = null;
+
+//	private void releaseCamera() {
+//		// stop and release camera
+//		if (mCamera != null) {
+//			mCamera.release();
+//			mCamera = null;
+//		}
+//	}
+
+	private synchronized void startOrientationSensor() {
+		//Disable global orientation change listener, and initiate only dialer listener
+		LinphoneActivity.instance().mOrientationHelper.disable();
+		if (mOrientationHelper == null) {
+			mOrientationHelper = new LocalOrientationEventListener(LinphoneActivity.instance());
+		}
+		mOrientationHelper.enable();
+	}
+	public int mAlwaysChangingPhoneAngle = -1;
+	public int lastDeviceAngle = 0;
+	private class LocalOrientationEventListener extends OrientationEventListener {
+		public LocalOrientationEventListener(Context context) {
+			super(context);
+		}
+
+		@Override
+		public void onOrientationChanged(final int o) {
+
+			if (o == OrientationEventListener.ORIENTATION_UNKNOWN) {
+				return;
+			}
+
+
+			//alpha is the distance from each axis we want to allow a rotation.
+			int degrees;
+
+			degrees = lastDeviceAngle;
+
+			int sensativity = 10;
+
+
+			if (o < 0 + sensativity || o > 360 - sensativity)// when o is around 0, we set degrees to zero
+				degrees = 0;
+			else if (o > 90 - sensativity && o < 90 + sensativity)//when o is around 90, we set the degrees to 90
+				degrees = 90;
+			else if (o > 180 - sensativity && o < 180 + sensativity)//when o is around 180 we set the degrees to 180
+				degrees = 180;
+			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
+				degrees = 270;
+
+
+			/*Log.d("onOrientationChanged_Dialer", o);
+			Log.d("degrees", degrees);
+			Log.d("mAlwaysChangingPhoneAngle", mAlwaysChangingPhoneAngle);
+			*/
+
+			if (mAlwaysChangingPhoneAngle == degrees) {
+				return;
+			}
+			mAlwaysChangingPhoneAngle = degrees;
+
+
+			Log.d("Phone orientation changed to ", degrees);
+			lastDeviceAngle = degrees;
+			cameraPreview.removeAllViews();
+			mPreview.surfaceDestroyed(mPreview.getHolder());
+			mPreview = new CameraPreview(myContext, mCamera);
+			cameraPreview.addView(mPreview);
+
 		}
 	}
-
 	@Override
 	public void onResume() {
 		super.onResume();
 
+		mOrientationHelper.enable();
+		LinphoneActivity.instance().mOrientationHelper.disable();
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
 			LinphoneActivity.instance().updateDialerFragment(this);
@@ -459,7 +521,7 @@ public class DialerFragment extends Fragment {
 		}
 
 
-
+		initialize_camera();
 		resetLayout(isCallTransferOngoing);
 	}
 	private boolean hasCamera(Context context) {
@@ -589,6 +651,9 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 	@Override //Disable until General Release
 	public boolean isEnabled(int position) { return false; }
 
+
+
+
 	public View getCustomViewSpinner(int position, View convertView,
 									 ViewGroup parent) {
 		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
@@ -597,14 +662,16 @@ class SpinnerAdapter extends ArrayAdapter<String> {
 		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 		main_text.setText(getItem(position));
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
+		left_icon.setImageResource(this.drawables[position]/*R.drawable.provider_logo_sorenson*/);
 		if(!isEnabled(position)){
 			mySpinner.setBackgroundColor(Color.DKGRAY);
 			left_icon.setColorFilter(Color.GRAY);
 			main_text.setTextColor(Color.WHITE);
 		}
 		return mySpinner;
-	}
 
+
+
+	}
 
 }

@@ -20,9 +20,11 @@ package org.linphone;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -31,8 +33,6 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.mediastream.Log;
-import org.linphone.setup.RemoteProvisioningActivity;
-import org.linphone.tutorials.TutorialLauncherActivity;
 
 import static android.content.Intent.ACTION_MAIN;
 
@@ -53,7 +53,6 @@ public class LinphoneLauncherActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		// Used to change for the lifetime of the app the name used to tag the logs
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
 		Log.TAG = "Linphone";
@@ -67,15 +66,12 @@ public class LinphoneLauncherActivity extends Activity {
 		View view=LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
 		setContentView(view);
 		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.bounce));
-
-
 		mHandler = new Handler();
 		
 		if (LinphoneService.isReady()) {
 			onServiceReady();
 		} else {
-			// start linphone as background  
-			
+			// start linphone as background
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 			mThread = new ServiceWaitThread();
 			mThread.start();
@@ -83,12 +79,13 @@ public class LinphoneLauncherActivity extends Activity {
 	}
 
 	protected void onServiceReady() {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
 		final Class<? extends Activity> classToStart;
-		if (getResources().getBoolean(R.bool.show_tutorials_instead_of_app)) {
-			classToStart = /*LoginMainActivity.class;//*/TutorialLauncherActivity.class;
-		} else if (getResources().getBoolean(R.bool.display_sms_remote_provisioning_activity) && LinphonePreferences.instance().isFirstRemoteProvisioning()) {
-			classToStart = /*LoginMainActivity.class;//*/RemoteProvisioningActivity.class;
-		} else {
+		if(!hasAcceptedRelease){
+			classToStart = LegalRelease.class;
+		}
+		else {
 			classToStart = /*LoginMainActivity.class;//*/LinphoneActivity.class;
 		}
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(classToStart);

@@ -17,13 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.net.URL;
-import java.util.Locale;
-import java.util.regex.Pattern;
-
-import org.linphone.LinphoneManager;
-import org.linphone.LinphoneService;
-import org.linphone.core.LinphoneProxyConfig;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -46,7 +39,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.linphone.LinphoneManager;
+import org.linphone.LinphoneService;
 import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.mediastream.Log;
+
+import java.net.URL;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 import de.timroes.axmlrpc.XMLRPCCallback;
 import de.timroes.axmlrpc.XMLRPCClient;
@@ -254,7 +256,8 @@ public class WizardFragment extends Fragment {
 	    		
 	    		Runnable runOk = new Runnable() {
     				public void run() {
-    					SetupActivity.instance().saveCreatedAccount(username, password, context.getString(R.string.default_domain));
+						Log.d("in wizard fragment saving created account");
+						SetupActivity.instance().saveCreatedAccount(username, password, context.getString(R.string.default_domain), "", LinphoneAddress.TransportType.LinphoneTransportTcp,context.getString(R.string.default_port));
     					SetupActivity.instance().displayWizardConfirm(username);
 					}
 	    		};

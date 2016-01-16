@@ -132,7 +132,6 @@ public final class LinphoneService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
 		// In case restart after a crash. Main in LinphoneActivity
 		mNotificationTitle = getString(R.string.service_name);
 
@@ -154,12 +153,13 @@ public final class LinphoneService extends Service {
 
 		Bitmap bm = null;
 		try {
-			bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo_linphone_57x57);
+			bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 		} catch (Exception e) {
 		}
 		mNotif = Compatibility.createNotification(this, mNotificationTitle, "", R.drawable.status_level, IC_LEVEL_OFFLINE, bm, mNotifContentIntent, true,notifcationsPriority);
 
 		LinphoneManager.createAndStart(LinphoneService.this);
+		LinphoneManager.getInstance().setAudioPayloadsOrder();
 
 		instance = this; // instance is ready once linphone manager has been created
 		LinphoneManager.getLc().addListener(mListener = new LinphoneCoreListenerBase(){
@@ -375,7 +375,7 @@ public final class LinphoneService extends Service {
 		
 		Bitmap bm = null;
 		try {
-			bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo_linphone_57x57);
+			bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 		} catch (Exception e) {
 		}
 		mCustomNotif = Compatibility.createNotification(this, title, message, iconResourceID, 0, bm, notifContentIntent, isOngoingEvent,notifcationsPriority);
@@ -547,7 +547,7 @@ public final class LinphoneService extends Service {
 
 		Bitmap bm = null;
 		try {
-			bm = BitmapFactory.decodeResource(getResources(), R.drawable.logo_linphone_57x57);
+			bm = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 		} catch (Exception e) {
 		}
 		mNotif = Compatibility.createNotification(this, mNotificationTitle, text, R.drawable.status_level, level, bm, mNotifContentIntent, true,notifcationsPriority);

@@ -17,8 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import org.linphone.R;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,6 +26,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+
 /**
  * @author Sylvain Berfini
  */
@@ -58,7 +60,13 @@ public class LinphoneLoginFragment extends Fragment implements OnClickListener {
 			return;
 		}
 		
-		SetupActivity.instance().linphoneLogIn(login.getText().toString(), password.getText().toString(), getResources().getBoolean(R.bool.setup_account_validation_mandatory));
+		SetupActivity.instance().linphoneLogIn(
+				login.getText().toString(),
+				password.getText().toString(),
+				getResources().getString(R.string.default_domain), "",
+				LinphoneAddress.TransportType.LinphoneTransportTcp,
+				getResources().getString(R.string.default_port),
+				getResources().getBoolean(R.bool.setup_account_validation_mandatory));
 	}
 
 	@Override

@@ -110,7 +110,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static Context ctx;
 	public static Activity act;
 	private static final int SETTINGS_ACTIVITY = 123;
-	private static final int FIRST_LOGIN_ACTIVITY = 101;
+	public static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
 	private static final int CALL_ACTIVITY = 19;
     private static final int CHAT_ACTIVITY = 21;
@@ -128,7 +128,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private SavedState dialerSavedState;
 	private boolean newProxyConfig;
 	private boolean isAnimationDisabled = false, preferLinphoneContacts = false;
-	private OrientationEventListener mOrientationHelper;
+	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
 
 	public static View topLayout;
@@ -146,7 +146,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return instance;
 		throw new RuntimeException("LinphoneActivity not instantiated yet");
 	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -163,7 +162,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		        .setMessage(getString(R.string.location_for_911_disabled_message))
 		        .setPositiveButton(R.string.button_ok,null)
 		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) { 
+		            public void onClick(DialogInterface dialog, int which) {
 		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
 		            }
 		         })
@@ -184,18 +183,16 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return;
 		}
 
-		boolean useFirstLoginActivity = getResources().getBoolean(R.bool.display_account_wizard_at_first_start);
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+
 		if (LinphonePreferences.instance().isProvisioningLoginViewEnabled()) {
 			Intent wizard = new Intent();
 			wizard.setClass(this, RemoteProvisioningLoginActivity.class);
 			wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
 			startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
-		} else if (useFirstLoginActivity && LinphonePreferences.instance().isFirstLaunch()) {
-			if (LinphonePreferences.instance().getAccountCount() > 0) {
-				LinphonePreferences.instance().firstLaunchSuccessful();
-			} else {
+		} else if (LinphonePreferences.instance().isFirstLaunch()) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
-			}
+				LinphonePreferences.instance().firstLaunchSuccessful();
 		}
 
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
@@ -253,14 +250,27 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 				if(state.equals(RegistrationState.RegistrationFailed) && newProxyConfig) {
 					newProxyConfig = false;
+
+
 					if (proxy.getError() == Reason.BadCredentials) {
 						displayCustomToast(getString(R.string.error_bad_credentials), Toast.LENGTH_LONG);
+						go_back_to_login();
 					}
 					if (proxy.getError() == Reason.Unauthorized) {
 						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
 					}
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
+						//Potential Issues that through this flag
+						//bad port
+						//no internet connection
+						//bad server address
+						//mismatch transport proto-call and port number
+
+
+						//throw them back to log-in
+
+
 					}
 				}
 			}
@@ -294,7 +304,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		};
 
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.addListener(mListener);
 		}
@@ -322,8 +331,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		mAlwaysChangingPhoneAngle = rotation;
 
 		updateAnimationsState();
+		startOrientationSensor();
+	}
+	private void go_back_to_login(){
+		deleteDefaultAccount();
+		Log.d("Restarting Login because registration failed");
+		Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+		startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
 	}
 
+	private void deleteDefaultAccount(){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+		LinphonePreferences mPrefs = LinphonePreferences.instance();
+		int n= mPrefs.getDefaultAccountIndex();
+		mPrefs.deleteAccount(n);
+	}
 	private void initButtons() {
 		menu = (LinearLayout) findViewById(R.id.menu);
 		mark = (LinearLayout) findViewById(R.id.mark);
@@ -757,7 +779,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				intent.putExtra("PictureUri", pictureUri);
 				intent.putExtra("ThumbnailUri", thumbnailUri);
 			}
-			startOrientationSensor();
+			//
+			// startOrientationSensor();
 			startActivityForResult(intent, CHAT_ACTIVITY);
 		}
 
@@ -1032,14 +1055,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public void startVideoActivity(LinphoneCall currentCall) {
 		Intent intent = new Intent(this, InCallActivity.class);
 		intent.putExtra("VideoEnabled", true);
-		startOrientationSensor();
+		//startOrientationSensor();
 		startActivityForResult(intent, CALL_ACTIVITY);
 	}
 
 	public void startIncallActivity(LinphoneCall currentCall) {
 		Intent intent = new Intent(this, InCallActivity.class);
 		intent.putExtra("VideoEnabled", false);
-		startOrientationSensor();
+		//startOrientationSensor();
 		startActivityForResult(intent, CALL_ACTIVITY);
 	}
 
@@ -1069,8 +1092,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		mOrientationHelper.enable();
 	}
 
-	private int mAlwaysChangingPhoneAngle = -1;
-	private int lastDeviceAngle = 270;
+	public int mAlwaysChangingPhoneAngle = -1;
+	public int lastDeviceAngle = 0;
 	public int getDeviceOrientation(){
 		return lastDeviceAngle;
 	}
@@ -1222,15 +1245,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+//		if (LinphonePreferences.instance().getAccountCount() == 0) {
+//			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
+//		}
 		// Attempt to update user location
-		boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
-		if (hasGps) {
-			LinphoneLocationManager.instance(this).updateLocation();
-		} else {
-			Log.d("TAG", "NO GPS");
+		try {
+			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+			if (hasGps) {
+				LinphoneLocationManager.instance(this).updateLocation();
+			} else {
+				Log.d("TAG", "NO GPS");
+			}
 		}
-
+		catch(NullPointerException e){
+			Log.e("E", "Device does not have GPS support");
+		}
 		if (!LinphoneService.isReady())  {
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}

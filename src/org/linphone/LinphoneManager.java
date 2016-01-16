@@ -953,7 +953,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
 
 
-		if (state == State.IncomingReceived && auto_answer) {
+		if (state == State.IncomingReceived && auto_answer && lc.getCalls().length == 1) {
 			try {
 				mLc.acceptCall(call);
 			} catch (LinphoneCoreException e) {
@@ -1411,6 +1411,17 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 
 
+	public void setRttEnabled(boolean enabled)
+	{
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+
+			SharedPreferences.Editor editor = prefs.edit();
+			// Enable by default
+			editor.putBoolean(getString(R.string.pref_text_enable_key), enabled);
+			editor.commit();
+
+	}
 	public void setDefaultRttPreference() {
 		Log.d("RTT: setDefaultRttPreference");
 		SharedPreferences prefs = PreferenceManager.
@@ -1444,7 +1455,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		LinphoneChatMessage message = null;
 
 		char c;
+		Log.d("Entering loop to process message "+s+" which is i characters long"+s.length());
+
 		for (int i = 0; i < s.length(); i++) {
+			Log.d("i"+i);
 			if (message == null)
 				message = chatRoom.createLinphoneChatMessage("");
 
@@ -1539,6 +1553,30 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 					}
 				}
 			}
+
+	}
+	public void setAudioPayloadsOrder() {
+		LinphoneCore lc = getLcIfManagerNotDestroyedOrNull();
+		if (lc == null)
+			return;
+		PayloadType currentPayloadType[] = lc.getAudioCodecs();
+		int currentPayloadCount = currentPayloadType.length;
+		PayloadType orderedPayloadType[] = new PayloadType[5];
+
+		for (int i = 0; i < currentPayloadCount; i++) {
+			String key = currentPayloadType[i].getMime() + "/" + currentPayloadType[i].getRate();
+			if (key.equals("G722/8000"))
+				orderedPayloadType[0] = currentPayloadType[i];
+			else if (key.equals("PCMU/8000"))
+				orderedPayloadType[1] = currentPayloadType[i];
+			else if (key.equals("PCMA/8000"))
+				orderedPayloadType[2] = currentPayloadType[i];
+			else if (key.equals("speex/32000"))
+				orderedPayloadType[3] = currentPayloadType[i];
+			else if (key.equals("speex/8000"))
+				orderedPayloadType[4] = currentPayloadType[i];
+		}
+		lc.setAudioCodecs(orderedPayloadType);
 
 	}
 
