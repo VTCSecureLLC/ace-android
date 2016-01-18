@@ -14,6 +14,7 @@
         android:contentDescription="@string/content_description_resource"
 		android:scaleType="fitXY"
 		android:src="@drawable/resources_new" />
+    <include layout="@layout/mwi_badge" android:id="@+id/mwi_badge" android:layout_width="40dp" android:layout_height="40dp"   />
 
     <TextView
         android:id="@+id/text"
