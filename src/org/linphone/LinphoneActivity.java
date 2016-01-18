@@ -74,11 +74,13 @@ import org.linphone.core.LinphoneCallLog;
 import org.linphone.core.LinphoneCallLog.CallStatus;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
+import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
@@ -233,6 +235,28 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
+			public void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content) {
+				super.notifyReceived(lc, ev, eventName, content);
+				if (content.getSubtype().equals("simple-message-summary")) {
+					SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+					int count = prefs.getInt("mwi_count", 0);
+					count++;
+					prefs.edit().putInt("mwi_count", count).commit();
+
+					View resources = findViewById(R.id.chat);
+					if (resources != null) {
+						View mwi_badge = resources.findViewById(R.id.mwi_badge);
+						if (mwi_badge != null) {
+							TextView notificationCountTextView = (TextView) resources.findViewById(R.id.textView);
+							if (notificationCountTextView != null) {
+								reloadMwiCount();
+							}
+						}
+					}
+				}
+			}
+
+			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				if(!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
 					cr.markAsRead();
@@ -337,6 +361,28 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		updateAnimationsState();
 		startOrientationSensor();
+
+		reloadMwiCount();
+	}
+
+	public void reloadMwiCount(){
+		View resources = findViewById(R.id.chat);
+		if (resources != null) {
+			View mwi_badge = resources.findViewById(R.id.mwi_badge);
+			if (mwi_badge != null) {
+				TextView notificationCountTextView = (TextView) resources.findViewById(R.id.textView);
+				if (notificationCountTextView != null) {
+					SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+					int count = prefs.getInt("mwi_count", 0);
+					if(count == 0){ mwi_badge.setVisibility(View.GONE); }
+					else{
+						notificationCountTextView.setText(String.valueOf(count));
+						mwi_badge.setVisibility(View.VISIBLE);
+					}
+
+				}
+			}
+		}
 	}
 	private void go_back_to_login(){
 		deleteDefaultAccount();
@@ -794,6 +840,16 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		//displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
+	public int getMessageWaitingCount(){
+		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+		int count = prefs.getInt("mwi_count", 0);
+		return count;
+	}
+	public void resetMessageWaitingCount(){
+		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+		prefs.edit().putInt("mwi_count", 0).commit();
+		reloadMwiCount();
+	}
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
@@ -1272,7 +1328,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		ContactsManager.getInstance().prepareContactsInBackground();
 
 		updateMissedChatCount();
-
+		LinphoneActivity.instance().reloadMwiCount();
 		displayMissedCalls(getLc().getMissedCallsCount());
 
 		LinphoneManager.getInstance().changeStatusToOnline();
