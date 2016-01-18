@@ -167,7 +167,7 @@ public class SettingsFragment extends PreferencesListFragment {
 									public void onClick(DialogInterface dialog, int whichButton) {
 										deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
-										startActivityForResult(intent, WIZARD_INTENT);
+										getActivity().startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
 									}
 								}
 						)
