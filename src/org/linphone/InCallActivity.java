@@ -36,7 +36,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -133,6 +132,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private TextWatcher rttTextWatcher;
 	private ScrollView rtt_scrollview;
 	private View rttContainerView;
+	private View rttHolder;
 
 	String contactName = "";
 
@@ -140,6 +140,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	int INCOMING=1;
 
 	private boolean isRTTMaximized = false;
+	private boolean isIncommingBubbleCreated = false;
 	public int rttIncomingBubbleCount=0;
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
@@ -164,17 +165,30 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("onCreate()");
+
 		instance = this;
 		DialerFragment.instance().mOrientationHelper.disable();
 		LinphoneActivity.instance().mOrientationHelper.enable();
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		mainLayout = new RelativeLayout(this);
 		mainLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-		mViewsHolder =  getLayoutInflater().inflate(R.layout.incall, null);
-		mFragmentHolder = getLayoutInflater().inflate(R.layout.incall_fragment_holder, null);
-		mainLayout.addView(mFragmentHolder);
+		LayoutInflater inflator = LayoutInflater.from(this);
+		mViewsHolder =  inflator.inflate(R.layout.incall, null);
+		mFragmentHolder = inflator.inflate(R.layout.incall_fragment_holder, null);
+		rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
+		View statusBar = inflator.inflate(R.layout.status_holder, null);
+		RelativeLayout.LayoutParams paramss = new RelativeLayout.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT);
+
+
+		//paramss.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		mainLayout.addView(mFragmentHolder,paramss);
 		mainLayout.addView(mViewsHolder);
+		mainLayout.addView(rttHolder, paramss);
+		mainLayout.addView(statusBar);
 		setContentView(mainLayout);
+
 
         isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
         showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
@@ -392,20 +406,29 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+		Log.d("onConfigChanged");
+
+		boolean contralersVisible = mControlsLayout.getVisibility() == View.VISIBLE;
 		mainLayout.removeView(mViewsHolder);
+
+
 		mViewsHolder = (ViewGroup) getLayoutInflater().inflate(R.layout.incall, null);
-		mainLayout.addView(mViewsHolder);
+
+		mainLayout.addView(mViewsHolder, 1);
 		initUI();
-		if(isRTTEnabled){
+		if(!contralersVisible)
+			mControlsLayout.setVisibility(View.GONE);
+
+		/*if(isRTTEnabled){
 			initRTT();
-		}
-		if(isRTTMaximized){
+		}*/
+		/*if(isRTTMaximized){
 			showRTTinterface();
 		}
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			displayVideoCallControlsIfHidden();
 		}
-
+*/
 		if (LinphoneManager.getLc().getCallsNb() > 0) {
 			LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
 
@@ -429,7 +452,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		Log.d("TEXT_MODE ", TEXT_MODE);
 	}
-	public void hold_cursor_at_end_of_edit_text(final EditText et){
+	public void hold_cursor_at_end_of_edit_text(final EditText et) {
 		et.setCursorVisible(false);
 		et.setOnClickListener(new OnClickListener() {
 
@@ -439,12 +462,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 	}
+
+
 	/** Initializes the views and other components needed for RTT in a call */
 	private void initRTT(){
 		rttContainerView = findViewById(R.id.rtt_container);
-		rttContainerView.setOnClickListener(this);
-		rtt_scrollview = (ScrollView)findViewById(R.id.rtt_scrollview);
 
+		rtt_scrollview = (ScrollView)findViewById(R.id.rtt_scrollview);
+		rtt_scrollview.getChildAt(0).setOnClickListener(this);
 
 		rttTextWatcher = new TextWatcher() {
 			boolean enter_pressed;
@@ -470,7 +495,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					if(enter_pressed){
 						previousoutgoingEditText=outgoingEditText;
 						sendRttCharacter(enter_button);
-						create_new_outgoing_bubble(outgoingEditText, true);
+						create_new_outgoing_bubble(outgoingEditText, /*true*/ false);
 					}else if(count > before){
 
 						CharSequence last_letter_of_sequence = s.subSequence(start + before, start + count);
@@ -508,6 +533,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		};
 
+		outgoingEditText = (EditText) findViewById(R.id.et_outgoing_bubble);
+		outgoingEditText.addTextChangedListener(rttTextWatcher);
+		standardize_bubble_view(outgoingEditText);
+		hold_cursor_at_end_of_edit_text(outgoingEditText);
+		outgoingEditText.setMovementMethod(null);
+
 	}
 
 	public int to_dp(int dp){
@@ -525,17 +556,25 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextAppearance(this, R.style.RttTextStyle);
 		tv.getBackground().setAlpha(180);
 	}
-	public void create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
-		if(old_bubble!=null){
+	public TextView create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
+		/*if(old_bubble!=null){
 			disable_bubble_editing(old_bubble);
-		}
+		}*/
 		LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp.setMargins(to_dp(10), 0, 0, 0);
 
-		EditText et=new EditText(this);
+		TextView et=new TextView(this);
 		et.setLayoutParams(lp);
 		et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
-		et.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+		et.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				outgoingEditText.requestFocus();
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+			}
+		});
 		standardize_bubble_view(et);
 
 		//if(TEXT_MODE==RTT) {
@@ -544,7 +583,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		//}
 
-		et.setMovementMethod(null);
 //		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
 //			@Override
 //			public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -566,14 +604,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //				return false;
 //			}
 //		});
-		hold_cursor_at_end_of_edit_text(et);
-		outgoingEditText=et;
-		((LinearLayout) rttContainerView).addView(et);
+		//hold_cursor_at_end_of_edit_text(et);
+		//outgoingEditText=et;
+		if(((LinearLayout) rttContainerView).getChildCount()==0 || !isIncommingBubbleCreated)
+			((LinearLayout) rttContainerView).addView(et);
+		else
+			((LinearLayout) rttContainerView).addView(et,((LinearLayout) rttContainerView).getChildCount()-1 );
 
-		et.requestFocus();
-		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.showSoftInput(et, InputMethodManager.SHOW_FORCED);
-
+//		et.requestFocus();
+//		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//		imm.showSoftInput(et, InputMethodManager.SHOW_FORCED);
+//
 		rtt_scrollview.post(new Runnable() {
 			@Override
 			public void run() {
@@ -581,13 +622,25 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 		rttOutgoingBubbleCount++;
+		et.setText(outgoingEditText.getText().toString().replace("\n", ""));
+		outgoingEditText.setText("");
+		rtt_scrollview.post(new Runnable() {
+			@Override
+			public void run() {
+				rtt_scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+			}
+		});
+		return et;
 	}
 	public void updateIncomingTextView(final long character) {
 		runOnUiThread(new Runnable(){
 			public void run() {
-				if(rtt_scrollview.getVisibility()!=View.VISIBLE){
+				if(rttHolder.getVisibility()!=View.VISIBLE){
 					showRTTinterface();
 				}
+				if(mControlsLayout.getVisibility()!= View.GONE)
+					mControlsLayout.setVisibility(View.GONE);
+
 				if(!incoming_chat_initiated){
 					incomingTextView=create_new_incoming_bubble();
 					incoming_chat_initiated=true;
@@ -631,6 +684,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
 	}
 	public TextView create_new_incoming_bubble(){
+		isIncommingBubbleCreated = true;
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
 		lp1.gravity = Gravity.RIGHT;
@@ -644,13 +698,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(rttOutgoingBubbleCount==0){
-					create_new_outgoing_bubble(null, true);
-				}else{
-					outgoingEditText.requestFocus();
+				outgoingEditText.requestFocus();
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-				}
+
 			}
 		});
 		incomingTextView=tv;
@@ -666,11 +717,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		return tv;
 	}
 	private void showRTTinterface() {
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 		runOnUiThread(new Runnable() {
 			public void run() {
 				isRTTMaximized = true;
-				rtt_scrollview.setVisibility(View.VISIBLE);
+				rttHolder.setVisibility(View.VISIBLE);
 			}
 		});
 	}
@@ -683,7 +734,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	/** Called when backspace is pressed in an RTT conversation.
 	 * Sends a backspace character and updates the outgoing text
 	 * views if necessary.
-	 * @return true if the key event should be consumed (ie. there should
+	 * @return true if the key event should sbe consumed (ie. there should
 	 * be no further processing of this backspace event)
 	 */
 //	private boolean backspacePressed() {
@@ -811,11 +862,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			if(direction[i]==OUTGOING){
 				Log.d("OUTGOING: "+messages[i]);
-				create_new_outgoing_bubble(null, false);
-				outgoingEditText.setText(messages[i]);
-				if(i==messages.length-1){
-					outgoingEditText.addTextChangedListener(rttTextWatcher);
-				}
+				create_new_outgoing_bubble(null, false).setText(messages[i]);
 			}else{
 				Log.d("INCOMING: "+messages[i]);
 				create_new_incoming_bubble();
@@ -1137,9 +1184,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			hideRTTinterface();
 		} else{
 			Log.d("rttOutgoingBubbleCount"+rttOutgoingBubbleCount);
-			if(rttOutgoingBubbleCount==0){
-				create_new_outgoing_bubble(null, true);
-			}
+//			if(rttOutgoingBubbleCount==0){
+//				create_new_outgoing_bubble(null, true);
+//			}
 			showRTTinterface();
 			((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
 					.showSoftInput(outgoingEditText, InputMethodManager.SHOW_FORCED);
@@ -1147,8 +1194,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	}
 	public void hideRTTinterface(){
-		if(rtt_scrollview!=null) {
-			rtt_scrollview.setVisibility(View.GONE);
+		if(rttHolder!=null) {
+			rttHolder.setVisibility(View.GONE);
 			isRTTMaximized=false;
 			mControlsLayout.setVisibility(View.VISIBLE);
 		}

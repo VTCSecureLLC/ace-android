@@ -29,12 +29,4 @@
             android:enabled="true"
             android:maxLines="3"
             android:visibility="gone"/>
-
-        <fragment
-            android:id="@+id/status"
-            android:name="org.linphone.StatusFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/status" />
-
     </FrameLayout>
