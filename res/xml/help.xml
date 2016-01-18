@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 				<PreferenceCategory
-					android:title="Deaf/HoH Resource Page">
-					<Preference android:key="emailace" android:title="Tech Support"/>
-					<Preference android:key="instantfeedbackace" android:title="Instant Feedback"/>
+					android:title="Resources">
 					<PreferenceScreen
 						android:title="Deaf / Hard of Hearing Resources"
 						android:key="websiteace">
 					</PreferenceScreen>
+					<Preference android:key="emailace" android:title="Tech Support"/>
+					<Preference android:key="instantfeedbackace" android:title="Instant Feedback"/>
+					<Preference android:key="videomail" android:title="Videomail"/>
 
 				</PreferenceCategory>
 </PreferenceScreen>

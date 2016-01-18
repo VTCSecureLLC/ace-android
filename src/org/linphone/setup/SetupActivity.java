@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -58,6 +59,13 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	private boolean accountCreated = false;
 	private LinphoneCoreListenerBase mListener;
 	private LinphoneAddress address;
+	ProgressDialog mProgressDialog;
+	//URL format for registrar lookup
+	final String registrarSRVLookupFormat="_sip._tcp.%domain%";
+	final String registrarSRVLookupFormatTLS="_sips._tcp.%domain%";
+	//URL format for autoConfig lookup
+	final String autoConfigSRVLookupFormat="_rueconfig._tls.%domain%";
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
@@ -130,6 +138,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	}
 
 	private void initUI() {
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setTitle(R.string.please_wait);
 		/*back = (RelativeLayout) findViewById(R.id.setup_back);
 		back.setOnClickListener(this);
 		next = (RelativeLayout) findViewById(R.id.setup_next);
@@ -244,17 +254,104 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		}		
 	}
 
-	private void logIn(String username, String password, String domain, String userId, TransportType transport_type, String port, boolean sendEcCalibrationResult) {
+
+	/**
+	 * @param username SIP username
+	 * @param password SIP password
+	 * @param domain SIP domain
+	 * @param userId SIP userId
+	 * @param transport_type SIP Transport type
+	 * @param port SIP port number
+	 * @param sendEcCalibrationResult Send echo cancellation result
+	 */
+	private void logIn(final String username, final String password, final String domain, final String userId, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm != null && getCurrentFocus() != null) {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 		}
 
-        saveCreatedAccount(username, password, domain, userId, transport_type ,port);
+		mProgressDialog.show();
+		//Create rue config lookup url from domain and attempt to retrieve config
+		String configURL = autoConfigSRVLookupFormat.replace("%domain%", domain.toString().replaceAll("\\s", ""));
+		JsonConfig.refreshConfig(configURL, username, password, new JsonConfig.ConfigListener() {
 
-		if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-			launchEchoCancellerCalibration(sendEcCalibrationResult);
+
+			@Override
+			public void onParsed(JsonConfig config) {
+				String sip_username, sip_password;
+				if (config.getSipAuthPassword() == null || config.getSipAuthUsername() == null || config.getSipAuthPassword().length() == 0 || config.getSipAuthUsername().length() == 0) {
+					sip_username = username;
+					sip_password = password;
+				} else {
+					sip_username = config.getSipAuthUsername();
+					sip_password = config.getSipAuthPassword();
+				}
+				saveCreatedAccount(username, password, domain, userId, transport_type, port);
+				config.applySettings();
+				if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
+					launchEchoCancellerCalibration(sendEcCalibrationResult);
+				}
+				mProgressDialog.dismiss();
+			}
+
+			@Override
+			public void onFailed(String reason) {
+				mProgressDialog.dismiss();
+				try {
+					saveCreatedAccount(username, password, domain, userId, transport_type, port);
+					if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
+						launchEchoCancellerCalibration(sendEcCalibrationResult);
+					}
+				}
+				catch(Exception e){
+					Toast.makeText(SetupActivity.this, "Failed to register", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+
+
+
+	}
+
+
+	private void logIn(final String username, final String password, final String domain, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		if (imm != null && getCurrentFocus() != null) {
+			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 		}
+		//show progress bar
+
+		mProgressDialog.show();
+		JsonConfig.refreshConfig(domain, username, password, new JsonConfig.ConfigListener() {
+
+
+			@Override
+			public void onParsed(JsonConfig config) {
+				String sip_username, sip_password;
+				if (config.getSipAuthPassword() == null || config.getSipAuthUsername() == null || config.getSipAuthPassword().length() == 0 || config.getSipAuthUsername().length() == 0) {
+					sip_username = username;
+					sip_password = password;
+				} else {
+					sip_username = config.getSipAuthUsername();
+					sip_password = config.getSipAuthPassword();
+				}
+				saveCreatedAccount(sip_username, sip_password, sip_username, domain, transport_type, port);
+				config.applySettings();
+				if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
+					launchEchoCancellerCalibration(sendEcCalibrationResult);
+				}
+				mProgressDialog.dismiss();
+			}
+
+			@Override
+			public void onFailed(String reason) {
+				Toast.makeText(LinphoneManager.getInstance().getContext(), reason, Toast.LENGTH_LONG).show();
+				mProgressDialog.dismiss();
+			}
+		});
+
+
+
 	}
 	
 	public void checkAccount(String username, String password, String domain, String userId, TransportType transport_type, String port) {
@@ -373,7 +470,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		.setDomain(domain)
 		.setUserId(userId)
 		.setPassword(password)
-		.setExpires("3600");
+		.setExpires("280");
 		Log.d("isMainAccountLinphoneDotOrg=" + isMainAccountLinphoneDotOrg);
 		Log.d("useLinphoneDotOrgCustomPorts=" + useLinphoneDotOrgCustomPorts);
 		if (isMainAccountLinphoneDotOrg && useLinphoneDotOrgCustomPorts) {
@@ -444,19 +541,19 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	public void displayWizardConfirm(String username) {
 		WizardConfirmFragment fragment = new WizardConfirmFragment();
-		
+
 		Bundle extras = new Bundle();
 		extras.putString("Username", username);
 		fragment.setArguments(extras);
 		changeFragment(fragment);
-		
+
 		currentFragment = SetupFragmentsEnum.WIZARD_CONFIRM;
 
 		/*next.setVisibility(View.VISIBLE);
 		next.setEnabled(false);
 		back.setVisibility(View.GONE);*/
 	}
-	
+
 	public void isAccountVerified(String username) {
 		Toast.makeText(this, getString(R.string.setup_account_validated), Toast.LENGTH_LONG).show();
 		LinphoneManager.getLcIfManagerNotDestroyedOrNull().refreshRegisters();

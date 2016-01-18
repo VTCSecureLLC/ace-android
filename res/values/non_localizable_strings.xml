@@ -15,10 +15,8 @@
 
 
 	<string-array name="pref_text_settings_send_mode_entry_values">
-		<item>@string/tunnel_mode_entry_value_disabled</item>
-		<item >@string/tunnel_mode_entry_value_3G_only</item>
-		<item>@string/tunnel_mode_entry_value_always</item>
-		<item>@string/tunnel_mode_entry_value_auto</item>
+		<item>RTT</item>
+		<item >SIP_SIMPLE</item>
 	</string-array>
 
 	<string-array name="tunnel_mode_entry_values">
@@ -139,6 +137,8 @@
 	<string name="pref_auto_answer_key">pref_auto_answer_key</string>
 	<string name="pref_sipinfo_dtmf_key">pref_sipinfo_dtmf_key</string>
 	<string name="pref_voice_mail_key">pref_voice_mail_key</string>
+	<string name="pref_mail_waiting_indicator_key">pref_voice_mail_key</string>
+	<string name="pref_mail_waiting_indicator">Mail Waiting Indicator URI</string>
 	<string name="pref_upnp_enable_key">pref_upnp_enable_key</string>
 
 	<string name="pref_first_time_linphone_chat_storage">pref_first_time_linphone_chat_storage</string>

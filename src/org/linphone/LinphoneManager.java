@@ -1411,6 +1411,17 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 
 
+	public void setRttEnabled(boolean enabled)
+	{
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(LinphoneActivity.instance());
+
+			SharedPreferences.Editor editor = prefs.edit();
+			// Enable by default
+			editor.putBoolean(getString(R.string.pref_text_enable_key), enabled);
+			editor.commit();
+
+	}
 	public void setDefaultRttPreference() {
 		Log.d("RTT: setDefaultRttPreference");
 		SharedPreferences prefs = PreferenceManager.
@@ -1444,7 +1455,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		LinphoneChatMessage message = null;
 
 		char c;
+		Log.d("Entering loop to process message "+s+" which is i characters long"+s.length());
+
 		for (int i = 0; i < s.length(); i++) {
+			Log.d("i"+i);
 			if (message == null)
 				message = chatRoom.createLinphoneChatMessage("");
 

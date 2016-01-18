@@ -133,6 +133,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public static View topLayout;
 
+
+	//In Call Message State Variables
+	public static int[] message_directions;
+	public static String[] message_texts;
+
 	static final boolean isInstanciated() {
 		return instance != null;
 	}

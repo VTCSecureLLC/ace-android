@@ -942,7 +942,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
 
-					SharedPreferences prefs = PreferenceManager.
+				SharedPreferences prefs = PreferenceManager.
 						getDefaultSharedPreferences(LinphoneActivity.instance());
 				String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 				prefs.edit().putBoolean(previewIsEnabledKey, value).commit();
@@ -1035,8 +1035,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		Log.d("RTT: initTextSettings()");
 		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
 
-		boolean isRTTEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
-		Log.d("RTT: RTT enabled from earlier? " + isRTTEnabled);
+		boolean isTextEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
+		Log.d("RTT: RTT enabled from earlier? " + isTextEnabled);
 		enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
 
 		enableTextCb.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -1048,6 +1048,23 @@ public class SettingsFragment extends PreferencesListFragment {
 				return true;
 			}
 		});
+
+		//ListPreference
+		ListPreference text_send_type_pref = (ListPreference)findPreference(getString(R.string.pref_text_settings_send_mode_key));
+
+		//Values accepted are RTT or SIP_SIMPLE
+		text_send_type_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object value) {
+				Log.d("text_send_type_pref value", value);
+				editor.putString(getString(R.string.pref_text_settings_send_mode_key), value.toString());
+				return true;
+			}
+		});
+
+		String value=text_send_type_pref.getValue();
+		Log.d("text_send_type_pref value", value);
+
 	}
 
 	private void initVideoSettings() {
@@ -1240,6 +1257,8 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_voice_mail_key, mPrefs.getVoiceMailUri());
+		setPreferenceDefaultValueAndSummary(R.string.pref_mail_waiting_indicator_key,
+				prefs.getString(getString(R.string.pref_mail_waiting_indicator_key), ""));
 	}
 
 	private void setCallPreferencesListener() {
@@ -1266,6 +1285,16 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
+		findPreference(getString(R.string.pref_mail_waiting_indicator_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				EditTextPreference mwiUri= (EditTextPreference) findPreference(getString(R.string.pref_mail_waiting_indicator_key));
+				mwiUri.setSummary(newValue.toString());
+				mwiUri.setText(newValue.toString());
+				prefs.edit().putString(getString(R.string.pref_mail_waiting_indicator_key), newValue.toString()).commit();
+				return true;
+			}
+		});
 		findPreference(getString(R.string.pref_sipinfo_dtmf_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {

@@ -71,6 +71,13 @@
 		<CheckBoxPreference
 			android:title="@string/pref_text_enable_title"
 			android:key="@string/pref_text_enable_key"/>
+		<ListPreference
+			android:title="@string/pref_text_settings_send_mode_title"
+			android:key="@string/pref_text_settings_send_mode_key"
+			android:entries="@array/pref_text_settings_send_mode_entries"
+			android:entryValues="@array/pref_text_settings_send_mode_entry_values"/>
+
+
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -245,8 +252,12 @@
 			    android:key="@string/pref_rfc2833_dtmf_key"/>
 			
 			<EditTextPreference
-			    android:title="@string/pref_voice_mail"
-				android:key="@string/pref_voice_mail_key"/>
+			android:title="@string/pref_voice_mail"
+			android:key="@string/pref_voice_mail_key"/>
+
+			<EditTextPreference
+				android:title="@string/pref_mail_waiting_indicator"
+				android:key="@string/pref_mail_waiting_indicator_key"/>
 
 	    </PreferenceScreen>
 
