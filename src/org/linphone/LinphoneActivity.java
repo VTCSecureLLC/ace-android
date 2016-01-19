@@ -139,6 +139,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	//In Call Message State Variables
 	public static int[] message_directions;
 	public static String[] message_texts;
+	public static String message_call_Id;
 
 	static final boolean isInstanciated() {
 		return instance != null;
