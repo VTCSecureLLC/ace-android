@@ -197,7 +197,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			wizard.setClass(this, RemoteProvisioningLoginActivity.class);
 			wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
 			startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
-		} else if (LinphonePreferences.instance().isFirstLaunch()) {
+		} else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
 		}
@@ -1273,6 +1273,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == Activity.RESULT_OK && requestCode == FIRST_LOGIN_ACTIVITY) {
+			if (data != null && data.getExtras()!= null && data.getExtras().getBoolean("Exit", false)) {
+				exit();
+				return;
+			}
+		}
 		if (resultCode == Activity.RESULT_FIRST_USER && requestCode == SETTINGS_ACTIVITY) {
 			if (data.getExtras().getBoolean("Exit", false)) {
 				exit();
