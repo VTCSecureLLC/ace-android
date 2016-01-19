@@ -1460,20 +1460,29 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					|| currentFragment == FragmentsAvailable.HISTORY
 					|| currentFragment == FragmentsAvailable.CHATLIST
 					|| currentFragment == FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT
-					|| currentFragment == FragmentsAvailable.ABOUT_INSTEAD_OF_SETTINGS) {
-				boolean isBackgroundModeActive = LinphonePreferences.instance().isBackgroundModeEnabled();
-				if (!isBackgroundModeActive) {
-					stopService(new Intent(Intent.ACTION_MAIN).setClass(this, LinphoneService.class));
-					finish();
-				} else if (LinphoneUtils.onKeyBackGoHome(this, keyCode, event)) {
-					return true;
-				}
-			} else {
-				if (isTablet()) {
-					if (currentFragment == FragmentsAvailable.SETTINGS) {
-						updateAnimationsState();
+					|| currentFragment == FragmentsAvailable.ABOUT_INSTEAD_OF_SETTINGS
+					|| currentFragment == FragmentsAvailable.SETTINGS
+					|| currentFragment == FragmentsAvailable.ABOUT) {
+
+				if(currentFragment == FragmentsAvailable.DIALER) {
+					boolean isBackgroundModeActive = LinphonePreferences.instance().isBackgroundModeEnabled();
+					if (!isBackgroundModeActive) {
+						stopService(new Intent(Intent.ACTION_MAIN).setClass(this, LinphoneService.class));
+						finish();
+					} else if (LinphoneUtils.onKeyBackGoHome(this, keyCode, event)) {
+						return true;
 					}
 				}
+				else{
+					goToDialer();
+					return true;
+				}
+//			} else {
+//				if (isTablet()) {
+//					if (currentFragment == FragmentsAvailable.SETTINGS) {
+//						updateAnimationsState();
+//					}
+//				}
 			}
 		} else if (keyCode == KeyEvent.KEYCODE_MENU && statusFragment != null) {
 			if (event.getRepeatCount() < 1) {
