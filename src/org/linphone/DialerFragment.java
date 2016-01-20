@@ -20,9 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -34,12 +32,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -128,47 +126,23 @@ public class DialerFragment extends Fragment {
 			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
 			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			sipDomainSpinner.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					if(event.getAction() == MotionEvent.ACTION_DOWN){
-						isSpinnerOpen = !isSpinnerOpen;
-						if(isSpinnerOpen){
-							new AlertDialog.Builder(DialerFragment.this.getActivity())
-									.setTitle("")
-									.setMessage("Available in General Release")
-									.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											isSpinnerOpen = false;
-										}
-									}).show();
-						}
+
+			sipDomainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
+					try {
+						((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
+
+					} catch (Throwable e) {
+						//crashing on tablets because dialer_view or provider_spinner_box is missing
 					}
-					return false;
+					sipDomainTextView.setText("@" + adapter.getItem(position));
+
+					mAddress.setTag(sipDomainTextView.getText());
+				}
+
+				public void onNothingSelected(AdapterView<?> arg0) {
 				}
 			});
-
-//			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-//				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
-//					try {
-//						if (position == 0) {
-//							//set background gray because we are using the @ symbol
-//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
-//						} else {
-//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
-//						}
-//					} catch (Throwable e) {
-//						//crashing on tablets because dialer_view or provider_spinner_box is missing
-//					}
-//					if (position != 0) sipDomainTextView.setText("@" + adapter.getItem(position));
-//					else sipDomainTextView.setText("");
-//					mAddress.setTag(sipDomainTextView.getText());
-//				}
-//
-//				public void onNothingSelected(AdapterView<?> arg0) {
-//				}
-//			});
 			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
 					new String[]{"","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
 					new int[]{R.drawable.atbutton_new,R.drawable.provider_logo_sorenson,
