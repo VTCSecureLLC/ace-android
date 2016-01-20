@@ -3,9 +3,11 @@ package org.linphone;
 import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -16,14 +18,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Version;
+import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AvatarWithShadow;
 
 import java.io.InputStream;
@@ -44,7 +51,7 @@ public class EditContactFragment extends Fragment {
 	private int firstSipAddressIndex = -1;
 	private String newSipOrNumberToAdd;
 	private ContactsManager contactsManager;
-
+	private SharedPreferences sharedPreferences;
 	public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		this.inflater = inflater;
 		
@@ -68,7 +75,9 @@ public class EditContactFragment extends Fragment {
 		contactsManager = ContactsManager.getInstance();
 		
 		view = inflater.inflate(R.layout.edit_contact, container, false);
-		
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		loadProviderDomainsFromCache();
+
 		TextView cancel = (TextView) view.findViewById(R.id.cancel);
 		cancel.setOnClickListener(new OnClickListener() {
 			@Override
@@ -189,12 +198,10 @@ public class EditContactFragment extends Fragment {
         } else {
         	contactPicture.setImageResource(R.drawable.unknown_small);
         }
-		
 		initNumbersFields((TableLayout) view.findViewById(R.id.controls), contact);
 		
 		ops = new ArrayList<ContentProviderOperation>();
 		lastName.requestFocus();
-		
 		return view;
 	}
 
@@ -208,7 +215,37 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 	}
-	
+	public List<String> domains = new ArrayList<String>();
+
+
+
+	protected void loadProviderDomainsFromCache(){
+		if(sharedPreferences != null) {
+			//Load cached providers and their domains
+			String name = sharedPreferences.getString("provider0", "-1");
+			domains = new ArrayList<String>();
+			for (int i = 1; !name.equals("-1"); i++) {
+				domains.add(name);
+				name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
+			}
+		}
+//		setProviderData(domains);
+//		//Load default provider registration info if cached
+//		populateRegistrationInfo("provider" + String.valueOf(0) + "domain");
+	}
+
+	protected void setProviderData(final Spinner spinner, List<String> data){
+		String[] mData = new String[data.size()];
+		if(spinner != null) {
+			spinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
+					mData, new int[]{R.drawable.provider_logo_sorenson,
+					R.drawable.provider_logo_zvrs,
+					R.drawable.provider_logo_caag,//caag
+					R.drawable.provider_logo_purplevrs,
+					R.drawable.provider_logo_globalvrs,//global
+					R.drawable.provider_logo_convorelay}));
+		}
+	}
 	private void initNumbersFields(final TableLayout controls, final Contact contact) {
 		controls.removeAllViews();
 		numbersAndAddresses = new ArrayList<NewOrUpdatedNumberOrAddress>();
@@ -281,11 +318,11 @@ public class EditContactFragment extends Fragment {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				nounoa.setNewNumberOrAddress(noa.getText().toString());
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 			}
@@ -304,9 +341,32 @@ public class EditContactFragment extends Fragment {
 
 			}
 		});
+
+		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String oldAddr = noa.getText().toString();
+				if(oldAddr.length() > 1) {
+					int domainStart = oldAddr.indexOf("@", 0);
+					if(domainStart == -1){ domainStart = oldAddr.length(); }
+					String name = oldAddr.substring(0, domainStart);
+					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
+					noa.setText(name + "@" + newDomain);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+		setProviderData(sp_provider, domains);
+
 		return view;
 	}
-	
+
+
 	@SuppressLint("InflateParams")
 	private void addEmptyRowToAllowNewNumberOrAddress(final TableLayout controls, final boolean isSip) {
 		final View view = inflater.inflate(R.layout.contact_add_row, null);
@@ -323,15 +383,35 @@ public class EditContactFragment extends Fragment {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				nounoa.setNewNumberOrAddress(noa.getText().toString());
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 			}
 		});
+		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String oldAddr = noa.getText().toString();
+				if(oldAddr.length() > 1) {
+					int domainStart = oldAddr.indexOf("@", 0);
+					if(domainStart == -1){ domainStart = oldAddr.length(); }
+					String name = oldAddr.substring(0, domainStart);
+					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
+					noa.setText(name + "@" + newDomain);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+		setProviderData(sp_provider, domains);
 		
 		final ImageView add = (ImageView) view.findViewById(R.id.add);
 		add.setOnClickListener(new OnClickListener() {
@@ -366,6 +446,7 @@ public class EditContactFragment extends Fragment {
 				controls.addView(view);
 			}
 		}
+
 	}
 	
 	private String findContactFirstName(String contactID) {
@@ -436,7 +517,95 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 	}
-	
+	class SpinnerAdapter extends ArrayAdapter<String> {
+
+		int[] drawables;
+
+		public SpinnerAdapter(Context ctx, int txtViewResourceId,
+							  String[] objects, int[] drawable) {
+			super(ctx, txtViewResourceId, objects);
+			this.drawables = drawable;
+
+		}
+
+		@Override
+		public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
+			return getCustomViewSpinner(position, cnvtView, prnt);
+		}
+
+		@Override
+		public View getView(int pos, View cnvtView, ViewGroup prnt) {
+			return getCustomView(pos, cnvtView, prnt);
+		}
+
+		public View getCustomView(int position, View convertView,
+								  ViewGroup parent) {
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+			View mySpinner = inflater.inflate(R.layout.spiner_ithem, parent,
+					false);
+
+			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
+			String providerName = "";
+			if (domains != null && domains.size() > 0) {
+				providerName = domains.get(position);
+				main_text.setText(providerName);
+			}
+			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
+			if (providerName.toLowerCase().contains("sorenson")) {
+				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
+			} else if (providerName.toLowerCase().contains("zvrs")) {
+				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
+			} else if (providerName.toLowerCase().contains("star")) {
+				left_icon.setImageResource(R.drawable.provider_logo_caag);
+			} else if (providerName.toLowerCase().contains("convo")) {
+				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
+			} else if (providerName.toLowerCase().contains("global")) {
+				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
+			} else if (providerName.toLowerCase().contains("purple")) {
+				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
+			} else if (providerName.toLowerCase().contains("ace")) {
+				left_icon.setImageResource(R.drawable.ic_launcher);
+			} else {
+				left_icon.setImageResource(R.drawable.ic_launcher);
+			}
+			return mySpinner;
+		}
+
+		public View getCustomViewSpinner(int position, View convertView,
+										 ViewGroup parent) {
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+			View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
+					false);
+
+			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
+			String providerName = "";
+			if (domains != null && domains.size() > 0) {
+				try {
+					providerName = domains.get(position);
+					main_text.setText(providerName);
+				} catch (IndexOutOfBoundsException e) {
+					main_text.setText("");
+				}
+			}
+			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
+			if (providerName.toLowerCase().contains("sorenson")) {
+				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
+			} else if (providerName.toLowerCase().contains("zvrs")) {
+				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
+			} else if (providerName.toLowerCase().contains("star")) {
+				left_icon.setImageResource(R.drawable.provider_logo_caag);
+			} else if (providerName.toLowerCase().contains("convo")) {
+				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
+			} else if (providerName.toLowerCase().contains("global")) {
+				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
+			} else if (providerName.toLowerCase().contains("purple")) {
+				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
+			} else if (providerName.toLowerCase().contains("ace")) {
+				left_icon.setImageResource(R.drawable.ic_launcher);
+			}
+			return mySpinner;
+		}
+	}
 	class NewOrUpdatedNumberOrAddress {
 		private String oldNumberOrAddress;
 		private String newNumberOrAddress;
