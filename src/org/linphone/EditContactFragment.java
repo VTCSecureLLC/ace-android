@@ -343,17 +343,26 @@ public class EditContactFragment extends Fragment {
 		});
 
 		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		setProviderData(sp_provider, domains);
+		sp_provider.setTag(-1); //Setting tag to -1 infers no item has been selected, this prevents domain being overwritten
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(((Integer)sp_provider.getTag()) == -1){
+					sp_provider.setTag(0);
+					return;
+				}
 				String oldAddr = noa.getText().toString();
-				if(oldAddr.length() > 1) {
+				if (oldAddr.length() > 1) {
 					int domainStart = oldAddr.indexOf("@", 0);
-					if(domainStart == -1){ domainStart = oldAddr.length(); }
+					if (domainStart == -1) {
+						domainStart = oldAddr.length();
+					}
 					String name = oldAddr.substring(0, domainStart);
 					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
 					noa.setText(name + "@" + newDomain);
 				}
+				sp_provider.setTag(position);
 			}
 
 			@Override
@@ -361,7 +370,6 @@ public class EditContactFragment extends Fragment {
 
 			}
 		});
-		setProviderData(sp_provider, domains);
 
 		return view;
 	}
@@ -392,26 +400,7 @@ public class EditContactFragment extends Fragment {
 			public void afterTextChanged(Editable s) {
 			}
 		});
-		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
-		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String oldAddr = noa.getText().toString();
-				if(oldAddr.length() > 1) {
-					int domainStart = oldAddr.indexOf("@", 0);
-					if(domainStart == -1){ domainStart = oldAddr.length(); }
-					String name = oldAddr.substring(0, domainStart);
-					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
-					noa.setText(name + "@" + newDomain);
-				}
-			}
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
-			}
-		});
-		setProviderData(sp_provider, domains);
 		
 		final ImageView add = (ImageView) view.findViewById(R.id.add);
 		add.setOnClickListener(new OnClickListener() {
@@ -436,7 +425,7 @@ public class EditContactFragment extends Fragment {
 				}
 			}
 		});
-		
+
 		if (isSip) {
 			controls.addView(view, controls.getChildCount());
 		} else {
@@ -446,6 +435,31 @@ public class EditContactFragment extends Fragment {
 				controls.addView(view);
 			}
 		}
+		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		setProviderData(sp_provider, domains);
+		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String oldAddr = noa.getText().toString();
+				if (oldAddr.length() > 1) {
+					int domainStart = oldAddr.indexOf("@", 0);
+					if (domainStart == -1) {
+						domainStart = oldAddr.length();
+					}
+					String name = oldAddr.substring(0, domainStart);
+					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
+					noa.setText(name + "@" + newDomain);
+				}
+				else{
+					return;
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 
 	}
 	
