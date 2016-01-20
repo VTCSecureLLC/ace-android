@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -207,8 +208,13 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	@Override
 	public void onBackPressed() {
-		if(currentFragment == SetupFragmentsEnum.MENU || currentFragment == SetupFragmentsEnum.GENERIC_LOGIN)
+		if(currentFragment == SetupFragmentsEnum.MENU || currentFragment == SetupFragmentsEnum.GENERIC_LOGIN){
+			Intent i = new Intent();
+			i.putExtra("Exit", true);
+			setResult(RESULT_OK, i);
+			super.onBackPressed();
 			return;
+		}
 		if (currentFragment == firstFragment) {
 			LinphonePreferences.instance().firstLaunchSuccessful();
 			if (getResources().getBoolean(R.bool.setup_cancel_move_to_back)) {

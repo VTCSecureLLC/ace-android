@@ -68,16 +68,22 @@ public class HelpFragment extends PreferencesListFragment {
             }
         });
 
+        int videoMessageCount = LinphoneActivity.instance().getMessageWaitingCount();
+        findPreference("videomail").setTitle("Videomail" + " (" +String.valueOf(videoMessageCount) + ")");
+
         findPreference("videomail").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 LinphoneManager.getInstance().
                         newOutgoingCall(prefs.getString(getString(R.string.pref_voice_mail_key), ""), preference.getTitle().toString());
+                LinphoneActivity.instance().resetMessageWaitingCount();
+                preference.setTitle("Videomail");
                 return true;
             }
         });
         new LoadWebPageASYNC().execute();
     }
+
     public void populate_deaf_and_hard_of_hearing_preference() throws JSONException {
         String textjson;
         try {

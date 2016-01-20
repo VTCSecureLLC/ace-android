@@ -491,11 +491,17 @@ public class DialerFragment extends Fragment {
 
 			Log.d("Phone orientation changed to ", degrees);
 			lastDeviceAngle = degrees;
-			cameraPreview.removeAllViews();
-			mPreview.surfaceDestroyed(mPreview.getHolder());
-			mPreview = new CameraPreview(myContext, mCamera);
-			cameraPreview.addView(mPreview);
 
+
+			//Added quick crash fix to when unselecting camera preview prevent app from crashing.
+			try {
+				cameraPreview.removeAllViews();
+				mPreview.surfaceDestroyed(mPreview.getHolder());
+				mPreview = new CameraPreview(myContext, mCamera);
+				cameraPreview.addView(mPreview);
+			}catch(Throwable e){
+				e.printStackTrace();
+			}
 		}
 	}
 	@Override
