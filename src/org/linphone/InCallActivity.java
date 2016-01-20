@@ -863,7 +863,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		LinphoneActivity.instance().message_texts=new String[number_of_messages + 1];
 		for(int j=0; j<number_of_messages; j++){
 			View view=((LinearLayout) rttContainerView).getChildAt(j);
-			if((boolean)view.getTag()){
+			if(((Boolean)view.getTag())){
 				LinphoneActivity.instance().message_directions[j]=OUTGOING;
 			}else{
 				LinphoneActivity.instance().message_directions[j]=INCOMING;
