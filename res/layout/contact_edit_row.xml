@@ -18,10 +18,18 @@
    	<EditText
         android:textCursorDrawable="@null"
         android:id="@+id/numoraddr"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:background="@drawable/chat_fast_address_background"
-        android:inputType="textEmailAddress"/>
-  
-  </TableRow>
+        android:inputType="textEmailAddress"
+		android:minWidth="120dp" />
+
+	<Spinner
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:id="@+id/sp_contact_sip_provider"
+		android:clickable="true"
+		android:layout_weight="1" />
+
+</TableRow>
