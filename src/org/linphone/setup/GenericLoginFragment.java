@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -39,9 +38,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.linphone.AsyncProviderLookupOperation;
 import org.linphone.LinphoneActivity;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
@@ -51,17 +48,13 @@ import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Sylvain Berfini
  */
-public class GenericLoginFragment extends Fragment implements OnClickListener {
+public class GenericLoginFragment extends Fragment implements OnClickListener, AsyncProviderLookupOperation.ProviderNetworkOperationListener {
 	private EditText login, password, domain, port, userid;
 	private Spinner transport;
 	private ImageView apply;
@@ -71,7 +64,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 	Spinner sp_provider;
 	List<String> transportOptions = new ArrayList<String>();
 	private SharedPreferences sharedPreferences;
-	ProviderNetworkOperation retrieveProviderTask;
+	AsyncProviderLookupOperation providerLookupOperation;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,8 +89,8 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 				transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 					@Override
 					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						retrieveProviderTask = new ProviderNetworkOperation();
-						retrieveProviderTask.execute();
+						providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
+						providerLookupOperation.execute();
 					}
 
 					@Override
@@ -146,9 +139,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 					}
 				}
 			});
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		retrieveProviderTask = new ProviderNetworkOperation();
-		retrieveProviderTask.execute();
+
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+		providerLookupOperation= new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
+		providerLookupOperation.execute();
 		loadProviderDomainsFromCache();
 		return view;
 	}
@@ -176,56 +171,15 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			e.printStackTrace();
 		}
 	}
-	final String cdnProviderList = "http://cdn.vatrp.net/new-domains.json";
 	public List<String> domains = new ArrayList<String>();
-	public static String getText(String url) throws Exception {
-		URL website = new URL(url);
-		URLConnection connection = website.openConnection();
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(
-						connection.getInputStream()));
 
-		StringBuilder response = new StringBuilder();
-		String inputLine;
 
-		while ((inputLine = in.readLine()) != null)
-			response.append(inputLine);
-
-		in.close();
-
-		return response.toString();
-	}
-	protected void reloadProviderDomains(){
-		String textjson = "";
-		domains = new ArrayList<String>();
-		try {
-			textjson=getText(cdnProviderList);
-			org.linphone.mediastream.Log.d("textjson=" + textjson);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		JSONArray reader = null;
-		try {
-			reader = new JSONArray(textjson);
-			for (int i = 0; i < reader.length(); i++) {
-				//Store CDN providers and their domains in SharedPreferences
-				sharedPreferences.edit().
-						putString("provider" + String.valueOf(i),((JSONObject) reader.get(i)).getString("name")).commit();
-				sharedPreferences.edit().
-						putString("provider" + String.valueOf(i)+"domain",((JSONObject) reader.get(i)).getString("domain")).commit();
-				domains.add(((JSONObject)reader.get(i)).getString("name"));
-			}
-		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
 
 	protected void loadProviderDomainsFromCache(){
 		//Load cached providers and their domains
-		String name = sharedPreferences.getString("provider1", "-1");
+		String name = sharedPreferences.getString("provider0", "-1");
 		domains = new ArrayList<String>();
-		for (int i = 0; !name.equals("-1"); i++) {
+		for (int i = 1; !name.equals("-1"); i++) {
 			domains.add(name);
 			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
 		}
@@ -292,27 +246,21 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 		else if(id == R.id.ab_back)
 			getActivity().onBackPressed();
 	}
-	//Helper class to pull all provider domains from the CDN, pass into setup.login for autoconfig
-	private class ProviderNetworkOperation extends AsyncTask<Void, Void, Void> {
-		@Override
-		protected Void doInBackground(Void... params) {
-			reloadProviderDomains();
-			return null;
-		}
 
-		@Override
-		protected void onPostExecute(Void aVoid) {
-			if (domains != null && domains.size() > 0) {
-				if (sp_provider != null && sp_provider.getAdapter() != null && sp_provider.getAdapter().getCount() != domains.size()) {
-					setProviderData(domains);
-				}
-				if(sp_provider != null) {
-					populateRegistrationInfo("provider" + String.valueOf(sp_provider.getSelectedItemPosition()) + "domain");
-				}
-				super.onPostExecute(aVoid);
+	@Override
+	public void onProviderLookupFinished(ArrayList<String> mDomains) {
+		if(mDomains == null){ return; }
+		domains = mDomains;
+		if (domains.size() > 0) {
+			if (sp_provider != null && sp_provider.getAdapter() != null && sp_provider.getAdapter().getCount() != domains.size()) {
+				setProviderData(domains);
+			}
+			if(sp_provider != null) {
+				populateRegistrationInfo("provider" + String.valueOf(sp_provider.getSelectedItemPosition()) + "domain");
 			}
 		}
 	}
+
 	class SpinnerAdapter extends ArrayAdapter<String> {
 
 		int[] drawables;
@@ -415,6 +363,5 @@ public class GenericLoginFragment extends Fragment implements OnClickListener {
 			return mySpinner;
 		}
 
-		
 	}
 }
