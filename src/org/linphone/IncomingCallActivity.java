@@ -179,7 +179,6 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	@Override
 	protected void onPause() {
 		terminated = true;
-		HueController.getInstance().restoreAllLightStates();
 		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
@@ -187,6 +186,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		}
         stopRingCount();
 		super.onPause();
+		HueController.getInstance().stopFlashing();
 	}
 
 	@Override
