@@ -18,23 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.linphone.core.LinphoneAddress;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
-import org.linphone.core.LinphoneCallParams;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.mediastream.Log;
-import org.linphone.setup.ApplicationPermissionManager;
-import org.linphone.ui.AvatarWithShadow;
-import org.linphone.ui.LinphoneSliders;
-import org.linphone.ui.LinphoneSliders.LinphoneSliderTriggered;
-import org.linphone.vtcsecure.LinphoneTorchFlasher;
-
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
@@ -54,9 +37,25 @@ import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCall.State;
+import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.mediastream.Log;
+import org.linphone.setup.ApplicationPermissionManager;
+import org.linphone.ui.AvatarWithShadow;
+import org.linphone.vtcsecure.LinphoneTorchFlasher;
+
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Activity displayed when a call comes in.
@@ -64,7 +63,7 @@ import android.widget.Toast;
  *
  * @author Guillaume Beraudo
  */
-public class IncomingCallActivity extends Activity implements LinphoneSliderTriggered {
+public class IncomingCallActivity extends Activity {
 
 	private static IncomingCallActivity instance;
 
@@ -72,7 +71,9 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	private TextView mNumberView;
 	private AvatarWithShadow mPictureView;
 	private LinphoneCall mCall;
-	private LinphoneSliders mIncomingCallWidget;
+	//private LinphoneSliders mIncomingCallWidget;
+	private ImageView accept_call_button;
+	private ImageView decline_call_button;
 	private LinphoneCoreListenerBase mListener;
 	private RelativeLayout topLayout; 
 	private Boolean backgroundIsRed = false;
@@ -105,8 +106,23 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		getWindow().addFlags(flags);
 
 		// "Dial-to-answer" widget for incoming calls.
-		mIncomingCallWidget = (LinphoneSliders) findViewById(R.id.sliding_widget);
-		mIncomingCallWidget.setOnTriggerListener(this);
+//		mIncomingCallWidget = (LinphoneSliders) findViewById(R.id.sliding_widget);
+//		mIncomingCallWidget.setOnTriggerListener(this);
+
+		accept_call_button = (ImageView) findViewById(R.id.accept_call_button);
+		decline_call_button = (ImageView) findViewById(R.id.decline_call_button);
+		accept_call_button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onCallAcceptClick();
+			}
+		});
+		decline_call_button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				onCallDeclineClick();
+			}
+		});
 
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
@@ -323,8 +339,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		}
 	}
 
-	@Override
-	public void onLeftHandleTriggered() {
+	public void onCallAcceptClick() {
 		if(ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.RECORD_AUDIO)) {
 			answer();
 			finish();
@@ -343,8 +358,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		}
 	}
 
-	@Override
-	public void onRightHandleTriggered() {
+	public void onCallDeclineClick() {
 		decline();
 		finish();
 	}
