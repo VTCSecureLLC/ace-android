@@ -27,13 +27,13 @@ tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-${SHA1}
 APK_FILE=""
 
 if [ -f bin/Linphone-debug.apk ]; then
-mv bin/Linphone-debug.apk bin/ACE-$tag-debug.apk
+mv bin/Linphone-debug.apk bin/ACE-debug.apk
 APK_FILE=bin/ACE-$tag-debug.apk
 fi
 
 if [ -f build/outputs/apk/linphone-android-debug.apk ]; then
 mv build/outputs/apk/linphone-android-debug.apk build/outputs/apk/ACE-$tag-debug.apk
-APK_FILE=build/outputs/apk/ACE-$tag-debug.apk
+APK_FILE=build/outputs/apk/ACE-debug.apk
 fi
 
 if [ -z "$APK_FILE" ]; then
