@@ -18,26 +18,28 @@ echo "TRAVIS_BRANCH is not master. Deploy skipped"
 exit 0
 fi
 
+# Prepare semantic versioning tag
+
+SHA1=$(git rev-parse --short HEAD)
+
+tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-${SHA1}
+
 APK_FILE=""
 
 if [ -f bin/Linphone-debug.apk ]; then
-APK_FILE=bin/Linphone-debug.apk
+mv bin/Linphone-debug.apk bin/ACE-$tag-debug.apk
+APK_FILE=bin/ACE-$tag-debug.apk
 fi
 
 if [ -f build/outputs/apk/linphone-android-debug.apk ]; then
-APK_FILE=build/outputs/apk/linphone-android-debug.apk
+mv build/outputs/apk/linphone-android-debug.apk build/outputs/apk/ACE-$tag-debug.apk
+APK_FILE=build/outputs/apk/ACE-$tag-debug.apk
 fi
 
 if [ -z "$APK_FILE" ]; then
 echo "Could not find an apk file to publish"
 exit 1
 fi
-
-# Prepare semantic versioning tag
-
-SHA1=$(git rev-parse --short HEAD)
-
-tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-${SHA1}
 
 # Prepare other variables
 
