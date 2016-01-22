@@ -131,7 +131,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		providerLookupOperation.execute();
 
 		sipDomainTextView.setText("");
-
+		mAddress.setTag(null);
 			sipDomainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
 					try {
@@ -140,9 +140,9 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 						//crashing on tablets because dialer_view or provider_spinner_box is missing
 					}
 					if(domains != null && domains.size() > 0) {
-						sipDomainTextView.setText("@" + domains.get(position));
+						sipDomainTextView.setText("@" + sharedPreferences.getString("provider" +
+								String.valueOf(position) + "domain", ""));
 					}
-
 					mAddress.setTag(sipDomainTextView.getText());
 				}
 
