@@ -58,8 +58,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.philips.lighting.hue.sdk.PHAccessPoint;
+import com.philips.lighting.hue.sdk.PHHueSDK;
+
 import joanbempong.android.HueBridgeSearchActivity;
 import joanbempong.android.HueController;
+import joanbempong.android.HueSharedPreferences;
+import joanbempong.android.PHWizardAlertDialog;
 
 /**
  * Activity displayed when a call comes in.
@@ -98,6 +103,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.incoming);
 
+
 		mNameView = (TextView) findViewById(R.id.incoming_caller_name);
 		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
 		mPictureView = (AvatarWithShadow) findViewById(R.id.incoming_picture);
@@ -132,6 +138,23 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	protected void onResume() {
         super.onResume();
 		instance = this;
+		// Try to automatically connect to the last known bridge.  For first time use this will be empty so a bridge search is automatically started.
+		HueSharedPreferences prefs = HueSharedPreferences.getInstance(getApplicationContext());
+		String lastIpAddress   = prefs.getLastConnectedIPAddress();
+		String lastUsername    = prefs.getUsername();
+
+		PHHueSDK phHueSDK = PHHueSDK.getInstance();
+		// Automatically try to connect to the last connected IP Address.  For multiple bridge support a different implementation is required.
+		if (lastIpAddress !=null && !lastIpAddress.equals("")) {
+			PHAccessPoint lastAccessPoint = new PHAccessPoint();
+			lastAccessPoint.setIpAddress(lastIpAddress);
+			lastAccessPoint.setUsername(lastUsername);
+
+			if (!phHueSDK.isAccessPointConnected(lastAccessPoint)) {
+				//PHWizardAlertDialog.getInstance().showProgressDialog(R.string.connecting, HueBridgeSearchActivity.this);
+				phHueSDK.connect(lastAccessPoint);
+			}
+		}
 
 		// VTCSecure
 		HueController.getInstance().startFlashing(null);
