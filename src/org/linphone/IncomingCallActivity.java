@@ -58,6 +58,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import joanbempong.android.HueBridgeSearchActivity;
+import joanbempong.android.HueController;
+
 /**
  * Activity displayed when a call comes in.
  * It should bypass the screen lock mechanism.
@@ -131,6 +134,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 		instance = this;
 
 		// VTCSecure
+		HueController.getInstance().startFlashing(null);
 
 		flashRedBackground();
 		flashTorch();
@@ -175,6 +179,7 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 	@Override
 	protected void onPause() {
 		terminated = true;
+		HueController.getInstance().restoreAllLightStates();
 		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
