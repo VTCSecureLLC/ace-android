@@ -60,7 +60,12 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	private LinphoneCoreListenerBase mListener;
 	private LinphoneAddress address;
 	ProgressDialog mProgressDialog;
-	String configDnsQuery = "_rueconfig._tcp.vatrp.net";//hardcoded for now
+	//URL format for registrar lookup
+	final String registrarSRVLookupFormat="_sip._tcp.%domain%";
+	final String registrarSRVLookupFormatTLS="_sips._tcp.%domain%";
+	//URL format for autoConfig lookup
+	final String autoConfigSRVLookupFormat="_rueconfig._tls.%domain%";
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
@@ -250,6 +255,15 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	}
 
 
+	/**
+	 * @param username SIP username
+	 * @param password SIP password
+	 * @param domain SIP domain
+	 * @param userId SIP userId
+	 * @param transport_type SIP Transport type
+	 * @param port SIP port number
+	 * @param sendEcCalibrationResult Send echo cancellation result
+	 */
 	private void logIn(final String username, final String password, final String domain, final String userId, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm != null && getCurrentFocus() != null) {
@@ -257,7 +271,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		}
 
 		mProgressDialog.show();
-		JsonConfig.refreshConfig(configDnsQuery, username, password, new JsonConfig.ConfigListener() {
+		//Create rue config lookup url from domain and attempt to retrieve config
+		String configURL = autoConfigSRVLookupFormat.replace("%domain%", domain.toString().replaceAll("\\s", ""));
+		JsonConfig.refreshConfig(configURL, username, password, new JsonConfig.ConfigListener() {
 
 
 			@Override
@@ -280,8 +296,16 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 			@Override
 			public void onFailed(String reason) {
-				Toast.makeText(LinphoneManager.getInstance().getContext(), "Getting config failed", Toast.LENGTH_LONG).show();
 				mProgressDialog.dismiss();
+				try {
+					saveCreatedAccount(username, password, domain, userId, transport_type, port);
+					if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
+						launchEchoCancellerCalibration(sendEcCalibrationResult);
+					}
+				}
+				catch(Exception e){
+					Toast.makeText(SetupActivity.this, "Failed to register", Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 
@@ -298,7 +322,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		//show progress bar
 
 		mProgressDialog.show();
-		JsonConfig.refreshConfig(configDnsQuery, username, password, new JsonConfig.ConfigListener() {
+		JsonConfig.refreshConfig(domain, username, password, new JsonConfig.ConfigListener() {
 
 
 			@Override
@@ -446,7 +470,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		.setDomain(domain)
 		.setUserId(userId)
 		.setPassword(password)
-		.setExpires("3600");
+		.setExpires("280");
 		Log.d("isMainAccountLinphoneDotOrg=" + isMainAccountLinphoneDotOrg);
 		Log.d("useLinphoneDotOrgCustomPorts=" + useLinphoneDotOrgCustomPorts);
 		if (isMainAccountLinphoneDotOrg && useLinphoneDotOrgCustomPorts) {

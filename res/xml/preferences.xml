@@ -252,8 +252,12 @@
 			    android:key="@string/pref_rfc2833_dtmf_key"/>
 			
 			<EditTextPreference
-			    android:title="@string/pref_voice_mail"
-				android:key="@string/pref_voice_mail_key"/>
+			android:title="@string/pref_voice_mail"
+			android:key="@string/pref_voice_mail_key"/>
+
+			<EditTextPreference
+				android:title="@string/pref_mail_waiting_indicator"
+				android:key="@string/pref_mail_waiting_indicator_key"/>
 
 	    </PreferenceScreen>
 

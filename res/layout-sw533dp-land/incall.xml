@@ -16,24 +16,7 @@
         android:visibility="invisible"
         android:src="@drawable/switch_camera" />
 
-	<ScrollView
-		android:layout_width="fill_parent"
-		android:layout_height="500dp"
-		android:id="@+id/rtt_scrollview"
-		android:layout_below="@+id/switchCamera"
-		android:visibility="gone"
-		android:layout_above="@+id/menu">
-		<LinearLayout
-			android:id="@+id/rtt_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentRight="true">
 
-
-		</LinearLayout>
-	</ScrollView>
     
     <org.linphone.ui.Numpad
         android:id="@+id/numpad"
