@@ -532,6 +532,14 @@ public class StatusFragment extends Fragment {
 				mHandler.post(new Runnable() {
 					@Override
 					public void run() {
+						LinphoneCore lc = null;
+						try {
+							lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+						}
+						catch(Exception e){
+
+						}
+						if(lc == null){ return; } //Prevent crash
 						synchronized(LinphoneManager.getLc()) {
 							final LinphoneCallParams params = call.getCurrentParamsCopy();
 							if (params.getVideoEnabled()) {
