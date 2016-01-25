@@ -18,8 +18,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -46,6 +50,7 @@ import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +72,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
+
 		View view = inflater.inflate(R.layout.login_provider, container, false);
 		login = (EditText) view.findViewById(R.id.et_prv_user);
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
@@ -140,10 +146,15 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 		setProviderData();
-		if(savedInstanceState == null){
-		providerLookupOperation= new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
-		providerLookupOperation.execute();
+		if (CDNProviders.getInstance().getProvidersCount() == 0 && !AsyncProviderLookupOperation.isAsyncTaskRuning) {
+			org.linphone.mediastream.Log.e("ttt GenericLoginFragment AsyncProviderLookupOperation..");
+			providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
+			providerLookupOperation.execute();
+		} else if (AsyncProviderLookupOperation.isAsyncTaskRuning && AsyncProviderLookupOperation.getInstance() != null) {
+			providerLookupOperation = AsyncProviderLookupOperation.getInstance();
+			providerLookupOperation.addListener(this);
 		}
+
 		return view;
 	}
 	/**
@@ -228,5 +239,14 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	@Override
 	public void onProviderLookupFinished() {
 		setProviderData();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if(AsyncProviderLookupOperation.getInstance()!=null)
+		{
+			AsyncProviderLookupOperation.getInstance().removeListener(this);
+		}
 	}
 }

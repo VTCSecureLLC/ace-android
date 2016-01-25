@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -38,16 +39,32 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
     final String cdnProviderList = "http://cdn.vatrp.net/new-domains.json";
     //  protected SharedPreferences sharedPreferences;
     protected Context context;
-    protected ProviderNetworkOperationListener listener;
+    protected ArrayList<ProviderNetworkOperationListener> listeners;
+    private static AsyncProviderLookupOperation runingInstanceProviderLookupOperation;
+    public static boolean isAsyncTaskRuning = false;
 
     public AsyncProviderLookupOperation(ProviderNetworkOperationListener mListener, Context context) {
         this.context = context;
-        this.listener = mListener;
+        listeners = new ArrayList<ProviderNetworkOperationListener>();
+        if(mListener!=null)
+            listeners.add(mListener);
+    }
+
+    public void addListener(ProviderNetworkOperationListener mListener) {
+        listeners.add(mListener);
+    }
+    public void removeListener(ProviderNetworkOperationListener mListener)
+    {
+        listeners.remove(mListener);
     }
 
     public interface ProviderNetworkOperationListener {
         void onProviderLookupFinished();
     };
+
+    public static AsyncProviderLookupOperation getInstance(){
+        return runingInstanceProviderLookupOperation;
+    }
 
     protected String getText(String url) throws Exception {
         URL website = new URL(url);
@@ -66,6 +83,7 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
     }
 
     protected void reloadProviderDomains() {
+        org.linphone.mediastream.Log.d("ttt reloadProviderDomains");
         String textjson = "";
         try {
             textjson = getText(cdnProviderList);
@@ -75,7 +93,8 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
             for (int i=0; i<providers.getProvidersCount(); i++)
             {
                 CDNProviders.Provider p = providers.getProvider(i);
-                imageLoader(p.getIcon2x(), i);
+                downloadImagesToSdCard(p.getIcon2x(), i);
+                org.linphone.mediastream.Log.e("ttt p.getIcon2x()" + p.getIcon2x());
             }
 
             org.linphone.mediastream.Log.d("textjson=" + textjson);
@@ -85,61 +104,86 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        if(isAsyncTaskRuning) {
+            cancel(true);
+            return;
+        }
+        isAsyncTaskRuning = true;
+        runingInstanceProviderLookupOperation = this;
+    }
+
+    @Override
     protected Void doInBackground(Void... params) {
+        if(isCancelled()) return null;
+        else
         reloadProviderDomains();
         return null;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        listener.onProviderLookupFinished();
+        runingInstanceProviderLookupOperation = null;
+        isAsyncTaskRuning = false;
+        for (ProviderNetworkOperationListener listener: listeners
+             ) {
+            if(listener!= null)
+                listener.onProviderLookupFinished();
+        }
+        listeners.clear();
+
     }
 
-    public void copyStream(InputStream is, int index) throws FileNotFoundException{
+    private void downloadImagesToSdCard(String downloadUrl, int index)
+    {
+        try
+        {
+            URL url = new URL(downloadUrl);
+                        /* making a directory in sdcard */
+            String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE/icons";
 
-        ContextWrapper cw = new ContextWrapper(context);
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        File file = new File(directory, String.valueOf(index) + ".png");
-        if(!file.exists())
-            file.mkdirs();
-        FileOutputStream ostream = null;
+                        /* checks the file and if it already exist delete */
+            String fname = index+ ".png";
+            File file = new File (sdCard, fname);
+            if (!file.exists ())
+                file.mkdirs();
 
+                             /* Open a connection */
+            URLConnection ucon = url.openConnection();
+            InputStream inputStream = null;
+            HttpURLConnection httpConn = (HttpURLConnection)ucon;
+            httpConn.setRequestMethod("GET");
+            httpConn.connect();
 
-        final int buffer_size = 1024;
-        try {
-            byte[] bytes = new byte[buffer_size];
-            for (; ; ) {
-                int count = is.read(bytes, 0, buffer_size);
-                if (count == -1)
-                    break;
-                ostream.write(bytes, 0, count);
+            if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK)
+            {
+                inputStream = httpConn.getInputStream();
             }
-        } catch (Exception ex) {
+
+            FileOutputStream fos = new FileOutputStream(file);
+            int totalSize = httpConn.getContentLength();
+            int downloadedSize = 0;
+            byte[] buffer = new byte[1024];
+            int bufferLength = 0;
+            while ( (bufferLength = inputStream.read(buffer)) >0 )
+            {
+                fos.write(buffer, 0, bufferLength);
+                downloadedSize += bufferLength;
+                Log.i("Progress:","downloadedSize:"+downloadedSize+"totalSize:"+ totalSize) ;
+            }
+
+            fos.close();
+            Log.d("test", "Image Saved in sdcard..");
         }
-    }
-
-    void imageLoader(String url, int index) {
-        // Download Images from the Internet
-        try {
-
-
-            URL imageUrl = new URL(url.replace(" ", "%20"));
-            HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
-            conn.setConnectTimeout(30000);
-            conn.setReadTimeout(30000);
-            conn.setInstanceFollowRedirects(true);
-            InputStream is = conn.getInputStream();
-            copyStream(is, index);
-            conn.disconnect();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        catch(IOException io)
+        {
+            io.printStackTrace();
+        }
+        catch(Exception e)
+        {
             e.printStackTrace();
         }
-
     }
 
 }

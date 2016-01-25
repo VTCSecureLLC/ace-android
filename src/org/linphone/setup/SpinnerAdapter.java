@@ -1,8 +1,8 @@
 package org.linphone.setup;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.net.Uri;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,13 +32,11 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
 		mContext = ctx;
 		this.withText = withText;
 
-		ContextWrapper cw = new ContextWrapper(ctx);
-		// path to /data/data/yourapp/app_data/imageDir
-		File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-		cw.getDir("imageDir", Context.MODE_PRIVATE);
+		String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE/icons";
+
 		images = new Uri[providers.getProvidersCount()];
 		for (int i = 0; i < providers.getProvidersCount(); i++) {
-			File f = new File(directory, String.valueOf(i) + ".png");//getItemDetailimage());
+			File f = new File(sdCard, String.valueOf(i) + ".png");//getItemDetailimage());
 			if (f.exists()) {
 				images[i] = Uri.fromFile(f);
 			} else
@@ -97,8 +95,9 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
 		}
 
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-		if (position < images.length)
+		if (position < images.length){
 			left_icon.setImageURI(images[position]);
+		}
 
 		return mySpinner;
 	}
