@@ -18,7 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,7 +34,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.linphone.AsyncProviderLookupOperation;
@@ -68,49 +66,29 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.login_provider, container, false);
 		login = (EditText) view.findViewById(R.id.et_prv_user);
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
 		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		domain = (EditText) view.findViewById(R.id.et_prv_domain);
-		
-			port = (EditText) view.findViewById(R.id.et_prv_port);
-			transport = (Spinner) view.findViewById(R.id.spin_prv_transport);
 
-			transportOptions.add("TCP");
-			transportOptions.add("TLS");
+		port = (EditText) view.findViewById(R.id.et_prv_port);
+		transport = (Spinner) view.findViewById(R.id.spin_prv_transport);
 
-			try {
-				ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
-						android.R.layout.simple_spinner_item, transportOptions);
-				dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				transport.setAdapter(dataAdapter);
-				transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-					@Override
-					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
-						providerLookupOperation.execute();
-					}
+		transportOptions.add("TCP");
+		transportOptions.add("TLS");
 
-					@Override
-					public void onNothingSelected(AdapterView<?> parent) {
-
-					}
-				});
-			}
-
-			catch(Exception e){
-				Log.e("E", "Spinner is not supported by default on this device. Defaulting to TCP transport.");
-			}
-			userid = (EditText) view.findViewById(R.id.et_prv_userid);
-
-			view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
-			sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
-			sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		try {
+			ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
+					android.R.layout.simple_spinner_item, transportOptions);
+			dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			transport.setAdapter(dataAdapter);
+			transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					populateRegistrationInfo("provider" + String.valueOf(position) + "domain");
+					providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
+					providerLookupOperation.execute();
 				}
 
 				@Override
@@ -118,33 +96,54 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 				}
 			});
-			view.findViewById(R.id.ab_back).setOnClickListener(this);
+		}
 
-			advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
-			advancedLoginPanel.setVisibility(View.GONE);
-			advancedLoginPanelToggle = (Button) view.findViewById(R.id.toggleAdvancedLoginPanel);
-			advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (!isAdvancedLogin) {
-						advancedLoginPanel.setVisibility(View.VISIBLE);
-						((Button) v).setText("-");
-						isAdvancedLogin = true;
-						password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-					} else {
-						advancedLoginPanel.setVisibility(View.GONE);
-						((Button) v).setText("+");
-						isAdvancedLogin = false;
-						password.setImeOptions(EditorInfo.IME_ACTION_DONE);
-					}
+		catch(Exception e){
+			Log.e("E", "Spinner is not supported by default on this device. Defaulting to TCP transport.");
+		}
+		userid = (EditText) view.findViewById(R.id.et_prv_userid);
+
+		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
+		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
+		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				CDNProviders.getInstance().setSelectedProvider(position);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+		view.findViewById(R.id.ab_back).setOnClickListener(this);
+
+		advancedLoginPanel = view.findViewById(R.id.advancedLoginPanel);
+		advancedLoginPanel.setVisibility(View.GONE);
+		advancedLoginPanelToggle = (Button) view.findViewById(R.id.toggleAdvancedLoginPanel);
+		advancedLoginPanelToggle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!isAdvancedLogin) {
+					advancedLoginPanel.setVisibility(View.VISIBLE);
+					((Button) v).setText("-");
+					isAdvancedLogin = true;
+					password.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+				} else {
+					advancedLoginPanel.setVisibility(View.GONE);
+					((Button) v).setText("+");
+					isAdvancedLogin = false;
+					password.setImeOptions(EditorInfo.IME_ACTION_DONE);
 				}
-			});
+			}
+		});
 
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-
+		setProviderData();
+		if(savedInstanceState == null){
 		providerLookupOperation= new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
 		providerLookupOperation.execute();
-		loadProviderDomainsFromCache();
+		}
 		return view;
 	}
 	/**
@@ -171,33 +170,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			e.printStackTrace();
 		}
 	}
-	public List<String> domains = new ArrayList<String>();
 
-
-
-	protected void loadProviderDomainsFromCache(){
-		//Load cached providers and their domains
-		String name = sharedPreferences.getString("provider0", "-1");
-		domains = new ArrayList<String>();
-		for (int i = 1; !name.equals("-1"); i++) {
-			domains.add(name);
-			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
-		}
-
-		setProviderData(domains);
-		//Load default provider registration info if cached
-		populateRegistrationInfo("provider" + String.valueOf(0) + "domain");
-	}
-
-	protected void setProviderData(List<String> data){
-		String[] mData = new String[data.size()];
+	protected void setProviderData(){
 		sp_provider.setAdapter(new SpinnerAdapter(SetupActivity.instance(), R.layout.spiner_ithem,
-				mData, new int[]{R.drawable.provider_logo_sorenson,
-				R.drawable.provider_logo_zvrs,
-				R.drawable.provider_logo_caag,//caag
-				R.drawable.provider_logo_purplevrs,
-				R.drawable.provider_logo_globalvrs,//global
-				R.drawable.provider_logo_convorelay}));
+				new String[]{""}, new int[]{0}, true));
+		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
 	}
 
 	/**
@@ -234,134 +211,22 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 				Log.e("E", "Transport could not be found, defaulting to TCP");
 				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
 			}
+//			CDNProviders.getInstance().setSelectedProvider(sp_provider.getSelectedItemPosition());
 			SetupActivity.instance().genericLogIn(
 					login.getText().toString().replaceAll("\\s", ""),
 					password.getText().toString().replaceAll("\\s", ""),
-					domain.getText().toString().replaceAll("\\s", ""),
+					CDNProviders.getInstance().getSelectedProvider().getDomain().replaceAll("\\s", ""),
 					userid.getText().toString().replaceAll("\\s", ""),
 					transport_type,
 					port.getText().toString().replaceAll("\\s", ""));
-			
+
 		}
 		else if(id == R.id.ab_back)
 			getActivity().onBackPressed();
 	}
 
 	@Override
-	public void onProviderLookupFinished(ArrayList<String> mDomains) {
-		if(mDomains == null){ return; }
-		domains = mDomains;
-		if (domains.size() > 0) {
-			if (sp_provider != null && sp_provider.getAdapter() != null && sp_provider.getAdapter().getCount() != domains.size()) {
-				setProviderData(domains);
-			}
-			if(sp_provider != null) {
-				populateRegistrationInfo("provider" + String.valueOf(sp_provider.getSelectedItemPosition()) + "domain");
-			}
-		}
-	}
-
-	class SpinnerAdapter extends ArrayAdapter<String> {
-
-		int[] drawables;
-		public SpinnerAdapter(Context ctx, int txtViewResourceId,
-				String[] objects, int [] drawable) {
-			super(ctx, txtViewResourceId, objects);
-			this.drawables = drawable;
-			
-		}
-
-		@Override
-		public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
-			return getCustomViewSpinner(position, cnvtView, prnt);
-		}
-
-		@Override
-		public View getView(int pos, View cnvtView, ViewGroup prnt) {
-			return getCustomView(pos, cnvtView, prnt);
-		}
-
-		public View getCustomView(int position, View convertView,
-				ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spiner_ithem, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if(domains != null && domains.size() > 0) {
-				providerName = domains.get(position);
-				main_text.setText(providerName);
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if(providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			}
-			else if(providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			}
-			else if(providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			}
-			else if(providerName.toLowerCase().contains("convo")){
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			}
-			else if(providerName.toLowerCase().contains("global")){
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			}
-			else if(providerName.toLowerCase().contains("purple")){
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			}
-			else if(providerName.toLowerCase().contains("ace")){
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			else{
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-
-		public View getCustomViewSpinner(int position, View convertView,
-				ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if(domains != null && domains.size() > 0) {
-				try {
-					providerName = domains.get(position);
-					main_text.setText(providerName);
-				}
-				catch(IndexOutOfBoundsException e){
-					main_text.setText("");
-				}
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if(providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			}
-			else if(providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			}
-			else if(providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			}
-			else if(providerName.toLowerCase().contains("convo")){
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			}
-			else if(providerName.toLowerCase().contains("global")){
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			}
-			else if(providerName.toLowerCase().contains("purple")){
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			}
-			else if(providerName.toLowerCase().contains("ace")){
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-
+	public void onProviderLookupFinished() {
+		setProviderData();
 	}
 }
