@@ -60,6 +60,7 @@ import android.widget.Toast;
 
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
+import com.philips.lighting.model.PHBridge;
 
 import joanbempong.android.HueBridgeSearchActivity;
 import joanbempong.android.HueController;
@@ -154,6 +155,11 @@ public class IncomingCallActivity extends Activity implements LinphoneSliderTrig
 				//PHWizardAlertDialog.getInstance().showProgressDialog(R.string.connecting, HueBridgeSearchActivity.this);
 				phHueSDK.connect(lastAccessPoint);
 			}
+			PHBridge b = PHHueSDK.getInstance().getSelectedBridge();
+
+
+			phHueSDK.enableHeartbeat(b, PHHueSDK.HB_INTERVAL);
+			phHueSDK.getLastHeartbeat().put(b.getResourceCache().getBridgeConfiguration() .getIpAddress(), System.currentTimeMillis());
 		}
 
 		// VTCSecure
