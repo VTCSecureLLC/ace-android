@@ -138,7 +138,9 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
             String fname = index+ ".png";
             File file = new File (sdCard, fname);
             if (!file.exists ())
-                file.mkdirs();
+                file.getParentFile().mkdirs();
+            else
+                file.delete();
 
                              /* Open a connection */
             URLConnection ucon = url.openConnection();

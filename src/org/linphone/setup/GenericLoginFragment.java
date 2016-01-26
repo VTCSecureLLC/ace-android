@@ -18,15 +18,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,13 +38,8 @@ import org.linphone.AsyncProviderLookupOperation;
 import org.linphone.LinphoneActivity;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.SRVRecord;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
+import org.linphone.mediastream.Log;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +55,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	boolean isAdvancedLogin = false;
 	Spinner sp_provider;
 	List<String> transportOptions = new ArrayList<String>();
-	private SharedPreferences sharedPreferences;
 	AsyncProviderLookupOperation providerLookupOperation;
 
 	@Override
@@ -105,7 +93,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 		}
 
 		catch(Exception e){
-			Log.e("E", "Spinner is not supported by default on this device. Defaulting to TCP transport.");
+			Log.e("Spinner is not supported by default on this device. Defaulting to TCP transport.");
 		}
 		userid = (EditText) view.findViewById(R.id.et_prv_userid);
 
@@ -115,6 +103,8 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				CDNProviders.getInstance().setSelectedProvider(position);
+				if (CDNProviders.getInstance().getSelectedProvider() != null)
+					domain.setText(CDNProviders.getInstance().getSelectedProvider().getDomain());
 			}
 
 			@Override
@@ -144,8 +134,14 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			}
 		});
 
-		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 		setProviderData();
+
+		if(sp_provider.getSelectedItemPosition()< CDNProviders.getInstance().getProvidersCount())
+		{
+			domain.setText(CDNProviders.getInstance().getProvider(sp_provider.getSelectedItemPosition()).getDomain());
+		}
+
+
 		if (CDNProviders.getInstance().getProvidersCount() == 0 && !AsyncProviderLookupOperation.isAsyncTaskRuning) {
 			org.linphone.mediastream.Log.e("ttt GenericLoginFragment AsyncProviderLookupOperation..");
 			providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
@@ -157,44 +153,45 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 		return view;
 	}
-	/**
-	 * @param query URL to perform service lookup
-	 * @param key Key to save record to SharedPreferences as, pass "" or null to not persist
-	 */
+//	/**
+//	 * @param query URL to perform service lookup
+//	 * @param key Key to save record to SharedPreferences as, pass "" or null to not persist
+//	 */
 	//Helper function to lookup an SRV record given a URL String representation
-	protected void srvLookup(String query, String key){
-		try { //Perform lookup on URL and iterate through all records returned, printing hostname:port to stdout
-			Record[] records = new Lookup(query, Type.SRV).run();
-			String value;
-			if (records != null) {
-				for (Record record : records) {
-					SRVRecord srv = (SRVRecord) record;
-					String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
-					int port = srv.getPort();
-					value = hostname + "::" + String.valueOf(port);
-					if(key != null && !key.equals("")) {
-						sharedPreferences.edit().putString(key, value).apply();
-					}
-				}
-			}
-		}catch(TextParseException e){
-			e.printStackTrace();
-		}
-	}
+//	protected void srvLookup(String query, String key){
+//		try { //Perform lookup on URL and iterate through all records returned, printing hostname:port to stdout
+//			Record[] records = new Lookup(query, Type.SRV).run();
+//			String value;
+//			if (records != null) {
+//				for (Record record : records) {
+//					SRVRecord srv = (SRVRecord) record;
+//					String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
+//					int port = srv.getPort();
+//					value = hostname + "::" + String.valueOf(port);
+//					if(key != null && !key.equals("")) {
+//						sharedPreferences.edit().putString(key, value).apply();
+//					}
+//				}
+//			}
+//		}catch(TextParseException e){
+//			e.printStackTrace();
+//		}
+//	}
 
 	protected void setProviderData(){
 		sp_provider.setAdapter(new SpinnerAdapter(SetupActivity.instance(), R.layout.spiner_ithem,
 				new String[]{""}, new int[]{0}, true));
 		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
+		//set text
 	}
 
-	/**
-	 * @param providerDomainKey Key that was used to store registrar in SharedPreferences
-	 */
-	protected void populateRegistrationInfo(String providerDomainKey){
-		String domainString = sharedPreferences.getString(providerDomainKey, "");
-		domain.setText(domainString);
-	}
+//	/**
+//	 * @param providerDomainKey Key that was used to store registrar in SharedPreferences
+//	 */
+//	protected void populateRegistrationInfo(String providerDomainKey){
+//		String domainString = sharedPreferences.getString(providerDomainKey, "");
+//		domain.setText(domainString);
+//	}
 
 	@Override
 	public void onClick(View v) {
@@ -239,6 +236,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	@Override
 	public void onProviderLookupFinished() {
 		setProviderData();
+		Log.d("onProviderLookupFinished");
 	}
 
 	@Override
