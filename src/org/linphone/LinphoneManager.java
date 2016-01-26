@@ -211,7 +211,13 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public void routeAudioToSpeaker() {
-		routeAudioToSpeakerHelper(true);
+		if(!mAudioManager.isWiredHeadsetOn()){
+			routeAudioToSpeakerHelper(true);
+		}else{
+			Log.d("Headset Plugged in");
+			routeAudioToReceiver();
+		}
+
 	}
 
 	public String getUserAgent() throws NameNotFoundException {
