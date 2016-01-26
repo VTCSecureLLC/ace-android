@@ -143,11 +143,16 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		//final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, domains);
 		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-//		loadProviderDomainsFromCache();
 		setProviderData();
-		if (savedInstanceState == null) {
+		if ( CDNProviders.getInstance().getProvidersCount() == 0 && !AsyncProviderLookupOperation.isAsyncTaskRuning) {
+			Log.e("ttt DialFragment AsyncProviderLookupOperation..");
 			providerLookupOperation = new AsyncProviderLookupOperation(DialerFragment.this, getContext());
 //			providerLookupOperation.execute();
+		}
+		else if(AsyncProviderLookupOperation.isAsyncTaskRuning && AsyncProviderLookupOperation.getInstance()!=null)
+		{
+			providerLookupOperation = AsyncProviderLookupOperation.getInstance();
+			providerLookupOperation.addListener(this);
 		}
 
 		sipDomainTextView.setText("");
@@ -547,6 +552,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		if(AsyncProviderLookupOperation.isAsyncTaskRuning && AsyncProviderLookupOperation.getInstance()!=null)
+			AsyncProviderLookupOperation.getInstance().removeListener(this);
 		//releaseCamera();
 		//cameraPreview = null;
 //		if (androidVideoWindowImpl != null) {
