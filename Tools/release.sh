@@ -18,26 +18,28 @@ echo "TRAVIS_BRANCH is not master. Deploy skipped"
 exit 0
 fi
 
+# Prepare semantic versioning tag
+
+SHA1=$(git rev-parse --short HEAD)
+
+tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-${SHA1}
+
 APK_FILE=""
 
 if [ -f bin/Linphone-debug.apk ]; then
-APK_FILE=bin/Linphone-debug.apk
+mv bin/Linphone-debug.apk bin/ACE-debug.apk
+APK_FILE=bin/ACE-debug.apk
 fi
 
 if [ -f build/outputs/apk/linphone-android-debug.apk ]; then
-APK_FILE=build/outputs/apk/linphone-android-debug.apk
+mv build/outputs/apk/linphone-android-debug.apk build/outputs/apk/ACE-debug.apk
+APK_FILE=build/outputs/apk/ACE-debug.apk
 fi
 
 if [ -z "$APK_FILE" ]; then
 echo "Could not find an apk file to publish"
 exit 1
 fi
-
-# Prepare semantic versioning tag
-
-SHA1=$(git rev-parse --short HEAD)
-
-tag="$(bundle exec semver)-${TRAVIS_BUILD_NUMBER:-1}"-${SHA1}
 
 # Prepare other variables
 
@@ -61,13 +63,13 @@ chmod 755 /tmp/github-release
 --description "$(git log -1 --pretty=format:%B)" \
 --pre-release
 
-echo "Uploading $APK_FILE as ACE-$tag-debug.apk to github release $tag"
+echo "Uploading $APK_FILE as ACE-debug.apk to github release $tag"
 
 /tmp/github-release upload \
 --user ${GITHUB_REPO[0]:-VTCSecureLLC} \
 --repo ${GITHUB_REPO[1]:-ace-android} \
 --tag $tag \
---name ACE-$tag-debug.apk \
+--name ACE-debug.apk \
 --file $APK_FILE
 fi
 

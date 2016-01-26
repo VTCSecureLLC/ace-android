@@ -18,20 +18,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.ui;
 
-import org.linphone.LinphoneManager;
-import org.linphone.LinphonePreferences;
-import org.linphone.R;
-import org.linphone.core.CallDirection;
-import org.linphone.core.LinphoneCallLog;
-import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneProxyConfig;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.linphone.LinphoneManager;
+import org.linphone.R;
+import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneCallLog;
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneProxyConfig;
 
 /**
  * @author Guillaume Beraudo
@@ -52,12 +51,31 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 	public void onClick(View v) {
 		try {
 			if (!LinphoneManager.getInstance().acceptCallIfIncomingPending()) {
-				if (mAddress.getText().length() > 0) { 
+				//Parse SIP address url
+				if (mAddress.getText().length() > 0) {
+					//tag is the provider domain uri selected in dialerfragment, oldAddr is the current string to be dialed
+					//If tag is not equal to null, a different provider has been selected
 					if (mAddress.getTag() != null) {
-						mAddress.setText(mAddress.getText()+(String)mAddress.getTag());
+						String oldAddr = mAddress.getText().toString();
+						String name = "";
+						//Check if oldAddr already contains an @ domain, if so, strip it then append the new domain
+						if (oldAddr.length() > 1) {
+							int domainStart = oldAddr.indexOf("@", 0);
+							if (domainStart == -1) {
+								domainStart = oldAddr.length();
+							}
+							//username with @domain stripped
+							name = oldAddr.substring(0, domainStart);
+						}
+						//Combine username with new address to get the proper SIP uri
+						String fullAddr = name + mAddress.getTag();
+						mAddress.setText(fullAddr);
 						mAddress.setDisplayedName(mAddress.getText().toString());
+						mAddress.setTag(null);
 					}
-					LinphoneManager.getInstance().newOutgoingCall(mAddress);
+					else {
+						LinphoneManager.getInstance().newOutgoingCall(mAddress);
+					}
 				} else {
 					if (getContext().getResources().getBoolean(R.bool.call_last_log_if_adress_is_empty)) {
 						LinphoneCallLog[] logs = LinphoneManager.getLc().getCallLogs();

@@ -137,7 +137,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private LinphoneCoreListenerBase mListener;
 
 	public static View topLayout;
-
+	private AsyncProviderLookupOperation providerLookupOperation;
 
 	//In Call Message State Variables
 	public static int[] message_directions;
@@ -299,6 +299,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					}
 					if (proxy.getError() == Reason.Unauthorized) {
 						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
+						go_back_to_login();
 					}
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
@@ -375,6 +376,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		startOrientationSensor();
 
 		reloadMwiCount();
+
+		if(!AsyncProviderLookupOperation.isAsyncTaskRuning){
+			Log.e("ttt LinphoneActivity AsyncProviderLookupOperation..");
+			providerLookupOperation = new AsyncProviderLookupOperation(null, ctx);
+			providerLookupOperation.execute();
+		}
 	}
 
 	public void reloadMwiCount(){
@@ -1170,6 +1177,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public int getDeviceOrientation(){
 		return lastDeviceAngle;
 	}
+
 	private class LocalOrientationEventListener extends OrientationEventListener {
 		public LocalOrientationEventListener(Context context) {
 			super(context);
@@ -1416,7 +1424,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-
 		Bundle extras = intent.getExtras();
 		if (extras != null && extras.getBoolean("GoToChat", false)) {
 			LinphoneService.instance().removeMessageNotification();

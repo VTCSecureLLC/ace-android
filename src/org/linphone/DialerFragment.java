@@ -20,13 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
@@ -34,12 +31,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,19 +48,19 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.setup.ApplicationPermissionManager;
+import org.linphone.setup.CDNProviders;
+import org.linphone.setup.SpinnerAdapter;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
 import org.linphone.ui.EraseButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Sylvain Berfini
  */
-public class DialerFragment extends Fragment {
+public class DialerFragment extends Fragment implements AsyncProviderLookupOperation.ProviderNetworkOperationListener {
 
 	public OrientationEventListener mOrientationHelper;
 	public Camera mCamera;
@@ -91,8 +88,13 @@ public class DialerFragment extends Fragment {
 	private boolean cameraFront = false;
 	int SELF_VIEW_INDEX = 0, DIALER_INDEX = 1;
 	public int VIEW_INDEX = DIALER_INDEX;
-
+	private AsyncProviderLookupOperation providerLookupOperation;
 	private boolean isSpinnerOpen = false;
+	protected SharedPreferences sharedPreferences;
+	protected ArrayList<String> domains;
+	private Spinner sipDomainSpinner;
+	public boolean isCalled = false;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
@@ -100,7 +102,7 @@ public class DialerFragment extends Fragment {
 		final View view = inflater.inflate(R.layout.dialer, container, false);
 
 		dialer_content = view.findViewById(R.id.dialerContent);
-
+		isCalled = false;
 
 		dialer_view=view;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
@@ -116,72 +118,45 @@ public class DialerFragment extends Fragment {
 			camera = 0;
 		}
 		LinphoneManager.getLc().setVideoDevice(camera);
+
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 		// VTCSecure SIP Domain selection 
-		final Spinner sipDomainSpinner = (Spinner)view.findViewById(R.id.sipDomainSpinner);
+		sipDomainSpinner= (Spinner)view.findViewById(R.id.sipDomainSpinner);
+		sipDomainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(!isCalled){
+					isCalled = true;
+					return;
+				}
+
+				CDNProviders.getInstance().setSelectedProvider(position);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 
 		final TextView sipDomainTextView = (TextView)view.findViewById(R.id.sipDomainTextView);
-		sipDomainTextView.setText("");
-		String externalDomains = LinphonePreferences.instance().getConfig().getString("vtcsecure", "external_domains", "");
-		if (externalDomains.length()>0) {
-			externalDomains =","+externalDomains;
-			String sipDomains[] = externalDomains.split(",");
-			final List<String> sipDomainsList=new ArrayList<String>(Arrays.asList(sipDomains));
-			final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, sipDomainsList);
-			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			sipDomainSpinner.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					if(event.getAction() == MotionEvent.ACTION_DOWN){
-						isSpinnerOpen = !isSpinnerOpen;
-						if(isSpinnerOpen){
-							new AlertDialog.Builder(DialerFragment.this.getActivity())
-									.setTitle("")
-									.setMessage("Available in General Release")
-									.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											isSpinnerOpen = false;
-										}
-									}).show();
-						}
-					}
-					return false;
-				}
-			});
+		//final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, domains);
+		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-//			sipDomainSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-//				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
-//					try {
-//						if (position == 0) {
-//							//set background gray because we are using the @ symbol
-//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.background_color));
-//						} else {
-//							((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
-//						}
-//					} catch (Throwable e) {
-//						//crashing on tablets because dialer_view or provider_spinner_box is missing
-//					}
-//					if (position != 0) sipDomainTextView.setText("@" + adapter.getItem(position));
-//					else sipDomainTextView.setText("");
-//					mAddress.setTag(sipDomainTextView.getText());
-//				}
-//
-//				public void onNothingSelected(AdapterView<?> arg0) {
-//				}
-//			});
-			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					new String[]{"","Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS",	"Convo Relay"},
-					new int[]{R.drawable.atbutton_new,R.drawable.provider_logo_sorenson,
-							R.drawable.provider_logo_zvrs,
-							R.drawable.provider_logo_caag,//caag
-							R.drawable.provider_logo_purplevrs,
-							R.drawable.provider_logo_globalvrs,//global
-							R.drawable.provider_logo_convorelay}));
-
-		} else {
-			sipDomainSpinner.setVisibility(View.GONE);
+		setProviderData();
+		if ( CDNProviders.getInstance().getProvidersCount() == 0 && !AsyncProviderLookupOperation.isAsyncTaskRuning) {
+			Log.e("ttt DialFragment AsyncProviderLookupOperation..");
+			providerLookupOperation = new AsyncProviderLookupOperation(DialerFragment.this, getContext());
+//			providerLookupOperation.execute();
+		}
+		else if(AsyncProviderLookupOperation.isAsyncTaskRuning && AsyncProviderLookupOperation.getInstance()!=null)
+		{
+			providerLookupOperation = AsyncProviderLookupOperation.getInstance();
+			providerLookupOperation.addListener(this);
 		}
 
+		sipDomainTextView.setText("");
+		mAddress.setTag(null);
 		EraseButton erase = (EraseButton) view.findViewById(R.id.Erase);
 		erase.setAddressWidget(mAddress);
 
@@ -282,8 +257,37 @@ public class DialerFragment extends Fragment {
         
         startOrientationSensor();
 
+		Log.d("dialer oncreat");
 	return view;
 }
+//	protected void loadProviderDomainsFromCache(){
+//		//Load cached providers and their domains
+//		String name = sharedPreferences.getString("provider0", "-1");
+//		domains = new ArrayList<String>();
+//		for (int i = 1; !name.equals("-1"); i++) {
+//			domains.add(name);
+//			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
+//		}
+//
+//		reloadSipProviderData(domains);
+//	}
+
+	protected void setProviderData(){
+		sipDomainSpinner.setAdapter(new SpinnerAdapter(LinphoneActivity.ctx, R.layout.spiner_ithem,
+				new String[]{""}, new int[]{0}, false));
+		int selection = CDNProviders.getInstance().getSelectedProviderPosition();
+		Log.d("ttt xxx: " + selection);
+
+//		CDNProviders.getInstance().setSelectedProvider(position);
+		sipDomainSpinner.post(new Runnable() {
+			@Override
+			public void run() {
+				sipDomainSpinner.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
+
+			}
+		});
+	}
+
 	public void  initialize_camera(){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
@@ -447,6 +451,13 @@ public class DialerFragment extends Fragment {
 	}
 	public int mAlwaysChangingPhoneAngle = -1;
 	public int lastDeviceAngle = 0;
+
+	@Override
+	public void onProviderLookupFinished() {
+		Log.d("ttt onProviderLookupFinished");
+		setProviderData();
+	}
+
 	private class LocalOrientationEventListener extends OrientationEventListener {
 		public LocalOrientationEventListener(Context context) {
 			super(context);
@@ -541,6 +552,8 @@ public class DialerFragment extends Fragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		if(AsyncProviderLookupOperation.isAsyncTaskRuning && AsyncProviderLookupOperation.getInstance()!=null)
+			AsyncProviderLookupOperation.getInstance().removeListener(this);
 		//releaseCamera();
 		//cameraPreview = null;
 //		if (androidVideoWindowImpl != null) {
@@ -620,64 +633,6 @@ public class DialerFragment extends Fragment {
 			LinphoneManager.getInstance().newOutgoingCall(mAddress);
 		}
 	}
-}
-class SpinnerAdapter extends ArrayAdapter<String> {
-
-	int[] drawables;
-	public SpinnerAdapter(Context ctx, int txtViewResourceId,
-						  String[] objects, int [] drawable) {
-		super(ctx, txtViewResourceId, objects);
-		this.drawables = drawable;
-
-	}
-
-	@Override
-	public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
-		return getCustomViewSpinner(position, cnvtView, prnt);
-	}
-
-	@Override
-	public View getView(int pos, View cnvtView, ViewGroup prnt) {
-		return getCustomView(pos, cnvtView, prnt);
-	}
-
-	public View getCustomView(int position, View convertView,
-							  ViewGroup parent) {
-		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
-		View mySpinner = inflater.inflate(R.layout.provider_spinner_image_only, parent,
-				false);
-//		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-//		main_text.setText(getItem(position));
-		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-		left_icon.setImageResource( this.drawables[position]/*R.drawable.provider_logo_sorenson*/ );
-
-		return mySpinner;
-	}
-
-	@Override //Disable until General Release
-	public boolean isEnabled(int position) { return false; }
-
-
-
-
-	public View getCustomViewSpinner(int position, View convertView,
-									 ViewGroup parent) {
-		LayoutInflater inflater = LinphoneActivity.instance().getLayoutInflater();
-		View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
-				false);
-		TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-		main_text.setText(getItem(position));
-		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-		left_icon.setImageResource(this.drawables[position]/*R.drawable.provider_logo_sorenson*/);
-		if(!isEnabled(position)){
-			mySpinner.setBackgroundColor(Color.DKGRAY);
-			left_icon.setColorFilter(Color.GRAY);
-			main_text.setTextColor(Color.WHITE);
-		}
-		return mySpinner;
-
-
-
-	}
 
 }
+

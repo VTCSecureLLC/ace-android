@@ -13,7 +13,7 @@
 		android:layout_height="match_parent"
 		android:paddingTop="50dp"
 		android:orientation="vertical"
-		
+
 		>
 		
 	    <RelativeLayout
@@ -83,11 +83,34 @@
 		
 	</LinearLayout>
 
+	<!-- Removing slider widget to add buttons for answer and decline VATRP-1979
     <org.linphone.ui.LinphoneSliders
         android:id="@+id/sliding_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dp" />
+        android:layout_marginBottom="80dp" />-->
+
+	<LinearLayout
+		android:layout_alignParentBottom="true"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+	<ImageView
+		android:id="@+id/accept_call_button"
+		android:layout_weight="1"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:adjustViewBounds="true"
+		android:src="@drawable/accept_call_button" />
+
+	<ImageView
+		android:id="@+id/decline_call_button"
+		android:layout_weight="1"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:adjustViewBounds="true"
+		android:src="@drawable/decline_call_button" />
+	</LinearLayout>
 
 </RelativeLayout>

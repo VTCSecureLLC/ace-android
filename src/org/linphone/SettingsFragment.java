@@ -23,8 +23,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -35,9 +39,13 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
+
+import net.hockeyapp.android.Constants;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
@@ -56,6 +64,9 @@ import org.linphone.setup.SetupActivity;
 import org.linphone.ui.LedPreference;
 import org.linphone.ui.PreferencesListFragment;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,7 +148,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		initAudioVideoSettings();
 		initThemeSettings();
 		initTextSettings();
-
+		initSummarySettings();
 		if(isAdvancedSettings) {
 			initTunnelSettings();
 			initAudioSettings();
@@ -865,16 +876,14 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.pref_av_rtcp_feedback_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String value = (String)newValue;
-				if(value.compareToIgnoreCase("Off") == 0){
+				String value = (String) newValue;
+				if (value.compareToIgnoreCase("Off") == 0) {
 					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
-				}
-				else if(value.compareToIgnoreCase("Implicit") == 0){
+				} else if (value.compareToIgnoreCase("Implicit") == 0) {
 					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-				}
-				else if(value.compareToIgnoreCase("Explicit") == 0){
+				} else if (value.compareToIgnoreCase("Explicit") == 0) {
 					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
 				}
@@ -1030,6 +1039,203 @@ public class SettingsFragment extends PreferencesListFragment {
 //		});
 
 	};
+
+	private void initSummarySettings(){
+		((Preference)findPreference(getString(R.string.pref_summary_view_tss_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				createAndDisplayTSS();
+				return true;
+			}
+		});
+	}
+
+	private void createAndDisplayTSS(){
+		String version;
+		try {
+			PackageManager manager = getActivity().getPackageManager();
+			PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
+			version  = String.valueOf(info.versionName);
+		}
+
+		catch(PackageManager.NameNotFoundException e){
+			version = "Beta";
+		}
+
+
+		String tssContents = "\n\n DEVICE INFO:\n\n" + Constants.PHONE_MANUFACTURER
+				+ " " + Constants.PHONE_MODEL + "\nAndroid:" + Constants.ANDROID_VERSION + " " + "\nACE v" + version + "\n\n" +
+				"CONFIG: \n\n" + getConfigSettingsAsString();
+		File feedback = null;
+		try
+		{
+			File root = new File(Environment.getExternalStorageDirectory(), "ACE");
+			if (!root.exists()) {
+				root.mkdirs();
+			}
+			feedback = new File(root, "tss.txt");
+			FileWriter writer = new FileWriter(feedback);
+			writer.append(tssContents);
+			writer.flush();
+			writer.close();
+			Toast.makeText(LinphoneActivity.ctx, "Saved", Toast.LENGTH_SHORT).show();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		if(feedback != null) {
+			///storage/emulated/0/ACE/tss.txt
+			File crashFeedbackFile = new File(Environment.getExternalStorageDirectory() +"/ACE/tss.txt");
+			Intent target = new Intent(Intent.ACTION_VIEW);
+			target.setDataAndType(Uri.fromFile(crashFeedbackFile), MimeTypeMap.getSingleton().getMimeTypeFromExtension("txt"));
+			target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+			Intent pickerActivity = Intent.createChooser(target, "View Technical Support Sheet with...");
+			startActivity(pickerActivity);
+		}
+	}
+
+	private String getConfigSettingsAsString(){
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+		if(lc == null) return "LinphoneCore = null";
+		if(lc.getDefaultProxyConfig() == null) return "config = null";
+
+		String config = "";
+		ArrayList<String> values = new ArrayList<String>();
+		/**Account**/
+		String accountHeader = "\nACCOUNT: \n";
+		values.add(accountHeader);
+		/**Username**/
+		String username = "username = " + lc.getDefaultProxyConfig().getAddress().getUserName();
+		values.add(username);
+		/**Domain**/
+		String domain = "domain = " + lc.getDefaultProxyConfig().getDomain();
+		values.add(domain);
+		/**Transport**/
+		String transport = "transport = "+lc.getDefaultProxyConfig().getAddress().getTransport().toString();
+		values.add(transport);
+		/**Port**/
+		String port = "port = " + String.valueOf(lc.getDefaultProxyConfig().getAddress().getPort());
+		values.add(port);
+		/**Proxy**/
+		String proxy = "proxy = " + lc.getDefaultProxyConfig().getProxy();
+		values.add(proxy);
+		/**Full Address**/
+		String fullAddr = "full_address = " + lc.getDefaultProxyConfig().getAddress().asStringUriOnly();
+		values.add(fullAddr);
+
+		/**Video**/
+		String videoHeader = "\nVIDEO: \n";
+		values.add(videoHeader);
+		/**Video codecs**/
+		for (final PayloadType pt : lc.getVideoCodecs()) {
+			try {
+				String isCodecEnabled = pt.getMime()+" = " + String.valueOf(lc.isPayloadTypeEnabled(pt));
+				values.add(isCodecEnabled);
+				String codecSendFmtp = pt.getMime() + " send-fmtp = " + pt.getSendFmtp();
+				String codecRecvFmtp = pt.getMime() + " recv-fmtp = " + pt.getRecvFmtp();
+				values.add(codecSendFmtp);
+				values.add(codecRecvFmtp);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		/**Audio**/
+		String audioHeader = "\nAUDIO: \n";
+		values.add(audioHeader);
+		/**Audio codecs**/
+		for (final PayloadType pt : lc.getAudioCodecs()) {
+			try {
+				String isCodecEnabled = pt.getMime()+" = " + String.valueOf(lc.isPayloadTypeEnabled(pt));
+				values.add(isCodecEnabled);
+				String codecSendFmtp = pt.getMime() + " send-fmtp = " + pt.getSendFmtp();
+				String codecRecvFmtp = pt.getMime() + " recv-fmtp = " + pt.getRecvFmtp();
+				values.add(codecSendFmtp);
+				values.add(codecRecvFmtp);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		//MISC settings
+		String miscHeader = "\nMISC: \n";
+		values.add(miscHeader);
+
+		String isVideoEnabled = "video_enabled = " + String.valueOf(lc.isVideoEnabled());
+		values.add(isVideoEnabled);
+		/**Mute**/
+		String isMicMuted = "mic_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false));
+		values.add(isMicMuted);
+		String isSpeakerMuted = "speaker_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false));
+		values.add(isMicMuted);
+
+		//Echo cancellation
+		String echoCancel = "echo_cancellation = " + String.valueOf(lc.isEchoCancellationEnabled());
+		values.add(echoCancel);
+		//Adaptive rate control
+		String adaptiveRateControl = "adaptive_rate_control = " + String.valueOf(lc.isAdaptiveRateControlEnabled());
+		values.add(adaptiveRateControl);
+		//STUN
+		String stun = lc.getStunServer();
+		if(stun == null) { stun = "none"; }
+		String stunVal = "stun = " + stun;
+		values.add(stunVal);
+
+		//AVPF
+		String AVPF = "avpf = " + lc.getDefaultProxyConfig().avpfEnabled();
+		values.add(AVPF);
+
+		String avpfRRInterval = "avpf_rr_interval = "+ String.valueOf(lc.getDefaultProxyConfig().getAvpfRRInterval());
+		values.add(avpfRRInterval);
+
+		String rtcpFeedback = "rtcp_feedback = " + String.valueOf(LinphoneManager.getLc().getConfig().getInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0));
+		values.add(rtcpFeedback);
+		//Video size
+		String preferredVideoSize = "preferred_video_size = " + lc.getPreferredVideoSize().toDisplayableString();
+		values.add(preferredVideoSize);
+		//Bandwidth
+		String downloadBW = "download_bandwidth = " + String.valueOf(lc.getDownloadBandwidth());
+		values.add(downloadBW);
+
+		String uploadBW = "upload_bandwidth = " + String.valueOf(lc.getUploadBandwidth());
+		values.add(uploadBW);
+
+		for(int i = 0; i < values.size(); i++){
+			config = config + values.get(i) + "\n";
+		}
+		return config;
+	}
+	private void createTSS() {
+		String version;
+		try {
+			PackageManager manager = getActivity().getPackageManager();
+			PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
+			version = String.valueOf(info.versionName);
+		} catch (PackageManager.NameNotFoundException e) {
+			version = "Beta";
+		}
+
+		String tssContents = "\n\n DEVICE INFO:\n\n" + Constants.PHONE_MANUFACTURER
+				+ " " + Constants.PHONE_MODEL + "\nAndroid:" + Constants.ANDROID_VERSION + " " + "\nACE v" + version + "\n\n" +
+				"CONFIG: \n\n" + getConfigSettingsAsString();
+		File feedback = null;
+		try {
+			File root = new File(Environment.getExternalStorageDirectory(), "ACE");
+			if (!root.exists()) {
+				root.mkdirs();
+			}
+			feedback = new File(root, "tss.txt");
+			FileWriter writer = new FileWriter(feedback);
+			writer.append(tssContents);
+			writer.flush();
+			writer.close();
+			Toast.makeText(LinphoneActivity.ctx, "Saved", Toast.LENGTH_SHORT).show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void initTextSettings() {
 		Log.d("RTT: initTextSettings()");
