@@ -37,7 +37,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -575,7 +574,9 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 				mCall.setImageResource(R.drawable.transfer_call);
 				mCall.setExternalClickListener(transferListener);
 			} else {
-				mCall.setImageResource(R.drawable.add_call);
+				//VATRP-2093 Android: Plus image appearing intermediately, on new calls, and during transfer of calls.
+				//VATRP-2110 Android: When receiving a call the app shows a big "+" sign for a moment then goes to answer view
+				//mCall.setImageResource(R.drawable.add_call);
 				mCall.resetClickListener();
 			}
 			mAddContact.setEnabled(true);
