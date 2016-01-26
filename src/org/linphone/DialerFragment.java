@@ -580,7 +580,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 				mCall.resetClickListener();
 			}
 			mAddContact.setEnabled(true);
-			mAddContact.setImageResource(R.drawable.cancel);
+			//VATRP-2114 Android strange back arrow shows when incoming call occurs on dialer screen.
+			//mAddContact.setImageResource(R.drawable.cancel);
 			mAddContact.setOnClickListener(cancelListener);
 		} else {
 			mAddContact.setEnabled(true);
