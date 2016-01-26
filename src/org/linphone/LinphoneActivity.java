@@ -288,6 +288,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					}
 					if (proxy.getError() == Reason.Unauthorized) {
 						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
+						go_back_to_login();
 					}
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
