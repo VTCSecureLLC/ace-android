@@ -2,16 +2,10 @@ package org.linphone;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.linphone.setup.CDNProviders;
 
 import java.io.BufferedReader;
@@ -21,14 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by zackmatthews on 1/20/16.
@@ -36,7 +27,7 @@ import java.util.concurrent.Executors;
 //Helper class to pull all provider domains from the CDN, pass into setup.login for autoconfig
 public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
 
-    final String cdnProviderList = "http://cdn.vatrp.net/new-domains.json";
+    final String cdnProviderList = "http://cdn.vatrp.net/domains.json";
     //  protected SharedPreferences sharedPreferences;
     protected Context context;
     protected ArrayList<ProviderNetworkOperationListener> listeners;
@@ -170,11 +161,10 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
             {
                 fos.write(buffer, 0, bufferLength);
                 downloadedSize += bufferLength;
-                Log.i("Progress:","downloadedSize:"+downloadedSize+"totalSize:"+ totalSize) ;
+
             }
 
             fos.close();
-            Log.d("test", "Image Saved in sdcard..");
         }
         catch(IOException io)
         {
