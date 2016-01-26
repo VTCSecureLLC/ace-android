@@ -1,19 +1,22 @@
 package org.linphone;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.ContextWrapper;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.linphone.setup.CDNProviders;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 
 /**
  * Created by zackmatthews on 1/20/16.
@@ -22,19 +25,17 @@ import java.util.ArrayList;
 public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
 
     final String cdnProviderList = "http://cdn.vatrp.net/domains.json";
-    protected SharedPreferences sharedPreferences;
+    //  protected SharedPreferences sharedPreferences;
     protected Context context;
     protected ProviderNetworkOperationListener listener;
-    protected ArrayList<String> domains;
 
     public AsyncProviderLookupOperation(ProviderNetworkOperationListener mListener, Context context) {
         this.context = context;
         this.listener = mListener;
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public interface ProviderNetworkOperationListener {
-        void onProviderLookupFinished(ArrayList<String> mDomains);
+        void onProviderLookupFinished();
     };
 
     protected String getText(String url) throws Exception {
@@ -55,25 +56,19 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
 
     protected void reloadProviderDomains() {
         String textjson = "";
-        domains = new ArrayList<String>();
         try {
             textjson = getText(cdnProviderList);
+            CDNProviders providers = CDNProviders.getInstance();
+            CDNProviders.getInstance().updateProviders(textjson, true);
+
+            for (int i=0; i<providers.getProvidersCount(); i++)
+            {
+                CDNProviders.Provider p = providers.getProvider(i);
+                imageLoader(p.getIcon2x(), i);
+            }
+
             org.linphone.mediastream.Log.d("textjson=" + textjson);
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        JSONArray reader = null;
-        try {
-            reader = new JSONArray(textjson);
-            for (int i = 0; i < reader.length(); i++) {
-                //Store CDN providers and their domains in SharedPreferences
-                sharedPreferences.edit().
-                        putString("provider" + String.valueOf(i), ((JSONObject) reader.get(i)).getString("name")).commit();
-                sharedPreferences.edit().
-                        putString("provider" + String.valueOf(i) + "domain", ((JSONObject) reader.get(i)).getString("domain")).commit();
-                domains.add(((JSONObject) reader.get(i)).getString("name"));
-            }
-        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -86,6 +81,54 @@ public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        listener.onProviderLookupFinished(domains);
+        listener.onProviderLookupFinished();
     }
+
+    public void copyStream(InputStream is, int index) throws FileNotFoundException{
+
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File file = new File(directory, String.valueOf(index) + ".png");
+        if(!file.exists())
+            file.mkdirs();
+        FileOutputStream ostream = null;
+
+
+        final int buffer_size = 1024;
+        try {
+            byte[] bytes = new byte[buffer_size];
+            for (; ; ) {
+                int count = is.read(bytes, 0, buffer_size);
+                if (count == -1)
+                    break;
+                ostream.write(bytes, 0, count);
+            }
+        } catch (Exception ex) {
+        }
+    }
+
+    void imageLoader(String url, int index) {
+        // Download Images from the Internet
+        try {
+
+
+            URL imageUrl = new URL(url.replace(" ", "%20"));
+            HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setInstanceFollowRedirects(true);
+            InputStream is = conn.getInputStream();
+            copyStream(is, index);
+            conn.disconnect();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

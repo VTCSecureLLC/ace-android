@@ -48,13 +48,14 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.setup.ApplicationPermissionManager;
+import org.linphone.setup.CDNProviders;
+import org.linphone.setup.SpinnerAdapter;
 import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
 import org.linphone.ui.EraseButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -92,6 +93,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	protected SharedPreferences sharedPreferences;
 	protected ArrayList<String> domains;
 	private Spinner sipDomainSpinner;
+	public boolean isCalled = false;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
 			Bundle savedInstanceState) {
@@ -99,7 +102,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		final View view = inflater.inflate(R.layout.dialer, container, false);
 
 		dialer_content = view.findViewById(R.id.dialerContent);
-
+		isCalled = false;
 
 		dialer_view=view;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.ctx);
@@ -119,36 +122,36 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 		// VTCSecure SIP Domain selection 
 		sipDomainSpinner= (Spinner)view.findViewById(R.id.sipDomainSpinner);
+		sipDomainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(!isCalled){
+					isCalled = true;
+					return;
+				}
+
+				CDNProviders.getInstance().setSelectedProvider(position);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 
 		final TextView sipDomainTextView = (TextView)view.findViewById(R.id.sipDomainTextView);
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, domains);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		//final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_spinner_item, domains);
+		//adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-		loadProviderDomainsFromCache();
-
-
-		providerLookupOperation = new AsyncProviderLookupOperation(DialerFragment.this, getContext());
-		providerLookupOperation.execute();
+//		loadProviderDomainsFromCache();
+		setProviderData();
+		if (savedInstanceState == null) {
+			providerLookupOperation = new AsyncProviderLookupOperation(DialerFragment.this, getContext());
+//			providerLookupOperation.execute();
+		}
 
 		sipDomainTextView.setText("");
 		mAddress.setTag(null);
-			sipDomainSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
-					try {
-						((LinearLayout) dialer_view.findViewById(R.id.provider_spinner_box)).setBackgroundColor(getResources().getColor(R.color.text_color));
-					} catch (Throwable e) {
-						//crashing on tablets because dialer_view or provider_spinner_box is missing
-					}
-					if(domains != null && domains.size() > 0) {
-						sipDomainTextView.setText("@" + sharedPreferences.getString("provider" +
-								String.valueOf(position) + "domain", ""));
-					}
-					mAddress.setTag(sipDomainTextView.getText());
-				}
-
-				public void onNothingSelected(AdapterView<?> arg0) {
-				}
-			});
 		EraseButton erase = (EraseButton) view.findViewById(R.id.Erase);
 		erase.setAddressWidget(mAddress);
 
@@ -249,43 +252,35 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
         
         startOrientationSensor();
 
+		Log.d("dialer oncreat");
 	return view;
 }
-	protected void loadProviderDomainsFromCache(){
-		//Load cached providers and their domains
-		String name = sharedPreferences.getString("provider0", "-1");
-		domains = new ArrayList<String>();
-		for (int i = 1; !name.equals("-1"); i++) {
-			domains.add(name);
-			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
-		}
+//	protected void loadProviderDomainsFromCache(){
+//		//Load cached providers and their domains
+//		String name = sharedPreferences.getString("provider0", "-1");
+//		domains = new ArrayList<String>();
+//		for (int i = 1; !name.equals("-1"); i++) {
+//			domains.add(name);
+//			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
+//		}
+//
+//		reloadSipProviderData(domains);
+//	}
 
-		reloadSipProviderData(domains);
-	}
+	protected void setProviderData(){
+		sipDomainSpinner.setAdapter(new SpinnerAdapter(LinphoneActivity.ctx, R.layout.spiner_ithem,
+				new String[]{""}, new int[]{0}, false));
+		int selection = CDNProviders.getInstance().getSelectedProviderPosition();
+		Log.d("ttt xxx: " + selection);
 
-	protected void reloadSipProviderData(List<String> mDomains){
-		if(sipDomainSpinner == null) return;
+//		CDNProviders.getInstance().setSelectedProvider(position);
+		sipDomainSpinner.post(new Runnable() {
+			@Override
+			public void run() {
+				sipDomainSpinner.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
 
-		if(mDomains != null && mDomains.size()> 0) {
-			String[] mData = new String[mDomains.size()];
-			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					mData, new int[]{R.drawable.provider_logo_sorenson,
-					R.drawable.provider_logo_zvrs,
-					R.drawable.provider_logo_caag,//caag
-					R.drawable.provider_logo_purplevrs,
-					R.drawable.provider_logo_globalvrs,//global
-					R.drawable.provider_logo_convorelay}));
-		}
-		else{
-			sipDomainSpinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					new String[]{"", "Sorenson VRS", "ZVRS", "CAAG", "Purple VRS", "Global VRS", "Convo Relay"},
-					new int[]{R.drawable.atbutton_new, R.drawable.provider_logo_sorenson,
-							R.drawable.provider_logo_zvrs,
-							R.drawable.provider_logo_caag,//caag
-							R.drawable.provider_logo_purplevrs,
-							R.drawable.provider_logo_globalvrs,//global
-							R.drawable.provider_logo_convorelay}));
-		}
+			}
+		});
 	}
 
 	public void  initialize_camera(){
@@ -453,14 +448,9 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	public int lastDeviceAngle = 0;
 
 	@Override
-	public void onProviderLookupFinished(ArrayList<String> mDomains) {
-		if(mDomains == null){ return; }
-		domains = mDomains;
-		if (domains.size() > 0) {
-			if (sipDomainSpinner != null && sipDomainSpinner.getAdapter() != null && sipDomainSpinner.getAdapter().getCount() != domains.size()) {
-				reloadSipProviderData(domains);
-			}
-		}
+	public void onProviderLookupFinished() {
+		Log.d("ttt onProviderLookupFinished");
+		setProviderData();
 	}
 
 	private class LocalOrientationEventListener extends OrientationEventListener {
@@ -637,110 +627,5 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		}
 	}
 
-	class SpinnerAdapter extends ArrayAdapter<String> {
-
-		int[] drawables;
-		public SpinnerAdapter(Context ctx, int txtViewResourceId,
-							  String[] objects, int [] drawable) {
-			super(ctx, txtViewResourceId, objects);
-			this.drawables = drawable;
-
-		}
-
-		@Override
-		public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
-			return getCustomViewSpinner(position, cnvtView, prnt);
-		}
-
-		@Override
-		public View getView(int pos, View cnvtView, ViewGroup prnt) {
-			return getCustomView(pos, cnvtView, prnt);
-		}
-
-		public View getCustomView(int position, View convertView,
-								  ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spiner_ithem, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if(domains != null && domains.size() > 0) {
-				providerName = domains.get(position);
-				main_text.setText(providerName);
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if(providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			}
-			else if(providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			}
-			else if(providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			}
-			else if(providerName.toLowerCase().contains("convo")){
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			}
-			else if(providerName.toLowerCase().contains("global")){
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			}
-			else if(providerName.toLowerCase().contains("purple")){
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			}
-			else if(providerName.toLowerCase().contains("ace")){
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			else{
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-
-		public View getCustomViewSpinner(int position, View convertView,
-										 ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if(domains != null && domains.size() > 0) {
-				try {
-					providerName = domains.get(position);
-					main_text.setText(providerName);
-				}
-				catch(IndexOutOfBoundsException e){
-					main_text.setText("");
-				}
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if(providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			}
-			else if(providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			}
-			else if(providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			}
-			else if(providerName.toLowerCase().contains("convo")){
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			}
-			else if(providerName.toLowerCase().contains("global")){
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			}
-			else if(providerName.toLowerCase().contains("purple")){
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			}
-			else if(providerName.toLowerCase().contains("ace")){
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-
-//	@Override //Disable until General Release
-//	public boolean isEnabled(int position) { return false; }
-	}
 }
 
