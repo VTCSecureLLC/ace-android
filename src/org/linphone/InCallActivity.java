@@ -86,8 +86,12 @@ import java.util.TimerTask;
  * @author Sylvain Berfini
  */
 public class InCallActivity extends FragmentActivity implements OnClickListener {
-	private final static int SECONDS_BEFORE_HIDING_CONTROLS = 3000;
-	private final static int SECONDS_BEFORE_DENYING_CALL_UPDATE = 30000;
+	public boolean animating_show_controls=false;
+
+	public final static int NEVER = -1;
+	public final static int NOW = 0;
+	public final static int SECONDS_BEFORE_HIDING_CONTROLS = 3000;
+	public final static int SECONDS_BEFORE_DENYING_CALL_UPDATE = 30000;
 	
 	private static InCallActivity instance;
 
@@ -106,7 +110,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private boolean isMicMuted = false, isTransferAllowed, isAnimationDisabled,
 			isRTTLocallyEnabled = false, isRTTEnabled=true;
 	private static boolean isSpeakerMuted;
-	private ViewGroup mControlsLayout;
+	public ViewGroup mControlsLayout;
 	private Numpad numpad;
 	private int cameraNumber;
 	private Animation slideOutLeftToRight, slideInRightToLeft, slideInBottomToTop, slideInTopToBottom, slideOutBottomToTop, slideOutTopToBottom;
@@ -1098,9 +1102,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			isRTTMaximized = false;
 			mControlsLayout.setVisibility(View.VISIBLE);
 		}
-		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
-			displayVideoCallControlsIfHidden();
-		}
+
 
 		if (id == R.id.video) {
 			if (camera_mute_enabled) {
@@ -1284,7 +1286,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		
 		LinphoneManager.stopProximitySensorForActivity(InCallActivity.this);
 		replaceFragmentAudioByVideo();
-		displayVideoCallControlsIfHidden();
+		displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
 	}
 	
 	private void replaceFragmentVideoByAudio() {
@@ -1400,7 +1402,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 	
-	public void displayVideoCallControlsIfHidden() {
+	public void displayVideoCallControlsIfHidden(int delay_until_hide) {
 		if (mControlsLayout != null) {
 			if (mControlsLayout.getVisibility() != View.VISIBLE) {
 				if (isAnimationDisabled) {
@@ -1414,6 +1416,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					animation.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationStart(Animation animation) {
+							animating_show_controls=true;
 							mControlsLayout.setVisibility(View.VISIBLE);
 							callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
 							if (cameraNumber > 1) {
@@ -1428,6 +1431,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							animation.setAnimationListener(null);
+							animating_show_controls=false;
+
 						}
 					});
 					mControlsLayout.startAnimation(animation);
@@ -1436,62 +1441,64 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					}
 				}
 			}
-			resetControlsHidingCallBack();
+			hide_controls(delay_until_hide);
 		}		
 	}
 
-	public void resetControlsHidingCallBack() {
+	public void hide_controls(int delay_until_hide) {
 		if (mControlsHandler != null && mControls != null) {
 			mControlsHandler.removeCallbacks(mControls);
 		}
 		mControls = null;
 		
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall()) && mControlsHandler != null) {
-			mControlsHandler.postDelayed(mControls = new Runnable() {
-				public void run() {
-					hideNumpad();
+			if(delay_until_hide!=NEVER) {
+				mControlsHandler.postDelayed(mControls = new Runnable() {
+					public void run() {
+						hideNumpad();
 
-					if (isAnimationDisabled) {
-						transfer.setVisibility(View.INVISIBLE);
-						addCall.setVisibility(View.INVISIBLE);
-						mControlsLayout.setVisibility(View.GONE);
-						callsList.setVisibility(View.GONE);
-						switchCamera.setVisibility(View.INVISIBLE);
-						numpad.setVisibility(View.GONE);
-						options.setBackgroundResource(R.drawable.options);
-					} else {
-						Animation animation = slideOutTopToBottom;
-						animation.setAnimationListener(new AnimationListener() {
-							@Override
-							public void onAnimationStart(Animation animation) {
-								video.setEnabled(false); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
+						if (isAnimationDisabled) {
+							transfer.setVisibility(View.INVISIBLE);
+							addCall.setVisibility(View.INVISIBLE);
+							mControlsLayout.setVisibility(View.GONE);
+							callsList.setVisibility(View.GONE);
+							switchCamera.setVisibility(View.INVISIBLE);
+							numpad.setVisibility(View.GONE);
+							options.setBackgroundResource(R.drawable.options);
+						} else {
+							Animation animation = slideOutTopToBottom;
+							animation.setAnimationListener(new AnimationListener() {
+								@Override
+								public void onAnimationStart(Animation animation) {
+									video.setEnabled(false); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
+								}
+
+								@Override
+								public void onAnimationRepeat(Animation animation) {
+								}
+
+								@Override
+								public void onAnimationEnd(Animation animation) {
+									video.setEnabled(true); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
+									transfer.setVisibility(View.INVISIBLE);
+									addCall.setVisibility(View.INVISIBLE);
+									mControlsLayout.setVisibility(View.GONE);
+									callsList.setVisibility(View.GONE);
+									switchCamera.setVisibility(View.INVISIBLE);
+									numpad.setVisibility(View.GONE);
+									options.setBackgroundResource(R.drawable.options);
+
+									animation.setAnimationListener(null);
+								}
+							});
+							mControlsLayout.startAnimation(animation);
+							if (cameraNumber > 1) {
+								switchCamera.startAnimation(slideOutBottomToTop);
 							}
-
-							@Override
-							public void onAnimationRepeat(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationEnd(Animation animation) {
-								video.setEnabled(true); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
-								transfer.setVisibility(View.INVISIBLE);
-								addCall.setVisibility(View.INVISIBLE);
-								mControlsLayout.setVisibility(View.GONE);
-								callsList.setVisibility(View.GONE);
-								switchCamera.setVisibility(View.INVISIBLE);
-								numpad.setVisibility(View.GONE);
-								options.setBackgroundResource(R.drawable.options);
-
-								animation.setAnimationListener(null);
-							}
-						});
-						mControlsLayout.startAnimation(animation);
-						if (cameraNumber > 1) {
-							switchCamera.startAnimation(slideOutBottomToTop);
 						}
 					}
-				}
-			}, SECONDS_BEFORE_HIDING_CONTROLS);
+				}, delay_until_hide);
+			}
 		}
 	}
 
@@ -1830,7 +1837,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		instance = this;
 		
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
-			displayVideoCallControlsIfHidden();
+
+			displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
 		} else {
 			LinphoneManager.startProximitySensorForActivity(this);
 			setCallControlsVisibleAndRemoveCallbacks();
