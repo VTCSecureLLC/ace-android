@@ -19,18 +19,15 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Version;
-import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AvatarWithShadow;
 
 import java.io.InputStream;
@@ -38,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EditContactFragment extends Fragment {
-	private View view;
+	public static View view;
 	private TextView ok;
 	private EditText firstName, lastName;
 	private LayoutInflater inflater;
@@ -235,16 +232,9 @@ public class EditContactFragment extends Fragment {
 	}
 
 	protected void setProviderData(final Spinner spinner, List<String> data){
-		String[] mData = new String[data.size()];
-		if(spinner != null) {
-			spinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					mData, new int[]{R.drawable.provider_logo_sorenson,
-					R.drawable.provider_logo_zvrs,
-					R.drawable.provider_logo_caag,//caag
-					R.drawable.provider_logo_purplevrs,
-					R.drawable.provider_logo_globalvrs,//global
-					R.drawable.provider_logo_convorelay}));
-		}
+		spinner.setAdapter(new org.linphone.setup.SpinnerAdapter(LinphoneActivity.ctx, R.layout.spiner_ithem,
+				new String[]{""}, new int[]{0}, false){
+		});
 	}
 	private void initNumbersFields(final TableLayout controls, final Contact contact) {
 		controls.removeAllViews();
@@ -531,95 +521,7 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 	}
-	class SpinnerAdapter extends ArrayAdapter<String> {
-
-		int[] drawables;
-
-		public SpinnerAdapter(Context ctx, int txtViewResourceId,
-							  String[] objects, int[] drawable) {
-			super(ctx, txtViewResourceId, objects);
-			this.drawables = drawable;
-
-		}
-
-		@Override
-		public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
-			return getCustomViewSpinner(position, cnvtView, prnt);
-		}
-
-		@Override
-		public View getView(int pos, View cnvtView, ViewGroup prnt) {
-			return getCustomView(pos, cnvtView, prnt);
-		}
-
-		public View getCustomView(int position, View convertView,
-								  ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spiner_ithem, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if (domains != null && domains.size() > 0) {
-				providerName = domains.get(position);
-				main_text.setText(providerName);
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if (providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			} else if (providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			} else if (providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			} else if (providerName.toLowerCase().contains("convo")) {
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			} else if (providerName.toLowerCase().contains("global")) {
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			} else if (providerName.toLowerCase().contains("purple")) {
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			} else if (providerName.toLowerCase().contains("ace")) {
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			} else {
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-
-		public View getCustomViewSpinner(int position, View convertView,
-										 ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if (domains != null && domains.size() > 0) {
-				try {
-					providerName = domains.get(position);
-					main_text.setText(providerName);
-				} catch (IndexOutOfBoundsException e) {
-					main_text.setText("");
-				}
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if (providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			} else if (providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			} else if (providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			} else if (providerName.toLowerCase().contains("convo")) {
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			} else if (providerName.toLowerCase().contains("global")) {
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			} else if (providerName.toLowerCase().contains("purple")) {
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			} else if (providerName.toLowerCase().contains("ace")) {
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-	}
+//Eliminated old custom spinner adapter, now using global spinneradapter class
 	class NewOrUpdatedNumberOrAddress {
 		private String oldNumberOrAddress;
 		private String newNumberOrAddress;
