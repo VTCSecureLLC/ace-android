@@ -56,7 +56,8 @@
 		     	android:paddingTop="45dp"
 		     	android:textColor="@drawable/text_incall_button_color"
 		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content" />
+		        android:layout_height="wrap_content"
+				android:textSize="20dp"/>
 
             <ProgressBar
                 android:id="@+id/videoInProgress"
@@ -77,7 +78,8 @@
 		     	android:paddingTop="45dp"
 		     	android:textColor="@drawable/text_incall_button_color"
 		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content" />
+		        android:layout_height="wrap_content"
+				android:textSize="20dp"/>
 	        
 	        <TextView
 			    android:id="@+id/speaker"
@@ -87,7 +89,8 @@
 			 	android:paddingTop="45dp"
 			 	android:textColor="@drawable/text_incall_button_color"
 			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content" />
+			    android:layout_height="wrap_content"
+				android:textSize="20dp"/>
            	
 	        <TextView
 	           	android:id="@+id/options"
@@ -97,7 +100,8 @@
 	        	android:paddingTop="45dp"
 	        	android:textColor="@drawable/text_incall_button_color"
 	           	android:layout_width="wrap_content"
-	           	android:layout_height="wrap_content" />
+	           	android:layout_height="wrap_content"
+				android:textSize="20dp"/>
 	        
 	        <TextView
 	            android:id="@+id/addCall"
@@ -109,7 +113,8 @@
 	            android:gravity="center"
 	            android:paddingTop="45dp"
 	            android:text="@string/button_add_call"
-	            android:textColor="@drawable/text_incall_button_color" />
+	            android:textColor="@drawable/text_incall_button_color"
+				android:textSize="20dp"/>
 		        
 	        <TextView
 	            android:id="@+id/transfer"
@@ -121,6 +126,7 @@
 	            android:gravity="center"
 	            android:paddingTop="45dp"
 	            android:text="@string/button_transfer"
+				android:textSize="20dp"
 	            android:textColor="@drawable/text_incall_button_color" />
 	        
 	    </LinearLayout>
@@ -139,6 +145,7 @@
 		        android:visibility="gone"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+				android:textSize="20dp"
 		        android:background="@drawable/conference" />
 	        
 	        <TextView
@@ -146,6 +153,7 @@
                 android:contentDescription="@string/content_description_pause"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+				android:textSize="20dp"
 				android:background="@drawable/about_chat" />
 	        
 	        <TextView
@@ -153,6 +161,7 @@
                 android:contentDescription="@string/content_description_dialer"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
+				android:textSize="20dp"
 	            android:background="@drawable/dialer_alt" />
 	        
 	        <TextView
@@ -160,6 +169,7 @@
                 android:contentDescription="@string/content_description_hang_up"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
+				android:textSize="20dp"
 		        android:background="@drawable/hangup" />
 	        
 	    </LinearLayout>

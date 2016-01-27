@@ -63,7 +63,8 @@
                 android:paddingTop="40dp"
                 android:text="@string/button_bluetooth"
                 android:textColor="@drawable/text_incall_button_color"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:textSize="12dp"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -99,7 +100,8 @@
                 android:paddingTop="40dp"
                 android:text="@string/button_receiver"
                 android:textColor="@drawable/text_incall_button_color"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:textSize="12dp"/>
 
             <TextView
                 android:id="@+id/transfer"
@@ -111,7 +113,8 @@
                 android:paddingTop="40dp"
                 android:text="@string/button_transfer"
                 android:textColor="@drawable/text_incall_button_color"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:textSize="12dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -141,7 +144,8 @@
                 android:paddingTop="40dp"
                 android:text="@string/button_speaker"
                 android:textColor="@drawable/text_incall_button_color"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:textSize="12dp"/>
 
             <TextView
                 android:id="@+id/addCall"
@@ -153,7 +157,8 @@
                 android:paddingTop="40dp"
                 android:text="@string/button_add_call"
                 android:textColor="@drawable/text_incall_button_color"
-                android:visibility="invisible" />
+                android:visibility="invisible"
+                android:textSize="12dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -175,6 +180,7 @@
                     android:gravity="center"
                     android:paddingTop="45dp"
                     android:text="@string/button_video"
+                    android:textSize="12dp"
                     android:textColor="@drawable/text_incall_button_color" />
 
                 <ProgressBar
@@ -196,6 +202,7 @@
                 android:gravity="center"
                 android:paddingTop="45dp"
                 android:text="@string/button_micro"
+                android:textSize="12dp"
                 android:textColor="@drawable/text_incall_button_color" />
 
             <TextView
@@ -207,6 +214,7 @@
                 android:gravity="center"
                 android:paddingTop="45dp"
                 android:text="@string/button_speaker"
+                android:textSize="12dp"
                 android:textColor="@drawable/text_incall_button_color" />
 
             <TextView
@@ -218,6 +226,7 @@
                 android:gravity="center"
                 android:paddingTop="45dp"
                 android:text="@string/button_route"
+                android:textSize="12dp"
                 android:textColor="@drawable/text_incall_button_color"
                 android:visibility="gone" />
 
@@ -230,6 +239,7 @@
                 android:gravity="center"
                 android:paddingTop="45dp"
                 android:text="@string/button_options"
+                android:textSize="12dp"
                 android:textColor="@drawable/text_incall_button_color" />
         </LinearLayout>
 
@@ -244,6 +254,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="12dp"
                 android:background="@drawable/about_chat"
                 android:contentDescription="@string/content_description_pause" />
 
@@ -254,6 +265,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/conference"
                 android:contentDescription="@string/content_description_conference"
+                android:textSize="12dp"
                 android:visibility="gone" />
 
             <TextView
@@ -262,6 +274,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.97"
                 android:background="@drawable/hangup"
+                android:textSize="12dp"
                 android:contentDescription="@string/content_description_hang_up" />
 
             <TextView
@@ -269,6 +282,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="12dp"
                 android:background="@drawable/dialer_alt"
                 android:contentDescription="@string/content_description_dialer" />
         </LinearLayout>
