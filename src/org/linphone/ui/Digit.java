@@ -167,7 +167,7 @@ public class Digit extends Button implements AddressAware {
 			if (!linphoneServiceReady()) return true;
 
 			if (InCallActivity.isInstanciated()) {
-				InCallActivity.instance().resetControlsHidingCallBack();
+				InCallActivity.instance().hide_controls(InCallActivity.instance().SECONDS_BEFORE_HIDING_CONTROLS);
 			}
 			
 			LinphoneCore lc = LinphoneManager.getLc();

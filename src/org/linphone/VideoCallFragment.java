@@ -151,7 +151,17 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 				mGestureDetector.onTouchEvent(event);
 				if (inCallActivity != null) {
-					inCallActivity.displayVideoCallControlsIfHidden();
+
+					//If not screen buttons were pressed, toggle controls display
+					if(inCallActivity.instance().mControlsLayout != null &&inCallActivity.instance().mControlsLayout.getVisibility() != View.VISIBLE){
+						inCallActivity.instance().displayVideoCallControlsIfHidden(inCallActivity.NEVER);
+					}else if(!inCallActivity.instance().animating_show_controls){
+						inCallActivity.instance().hide_controls(inCallActivity.NOW);
+					}
+
+
+
+					//inCallActivity.displayVideoCallControlsIfHidden(inCallActivity.NEVER);
 				}
 				return true;
 			}
