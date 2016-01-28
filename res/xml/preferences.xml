@@ -97,7 +97,9 @@
 			android:title="@string/pref_summary_show_debug"
 			android:key="@string/pref_summary_show_debug_key"/>
 	</PreferenceScreen>
-
+	<Preference
+		android:title="@string/menu_IOT"
+		android:key="@string/menu_iot_key"/>
     <Preference
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>

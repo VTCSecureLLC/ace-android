@@ -70,6 +70,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import joanbempong.android.HueBridgeSearchActivity;
+import joanbempong.android.HueSharedPreferences;
+
 /**
  * @author Sylvain Berfini
  */
@@ -157,6 +160,22 @@ public class SettingsFragment extends PreferencesListFragment {
 			initNetworkSettings();
 			initAdvancedSettings();
 		}
+		// Add action on About button
+		findPreference(getString(R.string.menu_iot_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				if (LinphoneActivity.isInstanciated()) {
+					HueSharedPreferences prefs = HueSharedPreferences.getInstance(LinphoneActivity.instance().getApplicationContext());
+					prefs.setUsername(null);
+					prefs.setLastConnectedIPAddress(null);
+					Intent intent = new Intent(LinphoneService.instance(), HueBridgeSearchActivity.class);
+					getActivity().startActivityForResult(intent, -1);
+
+					return true;
+				}
+				return false;
+			}
+		});
 		// Add action on About button
 		findPreference(getString(R.string.menu_about_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override

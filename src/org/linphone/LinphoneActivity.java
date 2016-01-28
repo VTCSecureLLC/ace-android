@@ -101,6 +101,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import joanbempong.android.HueBridgeSearchActivity;
 import joanbempong.android.SetupController;
 import joanbempong.android.WelcomeActivity;
 
@@ -162,11 +163,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		super.onCreate(savedInstanceState);
 //		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
 //		LoginManager.verifyLogin(this, getIntent());
-		SetupController setupController = SetupController.getInstance();
-		if (!setupController.getSetupCompleted()){
+		//SetupController setupController = SetupController.getInstance();
+		//if (!setupController.getSetupCompleted()){
 			//navigate to the Welcome (initial set up) page
-			startActivity(new Intent(this, WelcomeActivity.class));
-		}
+		//	startActivity(new Intent(this,HueBridgeSearchActivity.class));
+		//}
 		ctx=this;
 		act=this;
 		instance = this;
