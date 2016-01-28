@@ -334,8 +334,12 @@ public class EditContactFragment extends Fragment {
 		});
 
 		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		if(!isSip){
+			sp_provider.setVisibility(View.INVISIBLE);
+		}
 		setProviderData(sp_provider, domains);
 		sp_provider.setTag(-1); //Setting tag to -1 infers no item has been selected, this prevents domain being overwritten
+		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -439,7 +443,11 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		if(!isSip){
+			sp_provider.setVisibility(View.INVISIBLE);
+		}
 		setProviderData(sp_provider, domains);
+		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
