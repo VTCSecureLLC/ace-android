@@ -28,6 +28,7 @@ import android.widget.TextView;
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Version;
+import org.linphone.setup.CDNProviders;
 import org.linphone.ui.AvatarWithShadow;
 
 import java.io.InputStream;
@@ -339,19 +340,10 @@ public class EditContactFragment extends Fragment {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if(((Integer)sp_provider.getTag()) == -1){
-					sp_provider.setTag(0);
+					sp_provider.setTag(CDNProviders.getInstance().getSelectedProviderPosition());
 					return;
 				}
-				String oldAddr = noa.getText().toString();
-				if (oldAddr.length() > 1) {
-					int domainStart = oldAddr.indexOf("@", 0);
-					if (domainStart == -1) {
-						domainStart = oldAddr.length();
-					}
-					String name = oldAddr.substring(0, domainStart);
-					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
-					noa.setText(name + "@" + newDomain);
-				}
+				update_field(noa, position, true);
 				sp_provider.setTag(position);
 			}
 
@@ -363,7 +355,28 @@ public class EditContactFragment extends Fragment {
 
 		return view;
 	}
+	public boolean update_field(EditText noa, int position, boolean isSip){
 
+		boolean characters_present=false;
+		String oldAddr = noa.getText().toString();
+		if (oldAddr.length() > 1) {
+			characters_present=true;
+			int domainStart = oldAddr.indexOf("@", 0);
+			if (domainStart == -1) {
+				domainStart = oldAddr.length();
+			}
+			String name = oldAddr.substring(0, domainStart);
+			//String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
+			String newDomain = CDNProviders.getInstance().getProviders().get(position).getDomain();
+			noa.setText(name + "@" + newDomain);
+			if(!isSip){
+				//it's a phone number, so we need to add phone parameters.
+				noa.setText("+1"+name.replaceAll("-","")+"@"+newDomain+";user=phone");
+			}
+		}
+
+		return characters_present;
+	}
 
 	@SuppressLint("InflateParams")
 	private void addEmptyRowToAllowNewNumberOrAddress(final TableLayout controls, final boolean isSip) {
@@ -430,19 +443,10 @@ public class EditContactFragment extends Fragment {
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String oldAddr = noa.getText().toString();
-				if (oldAddr.length() > 1) {
-					int domainStart = oldAddr.indexOf("@", 0);
-					if (domainStart == -1) {
-						domainStart = oldAddr.length();
-					}
-					String name = oldAddr.substring(0, domainStart);
-					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
-					noa.setText(name + "@" + newDomain);
-				}
-				else{
-					return;
-				}
+
+				update_field(noa, position, isSip);
+				return;
+
 			}
 
 			@Override
@@ -600,17 +604,7 @@ public class EditContactFragment extends Fragment {
 			
 			if (isNewContact) {
 				if (isSipAddress) {
-					if (newNumberOrAddress.startsWith("sip:"))
-						newNumberOrAddress = newNumberOrAddress.substring(4);
-					if(!newNumberOrAddress.contains("@")) {
-						//Use default proxy config domain if it exists
-						LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-						if(lpc != null){
-							newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
-						} else {
-							newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
-						}
-					}
+					cleanSipAddress();
 					Compatibility.addSipAddressToContact(getActivity(), ops, newNumberOrAddress);
 				} else {
 					ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -625,18 +619,7 @@ public class EditContactFragment extends Fragment {
 			} else {
 				String rawContactId = contactsManager.findRawContactID(getActivity().getContentResolver(),String.valueOf(contactID));
 				if (isSipAddress) {
-					if (newNumberOrAddress.startsWith("sip:"))
-						newNumberOrAddress = newNumberOrAddress.substring(4);
-					if(!newNumberOrAddress.contains("@")) {
-						//Use default proxy config domain if it exists
-						LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-						if(lpc != null){
-							newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
-						} else {
-							newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
-						}
-					}
-
+					cleanSipAddress();
 					Compatibility.addSipAddressToContact(getActivity(), ops, newNumberOrAddress, rawContactId);
 					if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 						Compatibility.addLinphoneContactTag(getActivity(), ops, newNumberOrAddress, contactsManager.findRawLinphoneContactID(String.valueOf(contactID)));
@@ -646,7 +629,7 @@ public class EditContactFragment extends Fragment {
 					    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId)       
 				        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
 				        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, newNumberOrAddress)
-				        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,  ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM)
+				        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM)
 				        .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, getString(R.string.addressbook_label))
 				        .build()
 				    );
@@ -660,17 +643,7 @@ public class EditContactFragment extends Fragment {
 			}
 			
 			if (isSipAddress) {
-				if (newNumberOrAddress.startsWith("sip:"))
-					newNumberOrAddress = newNumberOrAddress.substring(4);
-				if(!newNumberOrAddress.contains("@")) {
-					//Use default proxy config domain if it exists
-					LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-					if(lpc != null){
-						newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
-					} else {
-						newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
-					}
-				}
+				cleanSipAddress();
 				Compatibility.updateSipAddressForContact(ops, oldNumberOrAddress, newNumberOrAddress, String.valueOf(contactID));
 				if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 					Compatibility.updateLinphoneContactTag(getActivity(), ops, newNumberOrAddress, oldNumberOrAddress, contactsManager.findRawLinphoneContactID(String.valueOf(contactID)));
@@ -689,5 +662,18 @@ public class EditContactFragment extends Fragment {
 	            );
 			}
 		}
+	private void cleanSipAddress(){
+		if (newNumberOrAddress.startsWith("sip:"))
+			newNumberOrAddress = newNumberOrAddress.substring(4);
+		if(!newNumberOrAddress.contains("@")) {
+			//Use default proxy config domain if it exists
+			LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
+			if(lpc != null){
+				newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
+			} else {
+				newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
+			}
+		}
+	}
 	}
 }
