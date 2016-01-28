@@ -1,5 +1,6 @@
 APP_PROJECT_PATH := $(call my-dir)/../
 NDK_TOOLCHAIN_VERSION := 4.8
+APP_CPPFLAGS += -std=c++11 -frtti
 
 ifeq ($(BUILD_MEDIASTREAMER2_SDK),)
 BUILD_MEDIASTREAMER2_SDK=0
@@ -141,6 +142,11 @@ endif
 
 ifeq ($(BUILD_SRTP), 1)
 APP_MODULES      += libsrtp
+endif
+
+#belr and belcard
+ifeq ($(BUILD_VCARD),1)
+APP_MODULES      += libbelr libbelcard
 endif
 
 linphone-root-dir:=$(APP_PROJECT_PATH)

@@ -94,3 +94,9 @@
 [submodule "submodules/iot-android"]
 	path = submodules/iot-android
 	url = https://github.com/VTCSecureLLC/iot-android.git
+[submodule "submodules/belr"]
+	path = submodules/belr
+	url = git://git.linphone.org/belr.git
+[submodule "submodules/belcard"]
+	path = submodules/belcard
+	url = git://git.linphone.org/belcard.git

@@ -67,7 +67,10 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		} else {
 			manageAccountPreferencesFields(screen);
 		}
-
+		if (SettingsFragment.isAdvancedSettings)
+			screen.setEnabled(true);
+		else
+			screen.setEnabled(false);
 		// Force hide keyboard
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
@@ -332,8 +335,12 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
     	
     	PreferenceCategory manage = (PreferenceCategory) getPreferenceScreen().findPreference(getString(R.string.pref_manage_key));
     	final CheckBoxPreference disable = (CheckBoxPreference) manage.getPreference(0);
-    	disable.setEnabled(true);
-    	disable.setOnPreferenceChangeListener(disableChangedListener);
+		if (SettingsFragment.isAdvancedSettings)
+			disable.setEnabled(true);
+		else
+			disable.setEnabled(false);
+
+		disable.setOnPreferenceChangeListener(disableChangedListener);
     	
     	CheckBoxPreference mainAccount = (CheckBoxPreference) manage.getPreference(1);
     	mainAccount.setChecked(isDefaultAccount);
@@ -350,8 +357,12 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		});
 
     	final Preference delete = manage.getPreference(2);
-    	delete.setEnabled(true);
-    	delete.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		if (SettingsFragment.isAdvancedSettings)
+			delete.setEnabled(true);
+		else
+			delete.setEnabled(false);
+
+		delete.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 	        public boolean onPreferenceClick(Preference preference) {
 	        	mPrefs.deleteAccount(n);
 	        	LinphoneActivity.instance().displaySettings();
