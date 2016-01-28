@@ -71,7 +71,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	private Context myContext;
 	public boolean mVisible;
 	private AddressText mAddress;
-	private CallButton mCall;
+	public CallButton mCall;
 	private ImageView mAddContact;
 	public LinearLayout cameraPreview;
 	private AndroidVideoWindowImpl androidVideoWindowImpl;

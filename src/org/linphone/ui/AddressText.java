@@ -18,16 +18,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.ui;
 
-import org.linphone.DialerFragment;
-import org.linphone.LinphoneManager.AddressType;
-import org.linphone.R;
-
 import android.content.Context;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.linphone.DialerFragment;
+import org.linphone.LinphoneManager.AddressType;
+import org.linphone.R;
 
 /**
  * @author Guillaume Beraudo
@@ -53,6 +56,21 @@ public class AddressText extends EditText implements AddressType {
 
 		mTestPaint = new Paint();
 		mTestPaint.set(this.getPaint());
+		this.setImeOptions(EditorInfo.IME_ACTION_DONE);
+		setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if(actionId == EditorInfo.IME_ACTION_DONE){
+					try {
+						dialer.mCall.performClick();
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				return false;
+			}
+		});
 	}
 
 	public void clearDisplayedName() {
