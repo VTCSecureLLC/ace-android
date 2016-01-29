@@ -19,18 +19,16 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Version;
-import org.linphone.setup.SetupActivity;
+import org.linphone.setup.CDNProviders;
 import org.linphone.ui.AvatarWithShadow;
 
 import java.io.InputStream;
@@ -38,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EditContactFragment extends Fragment {
-	private View view;
+	public static View view;
 	private TextView ok;
 	private EditText firstName, lastName;
 	private LayoutInflater inflater;
@@ -235,16 +233,9 @@ public class EditContactFragment extends Fragment {
 	}
 
 	protected void setProviderData(final Spinner spinner, List<String> data){
-		String[] mData = new String[data.size()];
-		if(spinner != null) {
-			spinner.setAdapter(new SpinnerAdapter(getActivity(), R.layout.spiner_ithem,
-					mData, new int[]{R.drawable.provider_logo_sorenson,
-					R.drawable.provider_logo_zvrs,
-					R.drawable.provider_logo_caag,//caag
-					R.drawable.provider_logo_purplevrs,
-					R.drawable.provider_logo_globalvrs,//global
-					R.drawable.provider_logo_convorelay}));
-		}
+		spinner.setAdapter(new org.linphone.setup.SpinnerAdapter(LinphoneActivity.ctx, R.layout.spiner_ithem,
+				new String[]{""}, new int[]{0}, false){
+		});
 	}
 	private void initNumbersFields(final TableLayout controls, final Contact contact) {
 		controls.removeAllViews();
@@ -343,25 +334,20 @@ public class EditContactFragment extends Fragment {
 		});
 
 		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		if(!isSip){
+			sp_provider.setVisibility(View.INVISIBLE);
+		}
 		setProviderData(sp_provider, domains);
 		sp_provider.setTag(-1); //Setting tag to -1 infers no item has been selected, this prevents domain being overwritten
+		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if(((Integer)sp_provider.getTag()) == -1){
-					sp_provider.setTag(0);
+					sp_provider.setTag(CDNProviders.getInstance().getSelectedProviderPosition());
 					return;
 				}
-				String oldAddr = noa.getText().toString();
-				if (oldAddr.length() > 1) {
-					int domainStart = oldAddr.indexOf("@", 0);
-					if (domainStart == -1) {
-						domainStart = oldAddr.length();
-					}
-					String name = oldAddr.substring(0, domainStart);
-					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
-					noa.setText(name + "@" + newDomain);
-				}
+				update_field(noa, position, true);
 				sp_provider.setTag(position);
 			}
 
@@ -373,7 +359,28 @@ public class EditContactFragment extends Fragment {
 
 		return view;
 	}
+	public boolean update_field(EditText noa, int position, boolean isSip){
 
+		boolean characters_present=false;
+		String oldAddr = noa.getText().toString();
+		if (oldAddr.length() > 1) {
+			characters_present=true;
+			int domainStart = oldAddr.indexOf("@", 0);
+			if (domainStart == -1) {
+				domainStart = oldAddr.length();
+			}
+			String name = oldAddr.substring(0, domainStart);
+			//String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
+			String newDomain = CDNProviders.getInstance().getProviders().get(position).getDomain();
+			noa.setText(name + "@" + newDomain);
+			if(!isSip){
+				//it's a phone number, so we need to add phone parameters.
+				noa.setText("+1"+name.replaceAll("-","")+"@"+newDomain+";user=phone");
+			}
+		}
+
+		return characters_present;
+	}
 
 	@SuppressLint("InflateParams")
 	private void addEmptyRowToAllowNewNumberOrAddress(final TableLayout controls, final boolean isSip) {
@@ -436,23 +443,18 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 		final Spinner sp_provider = (Spinner)view.findViewById(R.id.sp_contact_sip_provider);
+		if(!isSip){
+			sp_provider.setVisibility(View.INVISIBLE);
+		}
 		setProviderData(sp_provider, domains);
+		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				String oldAddr = noa.getText().toString();
-				if (oldAddr.length() > 1) {
-					int domainStart = oldAddr.indexOf("@", 0);
-					if (domainStart == -1) {
-						domainStart = oldAddr.length();
-					}
-					String name = oldAddr.substring(0, domainStart);
-					String newDomain = sharedPreferences.getString("provider" + String.valueOf(position) + "domain", "");
-					noa.setText(name + "@" + newDomain);
-				}
-				else{
-					return;
-				}
+
+				update_field(noa, position, isSip);
+				return;
+
 			}
 
 			@Override
@@ -531,95 +533,7 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 	}
-	class SpinnerAdapter extends ArrayAdapter<String> {
-
-		int[] drawables;
-
-		public SpinnerAdapter(Context ctx, int txtViewResourceId,
-							  String[] objects, int[] drawable) {
-			super(ctx, txtViewResourceId, objects);
-			this.drawables = drawable;
-
-		}
-
-		@Override
-		public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
-			return getCustomViewSpinner(position, cnvtView, prnt);
-		}
-
-		@Override
-		public View getView(int pos, View cnvtView, ViewGroup prnt) {
-			return getCustomView(pos, cnvtView, prnt);
-		}
-
-		public View getCustomView(int position, View convertView,
-								  ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spiner_ithem, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if (domains != null && domains.size() > 0) {
-				providerName = domains.get(position);
-				main_text.setText(providerName);
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if (providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			} else if (providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			} else if (providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			} else if (providerName.toLowerCase().contains("convo")) {
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			} else if (providerName.toLowerCase().contains("global")) {
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			} else if (providerName.toLowerCase().contains("purple")) {
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			} else if (providerName.toLowerCase().contains("ace")) {
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			} else {
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-
-		public View getCustomViewSpinner(int position, View convertView,
-										 ViewGroup parent) {
-			LayoutInflater inflater = getActivity().getLayoutInflater();
-			View mySpinner = inflater.inflate(R.layout.spinner_dropdown_item, parent,
-					false);
-
-			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
-			String providerName = "";
-			if (domains != null && domains.size() > 0) {
-				try {
-					providerName = domains.get(position);
-					main_text.setText(providerName);
-				} catch (IndexOutOfBoundsException e) {
-					main_text.setText("");
-				}
-			}
-			ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
-			if (providerName.toLowerCase().contains("sorenson")) {
-				left_icon.setImageResource(R.drawable.provider_logo_sorenson);
-			} else if (providerName.toLowerCase().contains("zvrs")) {
-				left_icon.setImageResource(R.drawable.provider_logo_zvrs);
-			} else if (providerName.toLowerCase().contains("star")) {
-				left_icon.setImageResource(R.drawable.provider_logo_caag);
-			} else if (providerName.toLowerCase().contains("convo")) {
-				left_icon.setImageResource(R.drawable.provider_logo_convorelay);
-			} else if (providerName.toLowerCase().contains("global")) {
-				left_icon.setImageResource(R.drawable.provider_logo_globalvrs);
-			} else if (providerName.toLowerCase().contains("purple")) {
-				left_icon.setImageResource(R.drawable.provider_logo_purplevrs);
-			} else if (providerName.toLowerCase().contains("ace")) {
-				left_icon.setImageResource(R.drawable.ic_launcher);
-			}
-			return mySpinner;
-		}
-	}
+//Eliminated old custom spinner adapter, now using global spinneradapter class
 	class NewOrUpdatedNumberOrAddress {
 		private String oldNumberOrAddress;
 		private String newNumberOrAddress;
@@ -698,17 +612,7 @@ public class EditContactFragment extends Fragment {
 			
 			if (isNewContact) {
 				if (isSipAddress) {
-					if (newNumberOrAddress.startsWith("sip:"))
-						newNumberOrAddress = newNumberOrAddress.substring(4);
-					if(!newNumberOrAddress.contains("@")) {
-						//Use default proxy config domain if it exists
-						LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-						if(lpc != null){
-							newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
-						} else {
-							newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
-						}
-					}
+					cleanSipAddress();
 					Compatibility.addSipAddressToContact(getActivity(), ops, newNumberOrAddress);
 				} else {
 					ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -723,18 +627,7 @@ public class EditContactFragment extends Fragment {
 			} else {
 				String rawContactId = contactsManager.findRawContactID(getActivity().getContentResolver(),String.valueOf(contactID));
 				if (isSipAddress) {
-					if (newNumberOrAddress.startsWith("sip:"))
-						newNumberOrAddress = newNumberOrAddress.substring(4);
-					if(!newNumberOrAddress.contains("@")) {
-						//Use default proxy config domain if it exists
-						LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-						if(lpc != null){
-							newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
-						} else {
-							newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
-						}
-					}
-
+					cleanSipAddress();
 					Compatibility.addSipAddressToContact(getActivity(), ops, newNumberOrAddress, rawContactId);
 					if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 						Compatibility.addLinphoneContactTag(getActivity(), ops, newNumberOrAddress, contactsManager.findRawLinphoneContactID(String.valueOf(contactID)));
@@ -744,7 +637,7 @@ public class EditContactFragment extends Fragment {
 					    .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId)       
 				        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
 				        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, newNumberOrAddress)
-				        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,  ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM)
+				        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM)
 				        .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, getString(R.string.addressbook_label))
 				        .build()
 				    );
@@ -758,17 +651,7 @@ public class EditContactFragment extends Fragment {
 			}
 			
 			if (isSipAddress) {
-				if (newNumberOrAddress.startsWith("sip:"))
-					newNumberOrAddress = newNumberOrAddress.substring(4);
-				if(!newNumberOrAddress.contains("@")) {
-					//Use default proxy config domain if it exists
-					LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-					if(lpc != null){
-						newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
-					} else {
-						newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
-					}
-				}
+				cleanSipAddress();
 				Compatibility.updateSipAddressForContact(ops, oldNumberOrAddress, newNumberOrAddress, String.valueOf(contactID));
 				if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 					Compatibility.updateLinphoneContactTag(getActivity(), ops, newNumberOrAddress, oldNumberOrAddress, contactsManager.findRawLinphoneContactID(String.valueOf(contactID)));
@@ -787,5 +670,18 @@ public class EditContactFragment extends Fragment {
 	            );
 			}
 		}
+	private void cleanSipAddress(){
+		if (newNumberOrAddress.startsWith("sip:"))
+			newNumberOrAddress = newNumberOrAddress.substring(4);
+		if(!newNumberOrAddress.contains("@")) {
+			//Use default proxy config domain if it exists
+			LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
+			if(lpc != null){
+				newNumberOrAddress = newNumberOrAddress + "@" + lpc.getDomain();
+			} else {
+				newNumberOrAddress = newNumberOrAddress + "@" + getResources().getString(R.string.default_domain);
+			}
+		}
+	}
 	}
 }
