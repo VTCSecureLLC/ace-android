@@ -1,14 +1,23 @@
 package org.linphone;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
@@ -27,10 +36,12 @@ import android.widget.TextView;
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.setup.CDNProviders;
 import org.linphone.ui.AvatarWithShadow;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +51,9 @@ public class EditContactFragment extends Fragment {
 	private TextView ok;
 	private EditText firstName, lastName;
 	private LayoutInflater inflater;
-	
+
+	AvatarWithShadow contactPicture;
+
 	private boolean isNewContact = true;
 	private Contact contact;
 	private int contactID;
@@ -189,19 +202,32 @@ public class EditContactFragment extends Fragment {
 			}
 		}
 		
-		AvatarWithShadow contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
+		contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
+		String rawContactId = contactsManager.findRawContactID(getActivity().getContentResolver(),String.valueOf(contactID));
+		//First check for contact image from google/device contacts
 		if (contact != null && contact.getPhotoUri() != null) {
 			InputStream input = Compatibility.getContactPictureInputStream(getActivity().getContentResolver(), contact.getID());
 			contactPicture.setImageBitmap(BitmapFactory.decodeStream(input));
-        } else {
+        //Then check the sdcard ace folder for a contact image
+		} else if(ContactsManager.picture_exists_in_storage_for_contact(rawContactId)){
+			contactPicture.setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
+		} else {
         	contactPicture.setImageResource(R.drawable.unknown_small);
         }
+		contactPicture.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				openImageIntent();
+			}
+		});
 		initNumbersFields((TableLayout) view.findViewById(R.id.controls), contact);
 		
 		ops = new ArrayList<ContentProviderOperation>();
 		lastName.requestFocus();
 		return view;
 	}
+
+
 
 	@Override
 	public void onResume() {
@@ -684,4 +710,65 @@ public class EditContactFragment extends Fragment {
 		}
 	}
 	}
+
+	private Uri outputFileUri;
+	int YOUR_SELECT_PICTURE_REQUEST_CODE=999;
+	private void openImageIntent() {
+
+// Determine Uri of camera image to save.
+
+		String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE/contact_images";
+		String rawContactId = contactsManager.findRawContactID(getActivity().getContentResolver(),String.valueOf(contactID));
+		String fname = rawContactId+ ".png";
+		File image = new File(sdCard, fname);
+
+		if (!image.exists ())
+			image.getParentFile().mkdirs();
+		else
+			image.delete();
+
+		outputFileUri = Uri.fromFile(image);
+
+		Log.d("output file"+outputFileUri);
+		// Camera.
+		final List<Intent> cameraIntents = new ArrayList<Intent>();
+		final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		final PackageManager packageManager = LinphoneActivity.instance().getPackageManager();
+		final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+		for(ResolveInfo res : listCam) {
+			final String packageName = res.activityInfo.packageName;
+			final Intent intent = new Intent(captureIntent);
+			intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+			intent.setPackage(packageName);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+			cameraIntents.add(intent);
+		}
+
+		// Filesystem.
+		final Intent galleryIntent = new Intent();
+		galleryIntent.setType("image/*");
+		galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+		// Chooser of filesystem options.
+		final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+
+		// Add the camera options.
+		chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
+
+		startActivityForResult(chooserIntent, YOUR_SELECT_PICTURE_REQUEST_CODE);
+	}
+
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == YOUR_SELECT_PICTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			String fileToUploadPath = null;
+			String rawContactId = contactsManager.findRawContactID(getActivity().getContentResolver(),String.valueOf(contactID));
+			contactPicture.setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
+			Log.d(outputFileUri);
+		} else {
+			super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
 }

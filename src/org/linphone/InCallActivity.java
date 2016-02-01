@@ -126,7 +126,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private LinphoneCoreListenerBase mListener;
 	private Timer outgoingRingCountTimer = null;
 
-
+	public Contact contact;
 
 	// RTT views
 	private int TEXT_MODE;
@@ -1999,7 +1999,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
     	callsList.addView(callView);
 
 		if(!hide_additional_info) {
-			Contact contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
+			contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
 			if (contact != null) {
 				displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
 			} else {
@@ -2114,10 +2114,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 	
 	private void displayOrHideContactPicture(LinearLayout callView, Uri pictureUri, Uri thumbnailUri, boolean hide) {
+		String rawContactId = ContactsManager.getInstance().findRawContactID(LinphoneActivity.instance().getContentResolver(), String.valueOf(contact.getID()));
 		AvatarWithShadow contactPicture = (AvatarWithShadow) callView.findViewById(R.id.contactPicture);
 		if (pictureUri != null) {
         	LinphoneUtils.setImagePictureFromUri(callView.getContext(), contactPicture.getView(), Uri.parse(pictureUri.toString()), thumbnailUri, R.drawable.unknown_small);
-        }
+        }else if(ContactsManager.picture_exists_in_storage_for_contact(rawContactId)){
+			contactPicture.getView().setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
+		}
+
 		callView.setVisibility(hide ? View.GONE : View.VISIBLE);
 	}
 	
