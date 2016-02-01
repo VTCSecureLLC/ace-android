@@ -24,6 +24,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PublishState;
@@ -241,6 +242,16 @@ public class TutorialRttManager implements LinphoneCoreListener {
 	public void uploadStateChanged(LinphoneCore lc,
 			LogCollectionUploadState state, String info) {
 		
+	}
+
+	@Override
+	public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+		
+	}
+
+	@Override
+	public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+
 	}
 
 }

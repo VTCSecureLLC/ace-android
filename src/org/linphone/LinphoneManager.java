@@ -78,6 +78,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
@@ -1555,6 +1556,16 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		if (state == LogCollectionUploadState.LogCollectionUploadStateDelivered) {
 			LinphoneActivity.instance().sendLogs(LinphoneService.instance().getApplicationContext(),info);
 		}
+	}
+
+	@Override
+	public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+		// // TODO: 2/1/16  
+	}
+
+	@Override
+	public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+		//// TODO: 2/1/16  
 	}
 
 	@Override
