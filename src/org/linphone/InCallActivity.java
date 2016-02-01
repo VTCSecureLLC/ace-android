@@ -2114,11 +2114,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 	
 	private void displayOrHideContactPicture(LinearLayout callView, Uri pictureUri, Uri thumbnailUri, boolean hide) {
-		String rawContactId = ContactsManager.getInstance().findRawContactID(LinphoneActivity.instance().getContentResolver(), String.valueOf(contact.getID()));
+		String rawContactId = null;
+		try{
+			rawContactId = ContactsManager.getInstance().findRawContactID(LinphoneActivity.instance().getContentResolver(), String.valueOf(contact.getID()));
+		}catch(Throwable e){
+
+			e.printStackTrace();
+		}
+
 		AvatarWithShadow contactPicture = (AvatarWithShadow) callView.findViewById(R.id.contactPicture);
 		if (pictureUri != null) {
         	LinphoneUtils.setImagePictureFromUri(callView.getContext(), contactPicture.getView(), Uri.parse(pictureUri.toString()), thumbnailUri, R.drawable.unknown_small);
-        }else if(ContactsManager.picture_exists_in_storage_for_contact(rawContactId)){
+        }else if(rawContactId!=null&&ContactsManager.picture_exists_in_storage_for_contact(rawContactId)){
 			contactPicture.getView().setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
 		}
 
