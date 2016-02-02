@@ -116,65 +116,82 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		
 		lfl.setUri(serverUrl);
 		lfl.setListener(this);
+		synchronize.setEnabled(false);
 		lfl.synchronizeFriendsFromServer();
+	}
+	
+	private void myLog(String msg) {
+		Log.d(msg);
+		logs.setText(logs.getText().toString() + "\r\n" + msg);
 	}
 
 	@Override
 	public void onLinphoneFriendCreated(LinphoneFriendList list,
 			LinphoneFriend lf) {
 		// TODO Auto-generated method stub
-		Log.d("Friend created " + lf.getAddress());
-		logs.setText(logs.getText().toString() + "\r\n" + "Friend created " + lf.getAddress());
+		String msg = "Friend created " + lf.getAddress();
+		myLog(msg);
 		
 		LinphoneFriend[] friends = list.getFriendList();
-		Log.d("There are " + friends.length + " friends in the list");
-		logs.setText(logs.getText().toString() + "\r\n" + "There are " + friends.length + " friends in the list");
+		String msg2 = "There are " + friends.length + (friends.length > 1 ? " friends" : " friend") + " in the list";
+		myLog(msg2);
 	}
 
 	@Override
 	public void onLinphoneFriendUpdated(LinphoneFriendList list,
 			LinphoneFriend newFriend, LinphoneFriend oldFriend) {
 		// TODO Auto-generated method stub
-		Log.d("Friend updated " + newFriend.getAddress());
-		logs.setText(logs.getText().toString() + "\r\n" + "Friend updated " + newFriend.getAddress());
+		String msg = "Friend updated " + newFriend.getAddress();
+		myLog(msg);
 		
 		LinphoneFriend[] friends = list.getFriendList();
-		Log.d("There are " + friends.length + " friends in the list");
-		logs.setText(logs.getText().toString() + "\r\n" + "There are " + friends.length + " friends in the list");
+		String msg2 = "There are " + friends.length + (friends.length > 1 ? " friends" : " friend") + " in the list";
+		myLog(msg2);
 	}
 
 	@Override
 	public void onLinphoneFriendDeleted(LinphoneFriendList list,
 			LinphoneFriend lf) {
 		// TODO Auto-generated method stub
-		Log.d("Friend removed " + lf.getAddress());
-		logs.setText(logs.getText().toString() + "\r\n" + "Friend removed " + lf.getAddress());
+		String msg = "Friend removed " + lf.getAddress();
+		myLog(msg);
 		
 		LinphoneFriend[] friends = list.getFriendList();
-		Log.d("There are " + friends.length + " friends in the list");
-		logs.setText(logs.getText().toString() + "\r\n" + "There are " + friends.length + " friends in the list");
+		String msg2 = "There are " + friends.length + (friends.length > 1 ? " friends" : " friend") + " in the list";
+		myLog(msg2);
+	}
+
+	@Override
+	public void onLinphoneFriendSyncStatusChanged(LinphoneFriendList list,
+			org.linphone.core.LinphoneFriendList.State status, String message) {
+		// TODO Auto-generated method stub
+		String msg = "Sync status changed: " + status.toString() + " (" + message + ")";
+		myLog(msg);
+		if (status != LinphoneFriendList.State.SyncStarted) {
+			synchronize.setEnabled(true);
+		}
 	}
 
 	@Override
 	public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
 		// TODO Auto-generated method stub
-		Log.d("Friend List added");
-		logs.setText(logs.getText().toString() + "\r\n" + "FriendList added");
+		String msg = "Friend List added";
+		myLog(msg);
 		
 		LinphoneFriendList[] lists = lc.getFriendLists();
-		Log.d("There are " + lists.length + " lists in the core");
-		logs.setText(logs.getText().toString() + "\r\n" + "There are " + lists.length + " lists in the core");
+		String msg2 = "There are " + lists.length + (lists.length > 1 ? " lists" : " list") + " in the core";
+		myLog(msg2);
 	}
 
 	@Override
 	public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
 		// TODO Auto-generated method stub
-		Log.d("Friend List removed");
-		logs.setText(logs.getText().toString() + "\r\n" + "FriendList removed");
+		String msg = "Friend List removed";
+		myLog(msg);
 		
 		LinphoneFriendList[] lists = lc.getFriendLists();
-		Log.d("There are " + lists.length + " lists in the core");
-		logs.setText(logs.getText().toString() + "\r\n" + "There are " + lists.length + " lists in the core");
+		String msg2 = "There are " + lists.length + (lists.length > 1 ? " lists" : " list") + " in the core";
+		myLog(msg2);
 	}
 
 	@Override
