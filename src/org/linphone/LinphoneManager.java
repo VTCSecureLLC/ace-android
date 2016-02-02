@@ -1558,15 +1558,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		}
 	}
 
-	@Override
-	public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
-		// // TODO: 2/1/16  
-	}
-
-	@Override
-	public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
-		//// TODO: 2/1/16  
-	}
 
 	@Override
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,
@@ -1574,7 +1565,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		// TODO Auto-generated method stub
 
 	}
-	public void initSDP(boolean videoEnabled){
+
+    public void initSDP(boolean videoEnabled){
 		LinphoneCore lC = getLcIfManagerNotDestroyedOrNull();
 			if (lC != null && videoEnabled){
 				PayloadType pT = lC.findPayloadType("H263", 90000, -1);
@@ -1615,4 +1607,15 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	}
 
+        @Override
+        public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
 }
