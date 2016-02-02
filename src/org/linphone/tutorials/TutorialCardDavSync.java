@@ -125,6 +125,10 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		// TODO Auto-generated method stub
 		Log.d("Friend created " + lf.getAddress());
 		logs.setText(logs.getText().toString() + "\r\n" + "Friend created " + lf.getAddress());
+		
+		LinphoneFriend[] friends = list.getFriendList();
+		Log.d("There are " + friends.length + " friends in the list");
+		logs.setText(logs.getText().toString() + "\r\n" + "There are " + friends.length + " friends in the list");
 	}
 
 	@Override
@@ -133,6 +137,10 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		// TODO Auto-generated method stub
 		Log.d("Friend updated " + newFriend.getAddress());
 		logs.setText(logs.getText().toString() + "\r\n" + "Friend updated " + newFriend.getAddress());
+		
+		LinphoneFriend[] friends = list.getFriendList();
+		Log.d("There are " + friends.length + " friends in the list");
+		logs.setText(logs.getText().toString() + "\r\n" + "There are " + friends.length + " friends in the list");
 	}
 
 	@Override
@@ -141,6 +149,10 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		// TODO Auto-generated method stub
 		Log.d("Friend removed " + lf.getAddress());
 		logs.setText(logs.getText().toString() + "\r\n" + "Friend removed " + lf.getAddress());
+		
+		LinphoneFriend[] friends = list.getFriendList();
+		Log.d("There are " + friends.length + " friends in the list");
+		logs.setText(logs.getText().toString() + "\r\n" + "There are " + friends.length + " friends in the list");
 	}
 
 	@Override
@@ -148,6 +160,10 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		// TODO Auto-generated method stub
 		Log.d("Friend List added");
 		logs.setText(logs.getText().toString() + "\r\n" + "FriendList added");
+		
+		LinphoneFriendList[] lists = lc.getFriendLists();
+		Log.d("There are " + lists.length + " lists in the core");
+		logs.setText(logs.getText().toString() + "\r\n" + "There are " + lists.length + " lists in the core");
 	}
 
 	@Override
@@ -155,6 +171,10 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		// TODO Auto-generated method stub
 		Log.d("Friend List removed");
 		logs.setText(logs.getText().toString() + "\r\n" + "FriendList removed");
+		
+		LinphoneFriendList[] lists = lc.getFriendLists();
+		Log.d("There are " + lists.length + " lists in the core");
+		logs.setText(logs.getText().toString() + "\r\n" + "There are " + lists.length + " lists in the core");
 	}
 
 	@Override
