@@ -39,10 +39,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class TutorialCardDavSync extends Activity implements OnClickListener, LinphoneCoreListener, LinphoneFriendListListener {
 	private EditText username, password, ha1, server;
 	private Button synchronize;
+	private TextView logs;
 
 	private Timer timer;
 	
@@ -58,6 +60,7 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 		password = (EditText) findViewById(R.id.carddav_pwd);
 		ha1 = (EditText) findViewById(R.id.carddav_ha1);
 		server = (EditText) findViewById(R.id.carddav_server);
+		logs = (TextView) findViewById(R.id.carddav_events);
 		
 		synchronize = (Button) findViewById(R.id.carddav_synchronize);
 		synchronize.setOnClickListener(this);
@@ -120,33 +123,38 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 	public void onLinphoneFriendCreated(LinphoneFriendList list,
 			LinphoneFriend lf) {
 		// TODO Auto-generated method stub
-		Log.d("Friend created " + lf.getName() + " (" + lf.getAddress() + ")");
+		Log.d("Friend created " + lf.getAddress());
+		logs.setText(logs.getText().toString() + "\r\n" + "Friend created " + lf.getAddress());
 	}
 
 	@Override
 	public void onLinphoneFriendUpdated(LinphoneFriendList list,
 			LinphoneFriend newFriend, LinphoneFriend oldFriend) {
 		// TODO Auto-generated method stub
-		Log.d("Friend updated " + newFriend.getName() + " (" + newFriend.getAddress() + ")");
+		Log.d("Friend updated " + newFriend.getAddress());
+		logs.setText(logs.getText().toString() + "\r\n" + "Friend updated " + newFriend.getAddress());
 	}
 
 	@Override
 	public void onLinphoneFriendDeleted(LinphoneFriendList list,
 			LinphoneFriend lf) {
 		// TODO Auto-generated method stub
-		Log.d("Friend removed " + lf.getName() + " (" + lf.getAddress() + ")");
+		Log.d("Friend removed " + lf.getAddress());
+		logs.setText(logs.getText().toString() + "\r\n" + "Friend removed " + lf.getAddress());
 	}
 
 	@Override
 	public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
 		// TODO Auto-generated method stub
 		Log.d("Friend List added");
+		logs.setText(logs.getText().toString() + "\r\n" + "FriendList added");
 	}
 
 	@Override
 	public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
 		// TODO Auto-generated method stub
 		Log.d("Friend List removed");
+		logs.setText(logs.getText().toString() + "\r\n" + "FriendList removed");
 	}
 
 	@Override
