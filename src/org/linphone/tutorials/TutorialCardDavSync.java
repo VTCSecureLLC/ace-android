@@ -83,6 +83,10 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 			
 			lfl = lc.createLinphoneFriendList();
 			lc.addFriendList(lfl);
+			
+			LinphoneFriend lf = LinphoneCoreFactory.instance().createLinphoneFriend("sip:ghislain@sip.linphone.org");
+			lf.setName("Ghislain");
+			lfl.addLocalFriend(lf); // This is a local friend, it won't be sent to the CardDAV server and will be removed at the next synchronization
 		} catch (LinphoneCoreException e) {
 			Log.e(e);
 		}
@@ -123,14 +127,14 @@ public class TutorialCardDavSync extends Activity implements OnClickListener, Li
 	public void onLinphoneFriendUpdated(LinphoneFriendList list,
 			LinphoneFriend newFriend, LinphoneFriend oldFriend) {
 		// TODO Auto-generated method stub
-		Log.d("Friend updated" + newFriend.getName() + " (" + newFriend.getAddress() + ")");
+		Log.d("Friend updated " + newFriend.getName() + " (" + newFriend.getAddress() + ")");
 	}
 
 	@Override
 	public void onLinphoneFriendDeleted(LinphoneFriendList list,
 			LinphoneFriend lf) {
 		// TODO Auto-generated method stub
-		Log.d("Friend removed" + lf.getName() + " (" + lf.getAddress() + ")");
+		Log.d("Friend removed " + lf.getName() + " (" + lf.getAddress() + ")");
 	}
 
 	@Override
