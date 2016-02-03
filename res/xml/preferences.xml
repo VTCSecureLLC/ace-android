@@ -90,9 +90,7 @@
 		<Preference
 			android:title="@string/pref_summary_send_tss"
 			android:key="@string/pref_summary_send_tss_key"/>
-		<Preference
-			android:title="@string/pref_summary_show_debug"
-			android:key="@string/pref_summary_show_debug_key"/>
+
 	</PreferenceScreen>
 
     <Preference
