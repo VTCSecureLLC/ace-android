@@ -93,9 +93,7 @@
 		<Preference
 			android:title="@string/pref_summary_show_advanced"
 			android:key="@string/pref_summary_show_advanced_key"/>
-		<Preference
-			android:title="@string/pref_summary_show_debug"
-			android:key="@string/pref_summary_show_debug_key"/>
+
 	</PreferenceScreen>
 
     <Preference
