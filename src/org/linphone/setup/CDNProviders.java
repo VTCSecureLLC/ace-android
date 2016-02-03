@@ -136,6 +136,11 @@ public class CDNProviders {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+
+		}
+
+		//Add default ports from srvLookup after all providers are popluated to prevent cross threading
+		for (int i = 0; i < jsonArray.length(); i++) {
 			updateProvidersDefaultPorts(i);
 		}
 
