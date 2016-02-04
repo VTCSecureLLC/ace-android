@@ -400,7 +400,7 @@
   <string name="show_image">Show</string>
   <string name="download_image">Download</string>
   <string name="download_image_failed">Download failed. Please check your internet access or try again later.</string>
-  <string name="pref_auth_userid">Auth userid</string>
+  <string name="pref_auth_userid">Userid</string>
   <string name="pref_help_auth_userid">Enter authentication userid (optional)</string>
   <string name="pref_display_name">Display name</string>
   <string name="pref_help_display_name">Enter display name (optional)</string>
