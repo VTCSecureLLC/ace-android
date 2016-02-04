@@ -108,6 +108,11 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+
+		if(prefs.getBoolean("advanced_settings_enabled",false)){
+			isAdvancedSettings = true;
+		}
+
 		editor = prefs.edit();
 
 		// Init the settings page interface
