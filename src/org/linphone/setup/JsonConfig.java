@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
+import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.PayloadType;
@@ -77,12 +78,13 @@ public class JsonConfig {
 	private String _sip_mwi_uri;
 	private String _sip_videomail_uri;
 	private String _video_resolution_maximum;
+	private int _video_preferred_frames_per_second;
 
 
-	public void applySettings() {
+	public void applySettings(LinphoneAddress.TransportType transport_type, String port) {
 		applyAudioCodecs();
 		applyVideoCodecs();
-		applyOtherConfig();
+		applyOtherConfig(transport_type, port);
 	}
 
 
@@ -135,7 +137,15 @@ public class JsonConfig {
 	}
 
 
-	private void applyOtherConfig() {
+	private void applyOtherConfig(LinphoneAddress.TransportType transport_type, String port) {
+
+		//If changes made at login, use those instead of the jsonconfig changes.
+		_sip_register_port = Integer.parseInt(port);
+		if(transport_type==LinphoneAddress.TransportType.LinphoneTransportTcp){
+			_sip_register_transport="tcp";
+		}else{
+			_sip_register_transport="tls";
+		}
 
 		LinphonePreferences mPrefs = LinphonePreferences.instance();
 		int n = mPrefs.getDefaultAccountIndex();
@@ -147,9 +157,11 @@ public class JsonConfig {
 			mPrefs.setAccountDomain(n, _sip_register_domain);
 		if (_expiration_time > 0)
 			mPrefs.setExpires(n, _expiration_time + "");
+
 		String proxy = "<sip:" + _sip_register_domain;
-		if (_sip_register_port > 0)
+		if (_sip_register_port > 0) {
 			proxy += ":" + _sip_register_port;
+		}
 		proxy += ";transport=" + mPrefs.getAccountTransportString(n).toLowerCase() + ">";
 		mPrefs.setAccountProxy(n, proxy);
 
@@ -166,6 +178,7 @@ public class JsonConfig {
 			mPrefs.setDebugEnabled(true);
 
 		mPrefs.setPreferredVideoSize(_video_resolution_maximum);
+		mPrefs.setPreferredVideoFps(_video_preferred_frames_per_second);
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
@@ -201,9 +214,13 @@ public class JsonConfig {
 		if (!ob.isNull("sip_register_domain"))
 			config._sip_register_domain = ob.getString("sip_register_domain");
 
+		//If changes made at login, use those instead of the jsonconfig changes.
 		config._sip_register_port = ob.getInt("sip_register_port");
 		if (!ob.isNull("sip_register_transport"))
 			config._sip_register_transport = ob.getString("sip_register_transport");
+
+
+
 		config._enable_echo_cancellation = ob.getBoolean("enable_echo_cancellation");
 		config._enable_video = ob.getBoolean("enable_video");
 		config._enable_rtt = ob.getBoolean("enable_rtt");
@@ -223,6 +240,13 @@ public class JsonConfig {
 			config._sip_videomail_uri = ob.getString("sip_videomail_uri");
 		if (!ob.isNull("video_resolution_maximum"))
 			config._video_resolution_maximum = ob.getString("video_resolution_maximum");//prefared res
+
+		//fps
+		if (!ob.isNull("video_preferred_frames_per_second")) {
+			config._video_preferred_frames_per_second = ob.getInt("video_preferred_frames_per_second");//prefared res
+		}else{
+			config._video_preferred_frames_per_second=30;
+		}
 
 		JSONArray jsonArray = ob.getJSONArray("sip_register_usernames");// not used
 		config._sip_register_usernames = new String[jsonArray.length()];// codec mapping is required

@@ -371,11 +371,14 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 			}
 			
 			ImageView icon = (ImageView) view.findViewById(R.id.icon);
+			String rawContactId = ContactsManager.getInstance().findRawContactID(getActivity().getContentResolver(), String.valueOf(contact.getID()));
 			if (contact.getPhoto() != null) {
 				icon.setImageBitmap(contact.getPhoto());
 			} else if (contact.getPhotoUri() != null) {
 				icon.setImageURI(contact.getPhotoUri());
-			} else {
+			} else if(ContactsManager.picture_exists_in_storage_for_contact(rawContactId)) {
+				icon.setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
+			}else{
 				icon.setImageBitmap(bitmapUnknown);
 			}
 			

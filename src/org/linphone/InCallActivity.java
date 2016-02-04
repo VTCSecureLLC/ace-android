@@ -19,8 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -92,7 +94,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public final static int NOW = 0;
 	public final static int SECONDS_BEFORE_HIDING_CONTROLS = 3000;
 	public final static int SECONDS_BEFORE_DENYING_CALL_UPDATE = 30000;
-	
+
 	private static InCallActivity instance;
 
 	private boolean camera_mute_enabled=false;
@@ -117,7 +119,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private CountDownTimer timer;
 	private boolean isVideoCallPaused = false;
 	AcceptCallUpdateDialogFragment callUpdateDialog;
-	
+
 	private TableLayout callsList;
 	private LayoutInflater inflater;
 	private ViewGroup container;
@@ -126,7 +128,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private LinphoneCoreListenerBase mListener;
 	private Timer outgoingRingCountTimer = null;
 
-
+	public Contact contact;
 
 	// RTT views
 	private int TEXT_MODE;
@@ -157,10 +159,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	RelativeLayout mainLayout;
 	final float mute_db = -1000.0f;
 
+	private HeadPhoneJackIntentReceiver myReceiver;
+
 	public static InCallActivity instance() {
 		return instance;
 	}
-	
+
 	public static boolean isInstanciated() {
 		return instance != null;
 	}
@@ -193,17 +197,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mainLayout.addView(statusBar);
 		setContentView(mainLayout);
 
+		myReceiver = new HeadPhoneJackIntentReceiver();
 
-        isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
-        showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
+		isTransferAllowed = getApplicationContext().getResources().getBoolean(R.bool.allow_transfers);
+		showCallListInVideo = getApplicationContext().getResources().getBoolean(R.bool.show_current_calls_above_video);
 		LinphoneManager.getLc().enableSpeaker(true);
 
 
 		//if (params.realTimeTextEnabled()) { // Does not work, always false
 		isRTTLocallyEnabled=LinphoneManager.getInstance().getRttPreference();
 
-        isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
-        cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
+		isAnimationDisabled = getApplicationContext().getResources().getBoolean(R.bool.disable_animations) || !LinphonePreferences.instance().areAnimationsEnabled();
+		cameraNumber = AndroidCameraConfiguration.retrieveCameras().length;
 
 
 		getTextMode();
@@ -218,7 +223,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} else {
 			LinphoneManager.getLc().setPlaybackGain(0);
 		}
-        mListener = new LinphoneCoreListenerBase(){
+		mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
 				super.isComposingReceived(lc, cr);
@@ -247,37 +252,37 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 
 			@Override
-        	public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
-        		if (lc.getCallsNb() == 0) {
-        			finish();
-        			return;
-        		}
-                if(state==State.IncomingReceived||state == state.OutgoingInit) {
-                    LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
-                }
-        		if (state == State.IncomingReceived) {
-        			startIncomingCallActivity();
-        			return;
-        		}
+			public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
+				if (lc.getCallsNb() == 0) {
+					finish();
+					return;
+				}
+				if(state==State.IncomingReceived||state == state.OutgoingInit) {
+					LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
+				}
+				if (state == State.IncomingReceived) {
+					startIncomingCallActivity();
+					return;
+				}
 
 
-        		if (state == State.Paused || state == State.PausedByRemote ||  state == State.Pausing) {
-        			video.setEnabled(false);
-        			if(!isVideoEnabled(call)){
-        				showAudioView();
-        			}
-        		}
-        		
-        		if (state == State.Resuming) {
-        			if(LinphonePreferences.instance().isVideoEnabled()){
-        				status.refreshStatusItems(call, isVideoEnabled(call));
-        				if(isVideoEnabled(call)){
-        					showVideoView();
+				if (state == State.Paused || state == State.PausedByRemote ||  state == State.Pausing) {
+					video.setEnabled(false);
+					if(!isVideoEnabled(call)){
+						showAudioView();
+					}
+				}
+
+				if (state == State.Resuming) {
+					if(LinphonePreferences.instance().isVideoEnabled()){
+						status.refreshStatusItems(call, isVideoEnabled(call));
+						if(isVideoEnabled(call)){
+							showVideoView();
 						}
 					}
 				}
 
-        		if (state == State.StreamsRunning) {
+				if (state == State.StreamsRunning) {
 					if(isRTTLocallyEnabled) {
 						isRTTEnabled = call.getRemoteParams().realTimeTextEnabled();
 					}
@@ -285,49 +290,49 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						isRTTEnabled = false;
 					}
 
-        			switchVideo(isVideoEnabled(call));
+					switchVideo(isVideoEnabled(call));
 					//Check media in progress
 					if(LinphonePreferences.instance().isVideoEnabled() && !call.mediaInProgress()){
 						video.setEnabled(true);
 					}
-        			isMicMuted = lc.isMicMuted();
+					isMicMuted = lc.isMicMuted();
 					isSpeakerMuted = lc.getPlaybackGain()==mute_db;
 
-        			enableAndRefreshInCallActions();
-        			
-        			if (status != null) {
-        				videoProgress.setVisibility(View.GONE);
-        				status.refreshStatusItems(call, isVideoEnabled(call));
-        			}
-        		}
-        		
-        		refreshInCallActions();
-        		
-        		refreshCallList(getResources());
-        		
-        		if (state == State.CallUpdatedByRemote) {
-        			// If the correspondent proposes video while audio call
-        			boolean videoEnabled = LinphonePreferences.instance().isVideoEnabled();
-        			if (!videoEnabled) {
-        				acceptCallUpdate(false);
-        				return;
-        			}
-        			
-        			boolean remoteVideo = call.getRemoteParams().getVideoEnabled();
-        			boolean localVideo = call.getCurrentParamsCopy().getVideoEnabled();
-        			boolean autoAcceptCameraPolicy = LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests();
-        			if (remoteVideo && !localVideo && !autoAcceptCameraPolicy && !LinphoneManager.getLc().isInConference()) {
-        				showAcceptCallUpdateDialog();
-        				
-        				timer = new CountDownTimer(SECONDS_BEFORE_DENYING_CALL_UPDATE, 1000) {
-        					public void onTick(long millisUntilFinished) { }
-        					public void onFinish() {
+					enableAndRefreshInCallActions();
+
+					if (status != null) {
+						videoProgress.setVisibility(View.GONE);
+						status.refreshStatusItems(call, isVideoEnabled(call));
+					}
+				}
+
+				refreshInCallActions();
+
+				refreshCallList(getResources());
+
+				if (state == State.CallUpdatedByRemote) {
+					// If the correspondent proposes video while audio call
+					boolean videoEnabled = LinphonePreferences.instance().isVideoEnabled();
+					if (!videoEnabled) {
+						acceptCallUpdate(false);
+						return;
+					}
+
+					boolean remoteVideo = call.getRemoteParams().getVideoEnabled();
+					boolean localVideo = call.getCurrentParamsCopy().getVideoEnabled();
+					boolean autoAcceptCameraPolicy = LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests();
+					if (remoteVideo && !localVideo && !autoAcceptCameraPolicy && !LinphoneManager.getLc().isInConference()) {
+						showAcceptCallUpdateDialog();
+
+						timer = new CountDownTimer(SECONDS_BEFORE_DENYING_CALL_UPDATE, 1000) {
+							public void onTick(long millisUntilFinished) { }
+							public void onFinish() {
 								if (callUpdateDialog != null)
 									callUpdateDialog.dismiss();
-        						acceptCallUpdate(false);
-        			    	}
-        				}.start();
-        			} 
+								acceptCallUpdate(false);
+							}
+						}.start();
+					}
 //        			else if (remoteVideo && !LinphoneManager.getLc().isInConference() && autoAcceptCameraPolicy) {
 //        				mHandler.post(new Runnable() {
 //        					@Override
@@ -336,63 +341,63 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //        					}
 //        				});
 //        			}
-        		}
-        		
-        		transfer.setEnabled(LinphoneManager.getLc().getCurrentCall() != null);
-        	}
-        	
-        	@Override
-        	public void callEncryptionChanged(LinphoneCore lc, final LinphoneCall call, boolean encrypted, String authenticationToken) {
-        		if (status != null) {
-        			status.refreshStatusItems(call, call.getCurrentParamsCopy().getVideoEnabled());
-        		}
-        	}
-        };
-        
-        if (findViewById(R.id.fragmentContainer) != null) {
-            initUI();
-            
-            if (LinphoneManager.getLc().getCallsNb() > 0) {
-            	LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+				}
 
-            	if (LinphoneUtils.isCallEstablished(call)) {
-	    			enableAndRefreshInCallActions();
-            	}
-            }
-            
-            if (savedInstanceState != null) { 
-            	Log.d("getting savedInstanceState");
-            	// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
+				transfer.setEnabled(LinphoneManager.getLc().getCurrentCall() != null);
+			}
+
+			@Override
+			public void callEncryptionChanged(LinphoneCore lc, final LinphoneCall call, boolean encrypted, String authenticationToken) {
+				if (status != null) {
+					status.refreshStatusItems(call, call.getCurrentParamsCopy().getVideoEnabled());
+				}
+			}
+		};
+
+		if (findViewById(R.id.fragmentContainer) != null) {
+			initUI();
+
+			if (LinphoneManager.getLc().getCallsNb() > 0) {
+				LinphoneCall call = LinphoneManager.getLc().getCalls()[0];
+
+				if (LinphoneUtils.isCallEstablished(call)) {
+					enableAndRefreshInCallActions();
+				}
+			}
+
+			if (savedInstanceState != null) {
+				Log.d("getting savedInstanceState");
+				// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
 				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
-            	isMicMuted = savedInstanceState.getBoolean("Mic");
+				isMicMuted = savedInstanceState.getBoolean("Mic");
 				isSpeakerMuted = savedInstanceState.getBoolean("Speaker");
-            	isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
+				isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
 				refreshInCallActions();
 
 
-            	return;
-            }
-            
-            Fragment callFragment;
-            if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
-            	callFragment = new VideoCallFragment();
-            	videoCallFragment = (VideoCallFragment) callFragment;
-            	
-            	if (cameraNumber > 1) {
-            		switchCamera.setVisibility(View.VISIBLE); 
-            	}
-            } else {
-            	callFragment = new AudioCallFragment();
-            	audioCallFragment = (AudioCallFragment) callFragment;
-        		switchCamera.setVisibility(View.INVISIBLE);
-            }
+				return;
+			}
+
+			Fragment callFragment;
+			if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
+				callFragment = new VideoCallFragment();
+				videoCallFragment = (VideoCallFragment) callFragment;
+
+				if (cameraNumber > 1) {
+					switchCamera.setVisibility(View.VISIBLE);
+				}
+			} else {
+				callFragment = new AudioCallFragment();
+				audioCallFragment = (AudioCallFragment) callFragment;
+				switchCamera.setVisibility(View.INVISIBLE);
+			}
 
 			if(BluetoothManager.getInstance().isBluetoothHeadsetAvailable()){
 				BluetoothManager.getInstance().routeAudioToBluetooth();
 			}
 
-            callFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
+			callFragment.setArguments(getIntent().getExtras());
+			getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
 
 
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
@@ -404,7 +409,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					showRTTinterface();
 				}
 			}
-        }
+		}
 	}
 
 	@Override
@@ -450,12 +455,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		String text_mode=prefs.getString(getString(R.string.pref_text_settings_send_mode_key), "RTT");
 		if(text_mode.equals("SIP_SIMPLE")) {
 			TEXT_MODE=SIP_SIMPLE;
-		}else if(text_mode.equals("RTT")) {
-			TEXT_MODE=RTT;
+		}else if (text_mode.equals("RTT")) {
+			TEXT_MODE = RTT;
 
 		}
 		Log.d("TEXT_MODE ", TEXT_MODE);
 	}
+
 	public void hold_cursor_at_end_of_edit_text(final EditText et) {
 		et.setCursorVisible(false);
 		et.setOnClickListener(new OnClickListener() {
@@ -713,8 +719,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			@Override
 			public void onClick(View v) {
 				outgoingEditText.requestFocus();
-					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
 			}
 		});
@@ -835,7 +841,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneManager.getInstance().sendRealtimeText(cs);
 		}
 	}
-	
+
 	private boolean isVideoEnabled(LinphoneCall call) {
 		if(call != null){
 			return call.getCurrentParamsCopy().getVideoEnabled();
@@ -910,16 +916,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private boolean isTablet() {
 		return getResources().getBoolean(R.bool.isTablet);
 	}
-	
+
 	private void initUI() {
 		inflater = LayoutInflater.from(this);
 		container = (ViewGroup) findViewById(R.id.topLayout);
-        callsList = (TableLayout) findViewById(R.id.calls);
-        if (!showCallListInVideo) {
-        	callsList.setVisibility(View.GONE);
-        	
-        }
-        
+		callsList = (TableLayout) findViewById(R.id.calls);
+		if (!showCallListInVideo) {
+			callsList.setVisibility(View.GONE);
+
+		}
+
 		video = (TextView) findViewById(R.id.video);
 		video.setOnClickListener(this);
 		video.setEnabled(false);
@@ -954,7 +960,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		videoProgress.setVisibility(View.GONE);
 
 
-		
+
 		try {
 			routeLayout = (LinearLayout) findViewById(R.id.routesLayout);
 			audioRoute = (TextView) findViewById(R.id.audioRoute);
@@ -968,15 +974,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} catch (NullPointerException npe) {
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (1)");
 		}
-		
+
 		switchCamera = (ImageView) findViewById(R.id.switchCamera);
 		switchCamera.setOnClickListener(this);
-		
+
 		mControlsLayout = (ViewGroup) findViewById(R.id.menu);
-		
-        if (!isTransferAllowed) {
-        	addCall.setBackgroundResource(R.drawable.options_add_call);
-        }
+
+		if (!isTransferAllowed) {
+			addCall.setBackgroundResource(R.drawable.options_add_call);
+		}
 		if (Version.sdkAboveOrEqual(Version.API11_HONEYCOMB_30)) {
 			if(!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
 				BluetoothManager.getInstance().initBluetooth();
@@ -985,14 +991,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		}
 
-        if (!isAnimationDisabled) {
-	        slideInRightToLeft = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_to_left);
-	        slideOutLeftToRight = AnimationUtils.loadAnimation(this, R.anim.slide_out_left_to_right);
-	        slideInBottomToTop = AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom_to_top);
-	        slideInTopToBottom = AnimationUtils.loadAnimation(this, R.anim.slide_in_top_to_bottom);
-	        slideOutBottomToTop = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom_to_top);
-	        slideOutTopToBottom = AnimationUtils.loadAnimation(this, R.anim.slide_out_top_to_bottom);
-        }
+		if (!isAnimationDisabled) {
+			slideInRightToLeft = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_to_left);
+			slideOutLeftToRight = AnimationUtils.loadAnimation(this, R.anim.slide_out_left_to_right);
+			slideInBottomToTop = AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom_to_top);
+			slideInTopToBottom = AnimationUtils.loadAnimation(this, R.anim.slide_in_top_to_bottom);
+			slideOutBottomToTop = AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom_to_top);
+			slideOutTopToBottom = AnimationUtils.loadAnimation(this, R.anim.slide_out_top_to_bottom);
+		}
 
 		if (BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
 			try {
@@ -1009,23 +1015,23 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				speaker.setVisibility(View.VISIBLE);
 			} catch (NullPointerException npe) { Log.e("Bluetooth: Audio routes menu disabled on tablets for now (3)"); }
 		}
-		
+
 		LinphoneManager.getInstance().changeStatusToOnThePhone();
 	}
 
 
-	
+
 	private void refreshInCallActions() {
 		if (!LinphonePreferences.instance().isVideoEnabled()) {
 			video.setEnabled(false);
 		} else {
 			if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
-	        	video.setBackgroundResource(R.drawable.video_on);
+				video.setBackgroundResource(R.drawable.video_on);
 			} else {
 				video.setBackgroundResource(R.drawable.video_off);
 			}
 		}
-		
+
 		try {
 			if (!isSpeakerMuted) {
 				speaker.setBackgroundResource(R.drawable.speaker_on);
@@ -1046,7 +1052,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} catch (NullPointerException npe) {
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (4)");
 		}
-		
+
 		if (isMicMuted) {
 			micro.setBackgroundResource(R.drawable.micro_off);
 		} else {
@@ -1059,7 +1065,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} else {
 			conference.setVisibility(View.GONE);
 			pause.setVisibility(View.VISIBLE);
-			
+
 			List<LinphoneCall> pausedCalls = LinphoneUtils.getCallsInState(LinphoneManager.getLc(), Arrays.asList(State.Paused));
 			if (pausedCalls.size() == 1) {
 				pause.setBackgroundResource(R.drawable.pause_on);
@@ -1068,7 +1074,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		}
 	}
-	
+
 	private void enableAndRefreshInCallActions() {
 		addCall.setEnabled(LinphoneManager.getLc().getCallsNb() < LinphoneManager.getLc().getMaxCalls());
 		transfer.setEnabled(getResources().getBoolean(R.bool.allow_transfers));
@@ -1128,14 +1134,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		else if (id == R.id.micro) {
 			toggleMicro();
-		} 
+		}
 		else if (id == R.id.speaker) {
 			toggleSpeaker(!isSpeakerMuted);
 
-		} 
+		}
 		else if (id == R.id.addCall) {
 			goBackToDialer();
-		} 
+		}
 		else if (id == R.id.toggleChat) {
 			if(isRTTEnabled) {
 				toggle_chat();
@@ -1147,7 +1153,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		else if (id == R.id.hangUp) {
 			hangUp();
-		} 
+		}
 		else if (id == R.id.dialer) {
 			hideOrDisplayNumpad();
 		}
@@ -1192,7 +1198,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			routeSpeaker.setBackgroundResource(R.drawable.route_speaker_on);
 			hideOrDisplayAudioRoutes();
 		}
-		
+
 		else if (id == R.id.callStatus) {
 			LinphoneCall call = (LinphoneCall) v.getTag();
 			pauseOrResumeCall(call);
@@ -1202,7 +1208,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 
-	public void toggle_chat(){
+	public void toggle_chat() {
 		Log.d("RTT", "toggleChat clicked");
 		Log.d("RTT", "isRTTMaximaized" + isRTTMaximized);
 		mControlsLayout.setVisibility(View.GONE);
@@ -1244,16 +1250,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		toast.setView(layout);
 		toast.show();
 	}
-	
+
 	private void switchVideo(final boolean displayVideo) {
 		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 		if (call == null) {
 			return;
 		}
-		
+
 		//Check if the call is not terminated
 		if(call.getState() == State.CallEnd || call.getState() == State.CallReleased) return;
-		
+
 		if (!displayVideo) {
 			showAudioView();
 		} else {
@@ -1266,14 +1272,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		}
 	}
-	
+
 	private void showAudioView() {
 		video.setBackgroundResource(R.drawable.video_on);
 		LinphoneManager.startProximitySensorForActivity(InCallActivity.this);
 		replaceFragmentVideoByAudio();
 		setCallControlsVisibleAndRemoveCallbacks();
 	}
-	
+
 	private void showVideoView() {
 		if (!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
 			Log.w("Bluetooth not available, using speaker");
@@ -1283,15 +1289,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		video.setBackgroundResource(R.drawable.video_off);
 		video.setEnabled(true);
 		videoProgress.setVisibility(View.INVISIBLE);
-		
+
 		LinphoneManager.stopProximitySensorForActivity(InCallActivity.this);
 		replaceFragmentAudioByVideo();
 		displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
 	}
-	
+
 	private void replaceFragmentVideoByAudio() {
 		audioCallFragment = new AudioCallFragment();
-		
+
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragmentContainer, audioCallFragment);
 		try {
@@ -1299,14 +1305,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} catch (Exception e) {
 		}
 	}
-	
+
 	private void replaceFragmentAudioByVideo() {
 //		Hiding controls to let displayVideoCallControlsIfHidden add them plus the callback
 		mControlsLayout.setVisibility(View.GONE);
 		switchCamera.setVisibility(View.INVISIBLE);
-		
+
 		videoCallFragment = new VideoCallFragment();
-		
+
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragmentContainer, videoCallFragment);
 		try {
@@ -1325,7 +1331,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			micro.setBackgroundResource(R.drawable.micro_on);
 		}
 	}
-	
+
 	private void toggleSpeaker(boolean isMuted) {
 		final float mute_db = -1000.0f;
 		isSpeakerMuted = isMuted;
@@ -1337,7 +1343,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			speaker.setBackgroundResource(R.drawable.speaker_on);
 		}
 	}
-	
+
 	private void pauseOrResumeCall() {
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null && lc.getCallsNb() >= 1) {
@@ -1345,7 +1351,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			pauseOrResumeCall(call);
 		}
 	}
-	
+
 	public void pauseOrResumeCall(LinphoneCall call) {
 		LinphoneCore lc = LinphoneManager.getLc();
 		if (call != null && LinphoneUtils.isCallRunning(call)) {
@@ -1373,11 +1379,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		}
 	}
-	
+
 	private void hangUp() {
 		LinphoneCore lc = LinphoneManager.getLc();
 		LinphoneCall currentCall = lc.getCurrentCall();
-		
+
 		if (currentCall != null) {
 			lc.terminateCall(currentCall);
 		} else if (lc.isInConference()) {
@@ -1388,11 +1394,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		delete_messages();
 
 	}
-	
+
 	private void enterConference() {
 		LinphoneManager.getLc().addAllToConference();
 	}
-	
+
 	public void pauseOrResumeConference() {
 		LinphoneCore lc = LinphoneManager.getLc();
 		if (lc.isInConference()) {
@@ -1401,7 +1407,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			lc.enterConference();
 		}
 	}
-	
+
 	public void displayVideoCallControlsIfHidden(int delay_until_hide) {
 		if (mControlsLayout != null) {
 			if (mControlsLayout.getVisibility() != View.VISIBLE) {
@@ -1409,8 +1415,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					mControlsLayout.setVisibility(View.VISIBLE);
 					callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
 					if (cameraNumber > 1) {
-	            		switchCamera.setVisibility(View.VISIBLE); 
-	            	}
+						switchCamera.setVisibility(View.VISIBLE);
+					}
 				} else {
 					Animation animation = slideInBottomToTop;
 					animation.setAnimationListener(new AnimationListener() {
@@ -1420,14 +1426,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 							mControlsLayout.setVisibility(View.VISIBLE);
 							callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
 							if (cameraNumber > 1) {
-			            		switchCamera.setVisibility(View.VISIBLE); 
-			            	}
+								switchCamera.setVisibility(View.VISIBLE);
+							}
 						}
-						
+
 						@Override
 						public void onAnimationRepeat(Animation animation) {
 						}
-						
+
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							animation.setAnimationListener(null);
@@ -1442,7 +1448,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 			}
 			hide_controls(delay_until_hide);
-		}		
+		}
 	}
 
 	public void hide_controls(int delay_until_hide) {
@@ -1450,7 +1456,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			mControlsHandler.removeCallbacks(mControls);
 		}
 		mControls = null;
-		
+
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall()) && mControlsHandler != null) {
 			if(delay_until_hide!=NEVER) {
 				mControlsHandler.postDelayed(mControls = new Runnable() {
@@ -1507,17 +1513,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			mControlsHandler.removeCallbacks(mControls);
 		}
 		mControls = null;
-		
+
 		mControlsLayout.setVisibility(View.VISIBLE);
 		callsList.setVisibility(View.VISIBLE);
 		switchCamera.setVisibility(View.INVISIBLE);
 	}
-	
+
 	private void hideNumpad() {
 		if (numpad == null || numpad.getVisibility() != View.VISIBLE) {
 			return;
 		}
-			
+
 		dialer.setBackgroundResource(R.drawable.dialer_alt);
 		if (isAnimationDisabled) {
 			numpad.setVisibility(View.GONE);
@@ -1526,14 +1532,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			animation.setAnimationListener(new AnimationListener() {
 				@Override
 				public void onAnimationStart(Animation animation) {
-					
+
 				}
-				
+
 				@Override
 				public void onAnimationRepeat(Animation animation) {
-					
+
 				}
-				
+
 				@Override
 				public void onAnimationEnd(Animation animation) {
 					numpad.setVisibility(View.GONE);
@@ -1543,16 +1549,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			numpad.startAnimation(animation);
 		}
 	}
-	
+
 	private void hideOrDisplayNumpad() {
 		if (numpad == null) {
 			return;
 		}
-		
+
 		if (numpad.getVisibility() == View.VISIBLE) {
 			hideNumpad();
 		} else {
-			dialer.setBackgroundResource(R.drawable.dialer_alt_back);	
+			dialer.setBackgroundResource(R.drawable.dialer_alt_back);
 			if (isAnimationDisabled) {
 				numpad.setVisibility(View.VISIBLE);
 			} else {
@@ -1560,14 +1566,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				animation.setAnimationListener(new AnimationListener() {
 					@Override
 					public void onAnimationStart(Animation animation) {
-						
+
 					}
-					
+
 					@Override
 					public void onAnimationRepeat(Animation animation) {
-						
+
 					}
-					
+
 					@Override
 					public void onAnimationEnd(Animation animation) {
 						numpad.setVisibility(View.VISIBLE);
@@ -1578,18 +1584,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		}
 	}
-	
+
 	private void hideAnimatedPortraitCallOptions() {
 		Animation animation = slideOutLeftToRight;
 		animation.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
 			}
-			
+
 			@Override
 			public void onAnimationRepeat(Animation animation) {
 			}
-			
+
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				if (isTransferAllowed) {
@@ -1604,7 +1610,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		addCall.startAnimation(animation);
 	}
-	
+
 	private void hideAnimatedLandscapeCallOptions() {
 		Animation animation = slideOutTopToBottom;
 		if (isTransferAllowed) {
@@ -1612,11 +1618,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				@Override
 				public void onAnimationStart(Animation animation) {
 				}
-				
+
 				@Override
 				public void onAnimationRepeat(Animation animation) {
 				}
-				
+
 				@Override
 				public void onAnimationEnd(Animation animation) {
 					transfer.setAnimation(null);
@@ -1626,11 +1632,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						@Override
 						public void onAnimationStart(Animation animation) {
 						}
-						
+
 						@Override
 						public void onAnimationRepeat(Animation animation) {
 						}
-						
+
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							addCall.setVisibility(View.INVISIBLE);
@@ -1645,11 +1651,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				@Override
 				public void onAnimationStart(Animation animation) {
 				}
-				
+
 				@Override
 				public void onAnimationRepeat(Animation animation) {
 				}
-				
+
 				@Override
 				public void onAnimationEnd(Animation animation) {
 					addCall.setVisibility(View.INVISIBLE);
@@ -1658,18 +1664,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			addCall.startAnimation(animation);
 		}
 	}
-	
+
 	private void showAnimatedPortraitCallOptions() {
 		Animation animation = slideInRightToLeft;
 		animation.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
 			}
-			
+
 			@Override
 			public void onAnimationRepeat(Animation animation) {
 			}
-			
+
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				options.setBackgroundResource(R.drawable.options_alt);
@@ -1685,18 +1691,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		addCall.startAnimation(animation);
 	}
-	
+
 	private void showAnimatedLandscapeCallOptions() {
 		Animation animation = slideInBottomToTop;
 		animation.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
 			}
-			
+
 			@Override
 			public void onAnimationRepeat(Animation animation) {
 			}
-			
+
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				addCall.setAnimation(null);
@@ -1707,11 +1713,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						@Override
 						public void onAnimationStart(Animation animation) {
 						}
-						
+
 						@Override
 						public void onAnimationRepeat(Animation animation) {
 						}
-						
+
 						@Override
 						public void onAnimationEnd(Animation animation) {
 							transfer.setVisibility(View.VISIBLE);
@@ -1723,9 +1729,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		});
 		addCall.startAnimation(animation);
 	}
-	
+
 	private void hideOrDisplayAudioRoutes()
-	{		
+	{
 		if (routeSpeaker.getVisibility() == View.VISIBLE) {
 			routeSpeaker.setVisibility(View.GONE);
 			routeBluetooth.setVisibility(View.GONE);
@@ -1738,10 +1744,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			audioRoute.setSelected(true);
 		}
 	}
-	
+
 	private void hideOrDisplayCallOptions() {
 		boolean isOrientationLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-		
+
 		if (addCall.getVisibility() == View.VISIBLE) {
 			options.setBackgroundResource(R.drawable.options);
 			if (isAnimationDisabled) {
@@ -1757,7 +1763,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 			}
 			options.setSelected(false);
-		} else {		
+		} else {
 			if (isAnimationDisabled) {
 				if (isTransferAllowed) {
 					transfer.setVisibility(View.VISIBLE);
@@ -1775,55 +1781,55 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			transfer.setEnabled(LinphoneManager.getLc().getCurrentCall() != null);
 		}
 	}
-	
+
 	public void goBackToDialer() {
 		Intent intent = new Intent();
 		intent.putExtra("Transfer", false);
 		setResult(Activity.RESULT_FIRST_USER, intent);
 		finish();
 	}
-	
+
 	private void goBackToDialerAndDisplayTransferButton() {
 		Intent intent = new Intent();
 		intent.putExtra("Transfer", true);
 		setResult(Activity.RESULT_FIRST_USER, intent);
 		finish();
 	}
-	
+
 	public void acceptCallUpdate(boolean accept) {
 		if (timer != null) {
 			timer.cancel();
 		}
-		 
+
 		LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 		if (call == null) {
 			return;
 		}
-		 
+
 		LinphoneCallParams params = call.getCurrentParamsCopy();
 		if (accept) {
 			params.setVideoEnabled(true);
 			LinphoneManager.getLc().enableVideo(true, true);
 		}
-		 
+
 		try {
 			LinphoneManager.getLc().acceptCallUpdate(call, params);
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void startIncomingCallActivity() {
 		startActivity(new Intent(this, IncomingCallActivity.class));
 	}
 
-	
-	
+
+
 	private void showAcceptCallUpdateDialog() {
-        FragmentManager fm = getSupportFragmentManager();
-        callUpdateDialog = new AcceptCallUpdateDialogFragment();
-        callUpdateDialog.show(fm, "Accept Call Update Dialog");
-    }
+		FragmentManager fm = getSupportFragmentManager();
+		callUpdateDialog = new AcceptCallUpdateDialogFragment();
+		callUpdateDialog.show(fm, "Accept Call Update Dialog");
+	}
 
 	@Override
 	protected void onResume() {
@@ -1835,7 +1841,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //		}
 		Log.d("onResume()");
 		instance = this;
-		
+
 		if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 
 			displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
@@ -1843,21 +1849,24 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneManager.startProximitySensorForActivity(this);
 			setCallControlsVisibleAndRemoveCallbacks();
 		}
-		
+
 		super.onResume();
-		
+
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.addListener(mListener);
 		}
 
 		refreshCallList(getResources());
-		
+
 		handleViewIntent();
 
 		toggleSpeaker(isSpeakerMuted);
+
+		IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+		registerReceiver(myReceiver, filter);
 	}
-	
+
 	private void handleViewIntent() {
 		Intent intent = getIntent();
 		if(intent != null && intent.getAction() == "android.intent.action.VIEW") {
@@ -1867,7 +1876,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				String path = intent.getData().getPath();
 				Log.i("Openning " + path);
 				int openRes = player.open(path, new LinphonePlayer.Listener() {
-					
+
 					@Override
 					public void endOfFile(LinphonePlayer player) {
 						player.close();
@@ -1889,18 +1898,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		Log.d("onPause()");
-
+		unregisterReceiver(myReceiver);
 		save_messages();
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
 		}
-		
+
 		super.onPause();
 
 		if (mControlsHandler != null && mControls != null) {
@@ -1913,45 +1922,45 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneManager.stopProximitySensorForActivity(this);
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		Log.d("onDestroy()");
 		LinphoneManager.getInstance().changeStatusToOnline();
-		
+
 		if (mControlsHandler != null && mControls != null) {
 			mControlsHandler.removeCallbacks(mControls);
 		}
 		mControls = null;
 		mControlsHandler = null;
-		
+
 		unbindDrawables(findViewById(R.id.topLayout));
 		instance = null;
 		super.onDestroy();
-	    System.gc();
+		System.gc();
 	}
-	
+
 	private void unbindDrawables(View view) {
-        if (view.getBackground() != null) {
-        	view.getBackground().setCallback(null);
-        }
-        if (view instanceof ImageView) {
-        	view.setOnClickListener(null);
-        }
-        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-            	unbindDrawables(((ViewGroup) view).getChildAt(i));
-            }
-            ((ViewGroup) view).removeAllViews();
-        }
+		if (view.getBackground() != null) {
+			view.getBackground().setCallback(null);
+		}
+		if (view instanceof ImageView) {
+			view.setOnClickListener(null);
+		}
+		if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+			for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+				unbindDrawables(((ViewGroup) view).getChildAt(i));
+			}
+			((ViewGroup) view).removeAllViews();
+		}
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (LinphoneUtils.onKeyVolumeAdjust(keyCode)) return true;
- 		if (LinphoneUtils.onKeyBackGoHome(this, keyCode, event)) return true;
- 		return super.onKeyDown(keyCode, event);
- 	}
+		if (LinphoneUtils.onKeyBackGoHome(this, keyCode, event)) return true;
+		return super.onKeyDown(keyCode, event);
+	}
 
 	public void bindAudioFragment(AudioCallFragment fragment) {
 		audioCallFragment = fragment;
@@ -1960,10 +1969,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void bindVideoFragment(VideoCallFragment fragment) {
 		videoCallFragment = fragment;
 	}
-	
+
 	private void displayConferenceHeader() {
 		LinearLayout conferenceHeader = (LinearLayout) inflater.inflate(R.layout.conference_header, container, false);
-		
+
 		ImageView conferenceState = (ImageView) conferenceHeader.findViewById(R.id.conferenceStatus);
 		conferenceState.setOnClickListener(this);
 		if (LinphoneManager.getLc().isInConference()) {
@@ -1971,13 +1980,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} else {
 			conferenceState.setImageResource(R.drawable.pause);
 		}
-		
+
 		callsList.addView(conferenceHeader);
 	}
-	
+
 	private void displayCall(Resources resources, LinphoneCall call, int index) {
 		String sipUri = call.getRemoteAddress().asStringUriOnly();
-        LinphoneAddress lAddress;
+		LinphoneAddress lAddress;
 		try {
 			lAddress = LinphoneCoreFactory.instance().createLinphoneAddress(sipUri);
 		} catch (LinphoneCoreException e) {
@@ -1986,9 +1995,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 		boolean hide_additional_info = showCallListInVideo && isVideoEnabled(LinphoneManager.getLc().getCurrentCall());
-        // Control Row and Image Row
-    	LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
-        LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
+		// Control Row and Image Row
+		LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
+		LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
 		//callView.setId(index+1);
 
 		setContactName(imageView, lAddress, sipUri, resources);
@@ -1996,10 +2005,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(!hide_additional_info)
 			setRowBackground(callView, index);
 		registerCallDurationTimer(callView, call);
-    	callsList.addView(callView);
+		callsList.addView(callView);
 
 		if(!hide_additional_info) {
-			Contact contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
+			contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
 			if (contact != null) {
 				displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
 			} else {
@@ -2023,7 +2032,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			});
 		}
 	}
-	
+
 	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
 		TextView contact = (TextView) callView.findViewById(R.id.contactNameOrNumber);
 		//TextView partnerName = (TextView) findViewById(R.id.partner_name);
@@ -2034,16 +2043,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		Contact lContact  = ContactsManager.getInstance().findContactWithAddress(callView.getContext().getContentResolver(), lAddress);
 		if (lContact == null) {
-	        if (resources.getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(sipUri)) {
-	        	contact.setText(lAddress.getUserName());
-		        contactName = lAddress.getUserName();
-		        android.util.Log.e("Info", "contactName = " + contactName);
-		        //partnerName.setText(contactName);
+			if (resources.getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(sipUri)) {
+				contact.setText(lAddress.getUserName());
+				contactName = lAddress.getUserName();
+				android.util.Log.e("Info", "contactName = " + contactName);
+				//partnerName.setText(contactName);
 			} else {
 				contact.setText(sipUri);
-		        contactName = sipUri;
-		        android.util.Log.e("Info", "contactName = " + contactName);
-		       // partnerName.setText(contactName);
+				contactName = sipUri;
+				android.util.Log.e("Info", "contactName = " + contactName);
+				// partnerName.setText(contactName);
 			}
 		} else {
 			contact.setText(lContact.getName());
@@ -2052,11 +2061,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			//partnerName.setText(contactName);
 		}
 	}
-	
+
 	private void startOutgoingRingCount(LinearLayout callView) {
 		outgoingRingCountTimer = new Timer();
 		float outGoingRingDuration = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "outgoing_ring_duration", 2.0f);
-		final TextView outgoingRingCountTextView = (TextView)callView.findViewById(R.id.outboundRingCount);
+		final TextView outgoingRingCountTextView = (TextView) callView.findViewById(R.id.outboundRingCount);
 		outgoingRingCountTextView.setVisibility(View.VISIBLE);
 		outgoingRingCountTimer.schedule(new TimerTask() {
 			int ringCount = 0;
@@ -2071,8 +2080,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				});
 			}
 		}, 0, (long)(outGoingRingDuration*1000));
-	}	
-	
+	}
+
 	private void stopOutgoingRingCount() {
 		if (outgoingRingCountTimer != null) {
 			outgoingRingCountTimer.cancel();
@@ -2080,13 +2089,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
 		}
 	}
-	
+
 	private boolean displayCallStatusIconAndReturnCallPaused(LinearLayout callView, LinearLayout  imageView,  LinphoneCall call) {
 		boolean isCallPaused, isInConference;
 		ImageView callState = (ImageView) callView.findViewById(R.id.callStatus);
 		callState.setTag(call);
 		callState.setOnClickListener(this);
-		
+
 		if (call.getState() == State.Paused || call.getState() == State.PausedByRemote || call.getState() == State.Pausing) {
 			callState.setImageResource(R.drawable.pause);
 			isCallPaused = true;
@@ -2097,7 +2106,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			isCallPaused = false;
 			isInConference = false;
 			if (call.getState() == State.OutgoingRinging) startOutgoingRingCount(imageView);
-		    else stopOutgoingRingCount();
+			else stopOutgoingRingCount();
 		} else {
 			stopOutgoingRingCount();
 			if (isConferenceRunning && call.isInConference()) {
@@ -2109,18 +2118,29 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 			isCallPaused = false;
 		}
-		
+
 		return isCallPaused || isInConference;
 	}
-	
+
 	private void displayOrHideContactPicture(LinearLayout callView, Uri pictureUri, Uri thumbnailUri, boolean hide) {
+		String rawContactId = null;
+		try{
+			rawContactId = ContactsManager.getInstance().findRawContactID(LinphoneActivity.instance().getContentResolver(), String.valueOf(contact.getID()));
+		}catch(Throwable e){
+
+			e.printStackTrace();
+		}
+
 		AvatarWithShadow contactPicture = (AvatarWithShadow) callView.findViewById(R.id.contactPicture);
 		if (pictureUri != null) {
-        	LinphoneUtils.setImagePictureFromUri(callView.getContext(), contactPicture.getView(), Uri.parse(pictureUri.toString()), thumbnailUri, R.drawable.unknown_small);
-        }
+			LinphoneUtils.setImagePictureFromUri(callView.getContext(), contactPicture.getView(), Uri.parse(pictureUri.toString()), thumbnailUri, R.drawable.unknown_small);
+		}else if(rawContactId!=null&&ContactsManager.picture_exists_in_storage_for_contact(rawContactId)){
+			contactPicture.getView().setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
+		}
+
 		callView.setVisibility(hide ? View.GONE : View.VISIBLE);
 	}
-	
+
 	private void setRowBackground(LinearLayout callView, int index) {
 		int backgroundResource;
 		if (index == 0) {
@@ -2132,22 +2152,22 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		callView.setBackgroundResource(backgroundResource);
 	}
-	
+
 	private void registerCallDurationTimer(View v, LinphoneCall call) {
 		int callDuration = call.getDuration();
 		if (callDuration == 0 && call.getState() != State.StreamsRunning) {
 			return;
 		}
-		
+
 		Chronometer timer = (Chronometer) v.findViewById(R.id.callTimer);
 		if (timer == null) {
 			throw new IllegalArgumentException("no callee_duration view found");
 		}
-		
+
 		timer.setBase(SystemClock.elapsedRealtime() - 1000 * callDuration);
 		timer.start();
 	}
-	
+
 	public void refreshCallList(Resources resources) {
 		if (callsList == null) {
 			return;
@@ -2155,27 +2175,46 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		callsList.removeAllViews();
 		int index = 0;
-        
-        if (LinphoneManager.getLc().getCallsNb() == 0) {
-        	goBackToDialer();
-        	return;
-        }
-		
-        isConferenceRunning = LinphoneManager.getLc().getConferenceSize() > 1;
-        if (isConferenceRunning) {
-        	displayConferenceHeader();
-        	index++;
-        }
-        for (LinphoneCall call : LinphoneManager.getLc().getCalls()) {
-        	displayCall(resources, call, index);	
-        	index++;
-        }
-        
-        if(LinphoneManager.getLc().getCurrentCall() == null){
-        	showAudioView();
-        	video.setEnabled(false);
-        }
-        
-        callsList.invalidate();
+
+		if (LinphoneManager.getLc().getCallsNb() == 0) {
+			goBackToDialer();
+			return;
+		}
+
+		isConferenceRunning = LinphoneManager.getLc().getConferenceSize() > 1;
+		if (isConferenceRunning) {
+			displayConferenceHeader();
+			index++;
+		}
+		for (LinphoneCall call : LinphoneManager.getLc().getCalls()) {
+			displayCall(resources, call, index);
+			index++;
+		}
+
+		if(LinphoneManager.getLc().getCurrentCall() == null){
+			showAudioView();
+			video.setEnabled(false);
+		}
+
+		callsList.invalidate();
+	}
+	private class HeadPhoneJackIntentReceiver extends BroadcastReceiver {
+		@Override public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+				int state = intent.getIntExtra("state", -1);
+				switch (state) {
+					case 0:
+						Log.d("HEADPHONES", "Headset is unplugged");
+
+						break;
+					case 1:
+						Log.d("HEADPHONES", "Headset is plugged");
+						LinphoneManager.getInstance().routeAudioToReceiver();
+						break;
+					default:
+						Log.d("HEADPHONES", "I have no idea what the headset state is");
+				}
+			}
+		}
 	}
 }

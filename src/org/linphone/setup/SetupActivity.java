@@ -296,7 +296,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 					sip_password = config.getSipAuthPassword();
 				}
 				saveCreatedAccount(username, password, domain, userId, transport_type, port);
-				config.applySettings();
+				config.applySettings(transport_type, port);
 				if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
 					launchEchoCancellerCalibration(sendEcCalibrationResult);
 				}
@@ -345,7 +345,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 					sip_password = config.getSipAuthPassword();
 				}
 				saveCreatedAccount(sip_username, sip_password, sip_username, domain, transport_type, port);
-				config.applySettings();
+				config.applySettings(transport_type, port);
 				if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
 					launchEchoCancellerCalibration(sendEcCalibrationResult);
 				}

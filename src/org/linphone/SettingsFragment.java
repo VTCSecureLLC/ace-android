@@ -111,6 +111,11 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+
+		if(prefs.getBoolean("advanced_settings_enabled",false)){
+			isAdvancedSettings = true;
+		}
+
 		editor = prefs.edit();
 
 		// Init the settings page interface
@@ -520,15 +525,6 @@ public class SettingsFragment extends PreferencesListFragment {
 				entries.add(getString(R.string.media_encryption_srtp));
 				values.add(getString(R.string.pref_media_encryption_key_srtp));
 			}
-			if (hasZrtp){
-				entries.add(getString(R.string.media_encryption_zrtp));
-				values.add(getString(R.string.pref_media_encryption_key_zrtp));
-			}
-			if (hasDtls){
-				entries.add(getString(R.string.media_encryption_dtls));
-				values.add(getString(R.string.pref_media_encryption_key_dtls));
-
-			}
 			setListPreferenceValues(pref, entries, values);
 		}
 
@@ -536,12 +532,9 @@ public class SettingsFragment extends PreferencesListFragment {
 		pref.setSummary(value.toString());
 
 		String key = getString(R.string.pref_media_encryption_key_none);
-		if (value.toString().equals(getString(R.string.media_encryption_srtp)))
+		if (value.toString().equals(getString(R.string.media_encryption_srtp))) {
 			key = getString(R.string.pref_media_encryption_key_srtp);
-		else if (value.toString().equals(getString(R.string.media_encryption_zrtp)))
-			key = getString(R.string.pref_media_encryption_key_zrtp);
-		else if (value.toString().equals(getString(R.string.media_encryption_dtls)))
-			key = getString(R.string.pref_media_encryption_key_dtls);
+		}
 		pref.setValue(key);
 	}
 
@@ -862,6 +855,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initAudioVideoSettings(){
 		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
+		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
 		// VATRP-1017 -- Add global speaker and mic mute logic
 		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
@@ -905,6 +899,14 @@ public class SettingsFragment extends PreferencesListFragment {
 				} else if (value.compareToIgnoreCase("Explicit") == 0) {
 					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				LinphoneManager.getLc().getDefaultProxyConfig().setAvpfRRInterval(3);
+				try{
+					preference.setSummary(newValue.toString());
+				}
+				catch(Throwable e){
+					e.printStackTrace();
+					Log.e("RTCP selected:", "Invalid option");
 				}
 				return true;
 			}
@@ -1306,6 +1308,9 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		for (final PayloadType pt : lc.getVideoCodecs()) {
+			if(pt.getMime().equals("MP4V-ES")||pt.getMime().equals("H263-1998")){
+				continue;
+			}
 			CheckBoxPreference codec = new CheckBoxPreference(getActivity());
 			codec.setTitle(pt.getMime());
 
@@ -1554,11 +1559,11 @@ public class SettingsFragment extends PreferencesListFragment {
 		CheckBoxPreference randomPort = (CheckBoxPreference) findPreference(getString(R.string.pref_transport_use_random_ports_key));
 		randomPort.setChecked(mPrefs.isUsingRandomPort());
 
-		// Disable sip port choice if port is random
-		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
-		sipPort.setEnabled(!randomPort.isChecked());
-		sipPort.setSummary(mPrefs.getSipPort());
-		sipPort.setText(mPrefs.getSipPort());
+//		// Disable sip port choice if port is random
+//		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
+//		sipPort.setEnabled(!randomPort.isChecked());
+//		sipPort.setSummary(mPrefs.getSipPort());
+//		sipPort.setText(mPrefs.getSipPort());
 
 		EditTextPreference stun = (EditTextPreference) findPreference(getString(R.string.pref_stun_server_key));
 		stun.setSummary(mPrefs.getStunServer());
@@ -1620,19 +1625,19 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int port = -1;
-				try {
-					port = Integer.parseInt(newValue.toString());
-				} catch (NumberFormatException nfe) { }
-
-				mPrefs.setSipPort(port);
-				preference.setSummary(newValue.toString());
-				return true;
-			}
-		});
+//		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//				int port = -1;
+//				try {
+//					port = Integer.parseInt(newValue.toString());
+//				} catch (NumberFormatException nfe) { }
+//
+//				mPrefs.setSipPort(port);
+//				preference.setSummary(newValue.toString());
+//				return true;
+//			}
+//		});
 
 		findPreference(getString(R.string.pref_media_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
