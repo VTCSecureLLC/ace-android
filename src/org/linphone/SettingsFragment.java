@@ -1535,11 +1535,11 @@ public class SettingsFragment extends PreferencesListFragment {
 		CheckBoxPreference randomPort = (CheckBoxPreference) findPreference(getString(R.string.pref_transport_use_random_ports_key));
 		randomPort.setChecked(mPrefs.isUsingRandomPort());
 
-		// Disable sip port choice if port is random
-		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
-		sipPort.setEnabled(!randomPort.isChecked());
-		sipPort.setSummary(mPrefs.getSipPort());
-		sipPort.setText(mPrefs.getSipPort());
+//		// Disable sip port choice if port is random
+//		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
+//		sipPort.setEnabled(!randomPort.isChecked());
+//		sipPort.setSummary(mPrefs.getSipPort());
+//		sipPort.setText(mPrefs.getSipPort());
 
 		EditTextPreference stun = (EditTextPreference) findPreference(getString(R.string.pref_stun_server_key));
 		stun.setSummary(mPrefs.getStunServer());
@@ -1601,19 +1601,19 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int port = -1;
-				try {
-					port = Integer.parseInt(newValue.toString());
-				} catch (NumberFormatException nfe) { }
-
-				mPrefs.setSipPort(port);
-				preference.setSummary(newValue.toString());
-				return true;
-			}
-		});
+//		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//				int port = -1;
+//				try {
+//					port = Integer.parseInt(newValue.toString());
+//				} catch (NumberFormatException nfe) { }
+//
+//				mPrefs.setSipPort(port);
+//				preference.setSummary(newValue.toString());
+//				return true;
+//			}
+//		});
 
 		findPreference(getString(R.string.pref_media_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override

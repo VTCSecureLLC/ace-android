@@ -279,12 +279,12 @@
 			<CheckBoxPreference
 				android:title="@string/pref_transport_use_random_ports"
 			    android:key="@string/pref_transport_use_random_ports_key"/>
-
+<!--
 			<EditTextPreference
 			    android:title="@string/pref_sip_port_title"
 			    android:key="@string/pref_sip_port_key"
 				android:numeric="integer"/>
-
+											-->
 			<EditTextPreference
 			    android:title="@string/pref_audio_port_title"
 			    android:key="@string/pref_audio_port_key"
