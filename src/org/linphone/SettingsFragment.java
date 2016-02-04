@@ -1266,13 +1266,13 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object value) {
 				Log.d("text_send_type_pref value", value);
 				editor.putString(getString(R.string.pref_text_settings_send_mode_key), value.toString());
+				preference.setSummary(value.toString().replace("_", " "));
 				return true;
 			}
 		});
 
 		String value=text_send_type_pref.getValue();
-		Log.d("text_send_type_pref value", value);
-
+		text_send_type_pref.setSummary(value.toString().replace("_", " "));
 	}
 
 	private void initVideoSettings() {
