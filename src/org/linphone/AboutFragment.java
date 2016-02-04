@@ -18,10 +18,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -148,6 +150,14 @@ public class AboutFragment extends Fragment implements OnClickListener, EnterTex
 	@Override
 	public void onPasswordSubmitted(String input) {
 		if(input.equals(advancedSettingsPW)){
+
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+			SharedPreferences.Editor editor = prefs.edit();
+			// Enable by default
+			editor.putBoolean("advanced_settings_enabled", true);
+			editor.commit();
+
+			boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
 			SettingsFragment.isAdvancedSettings = true;
 			Toast.makeText(getActivity(), "Advanced settings unlocked", Toast.LENGTH_SHORT).show();
 		}
