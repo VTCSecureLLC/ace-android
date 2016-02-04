@@ -843,6 +843,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initAudioVideoSettings(){
 		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
+		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
 		// VATRP-1017 -- Add global speaker and mic mute logic
 		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
@@ -886,6 +887,14 @@ public class SettingsFragment extends PreferencesListFragment {
 				} else if (value.compareToIgnoreCase("Explicit") == 0) {
 					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				LinphoneManager.getLc().getDefaultProxyConfig().setAvpfRRInterval(3);
+				try{
+					preference.setSummary(newValue.toString());
+				}
+				catch(Throwable e){
+					e.printStackTrace();
+					Log.e("RTCP selected:", "Invalid option");
 				}
 				return true;
 			}
