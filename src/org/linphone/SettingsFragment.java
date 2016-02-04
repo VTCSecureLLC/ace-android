@@ -501,15 +501,6 @@ public class SettingsFragment extends PreferencesListFragment {
 				entries.add(getString(R.string.media_encryption_srtp));
 				values.add(getString(R.string.pref_media_encryption_key_srtp));
 			}
-			if (hasZrtp){
-				entries.add(getString(R.string.media_encryption_zrtp));
-				values.add(getString(R.string.pref_media_encryption_key_zrtp));
-			}
-			if (hasDtls){
-				entries.add(getString(R.string.media_encryption_dtls));
-				values.add(getString(R.string.pref_media_encryption_key_dtls));
-
-			}
 			setListPreferenceValues(pref, entries, values);
 		}
 
@@ -517,12 +508,9 @@ public class SettingsFragment extends PreferencesListFragment {
 		pref.setSummary(value.toString());
 
 		String key = getString(R.string.pref_media_encryption_key_none);
-		if (value.toString().equals(getString(R.string.media_encryption_srtp)))
+		if (value.toString().equals(getString(R.string.media_encryption_srtp))) {
 			key = getString(R.string.pref_media_encryption_key_srtp);
-		else if (value.toString().equals(getString(R.string.media_encryption_zrtp)))
-			key = getString(R.string.pref_media_encryption_key_zrtp);
-		else if (value.toString().equals(getString(R.string.media_encryption_dtls)))
-			key = getString(R.string.pref_media_encryption_key_dtls);
+		}
 		pref.setValue(key);
 	}
 
