@@ -1284,7 +1284,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		for (final PayloadType pt : lc.getVideoCodecs()) {
-			if(pt.getMime().equals("MP4V-ES")){
+			if(pt.getMime().equals("MP4V-ES")||pt.getMime().equals("H263-1998")){
 				continue;
 			}
 			CheckBoxPreference codec = new CheckBoxPreference(getActivity());
