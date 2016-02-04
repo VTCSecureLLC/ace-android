@@ -78,6 +78,7 @@ public class JsonConfig {
 	private String _sip_mwi_uri;
 	private String _sip_videomail_uri;
 	private String _video_resolution_maximum;
+	private int _video_preferred_frames_per_second;
 
 
 	public void applySettings(LinphoneAddress.TransportType transport_type, String port) {
@@ -177,6 +178,7 @@ public class JsonConfig {
 			mPrefs.setDebugEnabled(true);
 
 		mPrefs.setPreferredVideoSize(_video_resolution_maximum);
+		mPrefs.setPreferredVideoFps(_video_preferred_frames_per_second);
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
@@ -238,6 +240,13 @@ public class JsonConfig {
 			config._sip_videomail_uri = ob.getString("sip_videomail_uri");
 		if (!ob.isNull("video_resolution_maximum"))
 			config._video_resolution_maximum = ob.getString("video_resolution_maximum");//prefared res
+
+		//fps
+		if (!ob.isNull("video_preferred_frames_per_second")) {
+			config._video_preferred_frames_per_second = ob.getInt("video_preferred_frames_per_second");//prefared res
+		}else{
+			config._video_preferred_frames_per_second=30;
+		}
 
 		JSONArray jsonArray = ob.getJSONArray("sip_register_usernames");// not used
 		config._sip_register_usernames = new String[jsonArray.length()];// codec mapping is required
