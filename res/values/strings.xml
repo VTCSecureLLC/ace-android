@@ -479,8 +479,6 @@
   <string name="pref_summary_view_tss">View TSS</string>
   <string name="pref_summary_send_tss_key">pref_summary_send_tss_key</string>
   <string name="pref_summary_send_tss">Send TSS</string>
-  <string name="pref_summary_show_advanced_key">pref_summary_show_advanced_key</string>
-  <string name="pref_summary_show_advanced">Show Advanced</string>
 
 <!-- Copyright (C) 2013 The Android Open Source Project
 
