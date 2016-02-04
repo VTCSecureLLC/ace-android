@@ -889,6 +889,13 @@ public class SettingsFragment extends PreferencesListFragment {
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
 				}
 				LinphoneManager.getLc().getDefaultProxyConfig().setAvpfRRInterval(3);
+				try{
+					preference.setSummary(newValue.toString());
+				}
+				catch(Throwable e){
+					e.printStackTrace();
+					Log.e("RTCP selected:", "Invalid option");
+				}
 				return true;
 			}
 		});
