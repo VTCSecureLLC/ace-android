@@ -102,6 +102,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
 	private ImageView switchCamera;
+	public ImageView holdScreen;
 	private TextView pause, hangUp, dialer, video, micro, speaker, options, addCall, transfer, conference;
 	private TextView audioRoute, routeSpeaker, routeReceiver, routeBluetooth;
 	private LinearLayout routeLayout;
@@ -974,6 +975,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} catch (NullPointerException npe) {
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (1)");
 		}
+
+		holdScreen = (ImageView) findViewById(R.id.holdScreen);
 
 		switchCamera = (ImageView) findViewById(R.id.switchCamera);
 		switchCamera.setOnClickListener(this);
