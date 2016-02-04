@@ -327,10 +327,6 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	}
 
-	//Login without json_config_paramters uses app defaults
-	public void perform_standard_login(){
-
-	}
 
 	private void logIn(final String username, final String password, final String domain, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
