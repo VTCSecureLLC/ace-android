@@ -79,91 +79,13 @@
             android:textColor="@color/text_contrast" />
         
     </RelativeLayout>
-    
-    <RelativeLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:paddingTop="20dp">
-        
-        <RelativeLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:id="@+id/callBackRow"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
-            
-	        <ImageView
-	            android:contentDescription="@string/content_description_dial_back"
-	            android:id="@+id/dialBack"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:adjustViewBounds="true"
-	            android:src="@drawable/button"
-		    	android:layout_centerInParent="true" />
-	        
-	        <TextView 
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:text="@string/call"
-		    	android:textColor="@android:color/black"
-		    	android:layout_centerInParent="true" />
-        
-        </RelativeLayout>
-        
-        <RelativeLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:id="@+id/chatRow"
-		    android:layout_below="@id/callBackRow"
-	    	android:layout_marginTop="20dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
-            
-	        <ImageView
-	            android:contentDescription="@string/content_description_chat"
-	            android:id="@+id/chat"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:adjustViewBounds="true"
-	            android:src="@drawable/button"
-		    	android:layout_centerInParent="true" />
-	        
-	        <TextView 
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:text="@string/chat"
-		    	android:textColor="@android:color/black"
-		    	android:layout_centerInParent="true" />
-        
-        </RelativeLayout>
-        
-        <RelativeLayout
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:id="@+id/addContactRow"
-		    android:layout_below="@id/chatRow"
-	    	android:layout_marginTop="20dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
-            
-	        <ImageView
-	            android:contentDescription="@string/content_description_add_contact"
-	            android:id="@+id/addToContacts"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:adjustViewBounds="true"
-	            android:src="@drawable/button"
-		    	android:layout_centerInParent="true" />
-	        
-	        <TextView 
-			    android:layout_width="wrap_content"
-			    android:layout_height="wrap_content"
-			    android:text="@string/add_to_contacts"
-		    	android:textColor="@android:color/black"
-		    	android:layout_centerInParent="true" />
-        
-        </RelativeLayout>
-        
-    </RelativeLayout>
+
+	<TableLayout
+		android:id="@+id/controls"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:stretchColumns="*"
+		android:paddingTop="20dp"/>
+
 
 </LinearLayout>
