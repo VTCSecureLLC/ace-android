@@ -608,7 +608,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		setListPreferenceValues(pref, entries, values);
 		String value = Integer.toString(mPrefs.getPreferredVideoFps());
 		if (value.equals("0")) {
-			value = "none";
+			mPrefs.setPreferredVideoFps(30);
+			value = "30";
 		}
 		pref.setSummary(value);
 		pref.setValue(value);
@@ -1352,7 +1353,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		int fps = mPrefs.getPreferredVideoFps();
 		String fpsStr = Integer.toString(fps);
 		if (fpsStr.equals("0")) {
-			fpsStr = "none";
+			mPrefs.setPreferredVideoFps(30);
+			fpsStr = "30";
 		}
 		((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key))).setSummary(fpsStr);
 		((EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key))).setSummary(Integer.toString(mPrefs.getBandwidthLimit()));
