@@ -9,7 +9,17 @@
         android:layout_height="match_parent" 
         android:layout_width="match_parent" 
         android:id="@+id/videoSurface" />
-	
+
+    <ImageView
+        android:id="@+id/cameraCover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:src="@drawable/hold"
+        android:visibility="invisible" />
+
 	<SurfaceView
 	    android:id="@+id/videoCaptureSurface"
 	    android:layout_width="145dp"
