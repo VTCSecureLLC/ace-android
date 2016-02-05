@@ -18,12 +18,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -68,6 +70,7 @@ import java.util.TimerTask;
 public class StatusFragment extends Fragment {
 	private Handler mHandler = new Handler();
 	private Handler refreshHandler = new Handler();
+	private View qualityIdentifier;
 	private TextView statusText, exit, voicemailCount;
 	private ImageView statusLed, callQuality, encryption, background;
 	private ListView sliderContentAccounts;
@@ -79,12 +82,15 @@ public class StatusFragment extends Fragment {
 	private Timer mTimer;
 	private TimerTask mTask;
 	private LinphoneCoreListenerBase mListener;
-	
+
+
+	int oldQuality = 0;
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, 
         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.status, container, false);
-		
+
+		qualityIdentifier = view.findViewById(R.id.callQuality2);
 		statusText = (TextView) view.findViewById(R.id.statusText);
 		statusLed = (ImageView) view.findViewById(R.id.statusLed);
 		callQuality = (ImageView) view.findViewById(R.id.callQuality);
@@ -319,7 +325,8 @@ public class StatusFragment extends Fragment {
 	}
 	
 	private void startCallQuality() {
-		callQuality.setVisibility(View.VISIBLE);
+		//callQuality.setVisibility(View.VISIBLE);
+		qualityIdentifier.setVisibility(View.VISIBLE);
 		refreshHandler.postDelayed(mCallQualityUpdater = new Runnable() {
 			LinphoneCall mCurrentCall = LinphoneManager.getLc()
 					.getCurrentCall();
@@ -330,21 +337,45 @@ public class StatusFragment extends Fragment {
 					return;
 				}
 				
-				int oldQuality = 0;
+
 				float newQuality = mCurrentCall.getCurrentQuality();
-				if ((int) newQuality != oldQuality) {
-					updateQualityOfSignalIcon(newQuality);
+				if ((int) newQuality != oldQuality /*&& !mCurrentCall.mediaInProgress()*/) {
+					updateQualityOfSignalIcon((int)newQuality);
+					oldQuality = (int) newQuality;
+					//InCallActivity.instance().updateCallQuality();
 				}
 				
 				if (isInCall) {
 					refreshHandler.postDelayed(this, 1000);
-				} else
+				} else {
+					oldQuality = 0;
 					mCallQualityUpdater = null;
+				}
 			}
 		}, 1000);
 	}
-	
-	void updateQualityOfSignalIcon(float quality) {
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	void updateQualityOfSignalIcon(int quality) {
+
+		if(quality<=1)
+		{
+			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_bad);
+		}
+		else if (quality==2)
+		{
+			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_normal);
+		}
+		else
+		{
+			int sdk = android.os.Build.VERSION.SDK_INT;
+			if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+				qualityIdentifier.setBackgroundDrawable(null);
+			} else {
+				qualityIdentifier.setBackground(null);
+			}
+		}
+/*
 		if (quality >= 4) // Good Quality
 		{
 			callQuality.setImageResource(
@@ -365,7 +396,7 @@ public class StatusFragment extends Fragment {
 		{
 			callQuality.setImageResource(
 					R.drawable.call_quality_indicator_0);
-		}
+		}*/
 	}
 	
 	@Override

@@ -495,6 +495,7 @@
 		    <ImageView
 		        android:contentDescription="@string/content_description_call_quality"
 		        android:id="@+id/callQuality"
+
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_centerVertical="true"
@@ -548,5 +549,11 @@
         android:visibility="gone"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true" />
-	
+
+	<View
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:id="@+id/callQuality2"
+		android:visibility="gone"
+		></View>
 </RelativeLayout>
