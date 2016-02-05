@@ -72,6 +72,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphonePlayer;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
@@ -97,12 +98,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	private static InCallActivity instance;
 
-	private boolean camera_mute_enabled=false;
+	private boolean camera_mute_toggle=false;
 
 	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
 	private ImageView switchCamera;
-	public ImageView holdScreen;
+
 	private TextView pause, hangUp, dialer, video, micro, speaker, options, addCall, transfer, conference;
 	private TextView audioRoute, routeSpeaker, routeReceiver, routeBluetooth;
 	private LinearLayout routeLayout;
@@ -244,6 +245,24 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 			}
+
+			@Override
+			public void infoReceived(LinphoneCore lc, LinphoneCall call,
+									 LinphoneInfoMessage info) {
+				Log.d("info received"+info.getHeader("action"));
+				if(info.getHeader("action").equals("camera_mute_off")){
+					VideoCallFragment.cameraCover.setImageResource(R.drawable.camera_mute);
+					VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
+
+				}else if(info.getHeader("action").equals("camera_mute_on")){
+
+					VideoCallFragment.cameraCover.setVisibility(View.GONE);
+
+				}
+
+
+			}
+
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
@@ -976,7 +995,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (1)");
 		}
 
-		holdScreen = (ImageView) findViewById(R.id.holdScreen);
+
 
 		switchCamera = (ImageView) findViewById(R.id.switchCamera);
 		switchCamera.setOnClickListener(this);
@@ -1114,25 +1133,30 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 		if (id == R.id.video) {
-			if (camera_mute_enabled) {
+
+
+			if (camera_mute_toggle==true) {
 				video.setBackgroundResource(R.drawable.video_on);
+
+				LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
+				message.addHeader("action", "camera_mute_on");
+				final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+				call.sendInfoMessage(message);
+
+
 				LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
-				camera_mute_enabled=false;
-			} else {
+				camera_mute_toggle=false;
+			} else if (camera_mute_toggle==false){
 				video.setBackgroundResource(R.drawable.video_off);
 
-//				SurfaceView blankview=new SurfaceView(this){
-//					@Override
-//					protected void onDraw(Canvas canvas) {
-//						super.onDraw(canvas);
-//						Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.about_chat_over);
-//						canvas.drawColor(Color.BLACK);
-//						canvas.drawBitmap(icon, 10, 10, new Paint());
-//					}
-//				};
-				//VideoCallFragment.mCaptureView.draw(canvas);
+				LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
+				message.addHeader("action","camera_mute_off");
+				final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+				call.sendInfoMessage(message);
+
+
 				LinphoneManager.getLc().setPreviewWindow(null);
-				camera_mute_enabled=true;
+				camera_mute_toggle=true;
 			}
 		}
 		else if (id == R.id.micro) {

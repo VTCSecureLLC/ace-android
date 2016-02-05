@@ -1069,9 +1069,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			}
 		}
 		if(state == State.PausedByRemote){
-			InCallActivity.instance().holdScreen.setVisibility(View.VISIBLE);
+			VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
+			VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
 		}else{
-			InCallActivity.instance().holdScreen.setVisibility(View.GONE);
+			VideoCallFragment.cameraCover.setVisibility(View.GONE);
 		}
 	}
 
