@@ -17,15 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.ui.AvatarWithShadow;
 
 import android.annotation.SuppressLint;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,6 +38,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import org.linphone.R;
@@ -42,8 +47,9 @@ import org.linphone.R;
  * @author Sylvain Berfini
  */
 public class HistoryDetailFragment extends Fragment implements OnClickListener {
-	private ImageView dialBack, chat, addToContacts;
+	private ImageView addToContacts;
 	private View view;
+	private LayoutInflater inflater;
 	private AvatarWithShadow contactPicture;
 	private TextView contactName, contactAddress, callDirection, time, date;
 	private String sipUri, displayName, pictureUri;
@@ -51,6 +57,8 @@ public class HistoryDetailFragment extends Fragment implements OnClickListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
+		this.inflater = inflater;
 		sipUri = getArguments().getString("SipUri");
 		displayName = getArguments().getString("DisplayName");
 		pictureUri = getArguments().getString("PictureUri");
@@ -60,16 +68,7 @@ public class HistoryDetailFragment extends Fragment implements OnClickListener {
 		
 		view = inflater.inflate(R.layout.history_detail, container, false);
 		
-		dialBack = (ImageView) view.findViewById(R.id.dialBack);
-		dialBack.setOnClickListener(this);
-		
-		chat = (ImageView) view.findViewById(R.id.chat);
-		chat.setOnClickListener(this);
-		if (getResources().getBoolean(R.bool.disable_chat))
-			view.findViewById(R.id.chatRow).setVisibility(View.GONE);
-		
-		addToContacts = (ImageView) view.findViewById(R.id.addToContacts);
-		addToContacts.setOnClickListener(this);
+
 		
 		contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
 		
@@ -86,7 +85,7 @@ public class HistoryDetailFragment extends Fragment implements OnClickListener {
 		date = (TextView) view.findViewById(R.id.date);
 		
 		displayHistory(status, callTime, callDate);
-		
+		displayContact(inflater, view);
 		return view;
 	}
 	
@@ -116,8 +115,7 @@ public class HistoryDetailFragment extends Fragment implements OnClickListener {
 			lAddress = LinphoneCoreFactory.instance().createLinphoneAddress(sipUri);
 			Contact contact = ContactsManager.getInstance().findContactWithAddress(getActivity().getContentResolver(), lAddress);
 			if (contact != null) {
-				LinphoneUtils.setImagePictureFromUri(view.getContext(), contactPicture.getView(),contact.getPhotoUri(), contact.getThumbnailUri(), R.drawable.unknown_small);
-				view.findViewById(R.id.addContactRow).setVisibility(View.GONE);
+				LinphoneUtils.setImagePictureFromUri(view.getContext(), contactPicture.getView(), contact.getPhotoUri(), contact.getThumbnailUri(), R.drawable.unknown_small);
 			} else {
 				LinphoneUtils.setImagePictureFromUri(view.getContext(), contactPicture.getView(),null, null ,R.drawable.unknown_small);
 			}
@@ -136,8 +134,47 @@ public class HistoryDetailFragment extends Fragment implements OnClickListener {
 		this.displayName = displayName;
 		this.pictureUri = pictureUri;
 		displayHistory(status, callTime, callDate);
+		displayContact(inflater, view);
+
 	}
-	
+	@SuppressLint("InflateParams")
+	private void displayContact(LayoutInflater inflater, View view) {
+		//AvatarWithShadow contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
+		//int contactID = Integer.parseInt(contact.getID());
+		//String rawContactId = ContactsManager.getInstance().findRawContactID(getActivity().getContentResolver(), String.valueOf(contactID));
+
+		//contactPicture.setImageResource(R.drawable.unknown_small);
+
+		TextView contactName = (TextView) view.findViewById(R.id.contactName);
+		contactName.setText(displayName);
+
+
+		TableLayout controls = (TableLayout) view.findViewById(R.id.controls);
+		controls.removeAllViews();
+
+			View v = inflater.inflate(R.layout.contact_control_row, null);
+
+			String displayednumberOrAddress = sipUri;
+
+			TextView tv = (TextView) v.findViewById(R.id.numeroOrAddress);
+			tv.setText(displayednumberOrAddress);
+			tv.setSelected(true);
+
+
+			v.findViewById(R.id.dial).setOnClickListener(this);
+			v.findViewById(R.id.dial).setTag(displayednumberOrAddress);
+
+
+			v.findViewById(R.id.start_chat).setOnClickListener(this);
+			LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
+
+			addToContacts = (ImageView) v.findViewById(R.id.addFriend);
+			addToContacts.setOnClickListener(this);
+			addToContacts.setVisibility(View.VISIBLE);
+
+		controls.addView(v);
+
+	}
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -155,11 +192,11 @@ public class HistoryDetailFragment extends Fragment implements OnClickListener {
 	public void onClick(View v) {
 		int id = v.getId();
 		
-		if (id == R.id.dialBack) {
+		if (id == R.id.dial) {
 			LinphoneActivity.instance().setAddresGoToDialerAndCall(sipUri, displayName, pictureUri == null ? null : Uri.parse(pictureUri));
-		} else if (id == R.id.chat) {
+		} else if (id == R.id.start_chat) {
 			LinphoneActivity.instance().displayChat(sipUri);
-		} else if (id == R.id.addToContacts) {
+		} else if (id ==R.id.addFriend) {
 			String uriToAdd = sipUri;
 			if (getResources().getBoolean(R.bool.never_display_sip_addresses)) {
 				uriToAdd = LinphoneUtils.getUsernameFromAddress(sipUri);

@@ -199,8 +199,6 @@
 
 	<string name="pref_video_codec_vp8_title">VP8</string>
 	<string name="media_encryption_srtp">SRTP</string>
-	<string name="media_encryption_zrtp">ZRTP</string>
-    <string name="media_encryption_dtls">DTLS</string>
 
 	<string name="debug_popup_title">Debug</string>
 	<string-array name="popup_enable_log">

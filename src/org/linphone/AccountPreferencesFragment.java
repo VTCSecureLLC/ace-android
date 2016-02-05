@@ -225,37 +225,39 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			return true;
 		}
 	};
-	OnPreferenceChangeListener avpfChangedListener = new OnPreferenceChangeListener() {
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			boolean value = (Boolean) newValue;
-			if (isNewAccount) {
-				builder.setAvpfEnabled(value);
-			} else {
-				mPrefs.enableAvpf(n, value);
-			}
-			return true;
-		}
-	};
-	OnPreferenceChangeListener avpfRRIntervalChangedListener = new OnPreferenceChangeListener() {
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			String value = newValue.toString();
-			try {
-				int intValue = Integer.parseInt(value);
-				if ((intValue < 1) || (intValue > 5)) {
-					return false;
-				}
-			} catch (NumberFormatException nfe) { }
-			if (isNewAccount) {
-				//TODO
-			} else {
-				mPrefs.setAvpfRRInterval(n, value);
-			}	
-			preference.setSummary(value);
-			return true;
-		}
-	};
+
+	//Removed in VATRP-2301
+//	OnPreferenceChangeListener avpfChangedListener = new OnPreferenceChangeListener() {
+//		@Override
+//		public boolean onPreferenceChange(Preference preference, Object newValue) {
+//			boolean value = (Boolean) newValue;
+//			if (isNewAccount) {
+//				builder.setAvpfEnabled(value);
+//			} else {
+//				mPrefs.enableAvpf(n, value);
+//			}
+//			return true;
+//		}
+//	};
+//	OnPreferenceChangeListener avpfRRIntervalChangedListener = new OnPreferenceChangeListener() {
+//		@Override
+//		public boolean onPreferenceChange(Preference preference, Object newValue) {
+//			String value = newValue.toString();
+//			try {
+//				int intValue = Integer.parseInt(value);
+//				if ((intValue < 1) || (intValue > 5)) {
+//					return false;
+//				}
+//			} catch (NumberFormatException nfe) { }
+//			if (isNewAccount) {
+//				//TODO
+//			} else {
+//				mPrefs.setAvpfRRInterval(n, value);
+//			}
+//			preference.setSummary(value);
+//			return true;
+//		}
+//	};
 	OnPreferenceChangeListener escapeChangedListener = new OnPreferenceChangeListener() {
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -323,12 +325,12 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 
     	EditTextPreference prefix = (EditTextPreference) advanced.getPreference(4);
     	prefix.setOnPreferenceChangeListener(prefixChangedListener);
-
-		CheckBoxPreference avpf = (CheckBoxPreference) advanced.getPreference(5);
-		avpf.setOnPreferenceChangeListener(avpfChangedListener);
-
-		EditTextPreference avpfRRInterval = (EditTextPreference) advanced.getPreference(6);
-		avpfRRInterval.setOnPreferenceChangeListener(avpfRRIntervalChangedListener);
+//Removed in VATRP-2301
+//		CheckBoxPreference avpf = (CheckBoxPreference) advanced.getPreference(5);
+//		avpf.setOnPreferenceChangeListener(avpfChangedListener);
+//
+//		EditTextPreference avpfRRInterval = (EditTextPreference) advanced.getPreference(6);
+//		avpfRRInterval.setOnPreferenceChangeListener(avpfRRIntervalChangedListener);
 
     	CheckBoxPreference escape = (CheckBoxPreference) advanced.getPreference(7);
 		escape.setOnPreferenceChangeListener(escapeChangedListener);
@@ -430,17 +432,17 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
     	prefix.setSummary(prefixValue);
     	prefix.setText(prefixValue);
     	prefix.setOnPreferenceChangeListener(prefixChangedListener);
+//Removed in VATRP-2301
+//		CheckBoxPreference avpf = (CheckBoxPreference) advanced.getPreference(5);
+//		avpf.setChecked(mPrefs.avpfEnabled(n));
+//		avpf.setOnPreferenceChangeListener(avpfChangedListener);
+//
+//		EditTextPreference avpfRRInterval = (EditTextPreference) advanced.getPreference(6);
+//		avpfRRInterval.setText(mPrefs.getAvpfRRInterval(n));
+//		avpfRRInterval.setOnPreferenceChangeListener(avpfRRIntervalChangedListener);
+//		avpfRRInterval.setSummary(mPrefs.getAvpfRRInterval(n));
 
-		CheckBoxPreference avpf = (CheckBoxPreference) advanced.getPreference(5);
-		avpf.setChecked(mPrefs.avpfEnabled(n));
-		avpf.setOnPreferenceChangeListener(avpfChangedListener);
-
-		EditTextPreference avpfRRInterval = (EditTextPreference) advanced.getPreference(6);
-		avpfRRInterval.setText(mPrefs.getAvpfRRInterval(n));
-		avpfRRInterval.setOnPreferenceChangeListener(avpfRRIntervalChangedListener);
-		avpfRRInterval.setSummary(mPrefs.getAvpfRRInterval(n));
-
-    	CheckBoxPreference escape = (CheckBoxPreference) advanced.getPreference(7);
+    	CheckBoxPreference escape = (CheckBoxPreference) advanced.getPreference(5);
 		escape.setChecked(mPrefs.getReplacePlusByZeroZero(n));
 		escape.setOnPreferenceChangeListener(escapeChangedListener);
     	

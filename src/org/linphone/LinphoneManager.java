@@ -1069,6 +1069,12 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				Log.i("New call active while incall (CPU only) wake lock already active");
 			}
 		}
+		if(state == State.PausedByRemote){
+			VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
+			VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
+		}else{
+			VideoCallFragment.cameraCover.setVisibility(View.GONE);
+		}
 	}
 
 	public void callStatsUpdated(final LinphoneCore lc, final LinphoneCall call, final LinphoneCallStats stats) {}

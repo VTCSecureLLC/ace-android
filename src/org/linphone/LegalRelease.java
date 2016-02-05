@@ -19,6 +19,11 @@ public class LegalRelease extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LegalRelease.this);
+        boolean hasAcceptedLegalRelease = prefs.getBoolean("accepted_legal_release", false);
+        if(hasAcceptedLegalRelease){
+            this.finish();
+        }
         setContentView(R.layout.activity_legal_release);
         final TextView legalTextView = ((TextView)findViewById(R.id.legalTextView));
         final ScrollView scrollView = ((ScrollView)findViewById(R.id.legalScrollView));
