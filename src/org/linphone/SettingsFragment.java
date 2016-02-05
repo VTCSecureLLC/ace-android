@@ -776,8 +776,8 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initGeneralSettings(){
 		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
 
-		boolean isSipEncryptionEnabled = false; //VATRP-1007
-		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
+//		boolean isSipEncryptionEnabled = false; //VATRP-1007
+//		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
 
 		((CheckBoxPreference) findPreference(getString(R.string.pref_wifi_only_key))).setChecked(mPrefs.isWifiOnlyEnabled());
 
@@ -807,21 +807,21 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		//Todo: VATRP-1007 -- Add SIP Encryption logic on toggle
-		findPreference(getString(R.string.pref_general_sip_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				boolean value = (Boolean) newValue;
-				if(value){
-					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tls_key));
-					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
-				}else{
-					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tcp_key));
-					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
-				}
-				return true;
-			}
-		});
+//
+//		findPreference(getString(R.string.pref_general_sip_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//				boolean value = (Boolean) newValue;
+//				if(value){
+//					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tls_key));
+//					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
+//				}else{
+//					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tcp_key));
+//					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
+//				}
+//				return true;
+//			}
+//		});
 
 		findPreference(getString(R.string.pref_wifi_only_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override

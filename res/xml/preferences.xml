@@ -8,9 +8,11 @@
 	<CheckBoxPreference
 		android:title="@string/pref_autostart"
 		android:key="@string/pref_autostart_key"/>
+	<!--
 	<CheckBoxPreference
 		android:title="@string/pref_general_sip_encryption"
 		android:key="@string/pref_general_sip_encryption_key"/>
+		-->
 	<CheckBoxPreference
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
