@@ -413,6 +413,7 @@ public class HistoryFragment extends Fragment implements OnClickListener, OnChil
 					public void onClick(View v) {
 						if (LinphoneActivity.isInstanciated()) {
 							LinphoneActivity.instance().displayHistoryDetail(address.asStringUriOnly(), log);
+
 						}
 					}
 				});

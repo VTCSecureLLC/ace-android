@@ -24,7 +24,10 @@ import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.ContactsContract;
 
 import org.linphone.compatibility.Compatibility;
@@ -36,6 +39,7 @@ import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -445,6 +449,27 @@ public class ContactsManager {
 			return result;
 		}
 		return null;
+	}
+
+	public static boolean picture_exists_in_storage_for_contact(String RawContactID){
+		String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE/contact_images";
+		String fname = RawContactID+ ".png";
+		File image = new File(sdCard, fname);
+		if(image.exists()){
+			return true;
+		}else{
+			return false;
+		}
+
+	}
+	public static Bitmap get_bitmap_by_contact_resource_id(String RawContactID){
+		String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE/contact_images";
+		String fname = RawContactID+ ".png";
+		File image = new File(sdCard, fname);
+		BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+		Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+		//bitmap = Bitmap.createScaledBitmap(bitmap,parent.getWidth(),parent.getHeight(),true);
+		return bitmap;
 	}
 
 	public String findRawLinphoneContactID(String contactID) {

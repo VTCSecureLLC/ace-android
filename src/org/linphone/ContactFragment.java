@@ -17,15 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import org.linphone.compatibility.Compatibility;
-import org.linphone.core.LinphoneCore;
-import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.mediastream.Log;
-import org.linphone.ui.AvatarWithShadow;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
@@ -42,7 +33,14 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import org.linphone.R;
+import org.linphone.compatibility.Compatibility;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.mediastream.Log;
+import org.linphone.ui.AvatarWithShadow;
+
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * @author Sylvain Berfini
@@ -115,11 +113,15 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@SuppressLint("InflateParams")
 	private void displayContact(LayoutInflater inflater, View view) {
 		AvatarWithShadow contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
+		int contactID = Integer.parseInt(contact.getID());
+		String rawContactId = ContactsManager.getInstance().findRawContactID(getActivity().getContentResolver(), String.valueOf(contactID));
 		if (contact.getPhotoUri() != null) {
 			InputStream input = Compatibility.getContactPictureInputStream(LinphoneActivity.instance().getContentResolver(), contact.getID());
 			contactPicture.setImageBitmap(BitmapFactory.decodeStream(input));
-        } else {
-        	contactPicture.setImageResource(R.drawable.unknown_small);
+        } else if(ContactsManager.picture_exists_in_storage_for_contact(rawContactId)){
+			contactPicture.setImageBitmap(ContactsManager.get_bitmap_by_contact_resource_id(rawContactId));
+		} else{
+		contactPicture.setImageResource(R.drawable.unknown_small);
         }
 		
 		TextView contactName = (TextView) view.findViewById(R.id.contactName);

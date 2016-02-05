@@ -36,6 +36,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.linphone.compatibility.Compatibility;
@@ -54,6 +55,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
  */
 public class VideoCallFragment extends Fragment implements OnGestureListener, OnDoubleTapListener, CompatibilityScaleGestureListener {
 	private SurfaceView mVideoView;
+	public static ImageView cameraCover;
 	public static SurfaceView mCaptureView;
 	private AndroidVideoWindowImpl androidVideoWindowImpl;
 	private GestureDetector mGestureDetector;
@@ -77,6 +79,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		isH263();
 		View view = inflater.inflate(viewId, container, false);
 
+		cameraCover = (ImageView) view.findViewById(R.id.cameraCover);
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
 
