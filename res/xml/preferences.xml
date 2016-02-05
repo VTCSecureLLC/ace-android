@@ -14,9 +14,7 @@
 	<CheckBoxPreference
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
-	<CheckBoxPreference
-		android:title="@string/pref_auto_answer"
-		android:key="@string/pref_auto_answer_key"/>
+
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -367,6 +365,10 @@
 			<CheckBoxPreference
 			    android:title="@string/pref_autostart"
 				android:key="@string/pref_autostart_key"/>
+
+			<CheckBoxPreference
+				android:title="@string/pref_auto_answer"
+				android:key="@string/pref_auto_answer_key"/>
 
 			<EditTextPreference
 			    android:title="@string/pref_incoming_call_timeout_title"
