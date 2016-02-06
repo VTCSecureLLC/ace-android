@@ -838,6 +838,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
+
+		boolean isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
+		((CheckBoxPreference) findPreference(getString(R.string.pref_av_camera_mute_key))).setChecked(isCameraMuted);
+
 		// VATRP-1017 -- Add global speaker and mic mute logic
 		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
@@ -1168,11 +1172,16 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		String isVideoEnabled = "video_enabled = " + String.valueOf(lc.isVideoEnabled());
 		values.add(isVideoEnabled);
+
+		/**Camera Mute**/
+		String isCameraMuted = "camera_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false));
+		values.add(isCameraMuted);
+
 		/**Mute**/
 		String isMicMuted = "mic_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false));
 		values.add(isMicMuted);
 		String isSpeakerMuted = "speaker_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false));
-		values.add(isMicMuted);
+		values.add(isSpeakerMuted);
 
 		//Echo cancellation
 		String echoCancel = "echo_cancellation = " + String.valueOf(lc.isEchoCancellationEnabled());
@@ -1361,11 +1370,19 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void setVideoPreferencesListener() {
+		findPreference(getString(R.string.pref_av_camera_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				prefs.edit().putBoolean(getString(R.string.pref_av_camera_mute_key), value).commit();
+				return true;
+			}
+		});
 		findPreference(getString(R.string.pref_video_enable_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean enable = (Boolean) newValue;
-				mPrefs.enableVideo(enable);
+				mPrefs.enableVideo(enable,enable);
 				return true;
 			}
 		});

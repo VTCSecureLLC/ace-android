@@ -29,6 +29,9 @@
 		android:entries="@array/rtcp_feedback_entries"
 		android:entryValues="@array/rtcp_feedback_entries" />
 	<CheckBoxPreference
+		android:title="@string/pref_av_camera_mute"
+		android:key="@string/pref_av_camera_mute_key"/>
+	<CheckBoxPreference
 		android:title="@string/pref_av_speaker_mute"
 		android:key="@string/pref_av_speaker_mute_key"/>
 	<CheckBoxPreference
@@ -190,7 +193,8 @@
 				android:title="@string/pref_video_initiate_call_with_video_title"
 			    android:key="@string/pref_video_initiate_call_with_video_key"
 				android:summary="@string/pref_video_initiate_call_with_video"
-				android:dependency="@string/pref_video_enable_key"/>
+				android:dependency="@string/pref_video_enable_key"
+				android:layout="@layout/hidden"/>
 
 			<CheckBoxPreference
 				android:title="@string/pref_video_automatically_share_my_video_title"
@@ -203,7 +207,8 @@
 				android:title="@string/pref_video_automatically_accept_video_title"
 				android:key="@string/pref_video_automatically_accept_video_key"
 				android:summary="@string/pref_video_automatically_accept_video"
-				android:dependency="@string/pref_video_enable_key"/>
+				android:dependency="@string/pref_video_enable_key"
+				android:layout="@layout/hidden"/>
 
 			<ListPreference
 				android:title="Video preset"

@@ -754,8 +754,8 @@ public class LinphonePreferences {
 		return getLc().isVideoSupported() && getLc().isVideoEnabled();
 	}
 
-	public void enableVideo(boolean enable) {
-		getLc().enableVideo(enable, enable);
+	public void enableVideo(boolean output_stream, boolean input_stream) {
+		getLc().enableVideo(output_stream, input_stream);
 	}
 
 	public boolean shouldInitiateVideoCall() {
