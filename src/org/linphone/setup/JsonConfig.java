@@ -178,6 +178,11 @@ public class JsonConfig {
 			mPrefs.setDebugEnabled(true);
 
 		mPrefs.setPreferredVideoSize(_video_resolution_maximum);
+
+
+		if (_video_preferred_frames_per_second==0) {
+			_video_preferred_frames_per_second=30;
+		}
 		mPrefs.setPreferredVideoFps(_video_preferred_frames_per_second);
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
