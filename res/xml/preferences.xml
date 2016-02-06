@@ -17,6 +17,10 @@
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
 
+		<Preference
+			android:key="@string/pref_reset_key"
+			android:title="@string/reset"
+			></Preference>
 	</PreferenceScreen>
 
 	<PreferenceScreen

@@ -19,7 +19,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -796,6 +799,41 @@ public class SettingsFragment extends PreferencesListFragment {
 			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
 			editor.commit();
 		}
+
+
+		//if(isAdvancedSettings) {
+		Preference resetPreerence = findPreference(getString(R.string.pref_reset_key));
+		resetPreerence.setTitle(R.string.reset);
+		resetPreerence.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+
+				new AlertDialog.Builder(getActivity())
+						.setMessage(R.string.reset_question)
+						.setPositiveButton(R.string.button_ok,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int whichButton) {
+										AceApplication.getInstance().clearApplicationData();
+										Intent mStartActivity = new Intent(getActivity(), LinphoneLauncherActivity.class);
+										int mPendingIntentId = 123456;
+										PendingIntent mPendingIntent = PendingIntent.getActivity(getActivity(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+										AlarmManager mgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+										mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 500, mPendingIntent);
+										LinphoneActivity.instance().exit();
+									}
+								}
+						)
+						.setNegativeButton(R.string.button_cancel,
+								null
+						)
+						.create().show();
+
+
+				return true;
+			}
+		});
+
+		//}
 	}
 
 	private void setGeneralPreferencesListener(){
