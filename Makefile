@@ -184,7 +184,7 @@ $(FFMPEG_BUILD_DIR)/arm/config.h:
 
 $(FFMPEG_BUILD_DIR)/arm/libavcodec/libavcodec-linphone-arm.so: $(FFMPEG_BUILD_DIR)/arm/config.h
 	cd $(FFMPEG_BUILD_DIR)/arm && \
-	make -j${NUMCPUS} \
+	make -j \
 	|| ( echo "Build of ffmpeg for arm failed." ; exit 1 )
 
 $(FFMPEG_BUILD_DIR)/arm/libffmpeg-linphone-arm.so: $(FFMPEG_BUILD_DIR)/arm/libavcodec/libavcodec-linphone-arm.so
@@ -201,7 +201,7 @@ $(FFMPEG_BUILD_DIR)/x86/config.h:
 
 $(FFMPEG_BUILD_DIR)/x86/libavcodec/libavcodec-linphone-x86.so: $(FFMPEG_BUILD_DIR)/x86/config.h
 	cd $(FFMPEG_BUILD_DIR)/x86 && \
-	make -j${NUMCPUS} \
+	make -j \
 	|| ( echo "Build of ffmpeg for x86 failed." ; exit 1 )
 
 $(FFMPEG_BUILD_DIR)/x86/libffmpeg-linphone-x86.so: $(FFMPEG_BUILD_DIR)/x86/libavcodec/libavcodec-linphone-x86.so
