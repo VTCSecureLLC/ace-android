@@ -444,6 +444,8 @@
   <string name="pref_audio_video_settings">Audio/Video</string>
   <string name="pref_av_rtcp_feedback">RTCP Feedback</string>
   <string name="pref_av_rtcp_feedback_key">pref_av_rtcp_feedback_key</string>
+  <string name="pref_av_camera_mute">Camera Mute</string>
+  <string name="pref_av_camera_mute_key">pref_av_camera_mute_key</string>
   <string name="pref_av_speaker_mute_key">pref_av_speaker_mute_key</string>
   <string name="pref_av_speaker_mute">Speaker Mute</string>
   <string name="pref_av_mute_mic_key">pref_av_mute_mic_key</string>

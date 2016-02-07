@@ -11,6 +11,7 @@
         android:id="@+id/videoSurface" />
 
     <ImageView
+        android:background="@drawable/background"
         android:id="@+id/cameraCover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

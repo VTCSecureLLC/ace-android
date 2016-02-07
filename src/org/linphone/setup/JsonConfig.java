@@ -166,7 +166,7 @@ public class JsonConfig {
 		mPrefs.setAccountProxy(n, proxy);
 
 		mPrefs.setEchoCancellation(_enable_echo_cancellation);
-		mPrefs.enableVideo(_enable_video);
+		mPrefs.enableVideo(_enable_video, _enable_video);
 		LinphoneManager.getInstance().setRttEnabled(_enable_rtt);
 		mPrefs.enableAdaptiveRateControl(_enable_adaptive_rate);
 		if (_enable_stun && _stun_server != null)
