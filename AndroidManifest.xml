@@ -4,7 +4,7 @@
       android:versionCode="1"
       android:versionName="0.1.6-1-1ed3b52"
       android:installLocation="auto">
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="22"/>
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="22"/>
 
     <!-- Permissions for Push Notification -->
     <!--  <permission android:name="com.vtcsecure.ace.permission.C2D_MESSAGE" android:protectionLevel="signature" />  Change package ! -->
@@ -53,6 +53,88 @@
         android:name=".AceApplication"
         android:largeHeap="true" 
         android:allowBackup="true">
+
+        <activity
+            android:name="joanbempong.android.HomeActivity"
+            android:label="@string/title_activity_home" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="joanbempong.android.ProductsActivity"
+            android:label="@string/title_activity_products" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.HueBridgeSearchActivity"
+            android:label="@string/title_activity_hue_bridge_search" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.WelcomeActivity"
+            android:label="@string/title_activity_welcome" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.HuePushLinkActivity"
+            android:label="@string/title_activity_hue_push_link" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.MoreLightsActivity"
+            android:label="@string/title_activity_more_lights" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.ConfigureLightsActivity"
+            android:label="@string/title_activity_configure_lights" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.HueDefaultValuesActivity"
+            android:label="@string/title_activity_hue_default_values" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.ContactListDefaultActivity"
+            android:label="@string/title_activity_contact_list_default" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.CompletedSetupActivity"
+            android:label="@string/title_activity_completed_setup" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.LightsActivity"
+            android:label="@string/title_activity_lights" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.MyContactsActivity"
+            android:label="@string/title_activity_my_contacts" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.AddContactActivity"
+            android:label="@string/title_activity_add_contact" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.EditContactActivity"
+            android:label="@string/title_activity_edit_contact" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.MyLightsActivity"
+            android:label="@string/title_activity_my_lights" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.AddLightSetupActivity"
+            android:label="@string/title_activity_add_light_setup" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.OnCallActivity"
+            android:label="@string/title_activity_on_call" >
+        </activity>
+        <activity
+            android:name="joanbempong.android.SetHueDefaultValuesActivity"
+            android:label="@string/title_activity_set_hue_default_values" >
+        </activity>
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity android:name="net.hockeyapp.android.FeedbackActivity" />
         <activity android:name="net.hockeyapp.android.PaintActivity" />
