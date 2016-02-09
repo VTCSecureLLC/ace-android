@@ -78,6 +78,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
@@ -1563,13 +1564,15 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		}
 	}
 
+
 	@Override
 	public void ecCalibrationStatus(LinphoneCore lc, EcCalibratorStatus status,
 			int delay_ms, Object data) {
 		// TODO Auto-generated method stub
 
 	}
-	public void initSDP(boolean videoEnabled){
+
+    public void initSDP(boolean videoEnabled){
 		LinphoneCore lC = getLcIfManagerNotDestroyedOrNull();
 			if (lC != null && videoEnabled){
 				PayloadType pT = lC.findPayloadType("H263", 90000, -1);
@@ -1610,4 +1613,15 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	}
 
+        @Override
+        public void friendListCreated(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void friendListRemoved(LinphoneCore lc, LinphoneFriendList list) {
+                // TODO Auto-generated method stub
+
+        }
 }
