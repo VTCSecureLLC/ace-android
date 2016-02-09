@@ -50,8 +50,4 @@ public class TutorialLauncherActivity extends Activity {
 	public void startBuddyStatusTutorial(View v) {
 		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialBuddyStatusActivity.class));
 	}
-	
-	public void startCardDavSyncTutorial(View v) {
-		startActivity(new Intent().setClass(TutorialLauncherActivity.this, TutorialCardDavSync.class));
-	}
 }
