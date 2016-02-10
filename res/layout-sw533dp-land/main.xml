@@ -19,12 +19,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@color/background_color">
 
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="match_parent"
-		    android:layout_height="50dp"
+		    android:layout_height="80dp"
 		    android:layout_weight="0.2"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
@@ -34,7 +35,7 @@
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="80dp"
 		    android:layout_weight="0.2"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
@@ -44,7 +45,7 @@
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="80dp"
 		    android:layout_weight="0.2"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
@@ -54,7 +55,7 @@
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="80dp"
 		    android:layout_weight="0.2"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
@@ -64,7 +65,7 @@
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
 		    android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="80dp"
 		    android:layout_weight="0.2"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
@@ -115,7 +116,7 @@
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
