@@ -42,15 +42,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.philips.lighting.hue.sdk.PHAccessPoint;
-import com.philips.lighting.hue.sdk.PHHueSDK;
-import com.philips.lighting.model.PHBridge;
-
-import joanbempong.android.HueBridgeSearchActivity;
-import joanbempong.android.HueController;
-import joanbempong.android.HueSharedPreferences;
-import joanbempong.android.PHWizardAlertDialog;
-
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
@@ -105,7 +96,6 @@ public class IncomingCallActivity extends Activity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.incoming);
 
-
 		mNameView = (TextView) findViewById(R.id.incoming_caller_name);
 		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
 		mPictureView = (AvatarWithShadow) findViewById(R.id.incoming_picture);
@@ -155,31 +145,8 @@ public class IncomingCallActivity extends Activity {
 	protected void onResume() {
         super.onResume();
 		instance = this;
-		// Try to automatically connect to the last known bridge.  For first time use this will be empty so a bridge search is automatically started.
-		HueSharedPreferences prefs = HueSharedPreferences.getInstance(getApplicationContext());
-		String lastIpAddress   = prefs.getLastConnectedIPAddress();
-		String lastUsername    = prefs.getUsername();
-
-		PHHueSDK phHueSDK = PHHueSDK.getInstance();
-		// Automatically try to connect to the last connected IP Address.  For multiple bridge support a different implementation is required.
-		if (lastIpAddress !=null && !lastIpAddress.equals("")) {
-			PHAccessPoint lastAccessPoint = new PHAccessPoint();
-			lastAccessPoint.setIpAddress(lastIpAddress);
-			lastAccessPoint.setUsername(lastUsername);
-
-			if (!phHueSDK.isAccessPointConnected(lastAccessPoint)) {
-				//PHWizardAlertDialog.getInstance().showProgressDialog(R.string.connecting, HueBridgeSearchActivity.this);
-				phHueSDK.connect(lastAccessPoint);
-			}
-			PHBridge b = PHHueSDK.getInstance().getSelectedBridge();
-
-
-			phHueSDK.enableHeartbeat(b, PHHueSDK.HB_INTERVAL);
-			phHueSDK.getLastHeartbeat().put(b.getResourceCache().getBridgeConfiguration() .getIpAddress(), System.currentTimeMillis());
-		}
 
 		// VTCSecure
-		HueController.getInstance().startFlashing(null);
 
 		flashRedBackground();
 		flashTorch();
@@ -231,7 +198,6 @@ public class IncomingCallActivity extends Activity {
 		}
         stopRingCount();
 		super.onPause();
-		HueController.getInstance().stopFlashing();
 	}
 
 	@Override

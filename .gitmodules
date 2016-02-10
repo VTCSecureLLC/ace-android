@@ -85,9 +85,6 @@
 [submodule "submodules/mscodec2"]
 	path = submodules/mscodec2
 	url = git://git.linphone.org/mscodec2.git
-[submodule "submodules/iot-android"]
-	path = submodules/iot-android
-	url = https://github.com/VTCSecureLLC/iot-android.git
 [submodule "submodules/belr"]
 	path = submodules/belr
 	url = git://git.linphone.org/belr.git

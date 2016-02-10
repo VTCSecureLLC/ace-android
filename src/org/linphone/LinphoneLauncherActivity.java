@@ -34,9 +34,6 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.mediastream.Log;
 
-import joanbempong.android.SetupController;
-import joanbempong.android.WelcomeActivity;
-
 import static android.content.Intent.ACTION_MAIN;
 
 
@@ -60,8 +57,7 @@ public class LinphoneLauncherActivity extends Activity {
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
 		Log.TAG = "Linphone";
 		// Hack to avoid to draw twice LinphoneActivity on tablets
-
-		if (getResources().getBoolean(R.bool.isTablet)) {
+        if (getResources().getBoolean(R.bool.isTablet)) {
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -80,7 +76,6 @@ public class LinphoneLauncherActivity extends Activity {
 			mThread = new ServiceWaitThread();
 			mThread.start();
 		}
-
 	}
 
 	protected void onServiceReady() {
