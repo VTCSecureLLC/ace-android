@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@color/background_color">
 
 		<ImageView
 		    android:contentDescription="@string/content_description_mark"
