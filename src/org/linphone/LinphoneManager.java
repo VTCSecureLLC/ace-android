@@ -915,7 +915,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public void registrationState(final LinphoneCore lc, final LinphoneProxyConfig proxy,final RegistrationState state,final String message) {
-		Log.i("New registration state ["+state+"]");
+		Log.i("New registration state [" + state + "]");
 	}
 
 	private int savedMaxCallWhileGsmIncall;
@@ -1069,11 +1069,16 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				Log.i("New call active while incall (CPU only) wake lock already active");
 			}
 		}
-		if(state == State.PausedByRemote){
-			VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
-			VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
-		}else{
-			VideoCallFragment.cameraCover.setVisibility(View.GONE);
+		try {
+			if (state == State.PausedByRemote) {
+				VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
+				VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
+			} else {
+				VideoCallFragment.cameraCover.setVisibility(View.GONE);
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
+			Log.d("Camera cover not found");
 		}
 	}
 
