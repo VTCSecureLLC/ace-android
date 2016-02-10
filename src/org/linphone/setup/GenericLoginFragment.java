@@ -235,7 +235,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			SetupActivity.instance().genericLogIn(
 					login.getText().toString().replaceAll("\\s", ""),
 					password.getText().toString().replaceAll("\\s", ""),
-					CDNProviders.getInstance().getSelectedProvider().getDomain().replaceAll("\\s", ""),
+					domain.getText().toString().replaceAll("\\s", ""),
 					userid.getText().toString().replaceAll("\\s", ""),
 					transport_type,
 					port.getText().toString().replaceAll("\\s", ""));
