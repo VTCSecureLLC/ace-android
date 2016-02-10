@@ -101,10 +101,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
-import joanbempong.android.HueBridgeSearchActivity;
-import joanbempong.android.SetupController;
-import joanbempong.android.WelcomeActivity;
-
 import static android.content.Intent.ACTION_MAIN;
 import static org.linphone.LinphoneManager.getLc;
 
@@ -163,11 +159,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		super.onCreate(savedInstanceState);
 //		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
 //		LoginManager.verifyLogin(this, getIntent());
-		//SetupController setupController = SetupController.getInstance();
-		//if (!setupController.getSetupCompleted()){
-			//navigate to the Welcome (initial set up) page
-		//	startActivity(new Intent(this,HueBridgeSearchActivity.class));
-		//}
 		ctx=this;
 		act=this;
 		instance = this;
@@ -210,10 +201,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		} else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
-            
 		}
-        
-        
 
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());

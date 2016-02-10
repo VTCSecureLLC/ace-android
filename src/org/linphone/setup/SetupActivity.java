@@ -47,9 +47,6 @@ import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.custom.LoginMainActivity;
 import org.linphone.mediastream.Log;
 
-import joanbempong.android.WelcomeActivity;
-import joanbempong.android.SetupController;
-
 /**
  * @author Sylvain Berfini
  */
@@ -72,7 +69,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 //		if (getResources().getBoolean(R.bool.isTablet) && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
 //        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //        }
