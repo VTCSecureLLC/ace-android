@@ -101,10 +101,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
-import joanbempong.android.HueBridgeSearchActivity;
-import joanbempong.android.SetupController;
-import joanbempong.android.WelcomeActivity;
-
 import static android.content.Intent.ACTION_MAIN;
 import static org.linphone.LinphoneManager.getLc;
 
@@ -1190,13 +1186,22 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				return;
 			}
 
+
+
 			int degrees = 270;
-			if (o < 45 || o > 315)
+			degrees = lastDeviceAngle;
+
+			int sensativity = 10;
+
+
+			if (o < 0 + sensativity || o > 360 - sensativity)// when o is around 0, we set degrees to zero
 				degrees = 0;
-			else if (o < 135)
+			else if (o > 90 - sensativity && o < 90 + sensativity)//when o is around 90, we set the degrees to 90
 				degrees = 90;
-			else if (o < 225)
+			else if (o > 180 - sensativity && o < 180 + sensativity)//when o is around 180 we set the degrees to 180
 				degrees = 180;
+			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
+				degrees = 270;
 
 			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;
