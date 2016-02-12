@@ -159,6 +159,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		super.onCreate(savedInstanceState);
 //		LoginManager.register(this, "d6280d4d277d6876c709f4143964f0dc", "3e41eeed8656b90048f348c4d665a0a6", LoginManager.LOGIN_MODE_EMAIL_PASSWORD, LinphoneLauncherActivity.class);
 //		LoginManager.verifyLogin(this, getIntent());
+		//SetupController setupController = SetupController.getInstance();
+		//if (!setupController.getSetupCompleted()){
+			//navigate to the Welcome (initial set up) page
+		//	startActivity(new Intent(this,HueBridgeSearchActivity.class));
+		//}
 		ctx=this;
 		act=this;
 		instance = this;
@@ -201,7 +206,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		} else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
+            
 		}
+        
+        
 
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());
@@ -1178,13 +1186,22 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				return;
 			}
 
+
+
 			int degrees = 270;
-			if (o < 45 || o > 315)
+			degrees = lastDeviceAngle;
+
+			int sensativity = 10;
+
+
+			if (o < 0 + sensativity || o > 360 - sensativity)// when o is around 0, we set degrees to zero
 				degrees = 0;
-			else if (o < 135)
+			else if (o > 90 - sensativity && o < 90 + sensativity)//when o is around 90, we set the degrees to 90
 				degrees = 90;
-			else if (o < 225)
+			else if (o > 180 - sensativity && o < 180 + sensativity)//when o is around 180 we set the degrees to 180
 				degrees = 180;
+			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
+				degrees = 270;
 
 			if (mAlwaysChangingPhoneAngle == degrees) {
 				return;

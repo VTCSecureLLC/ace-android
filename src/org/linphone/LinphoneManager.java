@@ -93,6 +93,8 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
+import org.linphone.mediastream.MediastreamerAndroidContext;
+import org.linphone.mediastream.MediastreamException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -236,12 +238,25 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		routeAudioToSpeakerHelper(false);
 	}
 
+	public void configH264HardwareAcell(boolean encode, boolean decode){
+		try{
+			MediastreamerAndroidContext.enableFilterFromName("MSMediaCodecH264Dec", decode); // hw-accelerated decoder
+			MediastreamerAndroidContext.enableFilterFromName("MSMediaCodecH264Enc", encode); // hw-accelerated decoder
+			MediastreamerAndroidContext.enableFilterFromName("MSOpenH264Enc", !encode); // software encoder
+			MediastreamerAndroidContext.enableFilterFromName("MSOpenH264Dec", !decode); // software encoder
+		} catch (MediastreamException e){
+			android.util.Log.d("LinphoneManager", "configH264HardwareAcell: "+ e);
+		}
+	}
+
+
 	public synchronized static final LinphoneManager createAndStart(Context c) {
 		if (instance != null)
 			throw new RuntimeException("Linphone Manager is already initialized");
 
 		instance = new LinphoneManager(c);
 		instance.startLibLinphone(c);
+		instance.configH264HardwareAcell(true, false);
 
 		TelephonyManager tm = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
 		boolean gsmIdle = tm.getCallState() == TelephonyManager.CALL_STATE_IDLE;
@@ -899,7 +914,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	public void registrationState(final LinphoneCore lc, final LinphoneProxyConfig proxy,final RegistrationState state,final String message) {
-		Log.i("New registration state ["+state+"]");
+		Log.i("New registration state [" + state + "]");
 	}
 
 	private int savedMaxCallWhileGsmIncall;
@@ -1052,6 +1067,17 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			} else {
 				Log.i("New call active while incall (CPU only) wake lock already active");
 			}
+		}
+		try {
+			if (state == State.PausedByRemote) {
+				VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
+				VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
+			} else {
+				VideoCallFragment.cameraCover.setVisibility(View.GONE);
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
+			Log.d("Camera cover not found");
 		}
 	}
 

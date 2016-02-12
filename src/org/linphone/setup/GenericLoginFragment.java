@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +35,7 @@ import android.widget.Toast;
 
 import org.linphone.AsyncProviderLookupOperation;
 import org.linphone.LinphoneActivity;
+import org.linphone.LinphonePreferences;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.mediastream.Log;
@@ -81,10 +81,19 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			transport.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-					providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
-					providerLookupOperation.execute();
-				}
+//					providerLookupOperation = new AsyncProviderLookupOperation(GenericLoginFragment.this, getContext());
+//					providerLookupOperation.execute();
 
+					//Toggle port depending on transport selection
+					int n= LinphonePreferences.instance().getDefaultAccountIndex();
+					if(position==0&&port.getText().toString().contains("5061")){//tcp
+						port.setText(port.getText().toString().replace("5061", "5060"));
+						//LinphonePreferences.instance().setAccountProxy(n, LinphonePreferences.instance().getAccountProxy(n).replace("5061", "5060"));
+					}else if(position==1&&port.getText().toString().contains("5060")){//tls
+						port.setText(port.getText().toString().replace("5060", "5061"));
+						//LinphonePreferences.instance().setAccountProxy(n, LinphonePreferences.instance().getAccountProxy(n).replace("5060", "5061"));
+					}
+				}
 				@Override
 				public void onNothingSelected(AdapterView<?> parent) {
 
@@ -103,9 +112,12 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				CDNProviders.getInstance().setSelectedProvider(position);
-				if (CDNProviders.getInstance().getSelectedProvider() != null)
+				if (CDNProviders.getInstance().getSelectedProvider() != null) {
 					domain.setText(CDNProviders.getInstance().getSelectedProvider().getDomain());
+					port.setText(String.valueOf(CDNProviders.getInstance().getSelectedProvider().getPort()));
+				}
 			}
+
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -223,7 +235,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			SetupActivity.instance().genericLogIn(
 					login.getText().toString().replaceAll("\\s", ""),
 					password.getText().toString().replaceAll("\\s", ""),
-					CDNProviders.getInstance().getSelectedProvider().getDomain().replaceAll("\\s", ""),
+					domain.getText().toString().replaceAll("\\s", ""),
 					userid.getText().toString().replaceAll("\\s", ""),
 					transport_type,
 					port.getText().toString().replaceAll("\\s", ""));

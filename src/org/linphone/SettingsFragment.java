@@ -19,7 +19,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -70,6 +73,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import joanbempong.android.HueBridgeSearchActivity;
+import joanbempong.android.HueSharedPreferences;
+
 /**
  * @author Sylvain Berfini
  */
@@ -108,6 +114,11 @@ public class SettingsFragment extends PreferencesListFragment {
 
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+
+		if(prefs.getBoolean("advanced_settings_enabled",false)){
+			isAdvancedSettings = true;
+		}
+
 		editor = prefs.edit();
 
 		// Init the settings page interface
@@ -157,6 +168,22 @@ public class SettingsFragment extends PreferencesListFragment {
 			initNetworkSettings();
 			initAdvancedSettings();
 		}
+		// Add action on About button
+		findPreference(getString(R.string.menu_iot_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				if (LinphoneActivity.isInstanciated()) {
+					HueSharedPreferences prefs = HueSharedPreferences.getInstance(LinphoneActivity.instance().getApplicationContext());
+					prefs.setUsername(null);
+					prefs.setLastConnectedIPAddress(null);
+					Intent intent = new Intent(LinphoneService.instance(), HueBridgeSearchActivity.class);
+					getActivity().startActivityForResult(intent, -1);
+
+					return true;
+				}
+				return false;
+			}
+		});
 		// Add action on About button
 		findPreference(getString(R.string.menu_about_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
@@ -501,15 +528,6 @@ public class SettingsFragment extends PreferencesListFragment {
 				entries.add(getString(R.string.media_encryption_srtp));
 				values.add(getString(R.string.pref_media_encryption_key_srtp));
 			}
-			if (hasZrtp){
-				entries.add(getString(R.string.media_encryption_zrtp));
-				values.add(getString(R.string.pref_media_encryption_key_zrtp));
-			}
-			if (hasDtls){
-				entries.add(getString(R.string.media_encryption_dtls));
-				values.add(getString(R.string.pref_media_encryption_key_dtls));
-
-			}
 			setListPreferenceValues(pref, entries, values);
 		}
 
@@ -517,12 +535,9 @@ public class SettingsFragment extends PreferencesListFragment {
 		pref.setSummary(value.toString());
 
 		String key = getString(R.string.pref_media_encryption_key_none);
-		if (value.toString().equals(getString(R.string.media_encryption_srtp)))
+		if (value.toString().equals(getString(R.string.media_encryption_srtp))) {
 			key = getString(R.string.pref_media_encryption_key_srtp);
-		else if (value.toString().equals(getString(R.string.media_encryption_zrtp)))
-			key = getString(R.string.pref_media_encryption_key_zrtp);
-		else if (value.toString().equals(getString(R.string.media_encryption_dtls)))
-			key = getString(R.string.pref_media_encryption_key_dtls);
+		}
 		pref.setValue(key);
 	}
 
@@ -615,7 +630,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		setListPreferenceValues(pref, entries, values);
 		String value = Integer.toString(mPrefs.getPreferredVideoFps());
 		if (value.equals("0")) {
-			value = "none";
+			mPrefs.setPreferredVideoFps(30);
+			value = "30";
 		}
 		pref.setSummary(value);
 		pref.setValue(value);
@@ -783,8 +799,8 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initGeneralSettings(){
 		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
 
-		boolean isSipEncryptionEnabled = false; //VATRP-1007
-		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
+//		boolean isSipEncryptionEnabled = false; //VATRP-1007
+//		((CheckBoxPreference)findPreference(getString(R.string.pref_general_sip_encryption_key))).setChecked(isSipEncryptionEnabled);
 
 		((CheckBoxPreference) findPreference(getString(R.string.pref_wifi_only_key))).setChecked(mPrefs.isWifiOnlyEnabled());
 
@@ -802,6 +818,41 @@ public class SettingsFragment extends PreferencesListFragment {
 			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
 			editor.commit();
 		}
+
+
+		//if(isAdvancedSettings) {
+		Preference resetPreerence = findPreference(getString(R.string.pref_reset_key));
+		resetPreerence.setTitle(R.string.reset);
+		resetPreerence.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+
+				new AlertDialog.Builder(getActivity())
+						.setMessage(R.string.reset_question)
+						.setPositiveButton(R.string.button_ok,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int whichButton) {
+										AceApplication.getInstance().clearApplicationData();
+										Intent mStartActivity = new Intent(getActivity(), LinphoneLauncherActivity.class);
+										int mPendingIntentId = 123456;
+										PendingIntent mPendingIntent = PendingIntent.getActivity(getActivity(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+										AlarmManager mgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+										mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 500, mPendingIntent);
+										LinphoneActivity.instance().exit();
+									}
+								}
+						)
+						.setNegativeButton(R.string.button_cancel,
+								null
+						)
+						.create().show();
+
+
+				return true;
+			}
+		});
+
+		//}
 	}
 
 	private void setGeneralPreferencesListener(){
@@ -814,21 +865,21 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		//Todo: VATRP-1007 -- Add SIP Encryption logic on toggle
-		findPreference(getString(R.string.pref_general_sip_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				boolean value = (Boolean) newValue;
-				if(value){
-					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tls_key));
-					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
-				}else{
-					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tcp_key));
-					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
-				}
-				return true;
-			}
-		});
+//
+//		findPreference(getString(R.string.pref_general_sip_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//				boolean value = (Boolean) newValue;
+//				if(value){
+//					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tls_key));
+//					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5060","5061"));
+//				}else{
+//					mPrefs.setAccountTransport(n, getString(R.string.pref_transport_tcp_key));
+//					mPrefs.setAccountProxy(n, mPrefs.getAccountProxy(n).replace("5061","5060"));
+//				}
+//				return true;
+//			}
+//		});
 
 		findPreference(getString(R.string.pref_wifi_only_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
@@ -843,6 +894,11 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initAudioVideoSettings(){
 		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
+		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
+
+		boolean isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
+		((CheckBoxPreference) findPreference(getString(R.string.pref_av_camera_mute_key))).setChecked(isCameraMuted);
+
 		// VATRP-1017 -- Add global speaker and mic mute logic
 		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
@@ -886,6 +942,14 @@ public class SettingsFragment extends PreferencesListFragment {
 				} else if (value.compareToIgnoreCase("Explicit") == 0) {
 					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
 					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+				}
+				LinphoneManager.getLc().getDefaultProxyConfig().setAvpfRRInterval(3);
+				try{
+					preference.setSummary(newValue.toString());
+				}
+				catch(Throwable e){
+					e.printStackTrace();
+					Log.e("RTCP selected:", "Invalid option");
 				}
 				return true;
 			}
@@ -1165,11 +1229,16 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		String isVideoEnabled = "video_enabled = " + String.valueOf(lc.isVideoEnabled());
 		values.add(isVideoEnabled);
+
+		/**Camera Mute**/
+		String isCameraMuted = "camera_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false));
+		values.add(isCameraMuted);
+
 		/**Mute**/
 		String isMicMuted = "mic_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false));
 		values.add(isMicMuted);
 		String isSpeakerMuted = "speaker_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false));
-		values.add(isMicMuted);
+		values.add(isSpeakerMuted);
 
 		//Echo cancellation
 		String echoCancel = "echo_cancellation = " + String.valueOf(lc.isEchoCancellationEnabled());
@@ -1264,13 +1333,21 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object value) {
 				Log.d("text_send_type_pref value", value);
 				editor.putString(getString(R.string.pref_text_settings_send_mode_key), value.toString());
+				try {
+					preference.setSummary(value.toString().replace("_", " "));
+				}catch(Throwable e){
+
+				}
 				return true;
 			}
 		});
 
 		String value=text_send_type_pref.getValue();
-		Log.d("text_send_type_pref value", value);
-
+		try {
+			text_send_type_pref.setSummary(value.toString().replace("_", " "));
+		}catch(Throwable e) {
+			//field is still blank.
+		}
 	}
 
 	private void initVideoSettings() {
@@ -1287,6 +1364,9 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		for (final PayloadType pt : lc.getVideoCodecs()) {
+			if(pt.getMime().equals("MP4V-ES")||pt.getMime().equals("H263-1998")){
+				continue;
+			}
 			CheckBoxPreference codec = new CheckBoxPreference(getActivity());
 			codec.setTitle(pt.getMime());
 
@@ -1339,18 +1419,27 @@ public class SettingsFragment extends PreferencesListFragment {
 		int fps = mPrefs.getPreferredVideoFps();
 		String fpsStr = Integer.toString(fps);
 		if (fpsStr.equals("0")) {
-			fpsStr = "none";
+			mPrefs.setPreferredVideoFps(30);
+			fpsStr = "30";
 		}
 		((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key))).setSummary(fpsStr);
 		((EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key))).setSummary(Integer.toString(mPrefs.getBandwidthLimit()));
 	}
 
 	private void setVideoPreferencesListener() {
+		findPreference(getString(R.string.pref_av_camera_mute_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				prefs.edit().putBoolean(getString(R.string.pref_av_camera_mute_key), value).commit();
+				return true;
+			}
+		});
 		findPreference(getString(R.string.pref_video_enable_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean enable = (Boolean) newValue;
-				mPrefs.enableVideo(enable);
+				mPrefs.enableVideo(enable,enable);
 				return true;
 			}
 		});
@@ -1535,11 +1624,11 @@ public class SettingsFragment extends PreferencesListFragment {
 		CheckBoxPreference randomPort = (CheckBoxPreference) findPreference(getString(R.string.pref_transport_use_random_ports_key));
 		randomPort.setChecked(mPrefs.isUsingRandomPort());
 
-		// Disable sip port choice if port is random
-		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
-		sipPort.setEnabled(!randomPort.isChecked());
-		sipPort.setSummary(mPrefs.getSipPort());
-		sipPort.setText(mPrefs.getSipPort());
+//		// Disable sip port choice if port is random
+//		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
+//		sipPort.setEnabled(!randomPort.isChecked());
+//		sipPort.setSummary(mPrefs.getSipPort());
+//		sipPort.setText(mPrefs.getSipPort());
 
 		EditTextPreference stun = (EditTextPreference) findPreference(getString(R.string.pref_stun_server_key));
 		stun.setSummary(mPrefs.getStunServer());
@@ -1601,19 +1690,19 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int port = -1;
-				try {
-					port = Integer.parseInt(newValue.toString());
-				} catch (NumberFormatException nfe) { }
-
-				mPrefs.setSipPort(port);
-				preference.setSummary(newValue.toString());
-				return true;
-			}
-		});
+//		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//			@Override
+//			public boolean onPreferenceChange(Preference preference, Object newValue) {
+//				int port = -1;
+//				try {
+//					port = Integer.parseInt(newValue.toString());
+//				} catch (NumberFormatException nfe) { }
+//
+//				mPrefs.setSipPort(port);
+//				preference.setSummary(newValue.toString());
+//				return true;
+//			}
+//		});
 
 		findPreference(getString(R.string.pref_media_encryption_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override

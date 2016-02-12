@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.linphone.EditContactFragment;
 import org.linphone.R;
 
 import java.io.File;
@@ -69,9 +70,13 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
 			TextView main_text = (TextView) mySpinner.findViewById(R.id.txt);
 			if (tempProvider != null)
 				main_text.setText(tempProvider.getName());
-		} else
-			mySpinner = inflater.inflate(R.layout.provider_spinner_image_only, parent, false);
-
+		} else {
+			if(EditContactFragment.view!=null && EditContactFragment.view.isShown()){
+				mySpinner = inflater.inflate(R.layout.provider_spinner_image_for_contacts, parent, false);
+			}else{
+				mySpinner = inflater.inflate(R.layout.provider_spinner_image_only, parent, false);
+			}
+		}
 
 		ImageView left_icon = (ImageView) mySpinner.findViewById(R.id.iv);
 		if (position < images.length)

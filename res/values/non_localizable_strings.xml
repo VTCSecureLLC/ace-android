@@ -38,6 +38,7 @@
 	<string name="pref_ipv6_key">pref_ipv6_key</string>
 
 	<string name="menu_about_key">menu_about_key</string>
+	<string name="menu_iot_key">menu_iot_key</string>
 	<string name="pref_sipaccounts_key">pref_sipaccounts_key</string>
 	<string name="setup_key">setup_key</string>
 	<string name="pref_add_account_key">pref_add_account_key</string>
@@ -135,6 +136,7 @@
 
 	<string name="pref_rfc2833_dtmf_key">pref_rfc2833_dtmf_key</string>
 	<string name="pref_auto_answer_key">pref_auto_answer_key</string>
+	<string name="pref_reset_key">pref_reset_key</string>
 	<string name="pref_sipinfo_dtmf_key">pref_sipinfo_dtmf_key</string>
 	<string name="pref_voice_mail_key">pref_voice_mail_key</string>
 	<string name="pref_mail_waiting_indicator_key">pref_voice_mail_key</string>
@@ -199,8 +201,6 @@
 
 	<string name="pref_video_codec_vp8_title">VP8</string>
 	<string name="media_encryption_srtp">SRTP</string>
-	<string name="media_encryption_zrtp">ZRTP</string>
-    <string name="media_encryption_dtls">DTLS</string>
 
 	<string name="debug_popup_title">Debug</string>
 	<string-array name="popup_enable_log">

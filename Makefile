@@ -184,8 +184,7 @@ $(FFMPEG_BUILD_DIR)/arm/config.h:
 
 $(FFMPEG_BUILD_DIR)/arm/libavcodec/libavcodec-linphone-arm.so: $(FFMPEG_BUILD_DIR)/arm/config.h
 	cd $(FFMPEG_BUILD_DIR)/arm && \
-	make -j${NUMCPUS} \
-	|| ( echo "Build of ffmpeg for arm failed." ; exit 1 )
+	make || ( echo "Build of ffmpeg for arm failed." ; exit 1 )
 
 $(FFMPEG_BUILD_DIR)/arm/libffmpeg-linphone-arm.so: $(FFMPEG_BUILD_DIR)/arm/libavcodec/libavcodec-linphone-arm.so
 	cd $(FFMPEG_BUILD_DIR)/arm && \
@@ -201,8 +200,7 @@ $(FFMPEG_BUILD_DIR)/x86/config.h:
 
 $(FFMPEG_BUILD_DIR)/x86/libavcodec/libavcodec-linphone-x86.so: $(FFMPEG_BUILD_DIR)/x86/config.h
 	cd $(FFMPEG_BUILD_DIR)/x86 && \
-	make -j${NUMCPUS} \
-	|| ( echo "Build of ffmpeg for x86 failed." ; exit 1 )
+	make || ( echo "Build of ffmpeg for x86 failed." ; exit 1 )
 
 $(FFMPEG_BUILD_DIR)/x86/libffmpeg-linphone-x86.so: $(FFMPEG_BUILD_DIR)/x86/libavcodec/libavcodec-linphone-x86.so
 	cd $(FFMPEG_BUILD_DIR)/x86 && \
@@ -238,7 +236,7 @@ $(X264_BUILD_DIR)/arm/libx264.a:
 	mkdir -p $(X264_BUILD_DIR)/arm && \
 	cd $(X264_SRC_DIR) && \
 	$(X264_SRC_DIR)/configure $(X264_CONFIGURE_OPTIONS) $(X264_ARM_CONFIGURE_OPTIONS) && \
-	make -j$(NUMCPUS) STRIP= && \
+	make STRIP= && \
 	cp libx264.a $(X264_BUILD_DIR)/arm/libx264.a && \
 	make clean \
 	|| ( echo "Build of x264 for arm failed." ; exit 1 )
@@ -247,7 +245,7 @@ $(X264_BUILD_DIR)/x86/libx264.a:
 	mkdir -p $(X264_BUILD_DIR)/x86 && \
 	cd $(X264_SRC_DIR) && \
 	$(X264_SRC_DIR)/configure $(X264_CONFIGURE_OPTIONS) $(X264_X86_CONFIGURE_OPTIONS) && \
-	make -j$(NUMCPUS) STRIP= && \
+	make STRIP= && \
 	cp libx264.a $(X264_BUILD_DIR)/x86/libx264.a && \
 	make clean \
 	|| ( echo "Build of x264 for x86 failed." ; exit 1 )
@@ -320,11 +318,11 @@ copy-openh264-arm:  openh264-install-headers
 
 build-openh264-x86: copy-openh264-x86
 	cd $(OPENH264_BUILD_DIR_X86) && \
-	make libraries -j$(NUMCPUS) OS=android ARCH=x86 NDKROOT=$(NDK_PATH) TARGET=$(NDKBUILD_TARGET)
+	make libraries OS=android ARCH=x86 NDKROOT=$(NDK_PATH) TARGET=$(NDKBUILD_TARGET)
 
 build-openh264-arm: copy-openh264-arm
 	cd $(OPENH264_BUILD_DIR_ARM) && \
-	make libraries -j$(NUMCPUS) OS=android ARCH=arm NDKROOT=$(NDK_PATH) TARGET=$(NDKBUILD_TARGET)
+	make libraries OS=android ARCH=arm NDKROOT=$(NDK_PATH) TARGET=$(NDKBUILD_TARGET)
 
 build-openh264: $(BUILD_OPENH264_DEPS)
 
@@ -352,15 +350,13 @@ $(LIBVPX_BUILD_DIR)/arm/libvpx.a:
 	mkdir -p $(LIBVPX_BUILD_DIR)/arm && \
 	cd $(LIBVPX_BUILD_DIR)/arm && \
 	$(LIBVPX_SRC_DIR)/configure --target=armv7-android-gcc --extra-cflags="-mfloat-abi=softfp -mfpu=neon" --sdk-path=$(NDK_PATH) $(LIBVPX_CONFIGURE_OPTIONS) && \
-	make -j${NUMCPUS} \
-	|| ( echo "Build of libvpx for arm failed." ; exit 1 )
+	make || ( echo "Build of libvpx for arm failed." ; exit 1 )
 
 $(LIBVPX_BUILD_DIR)/x86/libvpx.a:
 	mkdir -p $(LIBVPX_BUILD_DIR)/x86 && \
 	cd $(LIBVPX_BUILD_DIR)/x86 && \
 	$(LIBVPX_SRC_DIR)/configure --target=x86-android-gcc --sdk-path=$(NDK_PATH) $(LIBVPX_CONFIGURE_OPTIONS) && \
-	make -j${NUMCPUS} \
-	|| ( echo "Build of libvpx for x86 failed." ; exit 1 )
+	make || ( echo "Build of libvpx for x86 failed." ; exit 1 )
 
 build-vpx: $(BUILD_VPX_DEPS)
 
@@ -456,11 +452,11 @@ MEDIASTREAMER2_OPTIONS = $(GENERATE_OPTIONS) BUILD_MEDIASTREAMER2_SDK=1
 
 
 generate-libs: prepare-sources javah
-	$(NDK_PATH)/ndk-build $(LIBLINPHONE_OPTIONS) -j$(NUMCPUS) TARGET_PLATFORM=$(NDKBUILD_TARGET)
+	$(NDK_PATH)/ndk-build $(LIBLINPHONE_OPTIONS) TARGET_PLATFORM=$(NDKBUILD_TARGET)
 
 generate-mediastreamer2-libs: prepare-sources
 	@cd $(TOPDIR)/submodules/linphone/mediastreamer2/java && \
-	$(NDK_PATH)/ndk-build $(MEDIASTREAMER2_OPTIONS) -j$(NUMCPUS) TARGET_PLATFORM=$(NDKBUILD_TARGET)
+	$(NDK_PATH)/ndk-build $(MEDIASTREAMER2_OPTIONS) TARGET_PLATFORM=$(NDKBUILD_TARGET)
 
 update-project: $(TOPDIR)/res/raw/rootca.pem
 	$(SDK_PATH)/android update project --path . --target $(ANDROID_MOST_RECENT_TARGET)
@@ -472,7 +468,7 @@ update-mediastreamer2-project:
 	$(SDK_PATH)/android update project --path . --target $(ANDROID_MOST_RECENT_TARGET)
 
 liblinphone_tester: update-project prepare-sources prepare-cunit prepare-liblinphone_tester javah
-	$(NDK_PATH)/ndk-build -C liblinphone_tester $(LIBLINPHONE_OPTIONS) -j$(NUMCPUS) TARGET_PLATFORM=$(NDKBUILD_TARGET)
+	$(NDK_PATH)/ndk-build -C liblinphone_tester $(LIBLINPHONE_OPTIONS) TARGET_PLATFORM=$(NDKBUILD_TARGET)
 	$(MAKE) -C liblinphone_tester
 
 javah:

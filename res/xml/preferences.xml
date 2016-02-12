@@ -8,15 +8,19 @@
 	<CheckBoxPreference
 		android:title="@string/pref_autostart"
 		android:key="@string/pref_autostart_key"/>
+	<!--
 	<CheckBoxPreference
 		android:title="@string/pref_general_sip_encryption"
 		android:key="@string/pref_general_sip_encryption_key"/>
+		-->
 	<CheckBoxPreference
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
-	<CheckBoxPreference
-		android:title="@string/pref_auto_answer"
-		android:key="@string/pref_auto_answer_key"/>
+
+		<Preference
+			android:key="@string/pref_reset_key"
+			android:title="@string/reset"
+			></Preference>
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -28,6 +32,9 @@
 		android:key="@string/pref_av_rtcp_feedback_key"
 		android:entries="@array/rtcp_feedback_entries"
 		android:entryValues="@array/rtcp_feedback_entries" />
+	<CheckBoxPreference
+		android:title="@string/pref_av_camera_mute"
+		android:key="@string/pref_av_camera_mute_key"/>
 	<CheckBoxPreference
 		android:title="@string/pref_av_speaker_mute"
 		android:key="@string/pref_av_speaker_mute_key"/>
@@ -90,14 +97,11 @@
 		<Preference
 			android:title="@string/pref_summary_send_tss"
 			android:key="@string/pref_summary_send_tss_key"/>
-		<Preference
-			android:title="@string/pref_summary_show_advanced"
-			android:key="@string/pref_summary_show_advanced_key"/>
-		<Preference
-			android:title="@string/pref_summary_show_debug"
-			android:key="@string/pref_summary_show_debug_key"/>
-	</PreferenceScreen>
 
+	</PreferenceScreen>
+	<Preference
+		android:title="@string/menu_IOT"
+		android:key="@string/menu_iot_key"/>
     <Preference
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>
@@ -195,7 +199,8 @@
 				android:title="@string/pref_video_initiate_call_with_video_title"
 			    android:key="@string/pref_video_initiate_call_with_video_key"
 				android:summary="@string/pref_video_initiate_call_with_video"
-				android:dependency="@string/pref_video_enable_key"/>
+				android:dependency="@string/pref_video_enable_key"
+				android:layout="@layout/hidden"/>
 
 			<CheckBoxPreference
 				android:title="@string/pref_video_automatically_share_my_video_title"
@@ -208,7 +213,8 @@
 				android:title="@string/pref_video_automatically_accept_video_title"
 				android:key="@string/pref_video_automatically_accept_video_key"
 				android:summary="@string/pref_video_automatically_accept_video"
-				android:dependency="@string/pref_video_enable_key"/>
+				android:dependency="@string/pref_video_enable_key"
+				android:layout="@layout/hidden"/>
 
 			<ListPreference
 				android:title="Video preset"
@@ -284,12 +290,12 @@
 			<CheckBoxPreference
 				android:title="@string/pref_transport_use_random_ports"
 			    android:key="@string/pref_transport_use_random_ports_key"/>
-
+<!--
 			<EditTextPreference
 			    android:title="@string/pref_sip_port_title"
 			    android:key="@string/pref_sip_port_key"
 				android:numeric="integer"/>
-
+											-->
 			<EditTextPreference
 			    android:title="@string/pref_audio_port_title"
 			    android:key="@string/pref_audio_port_key"
@@ -372,6 +378,10 @@
 			<CheckBoxPreference
 			    android:title="@string/pref_autostart"
 				android:key="@string/pref_autostart_key"/>
+
+			<CheckBoxPreference
+				android:title="@string/pref_auto_answer"
+				android:key="@string/pref_auto_answer_key"/>
 
 			<EditTextPreference
 			    android:title="@string/pref_incoming_call_timeout_title"

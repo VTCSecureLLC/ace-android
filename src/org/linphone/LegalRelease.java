@@ -19,6 +19,11 @@ public class LegalRelease extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LegalRelease.this);
+        boolean hasAcceptedLegalRelease = prefs.getBoolean("accepted_legal_release", false);
+        if(hasAcceptedLegalRelease){
+            this.finish();
+        }
         setContentView(R.layout.activity_legal_release);
         final TextView legalTextView = ((TextView)findViewById(R.id.legalTextView));
         final ScrollView scrollView = ((ScrollView)findViewById(R.id.legalScrollView));
@@ -114,7 +119,7 @@ public class LegalRelease extends Activity {
                 "11. \tComplete Agreement; Governing Language; Waiver. This License constitutes the entire agreement between you and VTCSecure relating to the Software and Services supersedes all prior or contemporaneous understandings regarding such subject matter. This License will be construed and interpreted fairly, in accordance with the plain meaning of its terms, and there will be no presumption or inference against the party drafting this License in construing or interpreting any of the provisions contained in this License. As set forth above, VTCSecure reserves the right to amend or modify this License by posting such amendment or modification on the VTCSecure website, and you agree to be bound by any such amendment or modification. Except as otherwise stated above, no amendment to or modification of this License will be binding unless in writing and signed by VTCSecure. Any translation of this License is done for local requirements and in the event of a dispute between the English and any non-English versions, the English version of this License shall govern, to the extent not prohibited by local law in your jurisdiction. No delay in exercising any right or remedy will operate as a waiver of such right or remedy or any other right or remedy. A waiver on one occasion will not be construed as a waiver of any right or remedy on any future occasion.\n" +
                 "____ I ACCEPT THE FOREGOING LICENSE TERMS AND CONDITIONS.\n");
 
-        ((Button)findViewById(R.id.acceptLegalButton)).setEnabled(false);
+        ((Button)findViewById(R.id.acceptLegalButton)).setEnabled(true);
         ((Button)findViewById(R.id.acceptLegalButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

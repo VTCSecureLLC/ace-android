@@ -20,12 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -36,6 +34,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.linphone.compatibility.Compatibility;
@@ -54,6 +53,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
  */
 public class VideoCallFragment extends Fragment implements OnGestureListener, OnDoubleTapListener, CompatibilityScaleGestureListener {
 	private SurfaceView mVideoView;
+	public static ImageView cameraCover;
 	public static SurfaceView mCaptureView;
 	private AndroidVideoWindowImpl androidVideoWindowImpl;
 	private GestureDetector mGestureDetector;
@@ -77,6 +77,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		isH263();
 		View view = inflater.inflate(viewId, container, false);
 
+		cameraCover = (ImageView) view.findViewById(R.id.cameraCover);
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
 
@@ -151,14 +152,17 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 				mGestureDetector.onTouchEvent(event);
 				if (inCallActivity != null) {
-
-					//If not screen buttons were pressed, toggle controls display
-					if(inCallActivity.instance().mControlsLayout != null &&inCallActivity.instance().mControlsLayout.getVisibility() != View.VISIBLE){
-						inCallActivity.instance().displayVideoCallControlsIfHidden(inCallActivity.NEVER);
-					}else if(!inCallActivity.instance().animating_show_controls){
-						inCallActivity.instance().hide_controls(inCallActivity.NOW);
+					try {
+						//If not screen buttons were pressed, toggle controls display
+						if (inCallActivity.instance().mControlsLayout != null && inCallActivity.instance().mControlsLayout.getVisibility() != View.VISIBLE) {
+							inCallActivity.instance().displayVideoCallControlsIfHidden(inCallActivity.NEVER);
+						} else if (!inCallActivity.instance().animating_show_controls) {
+							inCallActivity.instance().hide_controls(inCallActivity.NOW);
+						}
 					}
-
+					catch(Exception e){
+						Log.e("InCallActivity Null pointer", "target: mControlsLayout");
+					}
 
 
 					//inCallActivity.displayVideoCallControlsIfHidden(inCallActivity.NEVER);
