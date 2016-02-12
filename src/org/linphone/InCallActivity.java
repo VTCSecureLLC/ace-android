@@ -259,7 +259,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					VideoCallFragment.cameraCover.setImageResource(R.drawable.camera_mute);
 					VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
 
-				}else if(info.getHeader("action").equals("isCameraMuted")){
+				}else if(info.getHeader("action").equals("isCameraMuted") || info.getHeader("action").equals("camera_mute_on")){
 					VideoCallFragment.cameraCover.setVisibility(View.GONE);
 
 				}

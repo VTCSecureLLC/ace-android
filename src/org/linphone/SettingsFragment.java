@@ -1685,7 +1685,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean randomPort = (Boolean) newValue;
 				mPrefs.useRandomPort((Boolean) newValue);
-				findPreference(getString(R.string.pref_sip_port_key)).setEnabled(!randomPort);
+				findPreference(getString(R.string.pref_transport_use_random_ports_key)).setEnabled(!randomPort);
 				return true;
 			}
 		});
