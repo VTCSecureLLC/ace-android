@@ -1576,7 +1576,9 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 	public void initSDP(boolean videoEnabled){
 		LinphoneCore lC = getLcIfManagerNotDestroyedOrNull();
-			if (lC != null && videoEnabled){
+		Log.d("initSDP");
+
+		if (lC != null && videoEnabled){
 				PayloadType pT = lC.findPayloadType("H263", 90000, -1);
 				if(pT != null){
 					pT.setRecvFmtp("CIF=1;QCIF=1");

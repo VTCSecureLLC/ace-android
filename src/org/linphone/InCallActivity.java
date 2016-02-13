@@ -277,6 +277,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
+				Log.d("callState change");
+				try {
+					LinphoneActivity.instance().display_all_core_values(lc, state.toString());
+				}catch(Throwable e){
+					e.printStackTrace();
+				}
 				if (lc.getCallsNb() == 0) {
 					finish();
 					return;
