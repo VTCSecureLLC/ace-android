@@ -316,15 +316,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State state, String message) {
+
 				if (state == State.IncomingReceived) {
+
 					startActivity(new Intent(LinphoneActivity.instance(), IncomingCallActivity.class));
 				} else if (state == State.OutgoingInit) {
+
 					if (call.getCurrentParamsCopy().getVideoEnabled()) {
 						startVideoActivity(call);
 					} else {
 						startIncallActivity(call);
 					}
 				} else if (state == State.CallEnd || state == State.Error || state == State.CallReleased) {
+
 					// Convert LinphoneCore message for internalization
 					if (message != null && call.getReason() == Reason.Declined) {
 						displayCustomToast(getString(R.string.error_call_declined), Toast.LENGTH_LONG);
@@ -1651,6 +1655,255 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 
+	}
+
+	public void display_all_core_values(LinphoneCore lc, final String filename){
+
+
+		final String getAdaptiveRateAlgorithm=LC_Object_to_String(lc.getAdaptiveRateAlgorithm());
+		final String getAudioCodecs=LC_Object_to_String(lc.getAudioCodecs());
+		final String getAudioDscp=LC_Object_to_String(lc.getAudioDscp());
+		final String getAudioMulticastAddr=LC_Object_to_String(lc.getAudioMulticastAddr());
+		final String getAudioMulticastTtl=LC_Object_to_String(lc.getAudioMulticastTtl());
+		final String getAuthInfosList=LC_Object_to_String(lc.getAuthInfosList());
+		final String getCallLogs=LC_Object_to_String(lc.getCallLogs());
+		final String getCalls=LC_Object_to_String(lc.getCalls());
+		final String getCallsNb=LC_Object_to_String(lc.getCallsNb());
+		//final String getChatRoom=LC_Object_to_String(lc.getChatRoom());
+		final String getConference=LC_Object_to_String(lc.getConference());
+		final String getConferenceSize=LC_Object_to_String(lc.getConferenceSize());
+		final String getConfig=LC_Object_to_String(lc.getConfig());
+		final String getCurrentCall=LC_Object_to_String(lc.getCurrentCall());
+		final String getDefaultProxyConfig=LC_Object_to_String(lc.getDefaultProxyConfig());
+		final String getDownloadBandwidth =LC_Object_to_String(lc.getDownloadBandwidth());
+		final String getFileTransferServer=LC_Object_to_String(lc.getFileTransferServer());
+		final String getFirewallPolicy=LC_Object_to_String(lc.getFirewallPolicy());
+		final String getFriendList=LC_Object_to_String(lc.getFriendList());
+		final String getGlobalState=LC_Object_to_String(lc.getGlobalState());
+		final String getHttpProxyHost=LC_Object_to_String(lc.getHttpProxyHost());
+		final String getHttpProxyPort=LC_Object_to_String(lc.getHttpProxyPort());
+		final String getLastOutgoingCallLog=LC_Object_to_String(lc.getLastOutgoingCallLog());
+		final String getMaxCalls=LC_Object_to_String(lc.getMaxCalls());
+		final String getMediaEncryption=LC_Object_to_String(lc.getMediaEncryption());
+		final String getMissedCallsCount=LC_Object_to_String(lc.getMissedCallsCount());
+		final String getMtu=LC_Object_to_String(lc.getMtu());
+		final String getNortpTimeout=LC_Object_to_String(lc.getNortpTimeout());
+		//final String getOrCreateChatRoom=LC_Object_to_String(lc.getOrCreateChatRoom());
+		//final String getPayloadTypeBitrate=LC_Object_to_String(lc.getPayloadTypeBitrate());
+		//final String getPayloadTypeNumber=LC_Object_to_String(lc.getPayloadTypeNumber());
+		final String getPlaybackGain=LC_Object_to_String(lc.getPlaybackGain());
+		final String getPlayLevel=LC_Object_to_String(lc.getPlayLevel());
+		final String getPreferredFramerate =LC_Object_to_String(lc.getPreferredFramerate());
+		final String getPreferredVideoSize=LC_Object_to_String(lc.getPreferredVideoSize());
+		final String getPresenceModel=LC_Object_to_String(lc.getPresenceModel());
+		final String getPrimaryContact=LC_Object_to_String(lc.getPrimaryContact());
+		final String getPrimaryContactDisplayName=LC_Object_to_String(lc.getPrimaryContactDisplayName());
+		final String getProvisioningUri=LC_Object_to_String(lc.getProvisioningUri());
+		final String getProxyConfigList=LC_Object_to_String(lc.getProxyConfigList());
+		final String getRemoteAddress=LC_Object_to_String(lc.getRemoteAddress());
+		final String getRemoteRingbackTone=LC_Object_to_String(lc.getRemoteRingbackTone());
+		final String getRing=LC_Object_to_String(lc.getRing());
+		final String getSignalingTransportPorts=LC_Object_to_String(lc.getSignalingTransportPorts());
+		final String getSipDscp =LC_Object_to_String(lc.getSipDscp());
+		final String getSipTransportTimeout=LC_Object_to_String(lc.getSipTransportTimeout());
+		final String getStunServer =LC_Object_to_String(lc.getStunServer());
+		final String getSupportedVideoSizes=LC_Object_to_String(lc.getSupportedVideoSizes());
+		final String getUploadBandwidth=LC_Object_to_String(lc.getUploadBandwidth());
+		final String getUpnpExternalIpaddress=LC_Object_to_String(lc.getUpnpExternalIpaddress());
+		final String getUpnpState=LC_Object_to_String(lc.getUpnpState());
+		final String getUseRfc2833ForDtmfs=LC_Object_to_String(lc.getUseRfc2833ForDtmfs());
+		final String getUseSipInfoForDtmfs=LC_Object_to_String(lc.getUseSipInfoForDtmfs());
+		final String getVersion=LC_Object_to_String(lc.getVersion());
+		final String getVideoAutoAcceptPolicy=LC_Object_to_String(lc.getVideoAutoAcceptPolicy());
+		final String getVideoAutoInitiatePolicy=LC_Object_to_String(lc.getVideoAutoInitiatePolicy());
+		final String getVideoCodecs=LC_Object_to_String(lc.getVideoCodecs());
+		final String getVideoDevice=LC_Object_to_String(lc.getVideoDevice());
+		final String getVideoDscp=LC_Object_to_String(lc.getVideoDscp());
+		final String getVideoMulticastAddr=LC_Object_to_String(lc.getVideoMulticastAddr());
+		final String getVideoMulticastTtl=LC_Object_to_String(lc.getVideoMulticastTtl());
+		final String getVideoPreset=LC_Object_to_String(lc.getVideoPreset());
+		final String getPresenceInfo=LC_Object_to_String(lc.getPresenceInfo());
+		final String tunnelGetMode=LC_Object_to_String(lc.tunnelGetMode());
+		final String tunnelGetServers=LC_Object_to_String(lc.tunnelGetServers());
+
+		//Display to developer
+
+		Log.d("getAdaptiveRateAlgorithm,", getAdaptiveRateAlgorithm);
+		Log.d("getAudioCodecs,",getAudioCodecs);
+		Log.d("getAudioDscp,",getAudioDscp);
+		Log.d("getAudioMulticastAddr,",getAudioMulticastAddr);
+		Log.d("getAudioMulticastTtl,",getAudioMulticastTtl);
+		Log.d("getAuthInfosList,",getAuthInfosList);
+		Log.d("getCallLogs,",getCallLogs);
+		Log.d("getCalls,",getCalls);
+		Log.d("getCallsNb,",getCallsNb);
+		//Log.d("getChatRoom,",getChatRoom);
+		Log.d("getConference,",getConference);
+		Log.d("getConferenceSize,",getConferenceSize);
+		Log.d("getConfig,",getConfig);
+		Log.d("getCurrentCall,",getCurrentCall);
+		Log.d("getDefaultProxyConfig,",getDefaultProxyConfig);
+		Log.d("getDownloadBandwidth,",getDownloadBandwidth);
+		Log.d("getFileTransferServer,",getFileTransferServer);
+		Log.d("getFirewallPolicy,",getFirewallPolicy);
+		Log.d("getFriendList,",getFriendList);
+		Log.d("getGlobalState,",getGlobalState);
+		Log.d("getHttpProxyHost,",getHttpProxyHost);
+		Log.d("getHttpProxyPort,",getHttpProxyPort);
+		Log.d("getLastOutgoingCallLog,",getLastOutgoingCallLog);
+		Log.d("getMaxCalls,",getMaxCalls);
+		Log.d("getMediaEncryption,",getMediaEncryption);
+		Log.d("getMissedCallsCount,",getMissedCallsCount);
+		Log.d("getMtu,",getMtu);
+		Log.d("getNortpTimeout,",getNortpTimeout);
+		//Log.d("getOrCreateChatRoom,",getOrCreateChatRoom);
+		//Log.d("getPayloadTypeBitrate,",getPayloadTypeBitrate);
+		//Log.d("getPayloadTypeNumber,",getPayloadTypeNumber);
+		Log.d("getPlaybackGain,",getPlaybackGain);
+		Log.d("getPlayLevel,",getPlayLevel);
+		Log.d("getPreferredFramerate,",getPreferredFramerate);
+		Log.d("getPreferredVideoSize,",getPreferredVideoSize);
+		Log.d("getPresenceModel,",getPresenceModel);
+		Log.d("getPrimaryContact,",getPrimaryContact);
+		Log.d("getPrimaryContactDisplayName,",getPrimaryContactDisplayName);
+		Log.d("getProvisioningUri,",getProvisioningUri);
+		Log.d("getProxyConfigList,",getProxyConfigList);
+		Log.d("getRemoteAddress,",getRemoteAddress);
+		Log.d("getRemoteRingbackTone,",getRemoteRingbackTone);
+		Log.d("getRing,",getRing);
+		Log.d("getSignalingTransportPorts,",getSignalingTransportPorts);
+		Log.d("getSipDscp,",getSipDscp);
+		Log.d("getSipTransportTimeout,",getSipTransportTimeout);
+		Log.d("getStunServer,",getStunServer);
+		Log.d("getSupportedVideoSizes,",getSupportedVideoSizes);
+		Log.d("getUploadBandwidth,",getUploadBandwidth);
+		Log.d("getUpnpExternalIpaddress,",getUpnpExternalIpaddress);
+		Log.d("getUpnpState,",getUpnpState);
+		Log.d("getUseRfc2833ForDtmfs,",getUseRfc2833ForDtmfs);
+		Log.d("getUseSipInfoForDtmfs,",getUseSipInfoForDtmfs);
+		Log.d("getVersion,",getVersion);
+		Log.d("getVideoAutoAcceptPolicy,",getVideoAutoAcceptPolicy);
+		Log.d("getVideoAutoInitiatePolicy,",getVideoAutoInitiatePolicy);
+		Log.d("getVideoCodecs,",getVideoCodecs);
+		Log.d("getVideoDevice,",getVideoDevice);
+		Log.d("getVideoDscp,",getVideoDscp);
+		Log.d("getVideoMulticastAddr,",getVideoMulticastAddr);
+		Log.d("getVideoMulticastTtl,",getVideoMulticastTtl);
+		Log.d("getVideoPreset,",getVideoPreset);
+		Log.d("getPresenceInfo,",getPresenceInfo);
+		Log.d("tunnelGetMode,",tunnelGetMode);
+		Log.d("tunnelGetServers,",tunnelGetServers);
+
+
+
+		new Thread() {
+			public void run() {
+				try {
+					//print to csv
+					String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE";
+
+                        /* checks the file and if it already exist delete */
+					final String fname = filename+ ".csv";
+					File file = new File (sdCard, fname);
+					if (!file.exists ()) {
+						file.getParentFile().mkdirs();
+					}else {
+						file.delete();
+					}
+
+					Log.d("fname",fname);
+					Log.d("file",file.getAbsolutePath());
+
+					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+					fw.append("getAdaptiveRateAlgorithm,"+getAdaptiveRateAlgorithm+"\n");
+					fw.append("getAudioCodecs," + getAudioCodecs+"\n");
+					fw.append("getAudioDscp," + getAudioDscp+"\n");
+					fw.append("getAudioMulticastAddr," + getAudioMulticastAddr+"\n");
+					fw.append("getAudioMulticastTtl," + getAudioMulticastTtl+"\n");
+					fw.append("getAuthInfosList," + getAuthInfosList+"\n");
+					fw.append("getCallLogs," + getCallLogs+"\n");
+					fw.append("getCalls," + getCalls+"\n");
+					fw.append("getCallsNb," + getCallsNb+"\n");
+					//fw.append("getChatRoom,"+getChatRoom+"\n");
+					fw.append("getConference," + getConference+"\n");
+					fw.append("getConferenceSize," + getConferenceSize+"\n");
+					fw.append("getConfig," + getConfig+"\n");
+					fw.append("getCurrentCall," + getCurrentCall+"\n");
+					fw.append("getDefaultProxyConfig," + getDefaultProxyConfig+"\n");
+					fw.append("getDownloadBandwidth," + getDownloadBandwidth+"\n");
+					fw.append("getFileTransferServer," + getFileTransferServer+"\n");
+					fw.append("getFirewallPolicy," + getFirewallPolicy+"\n");
+					fw.append("getFriendList," + getFriendList+"\n");
+					fw.append("getGlobalState," + getGlobalState+"\n");
+					fw.append("getHttpProxyHost," + getHttpProxyHost+"\n");
+					fw.append("getHttpProxyPort," + getHttpProxyPort+"\n");
+					fw.append("getLastOutgoingCallLog," + getLastOutgoingCallLog+"\n");
+					fw.append("getMaxCalls," + getMaxCalls+"\n");
+					fw.append("getMediaEncryption," + getMediaEncryption+"\n");
+					fw.append("getMissedCallsCount," + getMissedCallsCount+"\n");
+					fw.append("getMtu," + getMtu+"\n");
+					fw.append("getNortpTimeout," + getNortpTimeout+"\n");
+					//fw.append("getOrCreateChatRoom,"+getOrCreateChatRoom+"\n");
+					//fw.append("getPayloadTypeBitrate,"+getPayloadTypeBitrate+"\n");
+					//fw.append("getPayloadTypeNumber,"+getPayloadTypeNumber+"\n");
+					fw.append("getPlaybackGain," + getPlaybackGain+"\n");
+					fw.append("getPlayLevel," + getPlayLevel+"\n");
+					fw.append("getPreferredFramerate," + getPreferredFramerate+"\n");
+					fw.append("getPreferredVideoSize," + getPreferredVideoSize+"\n");
+					fw.append("getPresenceModel," + getPresenceModel+"\n");
+					fw.append("getPrimaryContact," + getPrimaryContact+"\n");
+					fw.append("getPrimaryContactDisplayName," + getPrimaryContactDisplayName+"\n");
+					fw.append("getProvisioningUri," + getProvisioningUri+"\n");
+					fw.append("getProxyConfigList," + getProxyConfigList+"\n");
+					fw.append("getRemoteAddress," + getRemoteAddress+"\n");
+					fw.append("getRemoteRingbackTone," + getRemoteRingbackTone+"\n");
+					fw.append("getRing," + getRing+"\n");
+					fw.append("getSignalingTransportPorts," + getSignalingTransportPorts+"\n");
+					fw.append("getSipDscp," + getSipDscp+"\n");
+					fw.append("getSipTransportTimeout," + getSipTransportTimeout+"\n");
+					fw.append("getStunServer," + getStunServer+"\n");
+					fw.append("getSupportedVideoSizes," + getSupportedVideoSizes+"\n");
+					fw.append("getUploadBandwidth," + getUploadBandwidth+"\n");
+					fw.append("getUpnpExternalIpaddress," + getUpnpExternalIpaddress+"\n");
+					fw.append("getUpnpState," + getUpnpState+"\n");
+					fw.append("getUseRfc2833ForDtmfs," + getUseRfc2833ForDtmfs+"\n");
+					fw.append("getUseSipInfoForDtmfs," + getUseSipInfoForDtmfs+"\n");
+					fw.append("getVersion," + getVersion+"\n");
+					fw.append("getVideoAutoAcceptPolicy," + getVideoAutoAcceptPolicy+"\n");
+					fw.append("getVideoAutoInitiatePolicy," + getVideoAutoInitiatePolicy+"\n");
+					fw.append("getVideoCodecs," + getVideoCodecs+"\n");
+					fw.append("getVideoDevice," + getVideoDevice+"\n");
+					fw.append("getVideoDscp," + getVideoDscp+"\n");
+					fw.append("getVideoMulticastAddr," + getVideoMulticastAddr+"\n");
+					fw.append("getVideoMulticastTtl," + getVideoMulticastTtl+"\n");
+					fw.append("getVideoPreset," + getVideoPreset+"\n");
+					fw.append("getPresenceInfo," + getPresenceInfo+"\n");
+					fw.append("tunnelGetMode," + tunnelGetMode+"\n");
+					fw.append("tunnelGetServers," + tunnelGetServers+"\n");
+					fw.close();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+
+
+		//show on screen logs
+
+	}
+	public String LC_Object_to_String(Object object){
+		String string;
+		try {
+			try {
+				string = object != null ? object.toString() : "null";
+			} catch (Throwable e) {
+				string = object != null ? String.valueOf(object) : "null";
+			}
+		}catch(Throwable e){
+			string = "unknown";
+		}
+
+		return string;
 	}
 }
 
