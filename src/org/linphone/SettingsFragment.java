@@ -1485,6 +1485,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.pref_video_preset_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if(newValue.equals("custom"))
+					mPrefs.setBandwidthLimit(1500);
 				mPrefs.setVideoPreset(newValue.toString());
 				preference.setSummary(mPrefs.getVideoPreset());
 				updateVideoPreferencesAccordingToPreset();
