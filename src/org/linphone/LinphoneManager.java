@@ -1576,7 +1576,9 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 	public void initSDP(boolean videoEnabled){
 		LinphoneCore lC = getLcIfManagerNotDestroyedOrNull();
-			if (lC != null && videoEnabled){
+		Log.d("initSDP");
+
+		if (lC != null && videoEnabled){
 				PayloadType pT = lC.findPayloadType("H263", 90000, -1);
 				if(pT != null){
 					pT.setRecvFmtp("CIF=1;QCIF=1");
@@ -1600,6 +1602,14 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		for (int i = 0; i < currentPayloadCount; i++) {
 			String key = currentPayloadType[i].getMime() + "/" + currentPayloadType[i].getRate();
+			try {
+				lc.enablePayloadType(currentPayloadType[i],true);
+			} catch (LinphoneCoreException e) {
+				e.printStackTrace();
+				Log.d("VATRP-2521 Couldn't Enable payload type");
+			}
+
+
 			if (key.equals("G722/8000"))
 				orderedPayloadType[0] = currentPayloadType[i];
 			else if (key.equals("PCMU/8000"))

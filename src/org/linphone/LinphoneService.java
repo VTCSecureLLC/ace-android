@@ -220,6 +220,7 @@ public final class LinphoneService extends Service {
 						sendNotification(IC_LEVEL_ORANGE, R.string.notification_registered);
 						final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.this);
 						//Initialize RTCP feedback preference
+
 						String rtcpFeedback = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
 						if(rtcpFeedback.compareToIgnoreCase("Off") == 0){
 							cfg.enableAvpf(false);
@@ -237,6 +238,7 @@ public final class LinphoneService extends Service {
 							cfg.enableAvpf(false);
 							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
 						}
+
 						cfg.setAvpfRRInterval(3);
 					}
 			
