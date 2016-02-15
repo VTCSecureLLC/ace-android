@@ -53,6 +53,7 @@ import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
 import org.linphone.ui.EraseButton;
+import org.linphone.ui.Numpad;
 
 import java.util.ArrayList;
 
@@ -93,6 +94,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	protected ArrayList<String> domains;
 	private Spinner sipDomainSpinner;
 	public boolean isCalled = false;
+	Numpad numpad;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -182,9 +184,11 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 			mCall.setImageResource(R.drawable.call_button_new);
 		}
 
-		AddressAware numpad = (AddressAware) view.findViewById(R.id.Dialer);
+		numpad = (Numpad) view.findViewById(R.id.Dialer);
 		if (numpad != null) {
 			numpad.setAddressWidget(mAddress);
+			numpad.setDTMFSoundEnabled(true);
+			numpad.setHapticEnabled(true);
 		}
 
 		mAddContact = (ImageView) view.findViewById(R.id.addContact);
@@ -517,7 +521,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		numpad.recheckSystemSettings();
 		mOrientationHelper.enable();
 		LinphoneActivity.instance().mOrientationHelper.disable();
 		if (LinphoneActivity.isInstanciated()) {

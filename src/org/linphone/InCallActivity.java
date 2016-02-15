@@ -993,6 +993,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		dialer.setOnClickListener(this);
 		dialer.setEnabled(false);
 		numpad = (Numpad) findViewById(R.id.numpad);
+		numpad.setHapticEnabled(true);
+		numpad.setDTMFSoundEnabled(false);
 		videoProgress =  (ProgressBar) findViewById(R.id.videoInProgress);
 		videoProgress.setVisibility(View.GONE);
 
