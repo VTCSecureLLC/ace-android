@@ -87,6 +87,8 @@ public class PreferencesMigrator {
 		mNewPrefs.setAutoStart(getPrefBoolean(R.string.pref_autostart_key, false));
 		mNewPrefs.setSharingPictureServerUrl(getPrefString(R.string.pref_image_sharing_server_key, null));
 		mNewPrefs.setRemoteProvisioningUrl(getPrefString(R.string.pref_remote_provisioning_key, null));
+		//VATRP-
+		mNewPrefs.enableAdaptiveRateControl(true);
 		
 		doAccountsMigration();
 		deleteAllOldPreferences();
