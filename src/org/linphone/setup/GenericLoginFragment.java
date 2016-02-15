@@ -111,8 +111,14 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
 		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			boolean iscalled = false;
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(!iscalled)
+				{
+					iscalled = true;
+					return;
+				}
 				CDNProviders.getInstance().setSelectedProvider(position);
 				if (CDNProviders.getInstance().getSelectedProvider() != null) {
 					domain.setText(CDNProviders.getInstance().getSelectedProvider().getDomain());
