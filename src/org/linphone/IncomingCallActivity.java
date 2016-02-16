@@ -46,11 +46,6 @@ import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.model.PHBridge;
 
-import joanbempong.android.HueBridgeSearchActivity;
-import joanbempong.android.HueController;
-import joanbempong.android.HueSharedPreferences;
-import joanbempong.android.PHWizardAlertDialog;
-
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
@@ -65,6 +60,9 @@ import org.linphone.vtcsecure.LinphoneTorchFlasher;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import joanbempong.android.HueController;
+import joanbempong.android.HueSharedPreferences;
 
 /**
  * Activity displayed when a call comes in.
@@ -283,7 +281,16 @@ public class IncomingCallActivity extends Activity {
 						reverseColorAnimation.setDuration((long) (flashFrequencyInSeconds * 1000));
 
 						if (terminated) {
-							flashRedBackgroundTimer.cancel();
+							//Call is showing terminated on some devices even though it is not, this is preventing red screen flashing. So I'm adding and attempt flash anyway, if it can't flash then we'll execute the anticpated terminate code.
+							try{
+								animatorSet.play(colorAnimation).after(reverseColorAnimation);
+								animatorSet.start();
+							}catch(Throwable e){
+								flashRedBackgroundTimer.cancel();
+								e.printStackTrace();
+								Log.d("incoming call is supposedly terminated and we tried to flash anyway, was unable to, so.. cancelling the flash timer");
+							}
+
 						} else {
 							animatorSet.play(colorAnimation).after(reverseColorAnimation);
 							animatorSet.start();
