@@ -179,8 +179,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		mChatDatabaseFile = basePath + "/linphone-history.db";
 		mFriendsDatabaseFile = basePath + "/linphone-friends.db";
 		mErrorToneFile = basePath + "/error.wav";
-		mConfigFile = basePath + "/configrc";
-		mUserCertificatePath = basePath;
+        mUserCertificatePath = basePath;
 
 		mPrefs = LinphonePreferences.instance();
 		mAudioManager = ((AudioManager) c.getSystemService(Context.AUDIO_SERVICE));
