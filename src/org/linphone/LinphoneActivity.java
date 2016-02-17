@@ -1395,8 +1395,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		if(BuildConfig.DEBUG) {
 			//Debug
-		}
-		else{
+			checkForCrashes();
+		} else{
 		 	//Release
 			checkForCrashes();
 		}
