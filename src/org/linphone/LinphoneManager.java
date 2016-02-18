@@ -110,6 +110,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.media.AudioManager.MODE_RINGTONE;
 import static android.media.AudioManager.STREAM_RING;
@@ -428,11 +430,23 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 //		}
 		LinphoneAddress lAddress;
 		try {
+			LinphoneProxyConfig lpc = mLc.getDefaultProxyConfig();
+
+			String internation_regex =  "^\\+(?:[0-9] ?){6,14}[0-9]$";
+			Pattern pattern = Pattern.compile(internation_regex);
+			String tmp_to = to.startsWith("00") ? "+" + to.substring(2): to;
+			Matcher matcher = pattern.matcher(tmp_to);
+			boolean isInternational = matcher.matches();
+
+			if(isInternational)
+			{
+				to = "sip:"+to + "@" + lpc.getDomain() + ";user=phone";
+			}
+
 			lAddress = mLc.interpretUrl(to);
 			if (mServiceContext.getResources().getBoolean(R.bool.override_domain_using_default_one)) {
 				lAddress.setDomain(mServiceContext.getString(R.string.default_domain));
 			}
-			LinphoneProxyConfig lpc = mLc.getDefaultProxyConfig();
 
 			if (mR.getBoolean(R.bool.forbid_self_call) && lpc!=null && lAddress.asStringUriOnly().equals(lpc.getIdentity())) {
 				return;
