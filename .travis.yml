@@ -78,13 +78,6 @@ android:
   - addon-google_apis-google-22
 before_script:
 - echo "Starting to update submodules"
-- if [ ! -d submodules/linphone/oRTP/.git ]; then rm -fr submodules/linphone/oRTP/
-  ; git clone git://git.linphone.org/ortp.git submodules/linphone/oRTP ; fi
-- if [ ! -d submodules/linphone/mediastreamer2/.git ]; then rm -fr submodules/linphone/mediastreamer2/
-  ; git clone git://git.linphone.org/mediastreamer2.git submodules/linphone/mediastreamer2
-  ; fi
-- if [ ! -d submodules/mswebrtc/webrtc/.git ]; then rm -fr submodules/mswebrtc/webrtc/
-  ; git clone git://git.linphone.org/webrtc.git submodules/mswebrtc/webrtc ; fi
 - git submodule update --init --recursive
 - echo "Submodule list before fetching all the tags"
 - git submodule
