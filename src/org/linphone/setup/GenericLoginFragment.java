@@ -59,9 +59,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		if (savedInstanceState==null)
-			setSelectedProviderToSTL();
+							 Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.login_provider, container, false);
 		login = (EditText) view.findViewById(R.id.et_prv_user);
@@ -111,14 +109,8 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 		view.findViewById(R.id.btn_prv_login).setOnClickListener(this);
 		sp_provider = (Spinner) view.findViewById(R.id.sp_prv);
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			boolean iscalled = false;
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if(!iscalled)
-				{
-					iscalled = true;
-					return;
-				}
 				CDNProviders.getInstance().setSelectedProvider(position);
 				if (CDNProviders.getInstance().getSelectedProvider() != null) {
 					domain.setText(CDNProviders.getInstance().getSelectedProvider().getDomain());
@@ -205,24 +197,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 		//set text
 	}
 
-	private void setSelectedProviderToSTL()
-	{
-		int i = 0;
-		for (CDNProviders.Provider provider: CDNProviders.getInstance().getProviders()
-				) {
-			if(provider.getDomain().equals("stl.vatrp.net"))
-			{
-				CDNProviders.getInstance().setSelectedProvider(i);
-				if(domain!=null && port!=null) {
-					domain.setText(CDNProviders.getInstance().getSelectedProvider().getDomain());
-					port.setText(String.valueOf(CDNProviders.getInstance().getSelectedProvider().getPort()));
-				}
-				//sp_provider.setSelection(i);
-			}
-
-		}
-
-	}
 //	/**
 //	 * @param providerDomainKey Key that was used to store registrar in SharedPreferences
 //	 */
@@ -273,8 +247,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 	@Override
 	public void onProviderLookupFinished() {
-		if(CDNProviders.getInstance().getSelectedProvider()==null)
-			setSelectedProviderToSTL();
 		setProviderData();
 		Log.d("onProviderLookupFinished");
 	}

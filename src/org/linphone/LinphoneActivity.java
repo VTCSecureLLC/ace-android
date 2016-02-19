@@ -117,6 +117,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private static final int CALL_ACTIVITY = 19;
     private static final int CHAT_ACTIVITY = 21;
 
+	private static boolean first_launch_boolean=true;
+
 	private static LinphoneActivity instance;
 
 	private StatusFragment statusFragment;
@@ -204,9 +206,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
 			startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
 		} else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0) {
+
+			//This is where the login screen is launched of first run, after accept legal release
+			if(first_launch_boolean==true) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
-            
+				first_launch_boolean=false;
+			}
+
 		}
         
         
@@ -1388,8 +1395,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		if(BuildConfig.DEBUG) {
 			//Debug
-		}
-		else{
+			checkForCrashes();
+		} else{
 		 	//Release
 			checkForCrashes();
 		}
