@@ -21,6 +21,7 @@ package org.linphone.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.media.ToneGenerator;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,11 +35,13 @@ import org.linphone.LinphoneService;
 import org.linphone.R;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.custom.HapticFeedback;
 import org.linphone.mediastream.Log;
 
 public class Digit extends Button implements AddressAware {
 
 	private AddressText mAddress;
+	private HapticFeedback feedbackHandler;
 	public void setAddressWidget(AddressText address) {
 		mAddress = address;
 	}
@@ -47,12 +50,15 @@ public class Digit extends Button implements AddressAware {
 	public void setPlayDtmf(boolean play) {
 		mPlayDtmf = play;
 	}
-
+	public void setFeedbackHandler(HapticFeedback feedbackHandler)
+	{
+		this.feedbackHandler = feedbackHandler;
+	}
 	@Override
 	protected void onTextChanged(CharSequence text, int start, int before,
-			int after) {
+								 int after) {
 		super.onTextChanged(text, start, before, after);
-		
+
 		if (text == null || text.length() < 1) {
 			return;
 		}
@@ -60,21 +66,21 @@ public class Digit extends Button implements AddressAware {
 		DialKeyListener lListener = new DialKeyListener();
 		setOnClickListener(lListener);
 		setOnTouchListener(lListener);
-		
+
 		if ("0+".equals(text)) {
 			setOnLongClickListener(lListener);
 		}
-		
+
 		if ("1".equals(text)) {
 			setOnLongClickListener(lListener);
 		}
 	}
-	
+
 	public Digit(Context context, AttributeSet attrs, int style) {
 		super(context, attrs, style);
 		setLongClickable(true);
 	}
-	
+
 	public Digit(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setLongClickable(true);
@@ -89,8 +95,23 @@ public class Digit extends Button implements AddressAware {
 		final char mKeyCode;
 		boolean mIsDtmfStarted;
 
+		int mToneCode = -1;
 		DialKeyListener() {
 			mKeyCode = Digit.this.getText().subSequence(0, 1).charAt(0);
+			try {
+				mToneCode = Integer.parseInt(mKeyCode+"");
+			}
+			catch (Exception ex)
+			{
+				if(mKeyCode =='*')
+				{
+					mToneCode = ToneGenerator.TONE_DTMF_S;
+				}
+				else if(mKeyCode =='#')
+				{
+					mToneCode = ToneGenerator.TONE_DTMF_P;
+				}
+			}
 		}
 
 		private boolean linphoneServiceReady() {
@@ -103,6 +124,8 @@ public class Digit extends Button implements AddressAware {
 		}
 
 		public void onClick(View v) {
+
+
 			if (mPlayDtmf) {
 				if (!linphoneServiceReady()) return;
 				LinphoneCore lc = LinphoneManager.getLc();
@@ -112,7 +135,7 @@ public class Digit extends Button implements AddressAware {
 					lc.sendDtmf(mKeyCode);
 				}
 			}
-			
+
 			if (mAddress != null) {
 				int lBegin = mAddress.getSelectionStart();
 				if (lBegin == -1) {
@@ -169,9 +192,11 @@ public class Digit extends Button implements AddressAware {
 			if (InCallActivity.isInstanciated()) {
 				InCallActivity.instance().hide_controls(InCallActivity.instance().SECONDS_BEFORE_HIDING_CONTROLS);
 			}
-			
+
 			LinphoneCore lc = LinphoneManager.getLc();
 			if (event.getAction() == MotionEvent.ACTION_DOWN && !mIsDtmfStarted) {
+				if(feedbackHandler!=null)
+					feedbackHandler.onEvent(mToneCode);
 				LinphoneManager.getInstance().playDtmf(getContext().getContentResolver(), mKeyCode);
 				mIsDtmfStarted = true;
 			} else {
@@ -182,7 +207,7 @@ public class Digit extends Button implements AddressAware {
 			}
 			return false;
 		}
-		
+
 		public boolean onLongClick(View v) {
 			int id = v.getId();
 			LinphoneCore lc = LinphoneManager.getLc();
@@ -192,7 +217,7 @@ public class Digit extends Button implements AddressAware {
 				// Called if "0+" dtmf
 				lc.stopDtmf();
 			}
-			
+
 			if(id == R.id.Digit1 && lc.getCalls().length == 0){
 				String voiceMail = LinphonePreferences.instance().getVoiceMailUri();
 				mAddress.getEditableText().clear();
@@ -202,8 +227,8 @@ public class Digit extends Button implements AddressAware {
 				}
 				return true;
 			}
-			
-			
+
+
 			if (mAddress == null) return true;
 
 			int lBegin = mAddress.getSelectionStart();
@@ -211,11 +236,11 @@ public class Digit extends Button implements AddressAware {
 				lBegin = mAddress.getEditableText().length();
 			}
 			if (lBegin >= 0) {
-			mAddress.getEditableText().insert(lBegin,"+");
+				mAddress.getEditableText().insert(lBegin,"+");
 			}
 			return true;
 		}
 	};
-	
+
 
 }

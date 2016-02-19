@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -35,6 +37,7 @@ import android.widget.LinearLayout;
 
 import org.linphone.LinphoneActivity;
 import org.linphone.R;
+import org.linphone.custom.HapticFeedback;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,28 +49,63 @@ import java.util.Collection;
 public class Numpad extends LinearLayout implements AddressAware {
 
 	private boolean mPlayDtmf;
+	private Context mContext;
+
 	public void setPlayDtmf(boolean sendDtmf) {
 		this.mPlayDtmf = sendDtmf;
 	}
 
 
 
+	HapticFeedback mHaptic = new HapticFeedback();
 
 
 	public Numpad(Context context, boolean playDtmf) {
 		super(context);
+		mContext = context;
 		mPlayDtmf = playDtmf;
 		View view=LayoutInflater.from(context).inflate(R.layout.numpad, this);
 		setLongClickable(true);
 		onFinishInflate();
 		setNumpadColors((ViewGroup) view);
+
+	}
+
+	public void setDTMFSoundEnabled(boolean enabled)
+	{
+		mHaptic.setDTMFSoundEnabled(enabled);
+	}
+
+	public void setHapticEnabled(boolean enabled)
+	{
+		mHaptic.setHapticEnabled(enabled);
+	}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		mHaptic.init(mContext, true);
+		mHaptic.checkSystemSetting();
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		mHaptic.deInit();
+	}
+
+	public void recheckSystemSettings()
+	{
+		mHaptic.checkSystemSetting();
 	}
 
 	public Numpad(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		mContext = context;
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Numpad);
-        mPlayDtmf = 1 == a.getInt(R.styleable.Numpad_play_dtmf, 1);
-        a.recycle();
+		mPlayDtmf = 1 == a.getInt(R.styleable.Numpad_play_dtmf, 1);
+
+		a.recycle();
 		View view=LayoutInflater.from(context).inflate(R.layout.numpad, this);
 		setLongClickable(true);
 		setNumpadColors((ViewGroup) view);
@@ -131,12 +169,12 @@ public class Numpad extends LinearLayout implements AddressAware {
 		((Button)view.findViewById(id)).setText(ss);
 		((Button)view.findViewById(id)).setLineSpacing(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, getResources().getDisplayMetrics()), .8f);
 
-
 	}
 	@Override
 	protected final void onFinishInflate() {
 		for (Digit v : retrieveChildren(this, Digit.class)) {
 			v.setPlayDtmf(mPlayDtmf);
+			v.setFeedbackHandler(mHaptic);
 		}
 		super.onFinishInflate();
 	}
