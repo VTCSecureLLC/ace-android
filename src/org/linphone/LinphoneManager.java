@@ -111,6 +111,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.media.AudioManager.MODE_RINGTONE;
 import static android.media.AudioManager.STREAM_RING;
@@ -431,11 +433,45 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 //		}
 		LinphoneAddress lAddress;
 		try {
+			LinphoneProxyConfig lpc = mLc.getDefaultProxyConfig();
+
+			boolean contains_international_tag = to.contains(";user=phone");
+
+			if(!contains_international_tag) {
+				String number;
+				boolean is_sip_uri = false;
+				if (to.contains("@")) {
+					int end_index = to.indexOf("@");
+					int start_index = 0;
+					if (to.contains("sip:"))
+						start_index = to.indexOf("sip:") + 4;
+
+					if (start_index < end_index) {
+						is_sip_uri = true;
+						number = to.substring(start_index, end_index);
+					}
+					else
+						number = to;
+				} else
+					number = to;
+
+				String internation_regex = "^\\+(?:[0-9] ?){6,14}[0-9]$";
+				Pattern pattern = Pattern.compile(internation_regex);
+				Matcher matcher = pattern.matcher(number.startsWith("00") ? "+" + number.substring(2) : number);
+				boolean isInternational = matcher.matches();
+
+				if (isInternational) {
+					if(is_sip_uri)
+						to += ";user=phone";
+					else
+						to = "sip:" + to + "@" + lpc.getDomain() + ";user=phone";
+				}
+
+			}
 			lAddress = mLc.interpretUrl(to);
 			if (mServiceContext.getResources().getBoolean(R.bool.override_domain_using_default_one)) {
 				lAddress.setDomain(mServiceContext.getString(R.string.default_domain));
 			}
-			LinphoneProxyConfig lpc = mLc.getDefaultProxyConfig();
 
 			if (mR.getBoolean(R.bool.forbid_self_call) && lpc!=null && lAddress.asStringUriOnly().equals(lpc.getIdentity())) {
 				return;
