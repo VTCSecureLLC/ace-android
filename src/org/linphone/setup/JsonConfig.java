@@ -1,18 +1,23 @@
 package org.linphone.setup;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.PayloadType;
+import org.linphone.mediastream.Log;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -326,6 +331,7 @@ public class JsonConfig {
 			errorMsg = "Failed to Login";
 		}
 
+
 		@Override
 		protected JsonConfig doInBackground(Void... params) {
 			Record[] records;// = new Record[0];
@@ -370,16 +376,47 @@ public class JsonConfig {
 			return null;
 		}
 
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			Log.d("Starting autoconfig download");
+			LinphoneActivity.instance().generic_ace_loading_dialog = new ProgressDialog(LinphoneActivity.instance());
+			LinphoneActivity.instance().generic_ace_loading_dialog.setCancelable(true);
+			LinphoneActivity.instance().generic_ace_loading_dialog.setMessage("Loading Auto Configuration Based on User...");
+			LinphoneActivity.instance().generic_ace_loading_dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			LinphoneActivity.instance().generic_ace_loading_dialog.setProgress(0);
+			LinphoneActivity.instance().generic_ace_loading_dialog.show();
 
+		}
 		@Override
 		protected void onPostExecute(JsonConfig res) {
 			super.onPostExecute(res);
 			if (res != null) {
-				if (listener != null)
+				if (listener != null) {
 					listener.onParsed(res);
+					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
+					new AlertDialog.Builder(LinphoneActivity.instance())
+							.setMessage("Auto-Configuration")
+							.setTitle("Configuration Loaded Successfully")
+							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialogInterface, int i) {
+								}
+							}).show();
+				}
 			} else {
-				if (listener != null)
+				if (listener != null) {
 					listener.onFailed(errorMsg);
+					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
+					new AlertDialog.Builder(LinphoneActivity.instance())
+							.setMessage("Auto-Configuration")
+							.setTitle("Configuration Not Loaded")
+							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialogInterface, int i) {
+								}
+							}).show();
+				}
 			}
 
 		}
