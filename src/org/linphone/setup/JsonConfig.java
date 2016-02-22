@@ -396,8 +396,8 @@ public class JsonConfig {
 					listener.onParsed(res);
 					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
 					new AlertDialog.Builder(LinphoneActivity.instance())
-							.setMessage("Auto-Configuration")
-							.setTitle("Configuration Loaded Successfully")
+							.setMessage("Configuration Loaded Successfully")
+							.setTitle("Auto-Configuration")
 							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialogInterface, int i) {
@@ -409,8 +409,8 @@ public class JsonConfig {
 					listener.onFailed(errorMsg);
 					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
 					new AlertDialog.Builder(LinphoneActivity.instance())
-							.setMessage("Auto-Configuration")
-							.setTitle("Configuration Not Loaded")
+							.setMessage("Configuration Not Loaded")
+							.setTitle("Auto-Configuration")
 							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialogInterface, int i) {
