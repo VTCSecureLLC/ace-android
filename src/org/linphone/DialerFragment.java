@@ -49,7 +49,6 @@ import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.setup.CDNProviders;
 import org.linphone.setup.SpinnerAdapter;
-import org.linphone.ui.AddressAware;
 import org.linphone.ui.AddressText;
 import org.linphone.ui.CallButton;
 import org.linphone.ui.EraseButton;
@@ -446,7 +445,12 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 
 	private synchronized void startOrientationSensor() {
 		//Disable global orientation change listener, and initiate only dialer listener
-		LinphoneActivity.instance().mOrientationHelper.disable();
+
+		try {//Random crash here sometimes adding try/catch
+			LinphoneActivity.instance().mOrientationHelper.disable();
+		}catch(Throwable e){
+
+		}
 		if (mOrientationHelper == null) {
 			mOrientationHelper = new LocalOrientationEventListener(LinphoneActivity.instance());
 		}
