@@ -83,6 +83,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PayloadType;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
@@ -1668,8 +1669,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	}
 
-	public void display_all_core_values(LinphoneCore lc, final String filename){
+	public ArrayList<String> display_all_core_values(LinphoneCore lc, final String filename){
 
+		ArrayList<String> stats_list=new ArrayList<String>();
 
 		final String getAdaptiveRateAlgorithm=LC_Object_to_String(lc.getAdaptiveRateAlgorithm());
 		final String getAudioCodecs=LC_Object_to_String(lc.getAudioCodecs());
@@ -1900,20 +1902,102 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 		//show on screen logs
+		//Display to developer
 
+		stats_list.add("getAdaptiveRateAlgorithm,"+ getAdaptiveRateAlgorithm);
+		stats_list.add("getAudioCodecs,"+getAudioCodecs);
+		stats_list.add("getAudioDscp,"+getAudioDscp);
+		stats_list.add("getAudioMulticastAddr,"+getAudioMulticastAddr);
+		stats_list.add("getAudioMulticastTtl,"+getAudioMulticastTtl);
+		stats_list.add("getAuthInfosList,"+getAuthInfosList);
+		stats_list.add("getCallLogs,"+getCallLogs);
+		stats_list.add("getCalls,"+getCalls);
+		stats_list.add("getCallsNb,"+getCallsNb);
+		//stats_list.add("getChatRoom,"+getChatRoom);
+		stats_list.add("getConference,"+getConference);
+		stats_list.add("getConferenceSize,"+getConferenceSize);
+		stats_list.add("getConfig,"+getConfig);
+		stats_list.add("getCurrentCall,"+getCurrentCall);
+		stats_list.add("getDefaultProxyConfig,"+getDefaultProxyConfig);
+		stats_list.add("getDownloadBandwidth,"+getDownloadBandwidth);
+		stats_list.add("getFileTransferServer,"+getFileTransferServer);
+		stats_list.add("getFirewallPolicy,"+getFirewallPolicy);
+		stats_list.add("getFriendList,"+getFriendList);
+		stats_list.add("getGlobalState,"+getGlobalState);
+		stats_list.add("getHttpProxyHost,"+getHttpProxyHost);
+		stats_list.add("getHttpProxyPort,"+getHttpProxyPort);
+		stats_list.add("getLastOutgoingCallLog,"+getLastOutgoingCallLog);
+		stats_list.add("getMaxCalls,"+getMaxCalls);
+		stats_list.add("getMediaEncryption,"+getMediaEncryption);
+		stats_list.add("getMissedCallsCount,"+getMissedCallsCount);
+		stats_list.add("getMtu,"+getMtu);
+		stats_list.add("getNortpTimeout,"+getNortpTimeout);
+		//stats_list.add("getOrCreateChatRoom,"+getOrCreateChatRoom);
+		//stats_list.add("getPayloadTypeBitrate,"+getPayloadTypeBitrate);
+		//stats_list.add("getPayloadTypeNumber,"+getPayloadTypeNumber);
+		stats_list.add("getPlaybackGain,"+getPlaybackGain);
+		stats_list.add("getPlayLevel,"+getPlayLevel);
+		stats_list.add("getPreferredFramerate,"+getPreferredFramerate);
+		stats_list.add("getPreferredVideoSize,"+getPreferredVideoSize);
+		stats_list.add("getPresenceModel,"+getPresenceModel);
+		stats_list.add("getPrimaryContact,"+getPrimaryContact);
+		stats_list.add("getPrimaryContactDisplayName,"+getPrimaryContactDisplayName);
+		stats_list.add("getProvisioningUri,"+getProvisioningUri);
+		stats_list.add("getProxyConfigList,"+getProxyConfigList);
+		stats_list.add("getRemoteAddress,"+getRemoteAddress);
+		stats_list.add("getRemoteRingbackTone,"+getRemoteRingbackTone);
+		stats_list.add("getRing,"+getRing);
+		stats_list.add("getSignalingTransportPorts,"+getSignalingTransportPorts);
+		stats_list.add("getSipDscp,"+getSipDscp);
+		stats_list.add("getSipTransportTimeout,"+getSipTransportTimeout);
+		stats_list.add("getStunServer,"+getStunServer);
+		stats_list.add("getSupportedVideoSizes,"+getSupportedVideoSizes);
+		stats_list.add("getUploadBandwidth,"+getUploadBandwidth);
+		stats_list.add("getUpnpExternalIpaddress,"+getUpnpExternalIpaddress);
+		stats_list.add("getUpnpState,"+getUpnpState);
+		stats_list.add("getUseRfc2833ForDtmfs,"+getUseRfc2833ForDtmfs);
+		stats_list.add("getUseSipInfoForDtmfs,"+getUseSipInfoForDtmfs);
+		stats_list.add("getVersion,"+getVersion);
+		stats_list.add("getVideoAutoAcceptPolicy,"+getVideoAutoAcceptPolicy);
+		stats_list.add("getVideoAutoInitiatePolicy,"+getVideoAutoInitiatePolicy);
+		stats_list.add("getVideoCodecs,"+getVideoCodecs);
+		stats_list.add("getVideoDevice,"+getVideoDevice);
+		stats_list.add("getVideoDscp,"+getVideoDscp);
+		stats_list.add("getVideoMulticastAddr,"+getVideoMulticastAddr);
+		stats_list.add("getVideoMulticastTtl,"+getVideoMulticastTtl);
+		stats_list.add("getVideoPreset,"+getVideoPreset);
+		stats_list.add("getPresenceInfo,"+getPresenceInfo);
+		stats_list.add("tunnelGetMode,"+tunnelGetMode);
+		stats_list.add("tunnelGetServers,"+tunnelGetServers);
+		return stats_list;
 	}
 	public String LC_Object_to_String(Object object){
 		String string;
 		try {
-			try {
-				string = object != null ? object.toString() : "null";
-			} catch (Throwable e) {
-				string = object != null ? String.valueOf(object) : "null";
+
+			if(object instanceof PayloadType[]){
+				PayloadType[] payloadTypes=(PayloadType[])object;
+				string="";
+				for(int i=0; i<payloadTypes.length; i++){
+					string=string+payloadTypes[i].toString()+",";
+				}
+			}else if(object instanceof String[]) {
+				String[] String=(String[])object;
+				string="";
+				for(int i=0; i<String.length; i++){
+					string=string+String[i].toString()+",";
+				}
+
+			}else{
+					try {
+						string = object != null ? object.toString() : "null";
+					} catch (Throwable e) {
+						string = object != null ? String.valueOf(object) : "null";
+					}
 			}
 		}catch(Throwable e){
 			string = "unknown";
 		}
-
 		return string;
 	}
 }

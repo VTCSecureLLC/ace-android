@@ -74,7 +74,7 @@ public class StatusFragment extends Fragment {
 	private TextView statusText, exit, voicemailCount;
 	private ImageView statusLed, callQuality, encryption, background;
 	private ListView sliderContentAccounts;
-	private TableLayout callStats;
+	public TableLayout callStats;
 	private SlidingDrawer drawer;
 //	private LinearLayout allAccountsLed;
 	private Runnable mCallQualityUpdater;
@@ -106,7 +106,7 @@ public class StatusFragment extends Fragment {
 				populateSliderContent();
 			}
 		});
-		
+
 		sliderContentAccounts = (ListView) view.findViewById(R.id.accounts);
 		if(LinphonePreferences.instance().areAnimationsEnabled()) {
 			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
@@ -126,10 +126,10 @@ public class StatusFragment extends Fragment {
 		});
 		if (getResources().getBoolean(R.bool.exit_button_on_dialer))
 			exit.setVisibility(View.VISIBLE);
-		
+
 		// We create it once to not delay the first display
 		populateSliderContent();
-		
+
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void registrationState(final LinphoneCore lc, final LinphoneProxyConfig proxy, final LinphoneCore.RegistrationState state, String smessage) {
@@ -144,7 +144,7 @@ public class StatusFragment extends Fragment {
 					statusLed.setImageResource(getStatusIconResource(state, true));
 					statusText.setText(getStatusIconText(state));
 				}
-				
+
 				try {
 					if (getResources().getBoolean(R.bool.lock_statusbar)) {
 						statusText.setOnClickListener(new OnClickListener() {
@@ -159,10 +159,10 @@ public class StatusFragment extends Fragment {
 					sliderContentAccounts.invalidate();
 				} catch (IllegalStateException ise) {}
 			}
-			
+
 			@Override
 			public void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content) {
-				
+
 				if(!content.getType().equals("application")) return;
 				if(!content.getSubtype().equals("simple-message-summary")) return;
 
@@ -181,7 +181,7 @@ public class StatusFragment extends Fragment {
 					voicemailCount.setVisibility(View.GONE);
 				}
 			}
-			
+
 		};
 
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
@@ -195,7 +195,7 @@ public class StatusFragment extends Fragment {
 
         return view;
     }
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -215,7 +215,7 @@ public class StatusFragment extends Fragment {
 		super.onDetach();
 		isAttached = false;
 	}
-	
+
 	public void openOrCloseStatusBar() {
 		openOrCloseStatusBar(false);
 	}

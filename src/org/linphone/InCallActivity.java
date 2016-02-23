@@ -59,6 +59,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +81,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.Numpad;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -98,7 +100,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	private static InCallActivity instance;
 
-
+	ArrayList<String> linphone_core_stats_list;
 
 	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
@@ -160,6 +162,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private TextView incomingTextView;
 	View mFragmentHolder;
 	View mViewsHolder;
+	View linphone_core_stats_holder;
+	TableLayout linphone_core_stats_table;
 	RelativeLayout mainLayout;
 	final float mute_db = -1000.0f;
 
@@ -186,6 +190,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mainLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 		LayoutInflater inflator = LayoutInflater.from(this);
 		mViewsHolder =  inflator.inflate(R.layout.incall, null);
+
+
+
 		mFragmentHolder = inflator.inflate(R.layout.incall_fragment_holder, null);
 		rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
 		View statusBar = inflator.inflate(R.layout.status_holder, null);
@@ -193,12 +200,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT);
 
+		linphone_core_stats_holder =  inflator.inflate(R.layout.linphone_core_stats, null);
+		linphone_core_stats_table = (TableLayout)linphone_core_stats_holder.findViewById(R.id.linphone_core_stats);
+		show_extra_linphone_core_stats();
 
 		//paramss.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		mainLayout.addView(mFragmentHolder,paramss);
 		mainLayout.addView(mViewsHolder);
 		mainLayout.addView(rttHolder, paramss);
 		mainLayout.addView(statusBar);
+		mainLayout.addView(linphone_core_stats_holder, paramss);
 		setContentView(mainLayout);
 
 		myReceiver = new HeadPhoneJackIntentReceiver();
@@ -230,6 +241,23 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		} else {
 			LinphoneManager.getLc().setPlaybackGain(0);
 		}
+
+		status.callStats.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Log.d("stats clicked");
+				linphone_core_stats_holder.setVisibility(View.VISIBLE);
+			}
+		});
+		linphone_core_stats_table.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Log.d("stats clicked");
+				linphone_core_stats_holder.setVisibility(View.GONE);
+			}
+		});
+
+
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void isComposingReceived(LinphoneCore lc, LinphoneChatRoom cr) {
@@ -506,6 +534,39 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 	}
+
+
+	public void show_extra_linphone_core_stats(){
+		//Add all linphone core stats.
+		linphone_core_stats_list=LinphoneActivity.instance().display_all_core_values(LinphoneManager.getLc(), "In Call Stats Populated");
+		for(int i=0; i<linphone_core_stats_list.size(); i++){
+
+			TableRow tr=new TableRow(LinphoneActivity.instance());
+			tr.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+
+			TextView label=new TextView(LinphoneActivity.instance());
+			label.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+			String label_string=linphone_core_stats_list.get(i).split(",")[0];
+			label.setText(label_string);
+			label.setTextColor(Color.WHITE);
+			label.setTextSize(6);
+			tr.addView(label);
+
+			TextView content=new TextView(LinphoneActivity.instance());
+			content.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+			content.setText(linphone_core_stats_list.get(i).subSequence(label_string.length()+1, linphone_core_stats_list.get(i).length()));
+			content.setTextColor(Color.WHITE);
+			content.setTextSize(6);
+			tr.addView(content);
+
+			linphone_core_stats_table.addView(tr);
+
+		}
+		//callStats.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, 5000));
+		//callStats.invalidate();
+		//((ScrollView)callStats.getParent()).invalidate();
+	}
+
 
 
 	/** Initializes the views and other components needed for RTT in a call */

@@ -348,7 +348,7 @@ public class JsonConfig {
 					String hostname = srv.getTarget().toString().replaceFirst("\\.$", "");
 
 					request_url = "https://" + hostname + "/config/v1/config.json";
-
+					Log.d("Auto Config request_url: "+request_url);
 				}
 //				if (request_url == null) {
 //					try {
@@ -360,6 +360,7 @@ public class JsonConfig {
 
 				try {
 					String reponse_str = getFromHttpURLConnection();
+					Log.d("Auto Config JSON: "+reponse_str);
 					return parseJson(reponse_str, request_url);
 
 				} catch (MalformedURLException e) {
@@ -379,6 +380,8 @@ public class JsonConfig {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
+			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+			LinphoneActivity.instance().display_all_core_values(lc, "Pre-AutoConfig");
 			Log.d("Starting autoconfig download");
 			LinphoneActivity.instance().generic_ace_loading_dialog = new ProgressDialog(LinphoneActivity.instance());
 			LinphoneActivity.instance().generic_ace_loading_dialog.setCancelable(true);
