@@ -84,6 +84,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.LpConfig;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
@@ -94,8 +95,10 @@ import org.linphone.vtcsecure.LinphoneLocationManager;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
@@ -1895,6 +1898,29 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					fw.append("tunnelGetMode," + tunnelGetMode+"\n");
 					fw.append("tunnelGetServers," + tunnelGetServers+"\n");
 					fw.close();
+
+
+
+
+					//Copy Linphonerc into ace folder
+					String path = LinphoneActivity.instance().getFilesDir().getAbsolutePath() + "/.linphonerc";
+
+                        /* checks the file and if it already exist delete */
+					final String fname1 = filename+ "_linphonerc.txt";
+					File file1 = new File (sdCard, fname1);
+					if (!file1.exists ()) {
+						file1.getParentFile().mkdirs();
+					}else {
+						file1.delete();
+					}
+
+					Log.d("fname",fname1);
+					Log.d("file",file1.getAbsolutePath());
+
+					fw = new FileWriter(file1.getAbsoluteFile());
+					fw.append(readFromFile(path));
+					fw.close();
+
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}
@@ -1989,7 +2015,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //					string=string+String[i].toString()+",";
 //				}
 
-			if(object.getClass().isArray()) {
+			if(object.getClass().isArray()) {//Handle Arrays
 
 				string="";
 				for(int i=0; i< Array.getLength(object); i++){
@@ -2003,24 +2029,65 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 								"\ngetRealm(): "+lai.getRealm();
 					}else {
 						try {
-							string = string + Array.get(object, i).toString();
+							string = string + Array.get(object, i).toString()+",";
 						} catch (Throwable e) {
 
 						}
 					}
 				}
 
-			}else{
+			}else{//Handle Objects
+
+				if(object instanceof LpConfig){
+					LpConfig lpconfig=(LpConfig)object;
+
+					String path = LinphoneActivity.instance().getFilesDir().getAbsolutePath() + "/.linphonerc";
+					//string=path+"\n"+readFromFile(path);
+					string=path;
+				}else {
 					try {
 						string = object != null ? object.toString() : "null";
 					} catch (Throwable e) {
 						string = object != null ? String.valueOf(object) : "null";
 					}
+				}
+
 			}
 		}catch(Throwable e){
 			string = "unknown";
+			e.printStackTrace();
 		}
 		return string;
+	}
+
+	private String readFromFile(String filepath) {
+
+		String ret = "";
+
+		try {
+			InputStream inputStream = openFileInput(".linphonerc");
+
+			if ( inputStream != null ) {
+				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+				String receiveString = "";
+				StringBuilder stringBuilder = new StringBuilder();
+
+				while ( (receiveString = bufferedReader.readLine()) != null ) {
+					stringBuilder.append(receiveString);
+				}
+
+				inputStream.close();
+				ret = stringBuilder.toString();
+			}
+		}
+		catch (FileNotFoundException e) {
+			Log.e("login activity", "File not found: " + e.toString());
+		} catch (IOException e) {
+			Log.e("login activity", "Can not read file: " + e.toString());
+		}
+
+		return ret;
 	}
 }
 
