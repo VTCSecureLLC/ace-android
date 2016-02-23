@@ -22,6 +22,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -108,6 +109,9 @@ import static org.linphone.LinphoneManager.getLc;
  * @author Sylvain Berfini
  */
 public class LinphoneActivity extends FragmentActivity implements OnClickListener, ContactPicked {
+
+	public static ProgressDialog generic_ace_loading_dialog;
+
 	public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
 	public static Context ctx;
 	public static Activity act;
