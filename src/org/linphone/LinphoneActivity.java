@@ -18,6 +18,7 @@ package org.linphone;
  along with this program; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -83,7 +84,6 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.PayloadType;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
@@ -97,6 +97,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1975,17 +1976,38 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		String string;
 		try {
 
-			if(object instanceof PayloadType[]){
-				PayloadType[] payloadTypes=(PayloadType[])object;
+//			if(object instanceof PayloadType[]){
+//				PayloadType[] payloadTypes=(PayloadType[])object;
+//				string="";
+//				for(int i=0; i<payloadTypes.length; i++){
+//					string=string+payloadTypes[i].toString()+",";
+//				}
+//			}else if(object instanceof String[]) {
+//				String[] String=(String[])object;
+//				string="";
+//				for(int i=0; i<String.length; i++){
+//					string=string+String[i].toString()+",";
+//				}
+
+			if(object.getClass().isArray()) {
+
 				string="";
-				for(int i=0; i<payloadTypes.length; i++){
-					string=string+payloadTypes[i].toString()+",";
-				}
-			}else if(object instanceof String[]) {
-				String[] String=(String[])object;
-				string="";
-				for(int i=0; i<String.length; i++){
-					string=string+String[i].toString()+",";
+				for(int i=0; i< Array.getLength(object); i++){
+					if(Array.get(object, i) instanceof LinphoneAuthInfo){
+						LinphoneAuthInfo lai=(LinphoneAuthInfo)Array.get(object, i);
+						string=string+"\ngetUsername(): "+lai.getUsername()+
+								"\ngetUserId(): "+lai.getUserId()+
+								"\ngetPassword(): "+lai.getPassword()+
+								"\ngetDomain(): "+lai.getDomain()+
+								"\ngetHa1(): "+lai.getHa1()+
+								"\ngetRealm(): "+lai.getRealm();
+					}else {
+						try {
+							string = string + Array.get(object, i).toString();
+						} catch (Throwable e) {
+
+						}
+					}
 				}
 
 			}else{
