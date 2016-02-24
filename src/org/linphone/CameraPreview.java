@@ -2,8 +2,10 @@ package org.linphone;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -100,26 +102,69 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Log.d("setCamera","setCamera");
 		//setCamera(mCamera);
 		try {
-			int layoutWidth = this.getWidth();
-			int layoutHeight = this.getHeight();
+			int app_orienation=LinphoneActivity.instance().getWindowManager().getDefaultDisplay().getRotation();
+			if(!LinphoneActivity.instance().isTablet()||(LinphoneActivity.instance().isTablet()&&(app_orienation==1||app_orienation==3))) {
+				int layoutWidth = this.getWidth();
+				int layoutHeight = this.getHeight();
+
+				setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), mCamera);
+
+				mCamera.setPreviewDisplay(mHolder);
+				Camera.Parameters parameters = mCamera.getParameters();
+				Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
+				parameters.setPreviewSize(size.width, size.height);
+				int max_fps=30;
+				parameters.setPreviewFrameRate(getHighestPreviewFramerate(max_fps));
+				mCamera.setParameters(parameters);
+
+				if (LinphoneActivity.instance().isTablet()) {
+					if(app_orienation==1||app_orienation==3) {
+						int aspect_width = layoutWidth;
+						int aspect_height = size.height * aspect_width / size.width;
+						this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width, aspect_height));
+					}else{
+						int aspect_height = layoutHeight;
+						int aspect_width = size.width *aspect_height/size.height;
+						this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width, aspect_height));
+					}
+				}
+			}else{//We are on a tablet in portrait
+
+				Display display = LinphoneActivity.instance().getWindowManager().getDefaultDisplay();
+				Point screen_size = new Point();
+				display.getSize(screen_size);
+				int width = screen_size.x;
+				int height = screen_size.y;
 
 
+				int layoutWidth = 0;
+				int layoutHeight = 0;
+				if(width>height){
+					layoutWidth=width;
+					layoutHeight=height;
+				}else{
+					layoutHeight=width;
+					layoutWidth=height;
+				}
 
 
-			setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), mCamera);
+				setCameraDisplayOrientation(LinphoneActivity.instance(), findFrontFacingCamera(), mCamera);
 
-			mCamera.setPreviewDisplay(mHolder);
-			Camera.Parameters parameters = mCamera.getParameters();
-			Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
-			parameters.setPreviewSize(size.width, size.height);
-			mCamera.setParameters(parameters);
+				mCamera.setPreviewDisplay(mHolder);
+				Camera.Parameters parameters = mCamera.getParameters();
+				Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
+				parameters.setPreviewSize(size.width, size.height);
+				int max_fps=30;
+				parameters.setPreviewFrameRate(getHighestPreviewFramerate(max_fps));
+				mCamera.setParameters(parameters);
 
-			if(LinphoneActivity.instance().isTablet()){
-				int aspect_width=layoutWidth;
-				int aspect_height=size.height*aspect_width/size.width;
-				this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width,aspect_height));
+				if (LinphoneActivity.instance().isTablet()) {
+
+					int aspect_width = width;
+					int aspect_height = height;
+					this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width, aspect_height));
+				}
 			}
-
 			mCamera.startPreview();
 		} catch (Exception e) {
 			Log.d(VIEW_LOG_TAG, "Error starting camera preview: " + e.getMessage());
@@ -146,7 +191,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		return result;
 
 	}
+	private int getHighestPreviewFramerate(int upper_limit)
+	{
+		//initialize to 0, but it can change based off of highest available fps capture
+		int framerate=0;
+		Camera.Parameters p = mCamera.getParameters();
+		for (int fps : p.getSupportedPreviewFrameRates()) {
+			if(fps>framerate&&!(fps>upper_limit)){
+				framerate=fps;
+			}
+		}
+		return framerate;
 
+	}
 
 	public static void setCameraDisplayOrientation(Activity activity, int icameraId, Camera camera)
 	{
@@ -156,6 +213,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Camera.getCameraInfo(icameraId, cameraInfo);
 
 		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+
+
 		Log.d("setting camera display orientation",String.valueOf(rotation));
 		int degrees = 0; // k
 
