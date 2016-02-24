@@ -113,6 +113,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				Camera.Parameters parameters = mCamera.getParameters();
 				Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
 				parameters.setPreviewSize(size.width, size.height);
+				int max_fps=30;
+				parameters.setPreviewFrameRate(getHighestPreviewFramerate(max_fps));
 				mCamera.setParameters(parameters);
 
 				if (LinphoneActivity.instance().isTablet()) {
@@ -126,15 +128,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 						this.setLayoutParams(new LinearLayout.LayoutParams(aspect_width, aspect_height));
 					}
 				}
-			}else{
-
-//				mCamera.setDisplayOrientation(orientation_degrees);
-//				layoutWidth = 814;
-//				layoutHeight = 1920;
-
-
-//				int dialer_height = DialerFragment.instance().dialer_view.getHeight();
-//				int dialer_width = DialerFragment.instance().dialer_view.getWidth();
+			}else{//We are on a tablet in portrait
 
 				Display display = LinphoneActivity.instance().getWindowManager().getDefaultDisplay();
 				Point screen_size = new Point();
@@ -143,8 +137,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				int height = screen_size.y;
 
 
-				int layoutWidth = 1920;
-				int layoutHeight = 814;
+				int layoutWidth = 0;
+				int layoutHeight = 0;
 				if(width>height){
 					layoutWidth=width;
 					layoutHeight=height;
@@ -160,6 +154,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 				Camera.Parameters parameters = mCamera.getParameters();
 				Camera.Size size = getBestPreviewSize(layoutWidth, layoutHeight);
 				parameters.setPreviewSize(size.width, size.height);
+				int max_fps=30;
+				parameters.setPreviewFrameRate(getHighestPreviewFramerate(max_fps));
 				mCamera.setParameters(parameters);
 
 				if (LinphoneActivity.instance().isTablet()) {
@@ -195,7 +191,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		return result;
 
 	}
+	private int getHighestPreviewFramerate(int upper_limit)
+	{
+		//initialize to 0, but it can change based off of highest available fps capture
+		int framerate=0;
+		Camera.Parameters p = mCamera.getParameters();
+		for (int fps : p.getSupportedPreviewFrameRates()) {
+			if(fps>framerate&&!(fps>upper_limit)){
+				framerate=fps;
+			}
+		}
+		return framerate;
 
+	}
 
 	public static void setCameraDisplayOrientation(Activity activity, int icameraId, Camera camera)
 	{
