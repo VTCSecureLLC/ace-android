@@ -146,6 +146,7 @@
                 android:autoText="false"
                 android:paddingLeft="30dp"
                 android:singleLine="true"
+                android:nextFocusDown="@+id/btn_prv_login"
                 android:imeOptions="actionNext"/>
         </LinearLayout>
 
