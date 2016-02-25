@@ -35,6 +35,8 @@ import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.LpConfig;
 import org.linphone.core.TunnelConfig;
 import org.linphone.mediastream.Log;
+import org.linphone.setup.DSCPClassSelector;
+
 /**
  * @author Sylvain Berfini
  */
@@ -1083,6 +1085,33 @@ public class LinphonePreferences {
 	public String getDefaultUsername() {
 		return getLc().getPrimaryContactUsername();
 	}
+
+
+	public void setPacketTagging(boolean enabled) {
+
+		LinphoneCore lc = getLc();
+		if(enabled)
+		{
+			lc.setVideoDscp(DSCPClassSelector.getVideoDSCP());
+			lc.setAudioDscp(DSCPClassSelector.getAudioDSCP());
+			lc.setSipDscp(DSCPClassSelector.getSipDSCP());
+		}
+		else
+		{
+			lc.setVideoDscp(DSCPClassSelector.getDefaultDSCP());
+			lc.setAudioDscp(DSCPClassSelector.getDefaultDSCP());
+			lc.setSipDscp(DSCPClassSelector.getDefaultDSCP());
+		}
+	}
+	public boolean isPacketTaggingEnabled()
+	{
+		LinphoneCore lc = getLc();
+		boolean isAudioTagged = lc.getAudioDscp() == DSCPClassSelector.getAudioDSCP()? true : false;
+		boolean isVideoTagged = lc.getVideoDscp() == DSCPClassSelector.getVideoDSCP()? true : false;
+		boolean isSipTagged = lc.getSipDscp() == DSCPClassSelector.getSipDSCP()? true : false;
+		return  isAudioTagged && isVideoTagged && isAudioTagged;
+	}
+
 	// End of advanced settings
 
 	// Tunnel settings

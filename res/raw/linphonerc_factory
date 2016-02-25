@@ -13,6 +13,7 @@ auto_net_state_mon=0
 auto_answer_replacing_calls=1
 media_encryption_mandatory=0
 ping_with_options=0
+dscp=28
 
 
 [rtp]
@@ -22,6 +23,9 @@ audio_jitt_comp=60
 video_jitt_comp=60
 nortp_timeout=30
 disable_upnp=1
+audio_dscp=38
+video_dscp=38
+
 
 [sound]
 playback_dev_id=
