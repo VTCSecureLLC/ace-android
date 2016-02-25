@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.linphone.LinphoneActivity;
+import org.linphone.LinphoneManager;
 import org.linphone.R;
 import org.linphone.mediastream.Log;
 
@@ -107,7 +109,8 @@ public class App extends Activity {
     	            mStatusText.setText("Importing Contacts...");
     	            
     	            // Start the import
-    	            mBoundService.doImport(fileName, mReplaceOnImport.isChecked(), App.this);
+					mBoundService.importContactsLinphone(LinphoneManager.getLc(), fileName, App.this);
+    	            //mBoundService.doImport(fileName, mReplaceOnImport.isChecked(), App.this);
     			}
     		}
     	};
@@ -127,7 +130,8 @@ public class App extends Activity {
     	            mStatusText.setText("Exporting Contacts...");
     	            
     	            // Start the import
-    	            mBoundService.doExport(fileName, App.this);
+					mBoundService.exportContactsLinphone(LinphoneManager.getLc(), fileName, App.this);
+    	            //mBoundService.doExport(fileName, App.this);
     			}
     		}
     	};

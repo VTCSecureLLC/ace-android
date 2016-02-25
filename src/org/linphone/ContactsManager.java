@@ -145,6 +145,25 @@ public class ContactsManager {
 		}
 	}
 
+	public void createNewContact(ArrayList<ContentProviderOperation> ops, String displayname) {
+		int contactID = 0;
+
+		ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+						.withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
+						.withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+						.withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+						.build()
+		);
+
+			ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+							.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, contactID)
+							.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+							.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayname)
+							.build()
+			);
+
+	}
+
 	public void updateExistingContact(ArrayList<ContentProviderOperation> ops, Contact contact, String firstName, String lastName) {
 		if (getDisplayName(firstName, lastName) != null) {
 			String select = ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE + "'";
@@ -158,6 +177,20 @@ public class ContactsManager {
 				.build()
 			);
 		}
+	}
+
+	public void updateExistingContact(ArrayList<ContentProviderOperation> ops, String id, String name) {
+
+			String select = ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE + "'";
+			String[] args = new String[]{id};
+
+			ops.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+							.withSelection(select, args)
+							.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+							.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+							.build()
+			);
+
 	}
 
 //Manage Linphone Friend if we cannot use Sip address
@@ -559,7 +592,6 @@ public class ContactsManager {
 
 		contactCursor = Compatibility.getContactsCursor(contentResolver, getContactsId());
 		sipContactCursor = Compatibility.getSIPContactsCursor(contentResolver, getContactsId());
-
 		Thread sipContactsHandler = new Thread(new Runnable() {
 			@Override
 			public void run() {
