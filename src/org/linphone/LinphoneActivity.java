@@ -85,6 +85,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.LpConfig;
+import org.linphone.core.PayloadType;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
@@ -224,8 +225,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 
 		}
-        
-        
+
+
 
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());
@@ -1677,6 +1678,29 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		ArrayList<String> stats_list=new ArrayList<String>();
 
+		final String LinphoneCoreStatsTitle="--------Linphone Core Stats---------";
+		final String audioMulticastEnabled=LC_Object_to_String(lc.audioMulticastEnabled());
+		final String videoMulticastEnabled=LC_Object_to_String(lc.videoMulticastEnabled());
+		final String chatEnabled=LC_Object_to_String(lc.chatEnabled());
+		final String dnsSrvEnabled=LC_Object_to_String(lc.dnsSrvEnabled());
+		final String hasBuiltInEchoCanceler=LC_Object_to_String(lc.hasBuiltInEchoCanceler());
+		final String isAdaptiveRateControlEnabled=LC_Object_to_String(lc.isAdaptiveRateControlEnabled());
+		final String isEchoCancellationEnabled=LC_Object_to_String(lc.isEchoCancellationEnabled());
+		final String isEchoLimiterEnabled=LC_Object_to_String(lc.isEchoLimiterEnabled());
+		final String isIncall=LC_Object_to_String(lc.isIncall());
+		final String isInComingInvitePending=LC_Object_to_String(lc.isInComingInvitePending());
+		final String isIpv6Enabled=LC_Object_to_String(lc.isIpv6Enabled());
+		final String isMediaEncryptionMandatory=LC_Object_to_String(lc.isMediaEncryptionMandatory());
+		final String isKeepAliveEnabled=LC_Object_to_String(lc.isKeepAliveEnabled());
+		final String isMicMuted=LC_Object_to_String(lc.isMicMuted());
+		final String isNetworkReachable=LC_Object_to_String(lc.isNetworkReachable());
+		final String isSdp200AckEnabled=LC_Object_to_String(lc.isSdp200AckEnabled());
+		final String isSpeakerEnabled=LC_Object_to_String(lc.isSpeakerEnabled());
+		final String isVideoSupported=LC_Object_to_String(lc.isVideoSupported());
+		final String needsEchoCalibration=LC_Object_to_String(lc.needsEchoCalibration());
+		final String soundResourcesLocked=LC_Object_to_String(lc.soundResourcesLocked());
+		final String upnpAvailable=LC_Object_to_String(lc.upnpAvailable());
+
 		final String getAdaptiveRateAlgorithm=LC_Object_to_String(lc.getAdaptiveRateAlgorithm());
 		final String getAudioCodecs=LC_Object_to_String(lc.getAudioCodecs());
 		final String getAudioDscp=LC_Object_to_String(lc.getAudioDscp());
@@ -1740,10 +1764,38 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		final String getVideoMulticastTtl=LC_Object_to_String(lc.getVideoMulticastTtl());
 		final String getVideoPreset=LC_Object_to_String(lc.getVideoPreset());
 		final String getPresenceInfo=LC_Object_to_String(lc.getPresenceInfo());
+		final String isTunnelAvailable=LC_Object_to_String(lc.isTunnelAvailable());
 		final String tunnelGetMode=LC_Object_to_String(lc.tunnelGetMode());
 		final String tunnelGetServers=LC_Object_to_String(lc.tunnelGetServers());
+		final String tunnelSipEnabled=LC_Object_to_String(lc.tunnelSipEnabled());
+
+
+		final String CameraParameters="--------Device Camera Stats---------";
+
 
 		//Display to developer
+		Log.d("LinphoneCoreStatsTitle,", LinphoneCoreStatsTitle);
+		Log.d("audioMulticastEnabled,", audioMulticastEnabled);
+		Log.d("videoMulticastEnabled,", videoMulticastEnabled);
+		Log.d("chatEnabled,", chatEnabled);
+		Log.d("dnsSrvEnabled,", dnsSrvEnabled);
+		Log.d("hasBuiltInEchoCanceler,", hasBuiltInEchoCanceler);
+		Log.d("isAdaptiveRateControlEnabled,", isAdaptiveRateControlEnabled);
+		Log.d("isEchoCancellationEnabled,", isEchoCancellationEnabled);
+		Log.d("isEchoLimiterEnabled,", isEchoLimiterEnabled);
+		Log.d("isIncall,", isIncall);
+		Log.d("isInComingInvitePending,", isInComingInvitePending);
+		Log.d("isIpv6Enabled,", isIpv6Enabled);
+		Log.d("isMediaEncryptionMandatory,", isMediaEncryptionMandatory);
+		Log.d("isKeepAliveEnabled,", isKeepAliveEnabled);
+		Log.d("isMicMuted,", isMicMuted);
+		Log.d("isNetworkReachable,", isNetworkReachable);
+		Log.d("isSdp200AckEnabled,", isSdp200AckEnabled);
+		Log.d("isSpeakerEnabled,", isSpeakerEnabled);
+		Log.d("isVideoSupported,", isVideoSupported);
+		Log.d("needsEchoCalibration,", needsEchoCalibration);
+		Log.d("soundResourcesLocked,", soundResourcesLocked);
+		Log.d("upnpAvailable,", upnpAvailable);
 
 		Log.d("getAdaptiveRateAlgorithm,", getAdaptiveRateAlgorithm);
 		Log.d("getAudioCodecs,",getAudioCodecs);
@@ -1808,8 +1860,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		Log.d("getVideoMulticastTtl,",getVideoMulticastTtl);
 		Log.d("getVideoPreset,",getVideoPreset);
 		Log.d("getPresenceInfo,",getPresenceInfo);
+		Log.d("isTunnelAvailable,",isTunnelAvailable);
 		Log.d("tunnelGetMode,",tunnelGetMode);
 		Log.d("tunnelGetServers,",tunnelGetServers);
+		Log.d("tunnelSipEnabled,",tunnelSipEnabled);
+
+		Log.d("CameraParameters,", CameraParameters);
 
 
 
@@ -1828,10 +1884,34 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						file.delete();
 					}
 
-					Log.d("fname",fname);
-					Log.d("file",file.getAbsolutePath());
+					Log.d("fname", fname);
+					Log.d("file", file.getAbsolutePath());
 
 					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+
+					fw.append("LinphoneCoreStatsTitle,"+LinphoneCoreStatsTitle+"\n");
+					fw.append("audioMulticastEnabled,"+audioMulticastEnabled+"\n");
+					fw.append("videoMulticastEnabled,"+videoMulticastEnabled+"\n");
+					fw.append("chatEnabled,"+chatEnabled+"\n");
+					fw.append("dnsSrvEnabled,"+dnsSrvEnabled+"\n");
+					fw.append("hasBuiltInEchoCanceler,"+hasBuiltInEchoCanceler+"\n");
+					fw.append("isAdaptiveRateControlEnabled,"+isAdaptiveRateControlEnabled+"\n");
+					fw.append("isEchoCancellationEnabled,"+isEchoCancellationEnabled+"\n");
+					fw.append("isEchoLimiterEnabled,"+isEchoLimiterEnabled+"\n");
+					fw.append("isIncall,"+isIncall+"\n");
+					fw.append("isInComingInvitePending,"+isInComingInvitePending+"\n");
+					fw.append("isIpv6Enabled,"+isIpv6Enabled+"\n");
+					fw.append("isMediaEncryptionMandatory,"+isMediaEncryptionMandatory+"\n");
+					fw.append("isKeepAliveEnabled,"+isKeepAliveEnabled+"\n");
+					fw.append("isMicMuted,"+isMicMuted+"\n");
+					fw.append("isNetworkReachable,"+isNetworkReachable+"\n");
+					fw.append("isSdp200AckEnabled,"+isSdp200AckEnabled+"\n");
+					fw.append("isSpeakerEnabled,"+isSpeakerEnabled+"\n");
+					fw.append("isVideoSupported,"+isVideoSupported+"\n");
+					fw.append("needsEchoCalibration,"+needsEchoCalibration+"\n");
+					fw.append("soundResourcesLocked,"+soundResourcesLocked+"\n");
+					fw.append("upnpAvailable,"+upnpAvailable+"\n");
+
 					fw.append("getAdaptiveRateAlgorithm,"+getAdaptiveRateAlgorithm+"\n");
 					fw.append("getAudioCodecs," + getAudioCodecs+"\n");
 					fw.append("getAudioDscp," + getAudioDscp+"\n");
@@ -1895,8 +1975,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					fw.append("getVideoMulticastTtl," + getVideoMulticastTtl+"\n");
 					fw.append("getVideoPreset," + getVideoPreset+"\n");
 					fw.append("getPresenceInfo," + getPresenceInfo+"\n");
+					fw.append("isTunnelAvailable," + isTunnelAvailable+"\n");
 					fw.append("tunnelGetMode," + tunnelGetMode+"\n");
 					fw.append("tunnelGetServers," + tunnelGetServers+"\n");
+					fw.append("tunnelSipEnabled," + tunnelSipEnabled+"\n");
+					fw.append("CameraParameters,"+CameraParameters+"\n");
 					fw.close();
 
 
@@ -1930,6 +2013,29 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		//show on screen logs
 		//Display to developer
+
+		stats_list.add("LinphoneCoreStatsTitle,"+ LinphoneCoreStatsTitle);
+		stats_list.add("audioMulticastEnabled,"+ audioMulticastEnabled);
+		stats_list.add("videoMulticastEnabled,"+ videoMulticastEnabled);
+		stats_list.add("chatEnabled,"+ chatEnabled);
+		stats_list.add("dnsSrvEnabled,"+ dnsSrvEnabled);
+		stats_list.add("hasBuiltInEchoCanceler,"+ hasBuiltInEchoCanceler);
+		stats_list.add("isAdaptiveRateControlEnabled,"+ isAdaptiveRateControlEnabled);
+		stats_list.add("isEchoCancellationEnabled,"+ isEchoCancellationEnabled);
+		stats_list.add("isEchoLimiterEnabled,"+ isEchoLimiterEnabled);
+		stats_list.add("isIncall,"+ isIncall);
+		stats_list.add("isInComingInvitePending,"+ isInComingInvitePending);
+		stats_list.add("isIpv6Enabled,"+ isIpv6Enabled);
+		stats_list.add("isMediaEncryptionMandatory,"+ isMediaEncryptionMandatory);
+		stats_list.add("isKeepAliveEnabled,"+ isKeepAliveEnabled);
+		stats_list.add("isMicMuted,"+ isMicMuted);
+		stats_list.add("isNetworkReachable,"+ isNetworkReachable);
+		stats_list.add("isSdp200AckEnabled,"+ isSdp200AckEnabled);
+		stats_list.add("isSpeakerEnabled,"+ isSpeakerEnabled);
+		stats_list.add("isVideoSupported,"+ isVideoSupported);
+		stats_list.add("needsEchoCalibration,"+ needsEchoCalibration);
+		stats_list.add("soundResourcesLocked,"+ soundResourcesLocked);
+		stats_list.add("upnpAvailable,"+ upnpAvailable);
 
 		stats_list.add("getAdaptiveRateAlgorithm,"+ getAdaptiveRateAlgorithm);
 		stats_list.add("getAudioCodecs,"+getAudioCodecs);
@@ -1994,8 +2100,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		stats_list.add("getVideoMulticastTtl,"+getVideoMulticastTtl);
 		stats_list.add("getVideoPreset,"+getVideoPreset);
 		stats_list.add("getPresenceInfo,"+getPresenceInfo);
+		stats_list.add("isTunnelAvailable,"+isTunnelAvailable);
 		stats_list.add("tunnelGetMode,"+tunnelGetMode);
 		stats_list.add("tunnelGetServers,"+tunnelGetServers);
+		stats_list.add("tunnelSipEnabled,"+tunnelSipEnabled);
+		stats_list.add("CameraParameters,"+ CameraParameters);
 		return stats_list;
 	}
 	public String LC_Object_to_String(Object object){
@@ -2018,32 +2127,43 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			if(object.getClass().isArray()) {//Handle Arrays
 
 				string="";
-				for(int i=0; i< Array.getLength(object); i++){
-					if(Array.get(object, i) instanceof LinphoneAuthInfo){
-						LinphoneAuthInfo lai=(LinphoneAuthInfo)Array.get(object, i);
-						string=string+"\ngetUsername(): "+lai.getUsername()+
-								"\ngetUserId(): "+lai.getUserId()+
-								"\ngetPassword(): "+lai.getPassword()+
-								"\ngetDomain(): "+lai.getDomain()+
-								"\ngetHa1(): "+lai.getHa1()+
-								"\ngetRealm(): "+lai.getRealm();
+				for(int i=0; i< Array.getLength(object); i++) {
+					if (Array.get(object, i) instanceof LinphoneAuthInfo) {
+						LinphoneAuthInfo lai = (LinphoneAuthInfo) Array.get(object, i);
+						string = string + "\n,getUsername(): " + lai.getUsername() +
+								"\n,getUserId(): " + lai.getUserId() +
+								"\n,getPassword(): " + lai.getPassword() +
+								"\n,getDomain(): " + lai.getDomain() +
+								"\n,getHa1(): " + lai.getHa1() +
+								"\n,getRealm(): " + lai.getRealm();
+					}else if(Array.get(object, i) instanceof PayloadType){
+						string = string + "\n,"+Array.get(object, i).toString()+",";
+						string = string+"\n,isPayloadTypeEnabled(),"+LC_Object_to_String(getLc().isPayloadTypeEnabled((PayloadType) Array.get(object, i)));
+						string = string+"\n,payloadTypeIsVbr(),"+LC_Object_to_String(getLc().payloadTypeIsVbr((PayloadType) Array.get(object, i)));
 					}else {
 						try {
 							string = string + Array.get(object, i).toString()+",";
 						} catch (Throwable e) {
-
+							string = object.toString();
 						}
 					}
 				}
 
-			}else{//Handle Objects
+			}else {//Handle Objects
 
-				if(object instanceof LpConfig){
-					LpConfig lpconfig=(LpConfig)object;
+				if (object instanceof LpConfig) {
+					LpConfig lpconfig = (LpConfig) object;
 
 					String path = LinphoneActivity.instance().getFilesDir().getAbsolutePath() + "/.linphonerc";
 					//string=path+"\n"+readFromFile(path);
-					string=path;
+					string = path;
+				}else if(object instanceof LinphoneCore.MediaEncryption){
+					try {
+						string = object != null ? object.toString() : "null";
+					} catch (Throwable e) {
+						string = object != null ? String.valueOf(object) : "null";
+					}
+					string = string+"\nmediaEncryptionSupported,"+LC_Object_to_String(getLc().mediaEncryptionSupported((LinphoneCore.MediaEncryption)object));
 				}else {
 					try {
 						string = object != null ? object.toString() : "null";
