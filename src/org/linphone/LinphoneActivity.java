@@ -106,6 +106,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Intent.ACTION_MAIN;
@@ -1723,7 +1724,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		final String getGlobalState=LC_Object_to_String(lc.getGlobalState());
 		final String getHttpProxyHost=LC_Object_to_String(lc.getHttpProxyHost());
 		final String getHttpProxyPort=LC_Object_to_String(lc.getHttpProxyPort());
-		final String getLastOutgoingCallLog=LC_Object_to_String(lc.getLastOutgoingCallLog());
+		//final String getLastOutgoingCallLog=LC_Object_to_String(lc.getLastOutgoingCallLog());
+		final String getLastOutgoingCallLog="CORRUPT";
 		final String getMaxCalls=LC_Object_to_String(lc.getMaxCalls());
 		final String getMediaEncryption=LC_Object_to_String(lc.getMediaEncryption());
 		final String getMissedCallsCount=LC_Object_to_String(lc.getMissedCallsCount());
@@ -2140,6 +2142,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						string = string + "\n ,"+Array.get(object, i).toString()+",";
 						string = string+"\n ,isPayloadTypeEnabled(),"+LC_Object_to_String(getLc().isPayloadTypeEnabled((PayloadType) Array.get(object, i)));
 						string = string+"\n ,payloadTypeIsVbr(),"+LC_Object_to_String(getLc().payloadTypeIsVbr((PayloadType) Array.get(object, i)));
+
+
+					}else if(Array.get(object, i) instanceof LinphoneProxyConfig) {
+						LinphoneProxyConfig linphoneproxyconfig = (LinphoneProxyConfig) Array.get(object, i);
+						string=LC_Object_to_String(linphoneproxyconfig);
+					}else if(Array.get(object, i) instanceof LinphoneAddress) {
+						LinphoneAddress linphoneaddress = (LinphoneAddress) Array.get(object, i);
+						string=LC_Object_to_String(linphoneaddress);
+					}else if(Array.get(object, i) instanceof LinphoneCallLog) {
+						LinphoneCallLog linphonecalllog = (LinphoneCallLog) Array.get(object, i);
+						string=LC_Object_to_String(linphonecalllog);
 					}else {
 						try {
 							string = string + Array.get(object, i).toString()+",";
@@ -2157,6 +2170,34 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					String path = LinphoneActivity.instance().getFilesDir().getAbsolutePath() + "/.linphonerc";
 					//string=path+"\n"+readFromFile(path);
 					string = path;
+				}else if(object instanceof LinphoneAddress) {
+					LinphoneAddress linephoneaddress = (LinphoneAddress) object;
+					string = string + "\n ,linephoneaddress.asString():" + LC_Object_to_String(linephoneaddress.asString()) +
+							"\n ,linephoneaddress.asStringUriOnly(): " + LC_Object_to_String(linephoneaddress.asStringUriOnly())+
+							"\n ,linephoneaddress.getDisplayName(): " + LC_Object_to_String(linephoneaddress.getDisplayName())+
+							"\n ,linephoneaddress.getDomain(): " + LC_Object_to_String(linephoneaddress.getDomain())+
+							"\n ,linephoneaddress.getPort(): " + LC_Object_to_String(linephoneaddress.getPort())+
+							"\n ,linephoneaddress.getTransport(): " + LC_Object_to_String(linephoneaddress.getTransport())+
+							"\n ,linephoneaddress.getUserName(): " + LC_Object_to_String(linephoneaddress.getUserName());
+
+
+				}else if(object instanceof LinphoneCallLog) {
+
+					try {
+						LinphoneCallLog linephonecalllog = (LinphoneCallLog) object;
+						string = string + "\n ,linephonecalllog.getCallDuration():" + formatHHMMSS(linephonecalllog.getCallDuration()) +
+								"\n ,linephonecalllog.getCallId(): " + LC_Object_to_String(linephonecalllog.getCallId()) +
+								"\n ,linephonecalllog.getDirection(): " + LC_Object_to_String(linephonecalllog.getDirection()) +
+								"\n ,linephonecalllog.getFrom(): " + LC_Object_to_String(linephonecalllog.getFrom()) +
+								"\n ,linephonecalllog.getStartDate(): " + LC_Object_to_String(linephonecalllog.getStartDate()) +
+								"\n ,linephonecalllog.getStatus(): " + LC_Object_to_String(linephonecalllog.getStatus()) +
+								"\n ,linephonecalllog.getTimestamp(): " + new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z").format(new Date(linephonecalllog.getTimestamp())) +
+								"\n ,linephonecalllog.getTo(): " + LC_Object_to_String(linephonecalllog.getTo());
+					}catch(Throwable e){
+						string="CORRUPT";
+					}
+
+
 				}else if(object instanceof LinphoneProxyConfig) {
 					LinphoneProxyConfig linphoneproxyconfig = (LinphoneProxyConfig) object;
 					string = string + "\n ,linphoneproxyconfig.avpfEnabled():" + LC_Object_to_String(linphoneproxyconfig.avpfEnabled()) +
@@ -2203,7 +2244,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			}
 		}catch(Throwable e){
-			string = "unknown";
+			string = "null";
 			e.printStackTrace();
 		}
 		return string;
@@ -2237,6 +2278,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 		return ret;
+	}
+	public String formatHHMMSS(int secondsCount){
+		//Calculate the seconds to display:
+		int seconds = secondsCount %60;
+		secondsCount -= seconds;
+		//Calculate the minutes:
+		long minutesCount = secondsCount / 60;
+		long minutes = minutesCount % 60;
+		minutesCount -= minutes;
+		//Calculate the hours:
+		long hoursCount = minutesCount / 60;
+		//Build the String
+		return "" + hoursCount + ":" + minutes + ":" + seconds;
 	}
 }
 
