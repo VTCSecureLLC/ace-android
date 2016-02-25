@@ -8,6 +8,7 @@ use_info=0
 use_ipv6=0
 keepalive_period=30000
 media_encryption=srtp
+dscp=28
 
 [video]
 size=cif
@@ -34,6 +35,8 @@ external_domains=Sorenson.com,ZVRS.com,CAAG.com,PurpleVRS.com,GlobalVRS.com,Conv
 
 [rtp]
 rtcp_xr_enabled=0
+audio_dscp=38
+video_dscp=38
 
 [video_codec_0]
 mime=H264
