@@ -2123,23 +2123,23 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //				for(int i=0; i<String.length; i++){
 //					string=string+String[i].toString()+",";
 //				}
-
+			string="";
 			if(object.getClass().isArray()) {//Handle Arrays
 
-				string="";
+
 				for(int i=0; i< Array.getLength(object); i++) {
 					if (Array.get(object, i) instanceof LinphoneAuthInfo) {
 						LinphoneAuthInfo lai = (LinphoneAuthInfo) Array.get(object, i);
-						string = string + "\n,getUsername(): " + lai.getUsername() +
-								"\n,getUserId(): " + lai.getUserId() +
-								"\n,getPassword(): " + lai.getPassword() +
-								"\n,getDomain(): " + lai.getDomain() +
-								"\n,getHa1(): " + lai.getHa1() +
-								"\n,getRealm(): " + lai.getRealm();
+						string = string + "\n ,getUsername(): " + lai.getUsername() +
+								"\n ,getUserId(): " + lai.getUserId() +
+								"\n ,getPassword(): " + lai.getPassword() +
+								"\n ,getDomain(): " + lai.getDomain() +
+								"\n ,getHa1(): " + lai.getHa1() +
+								"\n ,getRealm(): " + lai.getRealm();
 					}else if(Array.get(object, i) instanceof PayloadType){
-						string = string + "\n,"+Array.get(object, i).toString()+",";
-						string = string+"\n,isPayloadTypeEnabled(),"+LC_Object_to_String(getLc().isPayloadTypeEnabled((PayloadType) Array.get(object, i)));
-						string = string+"\n,payloadTypeIsVbr(),"+LC_Object_to_String(getLc().payloadTypeIsVbr((PayloadType) Array.get(object, i)));
+						string = string + "\n ,"+Array.get(object, i).toString()+",";
+						string = string+"\n ,isPayloadTypeEnabled(),"+LC_Object_to_String(getLc().isPayloadTypeEnabled((PayloadType) Array.get(object, i)));
+						string = string+"\n ,payloadTypeIsVbr(),"+LC_Object_to_String(getLc().payloadTypeIsVbr((PayloadType) Array.get(object, i)));
 					}else {
 						try {
 							string = string + Array.get(object, i).toString()+",";
@@ -2157,6 +2157,35 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					String path = LinphoneActivity.instance().getFilesDir().getAbsolutePath() + "/.linphonerc";
 					//string=path+"\n"+readFromFile(path);
 					string = path;
+				}else if(object instanceof LinphoneProxyConfig) {
+					LinphoneProxyConfig linphoneproxyconfig = (LinphoneProxyConfig) object;
+					string = string + "\n ,linphoneproxyconfig.avpfEnabled():" + LC_Object_to_String(linphoneproxyconfig.avpfEnabled()) +
+							"\n ,linphoneproxyconfig.getAddress(): " + LC_Object_to_String(linphoneproxyconfig.getAddress())+
+							"\n ,linphoneproxyconfig.getAvpfRRInterval(): " + LC_Object_to_String(linphoneproxyconfig.getAvpfRRInterval())+
+							"\n ,linphoneproxyconfig.getContactParameters(): " + LC_Object_to_String(linphoneproxyconfig.getContactParameters())+
+							"\n ,linphoneproxyconfig.getContactUriParameters(): " + LC_Object_to_String(linphoneproxyconfig.getContactUriParameters())+
+							"\n ,linphoneproxyconfig.getDialPrefix(): " + LC_Object_to_String(linphoneproxyconfig.getDialPrefix())+
+							"\n ,linphoneproxyconfig.getDomain(): " + LC_Object_to_String(linphoneproxyconfig.getDomain())+
+							"\n ,linphoneproxyconfig.getError(): " + LC_Object_to_String(linphoneproxyconfig.getError())+
+							"\n ,linphoneproxyconfig.getErrorInfo(): " + LC_Object_to_String(linphoneproxyconfig.getErrorInfo())+
+							"\n ,linphoneproxyconfig.getIdentity(): " + LC_Object_to_String(linphoneproxyconfig.getIdentity())+
+							"\n ,linphoneproxyconfig.getPrivacy(): " + LC_Object_to_String(linphoneproxyconfig.getPrivacy())+
+							"\n ,linphoneproxyconfig.getProxy(): " + LC_Object_to_String(linphoneproxyconfig.getProxy())+
+							"\n ,linphoneproxyconfig.getPublishExpires(): " + LC_Object_to_String(linphoneproxyconfig.getPublishExpires())+
+							"\n ,linphoneproxyconfig.getQualityReportingCollector(): " + LC_Object_to_String(linphoneproxyconfig.getQualityReportingCollector())+
+							"\n ,linphoneproxyconfig.getQualityReportingInterval(): " + LC_Object_to_String(linphoneproxyconfig.getQualityReportingInterval())+
+							"\n ,linphoneproxyconfig.getRealm(): " + LC_Object_to_String(linphoneproxyconfig.getRealm())+
+							"\n ,linphoneproxyconfig.getRoute(): " + LC_Object_to_String(linphoneproxyconfig.getRoute())+
+							"\n ,linphoneproxyconfig.getState(): " + LC_Object_to_String(linphoneproxyconfig.getState())+
+							"\n ,linphoneproxyconfig.getUserData(): " + LC_Object_to_String(linphoneproxyconfig.getUserData())+
+							//"\n ,linphoneproxyconfig.isPhoneNumber(): " + LC_Object_to_String(linphoneproxyconfig.isPhoneNumber())+
+							"\n ,linphoneproxyconfig.isRegistered(): " + LC_Object_to_String(linphoneproxyconfig.isRegistered())+
+							"\n ,linphoneproxyconfig.publishEnabled(): " + LC_Object_to_String(linphoneproxyconfig.publishEnabled())+
+							"\n ,linphoneproxyconfig.qualityReportingEnabled(): " + LC_Object_to_String(linphoneproxyconfig.qualityReportingEnabled())+
+							"\n ,linphoneproxyconfig.registerEnabled(): " + LC_Object_to_String(linphoneproxyconfig.registerEnabled());
+
+
+
 				}else if(object instanceof LinphoneCore.MediaEncryption){
 					try {
 						string = object != null ? object.toString() : "null";
