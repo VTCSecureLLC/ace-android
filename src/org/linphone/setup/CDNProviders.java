@@ -87,9 +87,13 @@ public class CDNProviders {
 		for (Provider provider1 : providers) {
 			if (provider.equals(provider1)) {
 				this.selectedProvider = provider1;
-				SharedPreferences.Editor editor = sharedPreferences.edit();
-				editor.putString(SELECTED_PROVIDER_NAME, provider1.getName());
-				editor.commit();
+				try {
+					SharedPreferences.Editor editor = sharedPreferences.edit();
+					editor.putString(SELECTED_PROVIDER_NAME, provider1.getName());
+					editor.commit();
+				}catch(Throwable e){
+
+				}
 				break;
 
 			}

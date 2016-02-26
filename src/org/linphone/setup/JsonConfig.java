@@ -381,7 +381,12 @@ public class JsonConfig {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-			LinphoneActivity.instance().display_all_core_values(lc, "Pre-AutoConfig");
+			try {
+				LinphoneActivity.instance().display_all_core_values(lc, "Pre-AutoConfig");
+			}catch(Throwable e){
+				e.printStackTrace();
+				Log.d("can't display core values");
+			}
 			Log.d("Starting autoconfig download");
 			LinphoneActivity.instance().generic_ace_loading_dialog = new ProgressDialog(LinphoneActivity.instance());
 			LinphoneActivity.instance().generic_ace_loading_dialog.setCancelable(true);
