@@ -382,6 +382,7 @@
 			<CheckBoxPreference
 				android:title="@string/pref_auto_answer"
 				android:key="@string/pref_auto_answer_key"/>
+			<CheckBoxPreference android:title="@string/pref_enable_packet_tagging" android:key="@string/pref_enable_packet_tagging_key"/>
 
 			<EditTextPreference
 			    android:title="@string/pref_incoming_call_timeout_title"
