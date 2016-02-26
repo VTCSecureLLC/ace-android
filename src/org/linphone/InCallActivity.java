@@ -549,14 +549,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			String label_string=linphone_core_stats_list.get(i).split(",")[0];
 			label.setText(label_string);
 			label.setTextColor(Color.WHITE);
-			label.setTextSize(6);
+			label.setTextSize(12);
 			tr.addView(label);
 
 			TextView content=new TextView(LinphoneActivity.instance());
 			content.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
 			content.setText(linphone_core_stats_list.get(i).subSequence(label_string.length()+1, linphone_core_stats_list.get(i).length()));
 			content.setTextColor(Color.WHITE);
-			content.setTextSize(6);
+			content.setTextSize(12);
 			tr.addView(content);
 
 			linphone_core_stats_table.addView(tr);
