@@ -219,11 +219,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		} else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0) {
 
 			//This is where the login screen is launched of first run, after accept legal release
-			if(first_launch_boolean==true) {
+			//if(first_launch_boolean==true) {
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
 				first_launch_boolean=false;
-			}
+			//}
 
 		}
 
@@ -310,11 +310,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 					if (proxy.getError() == Reason.BadCredentials) {
 						displayCustomToast(getString(R.string.error_bad_credentials), Toast.LENGTH_LONG);
-						go_back_to_login();
+						//go_back_to_login();
 					}
 					if (proxy.getError() == Reason.Unauthorized) {
 						displayCustomToast(getString(R.string.error_unauthorized), Toast.LENGTH_LONG);
-						go_back_to_login();
+						//go_back_to_login();
 					}
 					if (proxy.getError() == Reason.IOError) {
 						displayCustomToast(getString(R.string.error_io_error), Toast.LENGTH_LONG);
@@ -422,12 +422,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 		}
 	}
-	private void go_back_to_login(){
-		deleteDefaultAccount();
-		Log.d("Restarting Login because registration failed");
-		Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
-		startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
-	}
+//	private void go_back_to_login(){
+//		deleteDefaultAccount();
+//		Log.d("Restarting Login because registration failed");
+//		Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+//		startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
+//	}
 
 	private void deleteDefaultAccount(){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
@@ -1322,9 +1322,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == Activity.RESULT_OK && requestCode == FIRST_LOGIN_ACTIVITY) {
-			if (data != null && data.getExtras()!= null && data.getExtras().getBoolean("Exit", false)) {
-				exit();
-				return;
+			if (data != null && data.getExtras()!= null ) {
+				if(data.getExtras().getBoolean("Exit", false)) {
+					exit();
+					return;
+				}
+				else if(data.hasExtra(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA)) {
+					String message = data.getExtras().getBoolean(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA, false) ? "Configuration Loaded Successfully" : "Configuration Not Loaded";
+					new AlertDialog.Builder(LinphoneActivity.instance())
+							.setMessage(message)
+							.setTitle("Auto-Configuration")
+							.setPositiveButton("OK", null)
+							.show();
+				}
 			}
 		}
 		if (resultCode == Activity.RESULT_FIRST_USER && requestCode == SETTINGS_ACTIVITY) {

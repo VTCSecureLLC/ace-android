@@ -54,6 +54,7 @@ import joanbempong.android.SetupController;
  * @author Sylvain Berfini
  */
 public class SetupActivity extends FragmentActivity implements OnClickListener {
+	public final static String AUTO_CONFIG_SUCCED_EXTRA = "config_succeed_extra";
 	private static SetupActivity instance;
 	//private RelativeLayout back, next, cancel;
 	private SetupFragmentsEnum currentFragment;
@@ -61,6 +62,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	private Fragment fragment;
 	private LinphonePreferences mPrefs;
 	private boolean accountCreated = false;
+	private boolean isJsonConfigSucceed = false;
 	private LinphoneCoreListenerBase mListener;
 	private LinphoneAddress address;
 	ProgressDialog mProgressDialog;
@@ -100,8 +102,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
 								launchEchoCancellerCalibration(true);
 							}
-						} else if (state == RegistrationState.RegistrationFailed) {
+
+						} else if (state != RegistrationState.RegistrationProgress) {
 							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
+							deleteAccounts();
 						}
 					}
 				}
@@ -127,6 +131,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		if (lc != null) {
 			lc.removeListener(mListener);
 		}
+		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
+		{
+			deleteAccounts();
+		}
 		
 		super.onPause();
 	}
@@ -150,6 +158,15 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		next.setOnClickListener(this);
 		cancel = (RelativeLayout) findViewById(R.id.setup_cancel);
 		cancel.setOnClickListener(this);*/
+	}
+
+	void deleteAccounts()
+	{
+		accountCreated = false;
+		int nbAccounts = mPrefs.getAccountCount();
+		for (int i = 0; i < nbAccounts; i++) {
+			LinphonePreferences.instance().deleteAccount(i);
+		}
 	}
 	
 	private void changeFragment(Fragment newFragment) {
@@ -248,6 +265,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	private void launchEchoCancellerCalibration(boolean sendEcCalibrationResult) {
 		boolean needsEchoCalibration = LinphoneManager.getLc().needsEchoCalibration();
+
 		if (needsEchoCalibration && mPrefs.isFirstLaunch()) {
 			mPrefs.setAccountEnabled(mPrefs.getAccountCount() - 1, false); //We'll enable it after the echo calibration
 			EchoCancellerCalibrationFragment fragment = new EchoCancellerCalibrationFragment();
@@ -287,6 +305,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 			@Override
 			public void onParsed(JsonConfig config) {
+				isJsonConfigSucceed = true;
 				String sip_username, sip_password;
 				if (config.getSipAuthPassword() == null || config.getSipAuthUsername() == null || config.getSipAuthPassword().length() == 0 || config.getSipAuthUsername().length() == 0) {
 					sip_username = username;
@@ -297,20 +316,16 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				}
 				saveCreatedAccount(username, password, domain, userId, transport_type, port);
 				config.applySettings(transport_type, port);
-				if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-					launchEchoCancellerCalibration(sendEcCalibrationResult);
-				}
+
 				mProgressDialog.dismiss();
 			}
 
 			@Override
 			public void onFailed(String reason) {
 				mProgressDialog.dismiss();
+				isJsonConfigSucceed = false;
 				try {
 					saveCreatedAccount(username, password, domain, userId, transport_type, port);
-					if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-						launchEchoCancellerCalibration(sendEcCalibrationResult);
-					}
 				}
 				catch(Exception e){
 					Toast.makeText(SetupActivity.this, "Failed to register", Toast.LENGTH_SHORT).show();
@@ -346,9 +361,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				}
 				saveCreatedAccount(sip_username, sip_password, sip_username, domain, transport_type, port);
 				config.applySettings(transport_type, port);
-				if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-					launchEchoCancellerCalibration(sendEcCalibrationResult);
-				}
+
 				mProgressDialog.dismiss();
 			}
 
@@ -577,7 +590,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	public void success() {
 		mPrefs.firstLaunchSuccessful();
 		LinphoneActivity.instance().isNewProxyConfig();
-		setResult(Activity.RESULT_OK);
+		Intent i = new Intent();
+
+		i.putExtra(AUTO_CONFIG_SUCCED_EXTRA, isJsonConfigSucceed);
+		setResult(Activity.RESULT_OK, i);
 		finish();
 	}
 }
