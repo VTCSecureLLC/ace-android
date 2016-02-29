@@ -102,8 +102,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		Log.d("setCamera","setCamera");
 		//setCamera(mCamera);
 		try {
-			int app_orienation=LinphoneActivity.instance().getWindowManager().getDefaultDisplay().getRotation();
-			if(!LinphoneActivity.instance().isTablet()||(LinphoneActivity.instance().isTablet()&&(app_orienation==1||app_orienation==3))) {
+			int app_orientation=LinphoneActivity.instance().getWindowManager().getDefaultDisplay().getRotation();
+			if(!LinphoneActivity.instance().isTablet()||(LinphoneActivity.instance().isTablet()&&(app_orientation==1||app_orientation==3))) {
 				int layoutWidth = this.getWidth();
 				int layoutHeight = this.getHeight();
 
