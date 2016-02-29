@@ -61,7 +61,9 @@ public class LinphoneLauncherActivity extends Activity {
 		//if (getResources().getBoolean(R.bool.isTablet)) {
         	//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         //} else {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if(!getResources().getBoolean(R.bool.isTablet)){
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
        // }
 		//setContentView(R.layout.splash_screen);
 		View view=LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
