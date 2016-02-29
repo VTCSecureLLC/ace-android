@@ -403,27 +403,27 @@ public class JsonConfig {
 				if (listener != null) {
 					listener.onParsed(res);
 					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
-					new AlertDialog.Builder(LinphoneActivity.instance())
-							.setMessage("Configuration Loaded Successfully")
-							.setTitle("Auto-Configuration")
-							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialogInterface, int i) {
-								}
-							}).show();
+//					new AlertDialog.Builder(LinphoneActivity.instance())
+//							.setMessage("Configuration Loaded Successfully")
+//							.setTitle("Auto-Configuration")
+//							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//								@Override
+//								public void onClick(DialogInterface dialogInterface, int i) {
+//								}
+//							}).show();
 				}
 			} else {
 				if (listener != null) {
 					listener.onFailed(errorMsg);
 					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
-					new AlertDialog.Builder(LinphoneActivity.instance())
-							.setMessage("Configuration Not Loaded")
-							.setTitle("Auto-Configuration")
-							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialogInterface, int i) {
-								}
-							}).show();
+//					new AlertDialog.Builder(LinphoneActivity.instance())
+//							.setMessage("Configuration Not Loaded")
+//							.setTitle("Auto-Configuration")
+//							.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//								@Override
+//								public void onClick(DialogInterface dialogInterface, int i) {
+//								}
+//							}).show();
 				}
 			}
 
