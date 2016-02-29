@@ -667,6 +667,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setSingleLine(false);
 		//tv.setPadding(to_dp(10), to_dp(5), to_dp(10), to_dp(20));
 		tv.setTextAppearance(this, R.style.RttTextStyle);
+		//Log.d("RTT textsize by default="+tv.getTextSize());
+		//Default TextSize is 32dp
+		tv.setTextSize(16);
 		tv.getBackground().setAlpha(180);
 	}
 	public TextView create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
