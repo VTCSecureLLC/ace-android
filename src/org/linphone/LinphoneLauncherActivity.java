@@ -21,7 +21,6 @@ package org.linphone;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -58,13 +57,7 @@ public class LinphoneLauncherActivity extends Activity {
 		Log.TAG = "Linphone";
 		// Hack to avoid to draw twice LinphoneActivity on tablets
 
-		//if (getResources().getBoolean(R.bool.isTablet)) {
-        	//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        //} else {
-        if(!getResources().getBoolean(R.bool.isTablet)){
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		}
-       // }
+
 		//setContentView(R.layout.splash_screen);
 		View view=LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
 		setContentView(view);
