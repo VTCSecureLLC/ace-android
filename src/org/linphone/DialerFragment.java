@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -61,7 +60,7 @@ import java.util.ArrayList;
  */
 public class DialerFragment extends Fragment implements AsyncProviderLookupOperation.ProviderNetworkOperationListener {
 
-	public OrientationEventListener mOrientationHelper;
+	//public OrientationEventListener mOrientationHelper;
 	public Camera mCamera;
 	public static Camera.Size optimal_preview_size;
 
@@ -94,6 +93,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	private Spinner sipDomainSpinner;
 	public boolean isCalled = false;
 	Numpad numpad;
+
+	public static boolean camera_view_resize_oscillate=true;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
@@ -236,43 +237,23 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 
 
 		mAddress.setBackgroundResource(R.drawable.dialer_address_background_new);
-		//sipDomainSpinner.setBackgroundResource(R.drawable.atbutton);
+
 		erase.setImageResource(R.drawable.backspace_new);
 		mAddContact.setImageResource(R.drawable.add_contact_new);
 
 
-		//set background color independent
 
 		view.setBackgroundResource(R.drawable.background_theme_new);
 
-
-
-//		try {
-//			if (!LinphoneActivity.instance().isTablet()) {
-//				isPreviewEnabled = true;
-//			}
-//		}catch(Throwable e){
-//			Log.e("Trying to check if device is tablet, but linphoneactivity isn't instanciated yet\n"+e.getMessage());
-//		}
 		getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		myContext = getActivity().getApplication().getBaseContext();
         
-        startOrientationSensor();
+       // startOrientationSensor();
 
 		Log.d("dialer oncreat");
 	return view;
 }
-//	protected void loadProviderDomainsFromCache(){
-//		//Load cached providers and their domains
-//		String name = sharedPreferences.getString("provider0", "-1");
-//		domains = new ArrayList<String>();
-//		for (int i = 1; !name.equals("-1"); i++) {
-//			domains.add(name);
-//			name = sharedPreferences.getString("provider" + String.valueOf(i), "-1");
-//		}
-//
-//		reloadSipProviderData(domains);
-//	}
+
 
 	protected void setProviderData(){
 		sipDomainSpinner.setAdapter(new SpinnerAdapter(LinphoneActivity.ctx, R.layout.spiner_ithem,
@@ -280,7 +261,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		int selection = CDNProviders.getInstance().getSelectedProviderPosition();
 		Log.d("ttt xxx: " + selection);
 
-//		CDNProviders.getInstance().setSelectedProvider(position);
+
 		sipDomainSpinner.post(new Runnable() {
 			@Override
 			public void run() {
@@ -295,10 +276,11 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
 		try {
-			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled)
+			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled){
 				initialize_camera(dialer_view);
+			}
 		}catch(Throwable e){
-
+			e.printStackTrace();
 		}
 	}
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -319,96 +301,10 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 
 		mPreview = new CameraPreview(myContext, mCamera);
 		cameraPreview.addView(mPreview);
-		//cameraPreview.addOnLayoutChangeListener(camera_view_listener());
+
 
 	}
 
-	//	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-//	public View.OnLayoutChangeListener camera_view_listener(){
-//		View.OnLayoutChangeListener camera_view_listener=new View.OnLayoutChangeListener() {
-//			@Override
-//			public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-//
-//				try {
-//					cameraPreview = (LinearLayout) dialer_view.findViewById(R.id.camera_preview);
-//					cameraPreview.setOnClickListener(new OnClickListener() {
-//						@Override
-//						public void onClick(View v) {
-//							if (dialer_content != null) {
-//								dialer_content.setVisibility(View.VISIBLE);
-//							}
-//							VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
-//						}
-//					});
-//
-//					try {
-//						mCamera = Camera.open(findFrontFacingCamera());
-//					} catch (Throwable e) {
-//						e.printStackTrace();
-//						Log.d("couldn't open front camera");
-//					}
-//					Log.d("mCamera" + mCamera);
-//
-//					mPreview = new CameraPreview(myContext, mCamera);
-//					cameraPreview.addView(mPreview);
-//					cameraPreview.addOnLayoutChangeListener(camera_view_listener());
-//					List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-//					int viewWidth = mPreview.getWidth();
-//					int viewHeight = mPreview.getHeight();
-//					Log.d("mPreview" + mPreview.getWidth() + " " + mPreview.getHeight());
-//					Camera.Parameters parameters = mCamera.getParameters();
-//					optimal_preview_size = getOptimalPreviewSize(mSupportedPreviewSizes, viewWidth, viewHeight);
-//					parameters.setPreviewSize(optimal_preview_size.width, optimal_preview_size.height);
-//					mCamera.setParameters(parameters);
-//				}catch(Throwable e){
-//					e.printStackTrace();
-//				}
-//			}
-//		};
-//		return camera_view_listener;
-//	};
-	//	@Override
-//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//		final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-//		final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
-//		setMeasuredDimension(width, height);
-//
-//		if (mSupportedPreviewSizes != null) {
-//			mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
-//		}
-//	}
-
-//		private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
-//			final double ASPECT_TOLERANCE = 0.1;
-//			double targetRatio=(double)h / w;
-//
-//			if (sizes == null) return null;
-//
-//			Camera.Size optimalSize = null;
-//			double minDiff = Double.MAX_VALUE;
-//
-//			int targetHeight = h;
-//
-//			for (Camera.Size size : sizes) {
-//				double ratio = (double) size.width / size.height;
-//				if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
-//				if (Math.abs(size.height - targetHeight) < minDiff) {
-//					optimalSize = size;
-//					minDiff = Math.abs(size.height - targetHeight);
-//				}
-//			}
-//
-//			if (optimalSize == null) {
-//				minDiff = Double.MAX_VALUE;
-//				for (Camera.Size size : sizes) {
-//					if (Math.abs(size.height - targetHeight) < minDiff) {
-//						optimalSize = size;
-//						minDiff = Math.abs(size.height - targetHeight);
-//					}
-//				}
-//			}
-//			return optimalSize;
-//		}
 
     /**
 	 * @return null if not ready yet
@@ -420,44 +316,10 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	@Override
 	public void onPause() {
 		super.onPause();
-		if(mPreview!=null){
-		mPreview.surfaceDestroyed(null);
+		if (mPreview != null) {
+			mPreview.surfaceDestroyed(null);
 		}
-		//releaseCamera();
-//		if (androidVideoWindowImpl != null) {
-//			synchronized (androidVideoWindowImpl) {
-//				/*
-//				 * this call will destroy native opengl renderer which is used by
-//				 * androidVideoWindowImpl
-//				 */
-//				LinphoneManager.getLc().setVideoWindow(null);
-//			}
-//		}
 	}
-
-//	private void releaseCamera() {
-//		// stop and release camera
-//		if (mCamera != null) {
-//			mCamera.release();
-//			mCamera = null;
-//		}
-//	}
-
-	private synchronized void startOrientationSensor() {
-		//Disable global orientation change listener, and initiate only dialer listener
-
-		try {//Random crash here sometimes adding try/catch
-			LinphoneActivity.instance().mOrientationHelper.disable();
-		}catch(Throwable e){
-
-		}
-		if (mOrientationHelper == null) {
-			mOrientationHelper = new LocalOrientationEventListener(LinphoneActivity.instance());
-		}
-		mOrientationHelper.enable();
-	}
-	public int mAlwaysChangingPhoneAngle = -1;
-	public int lastDeviceAngle = 0;
 
 	@Override
 	public void onProviderLookupFinished() {
@@ -465,68 +327,11 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		setProviderData();
 	}
 
-	private class LocalOrientationEventListener extends OrientationEventListener {
-		public LocalOrientationEventListener(Context context) {
-			super(context);
-		}
-
-		@Override
-		public void onOrientationChanged(final int o) {
-
-			if (o == OrientationEventListener.ORIENTATION_UNKNOWN) {
-				return;
-			}
-
-
-			//alpha is the distance from each axis we want to allow a rotation.
-			int degrees;
-
-			degrees = lastDeviceAngle;
-
-			int sensativity = 10;
-
-
-			if (o < 0 + sensativity || o > 360 - sensativity)// when o is around 0, we set degrees to zero
-				degrees = 0;
-			else if (o > 90 - sensativity && o < 90 + sensativity)//when o is around 90, we set the degrees to 90
-				degrees = 90;
-			else if (o > 180 - sensativity && o < 180 + sensativity)//when o is around 180 we set the degrees to 180
-				degrees = 180;
-			else if (o > 270 - sensativity && o < 270 + sensativity)//when o is around 180 we set the degrees to 180
-				degrees = 270;
-
-
-			/*Log.d("onOrientationChanged_Dialer", o);
-			Log.d("degrees", degrees);
-			Log.d("mAlwaysChangingPhoneAngle", mAlwaysChangingPhoneAngle);
-			*/
-
-			if (mAlwaysChangingPhoneAngle == degrees) {
-				return;
-			}
-			mAlwaysChangingPhoneAngle = degrees;
-
-
-			Log.d("Phone orientation changed to ", degrees);
-			lastDeviceAngle = degrees;
-
-
-			//Added quick crash fix to when unselecting camera preview prevent app from crashing.
-			try {
-				cameraPreview.removeAllViews();
-				mPreview.surfaceDestroyed(mPreview.getHolder());
-				mPreview = new CameraPreview(myContext, mCamera);
-				cameraPreview.addView(mPreview);
-			}catch(Throwable e){
-				e.printStackTrace();
-			}
-		}
-	}
 	@Override
 	public void onResume() {
 		super.onResume();
 		numpad.recheckSystemSettings();
-		mOrientationHelper.enable();
+		//mOrientationHelper.enable();
 		LinphoneActivity.instance().mOrientationHelper.disable();
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.DIALER);
@@ -561,13 +366,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		super.onDestroyView();
 		if(AsyncProviderLookupOperation.isAsyncTaskRuning && AsyncProviderLookupOperation.getInstance()!=null)
 			AsyncProviderLookupOperation.getInstance().removeListener(this);
-		//releaseCamera();
-		//cameraPreview = null;
-//		if (androidVideoWindowImpl != null) {
-//			// Prevent linphone from crashing if correspondent hang up while you are rotating
-//			androidVideoWindowImpl.release();
-//			androidVideoWindowImpl = null;
-//		}
+
 	}
 
 	public void resetLayout(boolean callTransfer) {

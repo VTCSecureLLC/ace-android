@@ -146,6 +146,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
 
+	public static boolean providerLookupOperation_executed=false;
+
 	public static View topLayout;
 	private AsyncProviderLookupOperation providerLookupOperation;
 
@@ -396,10 +398,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		reloadMwiCount();
 
-		if(!AsyncProviderLookupOperation.isAsyncTaskRuning){
+		if(!AsyncProviderLookupOperation.isAsyncTaskRuning&&!providerLookupOperation_executed){
 			Log.e("ttt LinphoneActivity AsyncProviderLookupOperation..");
 			providerLookupOperation = new AsyncProviderLookupOperation(null, ctx);
 			providerLookupOperation.execute();
+			providerLookupOperation_executed=true;
 		}
 	}
 
