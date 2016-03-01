@@ -183,7 +183,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		Log.d("onCreate()");
 
 		instance = this;
-		DialerFragment.instance().mOrientationHelper.disable();
+		//DialerFragment.instance().mOrientationHelper.disable();
 		LinphoneActivity.instance().mOrientationHelper.enable();
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		mainLayout = new RelativeLayout(this);
