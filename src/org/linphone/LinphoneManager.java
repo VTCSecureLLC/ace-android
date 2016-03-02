@@ -22,9 +22,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -88,14 +90,14 @@ import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 import org.linphone.core.TunnelConfig;
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.MediastreamException;
+import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
-import org.linphone.mediastream.MediastreamerAndroidContext;
-import org.linphone.mediastream.MediastreamException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -153,7 +155,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private static List<LinphoneChatMessage> mPendingChatFileMessage;
 	private static LinphoneChatMessage mUploadPendingFileMessage;
 
-
+	private static boolean network_unavailable_message_shown=false;
 
 	public String wizardLoginViewDomain = null;
 
@@ -668,7 +670,29 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 						@Override
 						public void run() {
 							if (mLc != null) {
-								mLc.iterate();
+
+								//check if internet is available intermittently, display a message if not.
+								if(!mLc.isNetworkReachable()&&!network_unavailable_message_shown){
+									try {
+										String message = "Network not reachable, please confirm your device is connected to the internet.";
+											new AlertDialog.Builder(LinphoneActivity.instance())
+												.setMessage(message)
+												.setTitle("Connection Error")
+												.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+													@Override
+													public void onClick(DialogInterface dialog, int which) {
+														network_unavailable_message_shown = false;
+														LinphoneActivity.instance().startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+													}
+												})
+												.show();
+										network_unavailable_message_shown = true;
+									}catch(Throwable e){
+
+									}
+								}else{
+									mLc.iterate();
+								}
 							}
 						}
 					});
