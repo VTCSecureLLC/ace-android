@@ -39,6 +39,7 @@ import org.linphone.LinphonePreferences;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,40 +210,44 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	public void onClick(View v) {
 		int id = v.getId();
 		if (id == R.id.btn_prv_login) {
-			if (login.getText() == null || login.length() == 0 || password.getText() == null || password.length() == 0 || domain.getText() == null || domain.length() == 0) {
-				Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
-				return;
-			}
 
-			//set default transport to tcp
-			LinphoneAddress.TransportType transport_type = null;
-			try {
-				String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
-				if (selectedTransport.toLowerCase().equals("tcp")) {
-					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
-				} else if (selectedTransport.toLowerCase().equals("tls")) {
-					transport_type = LinphoneAddress.TransportType.LinphoneTransportTls;
-				} else {
+			if (!Utils.check_network_status(getActivity(), -1)) {
+				//network isn't available available, dialog shown by check above.
+			} else {
+				if (login.getText() == null || login.length() == 0 || password.getText() == null || password.length() == 0 || domain.getText() == null || domain.length() == 0) {
+					Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
+					return;
+				}
+
+				//set default transport to tcp
+				LinphoneAddress.TransportType transport_type = null;
+				try {
+					String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
+					if (selectedTransport.toLowerCase().equals("tcp")) {
+						transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+					} else if (selectedTransport.toLowerCase().equals("tls")) {
+						transport_type = LinphoneAddress.TransportType.LinphoneTransportTls;
+					} else {
+						transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+					}
+				} catch (Exception e) {
+					Log.e("E", "Transport could not be found, defaulting to TCP");
 					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
 				}
-			}
-
-			catch(Exception e){
-				Log.e("E", "Transport could not be found, defaulting to TCP");
-				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
-			}
 //			CDNProviders.getInstance().setSelectedProvider(sp_provider.getSelectedItemPosition());
-			SetupActivity.instance().genericLogIn(
-					login.getText().toString().replaceAll("\\s", ""),
-					password.getText().toString().replaceAll("\\s", ""),
-					domain.getText().toString().replaceAll("\\s", ""),
-					userid.getText().toString().replaceAll("\\s", ""),
-					transport_type,
-					port.getText().toString().replaceAll("\\s", ""));
+				SetupActivity.instance().genericLogIn(
+						login.getText().toString().replaceAll("\\s", ""),
+						password.getText().toString().replaceAll("\\s", ""),
+						domain.getText().toString().replaceAll("\\s", ""),
+						userid.getText().toString().replaceAll("\\s", ""),
+						transport_type,
+						port.getText().toString().replaceAll("\\s", ""));
 
-		}
-		else if(id == R.id.ab_back)
-			getActivity().onBackPressed();
+			}
+		}else if (id == R.id.ab_back){
+				getActivity().onBackPressed();
+			}
+
 	}
 
 	@Override

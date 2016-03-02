@@ -36,7 +36,11 @@ public class Utils {
                     .setPositiveButton("Turn on WIFI", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            activity.startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), ACTIVITY_RESULT_INT);
+                            if(ACTIVITY_RESULT_INT!=-1) {//If you don't want to refresh app after wifi activity.
+                                activity.startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), ACTIVITY_RESULT_INT);
+                            }else{
+                                activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            }
                             dialog.cancel();
                         }
                     })

@@ -70,7 +70,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	//URL format for autoConfig lookup
 	final String autoConfigSRVLookupFormat="_rueconfig._tls.%domain%";
 
-	int WIFI_ACTIVITY_RESULT=0;
+	static int WIFI_ACTIVITY_RESULT=0;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
