@@ -94,7 +94,6 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 	public boolean isCalled = false;
 	Numpad numpad;
 
-	public static boolean camera_view_resize_oscillate=true;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
