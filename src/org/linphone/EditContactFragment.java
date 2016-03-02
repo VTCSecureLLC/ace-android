@@ -2,6 +2,7 @@ package org.linphone;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentProviderOperation;
 import android.content.Context;
@@ -111,9 +112,18 @@ public class EditContactFragment extends Fragment {
 							}
 						}
 						if (areAllFielsEmpty) {
-							getFragmentManager().popBackStackImmediate();
+							String title= "Invalid Entry";
+							String message = "Please enter at least 1 phone number or SIP address or press cancel";
+							new AlertDialog.Builder(LinphoneActivity.instance())
+									.setMessage(message)
+									.setTitle(title)
+									.setPositiveButton("OK", null)
+									.show();
+							//getFragmentManager().popBackStackImmediate();
+
 							return;
 						}
+
 					}
 					contactsManager.createNewContact(ops, firstName.getText().toString(), lastName.getText().toString());
 				} else {
@@ -223,7 +233,7 @@ public class EditContactFragment extends Fragment {
 		initNumbersFields((TableLayout) view.findViewById(R.id.controls), contact);
 		
 		ops = new ArrayList<ContentProviderOperation>();
-		lastName.requestFocus();
+		firstName.requestFocus();
 		return view;
 	}
 
