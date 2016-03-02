@@ -123,7 +123,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
 	public static Context ctx;
 	public static Activity act;
-	public static final int WIFI_ACTIVITY_RESULT=0;
+	public static final int WIFI_ACTIVITY_RESULT=10;
 	private static final int SETTINGS_ACTIVITY = 123;
 	public static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;

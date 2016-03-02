@@ -210,8 +210,8 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	public void onClick(View v) {
 		int id = v.getId();
 		if (id == R.id.btn_prv_login) {
-
-			if (!Utils.check_network_status(getActivity(), -1)) {
+			int NO_WIFI_REFRESH=-1;
+			if (!Utils.check_network_status(getActivity(), NO_WIFI_REFRESH)) {//dont refresh on return when login button pressed and there wasn't wifi.
 				//network isn't available available, dialog shown by check above.
 			} else {
 				if (login.getText() == null || login.length() == 0 || password.getText() == null || password.length() == 0 || domain.getText() == null || domain.length() == 0) {
