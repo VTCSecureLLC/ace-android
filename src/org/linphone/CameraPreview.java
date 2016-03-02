@@ -296,14 +296,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		// Make sure to stop the preview before resizing or reformatting it.
 		Log.d("surfaceChanged","surfaceChanged");
 
-		//executed twice, make a variable that oscilates so this only executes once.
-		if(DialerFragment.camera_view_resize_oscillate){
-			refreshCamera(holder);
-			DialerFragment.camera_view_resize_oscillate=false;
-		}else{
-			DialerFragment.camera_view_resize_oscillate=true;
-		}
-
+		//executed twice,
+		refreshCamera(holder);
 	}
 
 	public void setCamera(Camera camera) {
