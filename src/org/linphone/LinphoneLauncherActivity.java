@@ -36,7 +36,6 @@ import org.linphone.mediastream.Log;
 import static android.content.Intent.ACTION_MAIN;
 
 
-
 /**
  * 
  * Launch Linphone main activity when Service is ready.
@@ -63,15 +62,19 @@ public class LinphoneLauncherActivity extends Activity {
 		setContentView(view);
 		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.bounce));
 		mHandler = new Handler();
-		
-		if (LinphoneService.isReady()) {
-			onServiceReady();
-		} else {
-			// start linphone as background
-			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
-			mThread = new ServiceWaitThread();
-			mThread.start();
-		}
+
+
+			if (LinphoneService.isReady()) {
+				onServiceReady();
+			} else {
+				// start linphone as background
+				startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
+				mThread = new ServiceWaitThread();
+				mThread.start();
+			}
+
+
+
 
 	}
 
