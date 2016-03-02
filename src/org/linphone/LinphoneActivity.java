@@ -93,6 +93,7 @@ import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
+import org.linphone.vtcsecure.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -122,6 +123,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
 	public static Context ctx;
 	public static Activity act;
+	public static final int WIFI_ACTIVITY_RESULT=10;
 	private static final int SETTINGS_ACTIVITY = 123;
 	public static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
@@ -1324,6 +1326,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode==WIFI_ACTIVITY_RESULT){
+				Intent refresh = new Intent(this, LinphoneActivity.class);
+				startActivity(refresh);
+				this.finish();
+		}
+
 		if (resultCode == Activity.RESULT_OK && requestCode == FIRST_LOGIN_ACTIVITY) {
 			if (data != null && data.getExtras()!= null ) {
 				if(data.getExtras().getBoolean("Exit", false)) {
@@ -1377,6 +1385,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
 		// Attempt to update user location
+		Utils.check_network_status(this, WIFI_ACTIVITY_RESULT);//Anytime activity is resumed and we don't have internet, tell the user.. and offer them to turn on wifi.
 		try {
 			boolean hasGps = getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
 			if (hasGps) {
