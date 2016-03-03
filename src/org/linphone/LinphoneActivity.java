@@ -1340,13 +1340,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				}
 				else if(data.hasExtra(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA)) {
 					String message = data.getExtras().getBoolean(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA, false) ? "Configuration Loaded Successfully" : "Configuration Not Loaded";
-//					new AlertDialog.Builder(LinphoneActivity.instance())
-//							.setMessage(message)
-//							.setTitle("Auto-Configuration")
-//							.setPositiveButton("OK", null)
-//							.show();
-					Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-					toast.show();
+					new AlertDialog.Builder(LinphoneActivity.instance())
+							.setMessage(message)
+							.setTitle("Auto-Configuration")
+							.setPositiveButton("OK", null)
+							.show();
 				}
 			}
 		}
