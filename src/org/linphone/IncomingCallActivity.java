@@ -85,7 +85,7 @@ public class IncomingCallActivity extends Activity {
 	private RelativeLayout topLayout; 
 	private Boolean backgroundIsRed = false;
 	private Boolean torhcIsOn = false;
-	private Timer flashRedBackgroundTimer;
+	private Timer flashOrangeBackgroundTimer;
 	private Timer vibrateTimer;
 	private boolean terminated = false;
     private int ringCount = 0;
@@ -101,11 +101,11 @@ public class IncomingCallActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		setContentView(R.layout.incoming);
+		setContentView(R.layout.new_incoming);
 
 
 		mNameView = (TextView) findViewById(R.id.incoming_caller_name);
-		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
+//		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
 		mPictureView = (AvatarWithShadow) findViewById(R.id.incoming_picture);
 		topLayout = (RelativeLayout)findViewById(R.id.topLayout);
 
@@ -179,7 +179,7 @@ public class IncomingCallActivity extends Activity {
 		// VTCSecure
 		HueController.getInstance().startFlashing(null);
 
-		flashRedBackground();
+		flashOrangeBackground();
 		flashTorch();
 		vibrate();
         stopRingCount();
@@ -211,12 +211,13 @@ public class IncomingCallActivity extends Activity {
 				contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
 
 		// To be done after findUriPictureOfContactAndSetDisplayName called
-		mNameView.setText(contact != null ? contact.getName() : "");
-		if (getResources().getBoolean(R.bool.only_display_username_if_unknown)) {
-			mNumberView.setText(address.getUserName());
-		} else {
-			mNumberView.setText(address.asStringUriOnly());
-		}
+		//TODO: question????
+		mNameView.setText(contact != null ? contact.getName() : address.getUserName());
+//		if (getResources().getBoolean(R.bool.only_display_username_if_unknown)) {
+//			mNumberView.setText(address.getUserName());
+//		} else {
+//			mNumberView.setText(address.asStringUriOnly());
+//		}
 	}
 
 	@Override
@@ -247,19 +248,17 @@ public class IncomingCallActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void flashRedBackground () {
-		flashRedBackgroundTimer = new Timer();
+	private void flashOrangeBackground() {
+		flashOrangeBackgroundTimer = new Timer();
 		final float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashred_frequency", 0.3f);
-		flashRedBackgroundTimer.schedule(new TimerTask() {
+		flashOrangeBackgroundTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Integer colorFrom = Color.TRANSPARENT;
-						Integer colorTo = Color.rgb(90, 17, 17);//RED;
+						Integer colorFrom = Color.rgb(255, 204, 0);
+						Integer colorTo = Color.rgb(255, 153, 0);//ORANGE;
 
 						AnimatorSet animatorSet = new AnimatorSet();
 						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
@@ -282,11 +281,11 @@ public class IncomingCallActivity extends Activity {
 
 						if (terminated) {
 							//Call is showing terminated on some devices even though it is not, this is preventing red screen flashing. So I'm adding and attempt flash anyway, if it can't flash then we'll execute the anticpated terminate code.
-							try{
+							try {
 								animatorSet.play(colorAnimation).after(reverseColorAnimation);
 								animatorSet.start();
-							}catch(Throwable e){
-								flashRedBackgroundTimer.cancel();
+							} catch (Throwable e) {
+								flashOrangeBackgroundTimer.cancel();
 								e.printStackTrace();
 								Log.d("incoming call is supposedly terminated and we tried to flash anyway, was unable to, so.. cancelling the flash timer");
 							}
@@ -298,7 +297,7 @@ public class IncomingCallActivity extends Activity {
 					}
 				});
 			}
-		}, 0, (long)(flashFrequencyInSeconds*2000));
+		}, 0, (long) (flashFrequencyInSeconds * 2000));
 	}
 
 
@@ -405,18 +404,18 @@ public class IncomingCallActivity extends Activity {
 	}
 
     private void incrementRingCount() {
-        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
-        outgoingRingCountTextView.setVisibility(View.VISIBLE);
-        ringCount++;
-        outgoingRingCountTextView.setText(ringCount + "");
+//        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
+//        outgoingRingCountTextView.setVisibility(View.VISIBLE);
+//        ringCount++;
+//        outgoingRingCountTextView.setText(ringCount + "");
 
     }
 
     private void stopRingCount() {
-        ringCount = 0;
-        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
-        outgoingRingCountTextView.setVisibility(View.GONE);
-        outgoingRingCountTextView.setText(ringCount + "");
+//        ringCount = 0;
+//        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
+//        outgoingRingCountTextView.setVisibility(View.GONE);
+//        outgoingRingCountTextView.setText(ringCount + "");
 
     }
 }

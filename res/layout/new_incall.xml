@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/topLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/holdScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:src="@drawable/hold"
+        android:visibility="gone" />
+
+    <!--<ImageView-->
+    <!--android:id="@+id/switchCamera"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:layout_marginTop="40dp"-->
+    <!--android:adjustViewBounds="true"-->
+    <!--android:contentDescription="@string/content_description_switch_camera"-->
+    <!--android:src="@drawable/switch_camera"-->
+    <!--android:visibility="gone" />-->
+
+    <org.linphone.ui.Numpad
+    android:id="@+id/numpad"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:background="@drawable/dialer_alt_background"
+    android:contentDescription="@string/content_description_numpad"
+    android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="right"
+        android:visibility="invisible"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
+
+            <TextView
+                android:id="@+id/routeBluetooth"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/switchCamera"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_above="@+id/routeReceiver"
+                android:paddingTop="40dp"
+                android:background="@drawable/route_bluetooth_off"
+                android:text="@string/button_bluetooth"
+                android:textColor="@drawable/text_incall_button_color"
+                android:textSize="12dp"
+                android:visibility="invisible"/>
+
+            <TextView
+                android:id="@id/routeReceiver"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/switchCamera"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/route_receiver_off"
+                android:paddingTop="40dp"
+                android:text="@string/button_receiver"
+                android:textColor="@drawable/text_incall_button_color"
+                android:visibility="invisible"
+                android:textSize="12dp"/>
+
+            <TextView
+                android:id="@+id/transfer"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:paddingTop="40dp"
+                android:background="@drawable/options_transfer"
+                android:text="@string/button_transfer"
+                android:textColor="@drawable/text_incall_button_color"
+                android:visibility="gone"
+                android:textSize="12dp"/>
+
+            <TextView
+                android:id="@+id/switchCamera"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="10dp"
+                android:background="#9E001111"
+                android:gravity="center"
+                android:text="Switch camera"
+                android:textColor="@android:color/white"
+                android:visibility="invisible"
+                android:textSize="12dp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/routeSpeaker"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/change_video_layout"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:background="@drawable/route_speaker_off"
+                android:text="@string/button_speaker"
+                android:textColor="@drawable/text_incall_button_color"
+                android:visibility="invisible"
+                android:textSize="12dp"/>
+
+            <TextView
+                android:id="@id/change_video_layout"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:background="#9E001111"
+                android:gravity="center"
+                android:text="Change video layout"
+                android:textColor="@android:color/white"
+                android:visibility="invisible"
+                android:textSize="12dp" />
+
+<!--TODO move this to another xml-->
+            <TextView
+                android:id="@+id/addCall"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/options_add_call_alt"
+                android:paddingTop="40dp"
+                android:text="@string/button_add_call"
+                android:textColor="@drawable/text_incall_button_color"
+                android:textSize="12dp"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/video"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:src="@drawable/selector_in_call_camera"
+                android:background="@drawable/selector_in_call_bg"
+                android:gravity="center"/>
+
+            <ImageView
+                android:id="@+id/micro"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/selector_in_call_microphone"
+                android:background="@drawable/selector_in_call_bg"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/dialer"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_dialer_alt"
+                android:background="@drawable/selector_in_call_bg"
+                android:padding="10dp" />
+
+            <ImageView
+                android:id="@+id/speaker"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/selector_in_call_speaker"
+                android:background="@drawable/selector_in_call_bg"
+                android:padding="10dp"/>
+
+            <ImageView
+                android:id="@+id/audioRoute"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:src="@drawable/routes"
+                android:background="@drawable/selector_in_call_bg"
+                android:padding="10dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/options"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:src="@drawable/ic_settings"
+                android:background="@drawable/selector_in_call_bg"
+                android:padding="10dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/hangUp"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/hangup"
+            android:textSize="12dp"
+            android:contentDescription="@string/content_description_hang_up" />
+
+        <TextView
+            android:id="@+id/toggleChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12dp"
+            android:background="@drawable/about_chat"
+            android:contentDescription="@string/content_description_pause"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/second_incoming_call_controllers"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
+
+            <ImageView
+                android:id="@+id/call_later_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_message_later"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@color/transparent_in_call_black_bg"/>
+
+            <ImageView
+                android:id="@+id/decline_call_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/ic_decline_call"
+                android:background="@color/transparent_in_call_black_bg"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/accept_call_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/main_app_color">
+
+        <ImageView
+            android:layout_width="55dp"
+            android:layout_height="45dp"
+            android:src="@drawable/ic_accept_call"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:text="accept"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/layout_container_second_call_user_data"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:visibility="invisible"/>-->
+    <include layout="@layout/item_in_call_second_flashing"/>
+    <include layout="@layout/item_in_call_second_passive"/>
+
+</RelativeLayout>
