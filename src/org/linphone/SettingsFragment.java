@@ -303,8 +303,8 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		if (getResources().getBoolean(R.bool.hide_camera_settings)) {
 			emptyAndHidePreference(R.string.pref_video_key);
-			hidePreference(R.string.pref_video_enable_key);
 		}
+		hidePreference(R.string.pref_video_enable_key);
 
 		if (getResources().getBoolean(R.bool.disable_every_log)) {
 			uncheckAndHidePreference(R.string.pref_debug_key);
