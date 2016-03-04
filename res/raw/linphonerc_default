@@ -7,10 +7,13 @@ contact="VTCSecure Android" <sip:vtcsecure.android@unknown-host>
 use_info=0
 use_ipv6=0
 keepalive_period=30000
-media_encryption=srtp
 dscp=28
 
 [video]
+display=1
+capture=1
+show_local=1
+enabled=1
 size=cif
 automatically_initiate=1
 automatically_accept=1
@@ -34,7 +37,16 @@ emergency_username=911
 external_domains=Sorenson.com,ZVRS.com,CAAG.com,PurpleVRS.com,GlobalVRS.com,Convo.com
 
 [rtp]
-rtcp_xr_enabled=0
+audio_rtp_port=7200-7299
+video_rtp_port=9200-9299
+audio_jitt_comp=60
+video_jitt_comp=60
+nortp_timeout=30
+rtcp_xr_enabled=1
+rtcp_xr_rcvr_rtt_mode=all
+rtcp_xr_rcvr_rtt_max_size=10000
+rtcp_xr_stat_summary_enabled=1
+rtcp_xr_voip_metrics_enabled=1
 audio_dscp=38
 video_dscp=38
 
@@ -42,16 +54,23 @@ video_dscp=38
 mime=H264
 rate=90000
 enabled=1
-recv_fmtp=profile-level-id=42801F
-
+send_fmtp=profile-level-id=42801F; packetization-mode=1
+recv_fmtp=profile-level-id=42801F; packetization-mode=1
 
 [video_codec_1]
+mime=H264
+rate=90000
+enabled=1
+send_fmtp=profile-level-id=42801F; packetization-mode=0
+recv_fmtp=profile-level-id=42801F; packetization-mode=0
+
+[video_codec_2]
 mime=H263
 rate=90000
 enabled=1
 recv_fmtp=CIF=1;QCIF=1
 
-[video_codec_2]
+[video_codec_3]
 mime=VP8
 rate=90000
 enabled=1
