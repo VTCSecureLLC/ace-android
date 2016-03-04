@@ -892,7 +892,9 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initAudioVideoSettings(){
-		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
+		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Implicit");
+		LinphoneService.instance().set_RTCP_Feedback("Implicit", 3, LinphoneManager.getLcIfManagerNotDestroyedOrNull().getDefaultProxyConfig());
+
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
 
@@ -933,17 +935,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String value = (String) newValue;
-				if (value.compareToIgnoreCase("Off") == 0) {
-					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
-					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
-				} else if (value.compareToIgnoreCase("Implicit") == 0) {
-					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
-					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-				} else if (value.compareToIgnoreCase("Explicit") == 0) {
-					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
-					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-				}
-				LinphoneManager.getLc().getDefaultProxyConfig().setAvpfRRInterval(3);
+				LinphoneService.instance().set_RTCP_Feedback(value, 3, LinphoneManager.getLcIfManagerNotDestroyedOrNull().getDefaultProxyConfig());
 				try{
 					preference.setSummary(newValue.toString());
 				}
