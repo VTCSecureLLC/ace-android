@@ -5,7 +5,7 @@ Feature: Calabash Testing
 	Then I enter "patrick_1" into input field number 1
 	Then I enter "topsecret" into input field number 2
 	Then I press the "Login" button
-	Then I should see text containing "Dial Number"
+	Then I should see text containing "CALL"
 
 #  Scenario: Checking if button click works
 #	When I press the "Click me" button
