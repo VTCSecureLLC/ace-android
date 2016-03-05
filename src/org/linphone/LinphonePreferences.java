@@ -128,6 +128,7 @@ public class LinphonePreferences {
 
 	// Accounts settings
 	private LinphoneProxyConfig getProxyConfig(int n) {
+		int count = getAccountCount();
 		LinphoneProxyConfig[] prxCfgs = getLc().getProxyConfigList();
 		if (n < 0 || n >= prxCfgs.length)
 			return null;

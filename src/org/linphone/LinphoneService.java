@@ -132,6 +132,8 @@ public final class LinphoneService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+
+		Log.d("test onCreate");
 		// In case restart after a crash. Main in LinphoneActivity
 		mNotificationTitle = getString(R.string.service_name);
 		try {
@@ -595,6 +597,7 @@ public final class LinphoneService extends Service {
 
 	@Override
 	public synchronized void onDestroy() {
+		Log.d("test service destoy");
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);

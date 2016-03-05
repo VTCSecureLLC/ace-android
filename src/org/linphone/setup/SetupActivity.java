@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +36,7 @@ import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.LinphonePreferences.AccountBuilder;
+import org.linphone.LinphoneService;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
@@ -72,12 +74,18 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	//URL format for autoConfig lookup
 	final String autoConfigSRVLookupFormat="_rueconfig._tls.%domain%";
 
+
+	private Handler mHandler;
+	private ServiceWaitThread mThread;
+
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 //		if (getResources().getBoolean(R.bool.isTablet) && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
 //        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //        }
+		mHandler = new Handler();
 		
 		setContentView(R.layout.setup);
 		firstFragment = getResources().getBoolean(R.bool.setup_use_linphone_as_first_fragment) ?
@@ -103,7 +111,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								launchEchoCancellerCalibration(true);
 							}
 
-						} else if (state != RegistrationState.RegistrationProgress) {
+						} else if (state != RegistrationState.RegistrationProgress && state != RegistrationState.RegistrationCleared) {
 							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
 							deleteAccounts();
 						}
@@ -118,19 +126,11 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-		if (lc != null) {
-			lc.addListener(mListener);
-		}
-
 	}
 	
 	@Override
 	protected void onPause() {
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-		if (lc != null) {
-			lc.removeListener(mListener);
-		}
+
 		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
 		{
 			deleteAccounts();
@@ -292,12 +292,29 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	 * @param sendEcCalibrationResult Send echo cancellation result
 	 */
 	private void logIn(final String username, final String password, final String domain, final String userId, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
+
+
+		mProgressDialog.show();
+		long time = System.currentTimeMillis();
+		LinphoneManager.destroy();
+		LinphoneManager.createAndStart(this);
+
+		long time2 = System.currentTimeMillis();
+
+		Log.d("TOOOK:    "+ (time2- time));
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+		if (lc != null) {
+			lc.addListener(mListener);
+		}
+
+
+
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm != null && getCurrentFocus() != null) {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 		}
 
-		mProgressDialog.show();
+
 		//Create rue config lookup url from domain and attempt to retrieve config
 		String configURL = autoConfigSRVLookupFormat.replace("%domain%", domain.toString().replaceAll("\\s", ""));
 		JsonConfig.refreshConfig(configURL, username, password, new JsonConfig.ConfigListener() {
@@ -326,8 +343,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				isJsonConfigSucceed = false;
 				try {
 					saveCreatedAccount(username, password, domain, userId, transport_type, port);
-				}
-				catch(Exception e){
+				} catch (Exception e) {
 					Toast.makeText(SetupActivity.this, "Failed to register", Toast.LENGTH_SHORT).show();
 				}
 			}
@@ -337,8 +353,18 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(!LinphoneService.isReady() && LinphoneManager.isInstanciated())
+		{
+			LinphoneManager.destroy();
+		}
+	}
 
 	private void logIn(final String username, final String password, final String domain, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
+
+
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm != null && getCurrentFocus() != null) {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -559,6 +585,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
+
+		Log.d("test accounts: " +  mPrefs.getAccountCount());
+
 	}
 
 	public void displayWizardConfirm(String username) {
@@ -589,11 +618,59 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	
 	public void success() {
 		mPrefs.firstLaunchSuccessful();
-		LinphoneActivity.instance().isNewProxyConfig();
-		Intent i = new Intent();
 
+
+		mHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+
+				LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+				if (lc != null) {
+					lc.removeListener(mListener);
+				}
+				LinphoneManager.destroy();
+				startService(new Intent(Intent.ACTION_MAIN).setClass(SetupActivity.this, LinphoneService.class));
+			}
+		}, 1000);
+
+		mThread = new ServiceWaitThread();
+		mThread.start();
+
+	}
+
+	void onServiceReady()
+
+	{
+
+
+		Intent i = new Intent(SetupActivity.this, LinphoneActivity.class);
 		i.putExtra(AUTO_CONFIG_SUCCED_EXTRA, isJsonConfigSucceed);
-		setResult(Activity.RESULT_OK, i);
+		startActivity(i);
 		finish();
+	}
+
+
+
+
+	private class ServiceWaitThread extends Thread {
+		public void run() {
+
+
+			while (!LinphoneService.isReady()) {
+				try {
+					sleep(30);
+				} catch (InterruptedException e) {
+					throw new RuntimeException("waiting thread sleep() has been interrupted");
+				}
+			}
+
+			mHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					onServiceReady();
+				}
+			});
+			mThread = null;
+		}
 	}
 }

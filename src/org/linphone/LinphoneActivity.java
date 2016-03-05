@@ -218,10 +218,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			wizard.setClass(this, RemoteProvisioningLoginActivity.class);
 			wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
 			startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
-		} else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0 && savedInstanceState == null) {
+		} else if (/*LinphonePreferences.instance().isFirstLaunch() ||*/ LinphonePreferences.instance().getAccountCount() == 0 && savedInstanceState == null) {
 
 			//This is where the login screen is launched of first run, after accept legal release
 			//if(first_launch_boolean==true) {
+
+			Log.d("test   count "  + LinphonePreferences.instance().getAccountCount());
+
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
 				first_launch_boolean=false;

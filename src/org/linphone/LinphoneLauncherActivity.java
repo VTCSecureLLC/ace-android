@@ -32,6 +32,7 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.mediastream.Log;
+import org.linphone.setup.SetupActivity;
 
 import static android.content.Intent.ACTION_MAIN;
 
@@ -68,7 +69,7 @@ public class LinphoneLauncherActivity extends Activity {
 			onServiceReady();
 		} else {
 			// start linphone as background
-			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
+			//startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 			mThread = new ServiceWaitThread();
 			mThread.start();
 		}
@@ -83,9 +84,9 @@ public class LinphoneLauncherActivity extends Activity {
 			classToStart = LegalRelease.class;
 		}
 		else {
-			classToStart = /*LoginMainActivity.class;//*/LinphoneActivity.class;
+			classToStart = /*LoginMainActivity.class;//*/SetupActivity.class;
 		}
-		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(classToStart);
+		//LinphoneService.instance().setActivityToLaunchOnIncomingReceived(classToStart);
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -99,12 +100,18 @@ public class LinphoneLauncherActivity extends Activity {
 
 	private class ServiceWaitThread extends Thread {
 		public void run() {
-			while (!LinphoneService.isReady()) {
+			while (!LinphoneService.isReady() && false) {
 				try {
 					sleep(30);
 				} catch (InterruptedException e) {
 					throw new RuntimeException("waiting thread sleep() has been interrupted");
 				}
+			}
+
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 
 			mHandler.post(new Runnable() {

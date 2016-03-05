@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,7 +36,9 @@ import android.widget.Toast;
 
 import org.linphone.AsyncProviderLookupOperation;
 import org.linphone.LinphoneActivity;
+import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
+import org.linphone.LinphoneService;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.mediastream.Log;
@@ -209,36 +212,11 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	public void onClick(View v) {
 		int id = v.getId();
 		if (id == R.id.btn_prv_login) {
-			if (login.getText() == null || login.length() == 0 || password.getText() == null || password.length() == 0 || domain.getText() == null || domain.length() == 0) {
-				Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
-				return;
-			}
+			/*LinphoneManager.destroy();
 
-			//set default transport to tcp
-			LinphoneAddress.TransportType transport_type = null;
-			try {
-				String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
-				if (selectedTransport.toLowerCase().equals("tcp")) {
-					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
-				} else if (selectedTransport.toLowerCase().equals("tls")) {
-					transport_type = LinphoneAddress.TransportType.LinphoneTransportTls;
-				} else {
-					transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
-				}
-			}
-
-			catch(Exception e){
-				Log.e("E", "Transport could not be found, defaulting to TCP");
-				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
-			}
-//			CDNProviders.getInstance().setSelectedProvider(sp_provider.getSelectedItemPosition());
-			SetupActivity.instance().genericLogIn(
-					login.getText().toString().replaceAll("\\s", ""),
-					password.getText().toString().replaceAll("\\s", ""),
-					domain.getText().toString().replaceAll("\\s", ""),
-					userid.getText().toString().replaceAll("\\s", ""),
-					transport_type,
-					port.getText().toString().replaceAll("\\s", ""));
+			LinphoneManager.setUser(login.getText().toString());
+			LinphoneManager.createAndStart(getActivity().getApplicationContext());*/
+			onServiceRestarted();
 
 		}
 		else if(id == R.id.ab_back)
@@ -259,4 +237,47 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			AsyncProviderLookupOperation.getInstance().removeListener(this);
 		}
 	}
+
+
+	void onServiceRestarted()
+	{
+
+//		LinphoneActivity.instance().stopService(new Intent(Intent.ACTION_MAIN).setClass(LinphoneActivity.instance(), LinphoneService.class));
+
+
+
+		if (login.getText() == null || login.length() == 0 || password.getText() == null || password.length() == 0 || domain.getText() == null || domain.length() == 0) {
+			Toast.makeText(getActivity(), getString(R.string.first_launch_no_login_password), Toast.LENGTH_LONG).show();
+			return;
+		}
+
+
+
+		//set default transport to tcp
+		LinphoneAddress.TransportType transport_type = null;
+		try {
+			String selectedTransport = transportOptions.get(transport.getSelectedItemPosition());
+			if (selectedTransport.toLowerCase().equals("tcp")) {
+				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+			} else if (selectedTransport.toLowerCase().equals("tls")) {
+				transport_type = LinphoneAddress.TransportType.LinphoneTransportTls;
+			} else {
+				transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+			}
+		}
+
+		catch(Exception e){
+			Log.e("E", "Transport could not be found, defaulting to TCP");
+			transport_type = LinphoneAddress.TransportType.LinphoneTransportTcp;
+		}
+//			CDNProviders.getInstance().setSelectedProvider(sp_provider.getSelectedItemPosition());
+		SetupActivity.instance().genericLogIn(
+				login.getText().toString().replaceAll("\\s", ""),
+				password.getText().toString().replaceAll("\\s", ""),
+				domain.getText().toString().replaceAll("\\s", ""),
+				userid.getText().toString().replaceAll("\\s", ""),
+				transport_type,
+				port.getText().toString().replaceAll("\\s", ""));
+	}
+
 }
