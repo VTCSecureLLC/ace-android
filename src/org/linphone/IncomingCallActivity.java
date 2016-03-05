@@ -55,6 +55,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.AvatarWithShadow;
+import org.linphone.ui.RoundedImageView;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import java.util.List;
@@ -76,7 +77,7 @@ public class IncomingCallActivity extends Activity {
 
 	private TextView mNameView;
 	private TextView mNumberView;
-	private AvatarWithShadow mPictureView;
+	private RoundedImageView mPictureView;
 	private LinphoneCall mCall;
 	//private LinphoneSliders mIncomingCallWidget;
 	private ImageView accept_call_button;
@@ -103,16 +104,13 @@ public class IncomingCallActivity extends Activity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.new_incoming);
 
-
 		mNameView = (TextView) findViewById(R.id.incoming_caller_name);
 //		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
-		mPictureView = (AvatarWithShadow) findViewById(R.id.incoming_picture);
+		mPictureView = (RoundedImageView) findViewById(R.id.incoming_picture);
 		topLayout = (RelativeLayout)findViewById(R.id.topLayout);
-
 		// set this flag so this activity will stay in front of the keyguard
 		int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 		getWindow().addFlags(flags);
-
 		// "Dial-to-answer" widget for incoming calls.
 //		mIncomingCallWidget = (LinphoneSliders) findViewById(R.id.sliding_widget);
 //		mIncomingCallWidget.setOnTriggerListener(this);
@@ -147,6 +145,8 @@ public class IncomingCallActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		instance = this;
+
+
 	}
 
 	@Override
@@ -207,13 +207,23 @@ public class IncomingCallActivity extends Activity {
 		LinphoneAddress address = mCall.getRemoteAddress();
 		// May be greatly sped up using a drawable cache
 		Contact contact = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), address);
-		LinphoneUtils.setImagePictureFromUri(this, mPictureView.getView(), contact != null ? contact.getPhotoUri() : null,
+		LinphoneUtils.setImagePictureFromUri(this, mPictureView, contact != null ? contact.getPhotoUri() : null,
 				contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
 
+
+		if (contact == null) {
+			if (getResources().getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(address.asStringUriOnly())) {
+				mNameView.setText(address.getUserName());
+				//partnerName.setText(contactName);
+			} else {
+				mNameView.setText(address.asStringUriOnly());
+				// partnerName.setText(contactName);
+			}
+		} else {
+			mNameView.setText(contact.getName());
+		}
 		// To be done after findUriPictureOfContactAndSetDisplayName called
-		//TODO: question????
-		mNameView.setText(contact != null ? contact.getName() : address.getUserName());
-//		if (getResources().getBoolean(R.bool.only_display_username_if_unknown)) {
+		//TODO: question????lame_if_unknown)) {
 //			mNumberView.setText(address.getUserName());
 //		} else {
 //			mNumberView.setText(address.asStringUriOnly());
@@ -257,8 +267,8 @@ public class IncomingCallActivity extends Activity {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Integer colorFrom = Color.rgb(255, 204, 0);
-						Integer colorTo = Color.rgb(255, 153, 0);//ORANGE;
+						Integer colorFrom = getResources().getColor(R.color.incomming_header_drak_bg);
+						Integer colorTo = getResources().getColor(R.color.incomming_light_backgtound);
 
 						AnimatorSet animatorSet = new AnimatorSet();
 						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);

@@ -13,12 +13,11 @@
 		android:paddingTop="30dp">
 
 		<!--linphone:picture="@drawable/unknown_small"-->
-		<org.linphone.ui.AvatarWithShadow
+		<org.linphone.ui.RoundedImageView
 			android:id="@+id/incoming_picture"
 			android:layout_width="150dp"
 			android:layout_height="150dp"
 			android:layout_centerHorizontal="true"
-			android:background="@drawable/unknown_small"
 			android:scaleType="fitCenter"
 			android:minWidth="128dp"
 			android:minHeight="128dp" />

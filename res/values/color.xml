@@ -11,6 +11,13 @@
     <color name="text_default">#ff5b656f</color>
     <color name="text_disabled">#ffa6b3bf</color>-->
 
+    <color name="incomming_btn_drak_backgtound">#4E4242</color>
+    <color name="incomming_light_backgtound">#FF7100</color>
+
+
+    <color name="incomming_header_drak_bg_transparent">#CC222426</color>
+    <color name="incomming_header_drak_bg">#222426</color>
+
     <color name="text_selected">#8cc9e5</color>
     <color name="text_over">#ffb9c4cb</color>
     <color name="text_default">#ffffffff</color>
