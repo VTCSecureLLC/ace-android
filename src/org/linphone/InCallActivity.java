@@ -139,7 +139,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private boolean isVideoCallPaused = false;
 	AcceptCallUpdateDialogFragment callUpdateDialog;
 
-	private TableLayout callsList;
+	//private TableLayout callsList;
 	private LayoutInflater inflater;
 	private ViewGroup container;
 	private boolean isConferenceRunning = false;
@@ -342,6 +342,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //				}
 				if (lc.getCallsNb() == 0) {
 					finish();
+					return;
+				}
+				if (lc.getCallsNb() == 1 && lc.getCalls()[0].getState() == State.Paused) {
+					if(state == State.CallEnd)
+						checkIncomingCall();
+					lc.resumeCall(lc.getCalls()[0]);
+
 					return;
 				}
 				if(state==State.IncomingReceived||state == state.OutgoingInit) {
@@ -1054,11 +1061,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void initUI() {
 		inflater = LayoutInflater.from(this);
 		container = (ViewGroup) findViewById(R.id.topLayout);
-		callsList = (TableLayout) findViewById(R.id.calls);
-		if (!showCallListInVideo) {
-			callsList.setVisibility(View.GONE);
-
-		}
+//		callsList = (TableLayout) findViewById(R.id.calls);
+//		if (!showCallListInVideo) {
+//			callsList.setVisibility(View.GONE);
+//
+//		}
 
 
 		video = (ImageView) findViewById(R.id.video);
@@ -1643,7 +1650,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (mControlsLayout.getVisibility() != View.VISIBLE) {
 				if (isAnimationDisabled) {
 					mControlsLayout.setVisibility(View.VISIBLE);
-					callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
+					//callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
 					if (cameraNumber > 1) {
 						switchCamera.setVisibility(View.INVISIBLE);
 					}
@@ -1654,7 +1661,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						public void onAnimationStart(Animation animation) {
 							animating_show_controls=true;
 							mControlsLayout.setVisibility(View.VISIBLE);
-							callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
+							//callsList.setVisibility(showCallListInVideo ? View.VISIBLE : View.GONE);
 
 						}
 
@@ -1690,7 +1697,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 						if (isAnimationDisabled) {
 							mControlsLayout.setVisibility(View.INVISIBLE);
-							callsList.setVisibility(View.GONE);
+							//callsList.setVisibility(View.GONE);
 							//switchCamera.setVisibility(View.INVISIBLE);
 							//changeVideoLayout.setVisibility(View.INVISIBLE);
 							numpad.setVisibility(View.GONE);
@@ -1710,7 +1717,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 								public void onAnimationEnd(Animation animation) {
 									video.setEnabled(true); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
 									mControlsLayout.setVisibility(View.INVISIBLE);
-									callsList.setVisibility(View.GONE);
+									//callsList.setVisibility(View.GONE);
 									numpad.setVisibility(View.GONE);
 
 									animation.setAnimationListener(null);
@@ -1732,7 +1739,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mControls = null;
 
 		mControlsLayout.setVisibility(View.VISIBLE);
-		callsList.setVisibility(View.VISIBLE);
+		//callsList.setVisibility(View.VISIBLE);
 		switchCamera.setVisibility(View.INVISIBLE);
 	}
 
@@ -2143,11 +2150,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 		super.onPause();
-
-		if (mControlsHandler != null && mControls != null) {
-			mControlsHandler.removeCallbacks(mControls);
-		}
-		mControls = null;
+/// onpause is called when new call is arrived
+//		if (mControlsHandler != null && mControls != null) {
+//			mControlsHandler.removeCallbacks(mControls);
+//		}
+//		mControls = null;
 
 
 		if (!isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
@@ -2203,97 +2210,97 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		videoCallFragment = fragment;
 	}
 
-	private void displayConferenceHeader() {
-		LinearLayout conferenceHeader = (LinearLayout) inflater.inflate(R.layout.conference_header, container, false);
+//	private void displayConferenceHeader() {
+//		LinearLayout conferenceHeader = (LinearLayout) inflater.inflate(R.layout.conference_header, container, false);
+//
+//		ImageView conferenceState = (ImageView) conferenceHeader.findViewById(R.id.conferenceStatus);
+//		conferenceState.setOnClickListener(this);
+//		if (LinphoneManager.getLc().isInConference()) {
+//			conferenceState.setImageResource(R.drawable.play);
+//		} else {
+//			conferenceState.setImageResource(R.drawable.pause);
+//		}
+//
+//		callsList.addView(conferenceHeader);
+//	}
 
-		ImageView conferenceState = (ImageView) conferenceHeader.findViewById(R.id.conferenceStatus);
-		conferenceState.setOnClickListener(this);
-		if (LinphoneManager.getLc().isInConference()) {
-			conferenceState.setImageResource(R.drawable.play);
-		} else {
-			conferenceState.setImageResource(R.drawable.pause);
-		}
+//	private void displayCall(Resources resources, LinphoneCall call, int index) {
+//		String sipUri = call.getRemoteAddress().asStringUriOnly();
+//		LinphoneAddress lAddress;
+//		try {
+//			lAddress = LinphoneCoreFactory.instance().createLinphoneAddress(sipUri);
+//		} catch (LinphoneCoreException e) {
+//			Log.e("Incall activity cannot parse remote address",e);
+//			lAddress= LinphoneCoreFactory.instance().createLinphoneAddress("uknown","unknown","unkonown");
+//		}
+//
+//		boolean hide_additional_info = showCallListInVideo && isVideoEnabled(LinphoneManager.getLc().getCurrentCall());
+//		// Control Row and Image Row
+//		LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
+//		LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
+//		//callView.setId(index+1);
+//
+//		setContactName(imageView, lAddress, sipUri, resources);
+//		displayCallStatusIconAndReturnCallPaused(callView, imageView, call);
+//		if(!hide_additional_info)
+//			setRowBackground(callView, index);
+//		registerCallDurationTimer(callView, call);
+//		callsList.addView(callView);
+//
+//		if(!hide_additional_info) {
+//			contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
+//			if (contact != null) {
+//				displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
+//			} else {
+//				displayOrHideContactPicture(imageView, null, null, false);
+//			}
+//			callsList.addView(imageView);
+//
+//			callView.setTag(imageView);
+//			callView.setOnClickListener(new OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					if (v.getTag() != null) {
+//						View imageView = (View) v.getTag();
+//						if (imageView.getVisibility() == View.VISIBLE)
+//							imageView.setVisibility(View.GONE);
+//						else
+//							imageView.setVisibility(View.VISIBLE);
+//						callsList.invalidate();
+//					}
+//				}
+//			});
+//		}
+//	}
 
-		callsList.addView(conferenceHeader);
-	}
-
-	private void displayCall(Resources resources, LinphoneCall call, int index) {
-		String sipUri = call.getRemoteAddress().asStringUriOnly();
-		LinphoneAddress lAddress;
-		try {
-			lAddress = LinphoneCoreFactory.instance().createLinphoneAddress(sipUri);
-		} catch (LinphoneCoreException e) {
-			Log.e("Incall activity cannot parse remote address",e);
-			lAddress= LinphoneCoreFactory.instance().createLinphoneAddress("uknown","unknown","unkonown");
-		}
-
-		boolean hide_additional_info = showCallListInVideo && isVideoEnabled(LinphoneManager.getLc().getCurrentCall());
-		// Control Row and Image Row
-		LinearLayout callView = (LinearLayout) inflater.inflate(R.layout.active_call_control_row, container, false);
-		LinearLayout imageView = (LinearLayout) inflater.inflate(R.layout.active_call_image_row, container, false);
-		//callView.setId(index+1);
-
-		setContactName(imageView, lAddress, sipUri, resources);
-		displayCallStatusIconAndReturnCallPaused(callView, imageView, call);
-		if(!hide_additional_info)
-			setRowBackground(callView, index);
-		registerCallDurationTimer(callView, call);
-		callsList.addView(callView);
-
-		if(!hide_additional_info) {
-			contact = ContactsManager.getInstance().findContactWithAddress(imageView.getContext().getContentResolver(), lAddress);
-			if (contact != null) {
-				displayOrHideContactPicture(imageView, contact.getPhotoUri(), contact.getThumbnailUri(), false);
-			} else {
-				displayOrHideContactPicture(imageView, null, null, false);
-			}
-			callsList.addView(imageView);
-
-			callView.setTag(imageView);
-			callView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (v.getTag() != null) {
-						View imageView = (View) v.getTag();
-						if (imageView.getVisibility() == View.VISIBLE)
-							imageView.setVisibility(View.GONE);
-						else
-							imageView.setVisibility(View.VISIBLE);
-						callsList.invalidate();
-					}
-				}
-			});
-		}
-	}
-
-	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
-		TextView contact = (TextView) callView.findViewById(R.id.contactNameOrNumber);
-		//TextView partnerName = (TextView) findViewById(R.id.partner_name);
-		//TextView userName = (TextView) findViewById(R.id.user_name);
-		LinphonePreferences mPrefs = LinphonePreferences.instance();
-		String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
-		//userName.setText(username);
-
-		Contact lContact  = ContactsManager.getInstance().findContactWithAddress(callView.getContext().getContentResolver(), lAddress);
-		if (lContact == null) {
-			if (resources.getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(sipUri)) {
-				contact.setText(lAddress.getUserName());
-				contactName = lAddress.getUserName();
-				android.util.Log.e("Info", "contactName = " + contactName);
-				//partnerName.setText(contactName);
-			} else {
-				contact.setText(sipUri);
-				contactName = sipUri;
-				android.util.Log.e("Info", "contactName = " + contactName);
-				// partnerName.setText(contactName);
-			}
-		} else {
-			contact.setText(lContact.getName());
-			contactName = lContact.getName();
-			android.util.Log.e("Info", "contactName = " + contactName);
-			//partnerName.setText(contactName);
-		}
-	}
+//	private void setContactName(LinearLayout callView, LinphoneAddress lAddress, String sipUri, Resources resources) {
+//		TextView contact = (TextView) callView.findViewById(R.id.contactNameOrNumber);
+//		//TextView partnerName = (TextView) findViewById(R.id.partner_name);
+//		//TextView userName = (TextView) findViewById(R.id.user_name);
+//		LinphonePreferences mPrefs = LinphonePreferences.instance();
+//		String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
+//		//userName.setText(username);
+//
+//		Contact lContact  = ContactsManager.getInstance().findContactWithAddress(callView.getContext().getContentResolver(), lAddress);
+//		if (lContact == null) {
+//			if (resources.getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(sipUri)) {
+//				contact.setText(lAddress.getUserName());
+//				contactName = lAddress.getUserName();
+//				android.util.Log.e("Info", "contactName = " + contactName);
+//				//partnerName.setText(contactName);
+//			} else {
+//				contact.setText(sipUri);
+//				contactName = sipUri;
+//				android.util.Log.e("Info", "contactName = " + contactName);
+//				// partnerName.setText(contactName);
+//			}
+//		} else {
+//			contact.setText(lContact.getName());
+//			contactName = lContact.getName();
+//			android.util.Log.e("Info", "contactName = " + contactName);
+//			//partnerName.setText(contactName);
+//		}
+//	}
 
 	private void startOutgoingRingCount(LinearLayout callView) {
 		outgoingRingCountTimer = new Timer();
@@ -2403,12 +2410,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	public void refreshCallList(Resources resources) {
-		if (callsList == null) {
-			return;
-		}
-
-		callsList.removeAllViews();
-		int index = 0;
+//		if (callsList == null) {
+//			return;
+//		}
+//
+//		callsList.removeAllViews();
+//		int index = 0;
 
 		if(LinphoneManager.getLc().getCalls().length==1 && LinphoneManager.getLc().getCalls()[0].getState()==State.IncomingReceived )
 		{
@@ -2422,23 +2429,23 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			goBackToDialer();
 			return;
 		}
-
-		isConferenceRunning = LinphoneManager.getLc().getConferenceSize() > 1;
-		if (isConferenceRunning) {
-			displayConferenceHeader();
-			index++;
-		}
-		for (LinphoneCall call : LinphoneManager.getLc().getCalls()) {
-			displayCall(resources, call, index);
-			index++;
-		}
-
-		if(LinphoneManager.getLc().getCurrentCall() == null){
-			showAudioView();
-			video.setEnabled(false);
-		}
-
-		callsList.invalidate();
+//
+//		isConferenceRunning = LinphoneManager.getLc().getConferenceSize() > 1;
+//		if (isConferenceRunning) {
+//			displayConferenceHeader();
+//			index++;
+//		}
+//		for (LinphoneCall call : LinphoneManager.getLc().getCalls()) {
+//			displayCall(resources, call, index);
+//			index++;
+//		}
+//
+//		if(LinphoneManager.getLc().getCurrentCall() == null){
+//			showAudioView();
+//			video.setEnabled(false);
+//		}
+//
+//		callsList.invalidate();
 	}
 	private class HeadPhoneJackIntentReceiver extends BroadcastReceiver {
 		@Override public void onReceive(Context context, Intent intent) {
@@ -2476,15 +2483,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 	void hideIncommingCallControlers()
 	{
-		mIncommingcallsLayout.setVisibility(View.INVISIBLE);
+
 		displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
 		invalidateHeader();
 	}
 	void showIncommingCallControlers()
 	{
 		// show header and start flashing
-		mIncommingcallsLayout.setVisibility(View.VISIBLE);
-		hide_controls(-1);
+		//mIncommingcallsLayout.setVisibility(View.VISIBLE);
+		hide_controls(0);
 		invalidateHeader();
 	}
 	private LinphoneCall getIncommingCall()
@@ -2566,12 +2573,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	private void switchCalls() {
-		LinphoneCall call = getPassiveCall();
+
 		LinphoneCore lc = LinphoneManager.getLc();
-		if (call != null) {
-			lc.pauseCall(lc.getCurrentCall());
-			lc.resumeCall(call);
+		LinphoneCall oldCall = (LinphoneCall)mInPassiveCallHeader.getTag();
+		LinphoneCall currentCall = lc.getCurrentCall();
+
+
+		if (oldCall != null && oldCall.getState() == State.Paused) {
+
+			lc.resumeCall(oldCall);
 		}
+		if(currentCall!=null && LinphoneUtils.isCallRunning(currentCall))
+			lc.pauseCall(currentCall);
 		invalidateHeader();
 	}
 
@@ -2607,7 +2620,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 				mIncomingUserName.setText(lAddress.getDisplayName());
 				mIncomingCallCount.setText(String.valueOf(mRingCount));
-
+				mIncommingcallsLayout.setVisibility(View.VISIBLE);
 				if (isVideoCall) {
 					mIncomingCallType.setText("Is video calling you...");
 				} else {
@@ -2623,18 +2636,31 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 
 				stopRingCount();
+				mInPassiveCallHeader.setTag(call);
 
 				mInPassiveCallHeader.setVisibility(View.VISIBLE);
-				mInComingCallHeader.setVisibility(View.INVISIBLE);
+
+				if(mInComingCallHeader.getVisibility()!= View.INVISIBLE) {
+					mIncommingcallsLayout.setVisibility(View.INVISIBLE);
+					mInComingCallHeader.setVisibility(View.INVISIBLE);
+				}
 
 				mIncomingPassiveUserName.setText(lAddress.getDisplayName());
 
 				mIncomingPassiveCallHoldTime.setBase(SystemClock.elapsedRealtime() - 1000 * call.getDuration());
 				mIncomingPassiveCallHoldTime.start();
+				//TODO: set data
 			}
 		} else {
+			if (isFlashing) {
+				System.out.println("++++++++++++++++++++++" + isFlashing);
+				isFlashing = false;
+				LinphoneTorchFlasher.instance().stopFlashTorch();
+				HueController.getInstance().stopFlashing();
+			}
 			mInComingCallHeader.setVisibility(View.INVISIBLE);
 			mInPassiveCallHeader.setVisibility(View.INVISIBLE);
+			mIncommingcallsLayout.setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -2699,7 +2725,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void vibrate() {
 		final Timer vibrateTimer = new Timer();
 		float vibrateFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_vibrate_frequency", 0.3f);
-		//final Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		final Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 
 		vibrateTimer.schedule(new TimerTask() {
 			@Override
@@ -2708,10 +2734,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					@Override
 					public void run() {
 						if (!isFlashing) {
+							mRingCount = 0;
 							vibrateTimer.cancel();
 						} else {
 							incrementRingCount();
-						//	v.vibrate(500);
+							v.vibrate(500);
 						}
 					}
 				});
