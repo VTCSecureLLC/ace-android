@@ -1221,20 +1221,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //				speaker.setBackgroundResource(R.drawable.speaker_on);
 				speaker.setSelected(false);
 
-				routeSpeaker.setBackgroundResource(R.drawable.route_speaker_on);
-				routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
-				routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_off);
+				routeSpeaker.setSelected(true);
+				routeReceiver.setSelected(false);
+				routeBluetooth.setSelected(false);
 			} else {
 //				speaker.setBackgroundResource(R.drawable.selector_in_call_speaker);
 				speaker.setSelected(true);
-
-				routeSpeaker.setBackgroundResource(R.drawable.route_speaker_off);
+				routeSpeaker.setSelected(false);
 				if (BluetoothManager.getInstance().isUsingBluetoothAudioRoute()) {
-					routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
-					routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_on);
+					routeReceiver.setSelected(false);
+					routeBluetooth.setSelected(true);
 				} else {
-					routeReceiver.setBackgroundResource(R.drawable.route_receiver_on);
-					routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_off);
+					routeReceiver.setSelected(true);
+					routeBluetooth.setSelected(false);
 				}
 			}
 		} catch (NullPointerException npe) {
@@ -1363,25 +1362,25 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		else if (id == R.id.routeBluetooth) {
 			if (BluetoothManager.getInstance().routeAudioToBluetooth()) {
 				isSpeakerMuted = true;
-				routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_on);
-				routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
-				routeSpeaker.setBackgroundResource(R.drawable.route_speaker_off);
+				routeBluetooth.setSelected(true);
+				routeReceiver.setSelected(false);
+				routeSpeaker.setSelected(false);
 			}
 			hideOrDisplayAudioRoutes();
 		}
 		else if (id == R.id.routeReceiver) {
 			LinphoneManager.getInstance().routeAudioToReceiver();
 			isSpeakerMuted = true;
-			routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_off);
-			routeReceiver.setBackgroundResource(R.drawable.route_receiver_on);
-			routeSpeaker.setBackgroundResource(R.drawable.route_speaker_off);
+			routeBluetooth.setSelected(false);
+			routeReceiver.setSelected(true);
+			routeSpeaker.setSelected(false);
 			hideOrDisplayAudioRoutes();
 		}
 		else if (id == R.id.routeSpeaker) {
 			LinphoneManager.getInstance().routeAudioToSpeaker();
-			routeBluetooth.setBackgroundResource(R.drawable.route_bluetooth_off);
-			routeReceiver.setBackgroundResource(R.drawable.route_receiver_off);
-			routeSpeaker.setBackgroundResource(R.drawable.route_speaker_on);
+			routeBluetooth.setSelected(false);
+			routeReceiver.setSelected(true);
+			routeSpeaker.setSelected(true);
 			hideOrDisplayAudioRoutes();
 		}
 

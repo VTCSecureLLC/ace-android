@@ -51,30 +51,30 @@
 
             <TextView
                 android:id="@+id/routeBluetooth"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
                 android:layout_toLeftOf="@id/switchCamera"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="5dp"
                 android:layout_above="@+id/routeReceiver"
-                android:paddingTop="40dp"
-                android:background="@drawable/route_bluetooth_off"
+                android:gravity="center"
+                android:background="@drawable/selector_in_call_bg_transparent"
                 android:text="@string/button_bluetooth"
-                android:textColor="@drawable/text_incall_button_color"
+                android:textColor="@android:color/white"
                 android:textSize="12dp"
                 android:visibility="invisible"/>
 
             <TextView
                 android:id="@id/routeReceiver"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
                 android:layout_toLeftOf="@id/switchCamera"
                 android:layout_marginRight="10dp"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/route_receiver_off"
-                android:paddingTop="40dp"
+                android:gravity="center"
+                android:background="@drawable/selector_in_call_bg_transparent"
                 android:text="@string/button_receiver"
-                android:textColor="@drawable/text_incall_button_color"
+                android:textColor="@android:color/white"
                 android:visibility="invisible"
                 android:textSize="12dp"/>
 
@@ -112,17 +112,17 @@
 
             <TextView
                 android:id="@+id/routeSpeaker"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                android:layout_width="150dp"
+                android:layout_height="35dp"
                 android:layout_toLeftOf="@+id/change_video_layout"
+                android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
+                android:background="@drawable/selector_in_call_bg_transparent"
                 android:gravity="center"
-                android:background="@drawable/route_speaker_off"
                 android:text="@string/button_speaker"
-                android:textColor="@drawable/text_incall_button_color"
-                android:visibility="invisible"
-                android:textSize="12dp"/>
+                android:textColor="@android:color/white"
+                android:textSize="12dp"
+                android:visibility="invisible"/>
 
             <TextView
                 android:id="@id/change_video_layout"
@@ -130,12 +130,12 @@
                 android:layout_height="35dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="5dp"
-                android:background="#9E001111"
+                android:background="@color/background_transparent_black"
                 android:gravity="center"
                 android:text="Change video layout"
                 android:textColor="@android:color/white"
-                android:visibility="invisible"
-                android:textSize="12dp" />
+                android:textSize="12dp"
+                android:visibility="invisible" />
 
 <!--TODO move this to another xml-->
             <TextView

@@ -49,8 +49,10 @@
     <color name="menu_button_background">#ff262a2e</color>
 
     <color name="background_color">#2c373d</color>
+
     <color name="border_color">#ffffffff</color>
     <color name="text_color">#ffffffff</color>
+    <color name="background_transparent_black">#9E001111</color>
 
     <drawable name="btn_white">#efefef</drawable>
     <drawable name="btn_white_selected">#D7D7D7</drawable>
