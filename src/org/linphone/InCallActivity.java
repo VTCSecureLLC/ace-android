@@ -1256,8 +1256,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			//TODO: remove
 //			conference.setVisibility(View.GONE);
 
-			//TODO: Change visibility to VISIBLE
-//			pause.setVisibility(View.VISIBLE);
+			if(pause.getVisibility()!=View.VISIBLE)
+				pause.setVisibility(View.VISIBLE);
 
 			List<LinphoneCall> pausedCalls = LinphoneUtils.getCallsInState(LinphoneManager.getLc(), Arrays.asList(State.Paused));
 			if (pausedCalls.size() == 1) {
