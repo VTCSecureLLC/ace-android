@@ -38,6 +38,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,8 +81,9 @@ public class IncomingCallActivity extends Activity {
 	private RoundedImageView mPictureView;
 	private LinphoneCall mCall;
 	//private LinphoneSliders mIncomingCallWidget;
-	private ImageView accept_call_button;
-	private ImageView decline_call_button;
+	private TextView accept_call_button;
+	private TextView decline_call_button;
+	private TextView mRinging;
 	private LinphoneCoreListenerBase mListener;
 	private RelativeLayout topLayout; 
 	private Boolean backgroundIsRed = false;
@@ -90,6 +92,7 @@ public class IncomingCallActivity extends Activity {
 	private Timer vibrateTimer;
 	private boolean terminated = false;
     private int ringCount = 0;
+	private LinearLayout mCallLaterLayout;
 
 	public static IncomingCallActivity instance() {
 		return instance;
@@ -98,6 +101,43 @@ public class IncomingCallActivity extends Activity {
 	public static boolean isInstanciated() {
 		return instance != null;
 	}
+
+	View.OnClickListener onClickListener  = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+			switch (v.getId()) {
+				case R.id.label_in_calling_call_later:
+					if (mCallLaterLayout.getVisibility() == View.VISIBLE) {
+						mCallLaterLayout.setVisibility(View.GONE);
+						v.setSelected(false);
+						mRinging.setVisibility(View.VISIBLE);
+					} else {
+						mCallLaterLayout.setVisibility(View.VISIBLE);
+						v.setSelected(true);
+						mRinging.setVisibility(View.GONE);
+					}
+
+					break;
+				case R.id.label_call_later:
+					//TODO: End call when message already send
+					Toast.makeText(IncomingCallActivity.this, "Can't talk now. Call me later?", Toast.LENGTH_SHORT).show();
+					onCallDeclineClick();
+					break;
+				case R.id.label_whats_up:
+					//TODO: End call when message already send
+					Toast.makeText(IncomingCallActivity.this, "Can't talk now. What's up?", Toast.LENGTH_SHORT).show();
+					onCallDeclineClick();
+					break;
+				case R.id.label_in_meeting:
+					//TODO: End call when message already send
+					Toast.makeText(IncomingCallActivity.this, "I'm in meeting", Toast.LENGTH_SHORT).show();
+					onCallDeclineClick();
+					break;
+
+			}
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +155,8 @@ public class IncomingCallActivity extends Activity {
 //		mIncomingCallWidget = (LinphoneSliders) findViewById(R.id.sliding_widget);
 //		mIncomingCallWidget.setOnTriggerListener(this);
 
-		accept_call_button = (ImageView) findViewById(R.id.accept_call_button);
-		decline_call_button = (ImageView) findViewById(R.id.decline_call_button);
+		accept_call_button = (TextView) findViewById(R.id.accept_call_button);
+		decline_call_button = (TextView) findViewById(R.id.decline_call_button);
 		accept_call_button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -129,6 +169,12 @@ public class IncomingCallActivity extends Activity {
 				onCallDeclineClick();
 			}
 		});
+		mCallLaterLayout = (LinearLayout) findViewById(R.id.layout_call_later);
+		mRinging = (TextView) findViewById(R.id.label_ringing);
+		findViewById(R.id.label_in_calling_call_later).setOnClickListener(onClickListener);
+		findViewById(R.id.label_call_later).setOnClickListener(onClickListener);
+		findViewById(R.id.label_whats_up).setOnClickListener(onClickListener);
+		findViewById(R.id.label_in_meeting).setOnClickListener(onClickListener);
 
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
@@ -145,8 +191,6 @@ public class IncomingCallActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		instance = this;
-
-
 	}
 
 	@Override
@@ -322,16 +366,16 @@ public class IncomingCallActivity extends Activity {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (terminated){
-                            vibrateTimer.cancel();
-                        } else {
-                            incrementRingCount();
-                            v.vibrate(500);
-                        }
+						if (terminated) {
+							vibrateTimer.cancel();
+						} else {
+							incrementRingCount();
+							v.vibrate(500);
+						}
 					}
 				});
 			}
-		}, 0, (long)(vibrateFrequencyInSeconds*1000));
+		}, 0, (long) (vibrateFrequencyInSeconds * 1000));
 
 	}
 

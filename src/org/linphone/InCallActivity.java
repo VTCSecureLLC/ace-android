@@ -127,7 +127,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private VideoCallFragment videoCallFragment;
 	private boolean isCameraMutedOnStart=false, isCameraMuted=false, isMicMuted = false, isTransferAllowed, isAnimationDisabled,
 			isRTTLocallyEnabled = false, isRTTEnabled=true;
-	private static boolean isSpeakerMuted;
+	private boolean isSpeakerMuted;
 	public ViewGroup mControlsLayout;
 	public LinearLayout mIncommingcallsLayout;
 	private View acceptBtn, declineBtn, callLaterBtn;
@@ -1297,6 +1297,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
+
 		if(isRTTMaximized){
 			hideRTTinterface();
 			InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1308,6 +1309,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		if (id == R.id.video) {
 			toggleCamera_mute();
+
 		}
 		else if (id == R.id.micro) {
 			toggleMicro();
@@ -1344,6 +1346,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //		}
 		else if (id == R.id.switchCamera) {
 			if (videoCallFragment != null) {
+				options.setSelected(false);
+				hide_controls(0);
 				videoCallFragment.switchCamera();
 			}
 		}
@@ -1403,7 +1407,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		{
 			//is not implemented yet
 		} else if (id == R.id.layout_item_in_call_passive)
-		switchCalls();
+			switchCalls();
+//		hide_controls(0);
 	}
 
 	public void toggle_chat() {
@@ -1568,12 +1573,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		isSpeakerMuted = isMuted;
 		if (isSpeakerMuted) {
 			LinphoneManager.getLc().setPlaybackGain(mute_db);
-//			speaker.setBackgroundResource(R.drawable.selector_in_call_speaker);
 			speaker.setSelected(true);
 
 		} else {
 			LinphoneManager.getLc().setPlaybackGain(0);
-//			speaker.setBackgroundResource(R.drawable.speaker_on);
 			speaker.setSelected(false);
 
 		}
@@ -1682,6 +1685,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	public void hide_controls(int delay_until_hide) {
+		if(mControlsLayout.getVisibility()==View.INVISIBLE)
+			return;
+
 		if (mControlsHandler != null && mControls != null) {
 			mControlsHandler.removeCallbacks(mControls);
 		}
@@ -1702,6 +1708,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 								@Override
 								public void onAnimationStart(Animation animation) {
 									video.setEnabled(false); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
+									switchCamera.setVisibility(View.INVISIBLE);
+									changeVideoLayout.setVisibility(View.INVISIBLE);
 								}
 
 								@Override

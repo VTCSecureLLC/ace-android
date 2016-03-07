@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true"
+        android:drawable="@drawable/transparent_white_53_procent" />
+
+    <item android:state_pressed="true"
+        android:drawable="@drawable/transparent_white_53_procent" />
+
+    <item android:drawable="@drawable/transparent_white_33_procent"/>
+ </selector>

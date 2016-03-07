@@ -64,6 +64,9 @@
     <drawable name="in_call_orange_bg">#ff8c00</drawable>
     <drawable name="transparent_in_call_black_bg">#C4001111</drawable>
 
+    <drawable name="transparent_white_33_procent">#52ffffff</drawable>
+    <drawable name="transparent_white_53_procent">#87ffffff</drawable>
+
     <color name="transparent_in_call_black_bg">#C4001111</color>
 
 
