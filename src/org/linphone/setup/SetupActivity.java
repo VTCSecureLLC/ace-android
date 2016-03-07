@@ -111,14 +111,14 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				if(accountCreated){
 					if(address != null && address.asString().equals(cfg.getIdentity()) ) {
 						if (state == RegistrationState.RegistrationOk) {
-//							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-//								launchEchoCancellerCalibration(true);
-//							}
+							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
+								launchEchoCancellerCalibration(true);
+							}
 
 							LinphoneManager.getInstance().copyAssets("done.txt");
 						} else if (state != RegistrationState.RegistrationProgress && state != RegistrationState.RegistrationCleared) {
 							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-							deleteAccounts();
+							//deleteAccounts();
 						}
 						else if (state.equals(RegistrationState.RegistrationCleared)) {
 							if (lc != null) {
@@ -637,17 +637,19 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				LinphoneManager.getInstance().copyAssets("before.txt");
+				LinphoneManager.getInstance().copyAssets("before_stoping_core.txt");
 
 				LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 				if (lc != null) {
 					lc.removeListener(mListener);
 				}
-				Log.d("test b accounts: " +  mPrefs.getAccountCount());
+				Log.d("test b accounts: " + mPrefs.getAccountCount());
 				LinphoneManager.destroy();
 			//	Log.d("test b accounts: " + mPrefs.getAccountCount());
-				LinphoneManager.getInstance().copyAssets("test.txt");
-				startService(new Intent(Intent.ACTION_MAIN).setClass(SetupActivity.this, LinphoneService.class));
+				LinphoneManager.createAndStart(SetupActivity.this);
+				LinphoneManager.getInstance().copyAssets("after_restarting_core.txt");
+				LinphoneManager.destroy();
+				//startService(new Intent(Intent.ACTION_MAIN).setClass(SetupActivity.this, LinphoneService.class));
 			}
 		}, 1000);
 
@@ -661,10 +663,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	{
 
 
-		Intent i = new Intent(SetupActivity.this, LinphoneActivity.class);
-		i.putExtra(AUTO_CONFIG_SUCCED_EXTRA, isJsonConfigSucceed);
-		startActivity(i);
-		finish();
+//		Intent i = new Intent(SetupActivity.this, LinphoneActivity.class);
+//		i.putExtra(AUTO_CONFIG_SUCCED_EXTRA, isJsonConfigSucceed);
+//		startActivity(i);
+//		finish();
 	}
 
 
