@@ -40,6 +40,7 @@ import org.linphone.LinphoneService;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
+import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCore.RegistrationState;
 import org.linphone.core.LinphoneCoreException;
@@ -48,6 +49,8 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.custom.LoginMainActivity;
 import org.linphone.mediastream.Log;
+
+import java.util.Set;
 
 import joanbempong.android.WelcomeActivity;
 import joanbempong.android.SetupController;
@@ -104,16 +107,25 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
         mListener = new LinphoneCoreListenerBase(){
         	@Override
         	public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState state, String smessage) {
+				Log.d("test state: " + state);
 				if(accountCreated){
 					if(address != null && address.asString().equals(cfg.getIdentity()) ) {
 						if (state == RegistrationState.RegistrationOk) {
-							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
-								launchEchoCancellerCalibration(true);
-							}
+//							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
+//								launchEchoCancellerCalibration(true);
+//							}
 
+							LinphoneManager.getInstance().copyAssets("done.txt");
 						} else if (state != RegistrationState.RegistrationProgress && state != RegistrationState.RegistrationCleared) {
 							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
 							deleteAccounts();
+						}
+						else if (state.equals(RegistrationState.RegistrationCleared)) {
+							if (lc != null) {
+								LinphoneAuthInfo authInfo = lc.findAuthInfo(cfg.getIdentity(), cfg.getRealm(), cfg.getDomain());
+								if (authInfo != null)
+									lc.removeAuthInfo(authInfo);
+							}
 						}
 					}
 				}
@@ -131,9 +143,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	@Override
 	protected void onPause() {
 
-		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
+		if(accountCreated && LinphoneManager.isInstanciated() && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
 		{
-			deleteAccounts();
+//			deleteAccounts();
 		}
 		
 		super.onPause();
@@ -162,6 +174,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	void deleteAccounts()
 	{
+		Log.d("test delete account ");
 		accountCreated = false;
 		int nbAccounts = mPrefs.getAccountCount();
 		for (int i = 0; i < nbAccounts; i++) {
@@ -586,6 +599,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			e.printStackTrace();
 		}
 
+
 		Log.d("test accounts: " +  mPrefs.getAccountCount());
 
 	}
@@ -623,12 +637,16 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
+				LinphoneManager.getInstance().copyAssets("before.txt");
 
 				LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 				if (lc != null) {
 					lc.removeListener(mListener);
 				}
+				Log.d("test b accounts: " +  mPrefs.getAccountCount());
 				LinphoneManager.destroy();
+			//	Log.d("test b accounts: " + mPrefs.getAccountCount());
+				LinphoneManager.getInstance().copyAssets("test.txt");
 				startService(new Intent(Intent.ACTION_MAIN).setClass(SetupActivity.this, LinphoneService.class));
 			}
 		}, 1000);

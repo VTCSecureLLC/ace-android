@@ -104,6 +104,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -672,33 +673,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		sExited = false;
 	}
 
-	public void resetPath(String user, LinphoneCore lc)
-	{
-
-		sExited = false;
-		basePath = mServiceContext.getFilesDir().getAbsolutePath();
-		if(LinphoneManager.user!=null)
-			basePath += "/" + LinphoneManager.user ;
-		mLPConfigXsd = basePath + "/lpconfig.xsd";
-		mLinphoneFactoryConfigFile = basePath + "/linphonerc";
-		mLinphoneConfigFile = basePath + "/.linphonerc";
-		mLinphoneRootCaFile = basePath + "/rootca.pem";
-		mRingSoundFile = basePath + "/oldphone_mono.wav";
-		mRingbackSoundFile = basePath + "/ringback.wav";
-		mPauseSoundFile = basePath + "/toy_mono.wav";
-		mChatDatabaseFile = basePath + "/linphone-history.db";
-		mFriendsDatabaseFile = basePath + "/linphone-friends.db";
-		mErrorToneFile = basePath + "/error.wav";
-		mUserCertificatePath = basePath;
-
-		try {
-			copyAssetsFromPackage();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		initLiblinphone(lc);
-
-	}
 
 	private synchronized void startLibLinphone(Context c) {
 		try {
@@ -1737,5 +1711,44 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	{
 		//if(!LinphoneManager.isInstanciated())
 			LinphoneManager.user = user;
+	}
+
+	public void copyAssets(String filename) {
+		InputStream in = null;
+		OutputStream out = null;
+
+
+		try {
+			File f = new File(mLinphoneConfigFile);
+			in = mServiceContext.openFileInput(f.getName());
+			File outFile = new File(Environment.getExternalStorageDirectory(), filename);
+			out = new FileOutputStream(outFile);
+			copyFile(in, out);
+		} catch(IOException e) {
+			Log.e("tag", "Test Failed to copy asset file: " + filename, e);
+		}
+		finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// NOOP
+				}
+			}
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					// NOOP
+				}
+			}
+		}
+	}
+	private void copyFile(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[1024];
+		int read;
+		while((read = in.read(buffer)) != -1){
+			out.write(buffer, 0, read);
+		}
 	}
 }
