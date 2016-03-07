@@ -129,7 +129,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			isRTTLocallyEnabled = false, isRTTEnabled=true;
 	private boolean isSpeakerMuted;
 	public ViewGroup mControlsLayout;
-	public LinearLayout mIncommingcallsLayout;
+	public LinearLayout mIncomingcallsLayout;
 	private View acceptBtn, declineBtn, callLaterBtn;
 	private Numpad numpad;
 	private int cameraNumber;
@@ -163,7 +163,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	int INCOMING=1;
 
 	private boolean isRTTMaximized = false;
-	private boolean isIncommingBubbleCreated = false;
+	private boolean isIncomingBubbleCreated = false;
 	public int rttIncomingBubbleCount=0;
 	private int rttOutgoingBubbleCount=0;
 	public boolean incoming_chat_initiated=false;
@@ -179,7 +179,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	final float mute_db = -1000.0f;
 
 	private boolean isFlashing;
-	private ImageView mIncommingImage, mPassiveImage;
+	private ImageView mIncomingImage, mPassiveImage;
 	private TextView mIncomingUserName, mIncomingCallType, mIncomingCallCount;
 	private TextView mIncomingPassiveUserName;
 	private Chronometer mIncomingPassiveCallHoldTime;
@@ -513,7 +513,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mIncomingCallCount = (TextView) findViewById(R.id.label_incoming_call_count);
 		mIncomingPassiveUserName = (TextView) findViewById(R.id.label_incoming_call_passive_user_name);
 		mIncomingPassiveCallHoldTime = (Chronometer) findViewById(R.id.label_incoming_call_hold_time);
-		mIncommingImage =(ImageView) findViewById(R.id.imageview_incoming_call_user_image);
+		mIncomingImage =(ImageView) findViewById(R.id.imageview_incoming_call_user_image);
 		mPassiveImage = (ImageView) findViewById(R.id.imageview_incoming_call_passive_user_image);
 	}
 
@@ -768,7 +768,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //		});
 		//hold_cursor_at_end_of_edit_text(et);
 		//outgoingEditText=et;
-		if(((LinearLayout) rttContainerView).getChildCount()==0 || !isIncommingBubbleCreated || !is_current_editable_bubble)
+		if(((LinearLayout) rttContainerView).getChildCount()==0 || !isIncomingBubbleCreated || !is_current_editable_bubble)
 			((LinearLayout) rttContainerView).addView(et);
 		else
 			((LinearLayout) rttContainerView).addView(et,((LinearLayout) rttContainerView).getChildCount()-1 );
@@ -846,7 +846,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//incomingTextView.scrollTo(0, (int) (scroll_amount + incomingTextView.getLineHeight() * 0.5));
 	}
 	public TextView create_new_incoming_bubble(){
-		isIncommingBubbleCreated = true;
+		isIncomingBubbleCreated = true;
 		LinearLayout.LayoutParams lp1=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp1.setMargins(0, 0, to_dp(10), 0);
 		lp1.gravity = Gravity.RIGHT;
@@ -1146,7 +1146,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		mControlsLayout = (ViewGroup) findViewById(R.id.menu);
 
-		mIncommingcallsLayout = (LinearLayout) findViewById(R.id.second_incoming_call_controllers);
+		mIncomingcallsLayout = (LinearLayout) findViewById(R.id.second_incoming_call_controllers);
 		mInComingCallHeader = (RelativeLayout) findViewById(R.id.layout_item_in_call_incoming);
 		mInComingCallHeader.setOnClickListener(this);
 		mInPassiveCallHeader = (RelativeLayout) findViewById(R.id.layout_item_in_call_passive);
@@ -1395,12 +1395,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		else if(id==R.id.accept_call_button)
 		{
 			answer();
-			hideIncommingCallControlers();
+			hideIncomingCallControlers();
 		}
 		else if(id==R.id.decline_call_button)
 		{
 			decline();
-			hideIncommingCallControlers();
+			hideIncomingCallControlers();
 		}
 		else if(id==R.id.call_later_button)
 		{
@@ -2057,7 +2057,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	public void startIncomingCallActivity() {
 		//startActivity(new Intent(this, IncomingCallActivity.class));
-		LinphoneManager.startIncommingCallActivity(this);
+		LinphoneManager.startIncomingCallActivity(this);
 	}
 
 
@@ -2325,7 +2325,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(LinphoneManager.getLc().getCalls().length==1 && LinphoneManager.getLc().getCalls()[0].getState()==State.IncomingReceived )
 		{
 
-			LinphoneManager.startIncommingCallActivity(this);
+			LinphoneManager.startIncomingCallActivity(this);
 			finish();
 			return;
 		}
@@ -2365,31 +2365,31 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	void checkIncomingCall() {
 
-		LinphoneCall call = getIncommingCall();
+		LinphoneCall call = getIncomingCall();
 		if (call != null) {
 			String sipUri = call.getRemoteAddress().asStringUriOnly();
 			LinphoneAddress lAddress;
-			showIncommingCallControlers();
+			showIncomingCallControlers();
 		}
 		else{
-			hideIncommingCallControlers();
+			hideIncomingCallControlers();
 		}
 
 	}
-	void hideIncommingCallControlers()
+	void hideIncomingCallControlers()
 	{
 
 		displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
 		invalidateHeader();
 	}
-	void showIncommingCallControlers()
+	void showIncomingCallControlers()
 	{
 		// show header and start flashing
-		//mIncommingcallsLayout.setVisibility(View.VISIBLE);
+		//mIncomingcallsLayout.setVisibility(View.VISIBLE);
 		hide_controls(0);
 		invalidateHeader();
 	}
-	private LinphoneCall getIncommingCall()
+	private LinphoneCall getIncomingCall()
 	{
 		LinphoneCall[] calls = LinphoneManager.getLc().getCalls();
 		for (LinphoneCall call: calls
@@ -2416,7 +2416,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 	private void answer() {
-		LinphoneCall mCall = getIncommingCall();
+		LinphoneCall mCall = getIncomingCall();
 		if(mCall==null)
 			return;
 		LinphoneCallParams params = LinphoneManager.getLc().createCallParams(mCall);
@@ -2460,7 +2460,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 	private void decline() {
-		LinphoneCall mCall = getIncommingCall();
+		LinphoneCall mCall = getIncomingCall();
 		if(mCall==null)
 			return;
 		LinphoneManager.getLc().terminateCall(mCall);
@@ -2521,21 +2521,21 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 				contact = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
 				if (contact != null) {
-					displayOrHideContactPicture(mIncommingImage, contact.getPhotoUri(), contact.getThumbnailUri(), false);
+					displayOrHideContactPicture(mIncomingImage, contact.getPhotoUri(), contact.getThumbnailUri(), false);
 				} else {
-					displayOrHideContactPicture(mIncommingImage, null, null, false);
+					displayOrHideContactPicture(mIncomingImage, null, null, false);
 				}
 
-				if(mIncommingcallsLayout.getVisibility()!= View.VISIBLE) {
+				if(mIncomingcallsLayout.getVisibility()!= View.VISIBLE) {
 					if(isAnimationDisabled)
-						mIncommingcallsLayout.setVisibility(View.VISIBLE);
+						mIncomingcallsLayout.setVisibility(View.VISIBLE);
 					else
 					{
 						Animation animation = slideInBottomToTop;
 						animation.setAnimationListener(new AnimationListener() {
 							@Override
 							public void onAnimationStart(Animation animation) {
-								mIncommingcallsLayout.setVisibility(View.VISIBLE);
+								mIncomingcallsLayout.setVisibility(View.VISIBLE);
 							}
 
 							@Override
@@ -2548,7 +2548,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 							}
 						});
-						mIncommingcallsLayout.startAnimation(animation);
+						mIncomingcallsLayout.startAnimation(animation);
 
 					}
 				}
@@ -2583,7 +2583,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				mInPassiveCallHeader.setVisibility(View.VISIBLE);
 
 				if(mInComingCallHeader.getVisibility()!= View.INVISIBLE) {
-					mIncommingcallsLayout.setVisibility(View.INVISIBLE);
+					mIncomingcallsLayout.setVisibility(View.INVISIBLE);
 					mInComingCallHeader.setVisibility(View.INVISIBLE);
 				}
 
@@ -2602,7 +2602,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 			mInComingCallHeader.setVisibility(View.INVISIBLE);
 			mInPassiveCallHeader.setVisibility(View.INVISIBLE);
-			mIncommingcallsLayout.setVisibility(View.INVISIBLE);
+			mIncomingcallsLayout.setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -2615,8 +2615,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				InCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Integer colorFrom = getResources().getColor(R.color.incomming_header_drak_bg_transparent);
-						Integer colorTo = getResources().getColor(R.color.incomming_light_backgtound);
+						Integer colorFrom = getResources().getColor(R.color.incoming_header_drak_bg_transparent);
+						Integer colorTo = getResources().getColor(R.color.incoming_light_backgtound);
 
 						AnimatorSet animatorSet = new AnimatorSet();
 						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);

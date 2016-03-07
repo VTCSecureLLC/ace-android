@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="40dp"
     android:padding="5dp"
-    android:background="@color/incomming_header_drak_bg_transparent"
+    android:background="@color/incoming_header_drak_bg_transparent"
     android:visibility="invisible">
 
     <org.linphone.ui.RoundedImageView

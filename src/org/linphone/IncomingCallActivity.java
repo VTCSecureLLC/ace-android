@@ -22,22 +22,18 @@ import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -55,7 +51,6 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
-import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.RoundedImageView;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
@@ -266,12 +261,6 @@ public class IncomingCallActivity extends Activity {
 		} else {
 			mNameView.setText(contact.getName());
 		}
-		// To be done after findUriPictureOfContactAndSetDisplayName called
-		//TODO: question????lame_if_unknown)) {
-//			mNumberView.setText(address.getUserName());
-//		} else {
-//			mNumberView.setText(address.asStringUriOnly());
-//		}
 	}
 
 	@Override
@@ -311,8 +300,8 @@ public class IncomingCallActivity extends Activity {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Integer colorFrom = getResources().getColor(R.color.incomming_header_drak_bg);
-						Integer colorTo = getResources().getColor(R.color.incomming_light_backgtound);
+						Integer colorFrom = getResources().getColor(R.color.incoming_header_drak_bg);
+						Integer colorTo = getResources().getColor(R.color.incoming_light_backgtound);
 
 						AnimatorSet animatorSet = new AnimatorSet();
 						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);

@@ -1681,10 +1681,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
         }
 
 
-	public static void startIncommingCallActivity(Context context )
+	public static void startIncomingCallActivity(Context context)
 	{
 		LinphoneCore lc = getLc();
-		Log.d("startIncommingCallActivity new call");
+		Log.d("startIncomingCallActivity new call");
 		if(lc.getCalls().length>1)
 		{
 

@@ -342,7 +342,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				if (InCallActivity.isInstanciated())
 					return;
 				if (state == State.IncomingReceived) {
-					LinphoneManager.startIncommingCallActivity(LinphoneActivity.this);
+					LinphoneManager.startIncomingCallActivity(LinphoneActivity.this);
 					//startActivity(new Intent(LinphoneActivity.instance(), IncomingCallActivity.class));
 				} else if (state == State.OutgoingInit) {
 
@@ -1266,7 +1266,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (LinphoneManager.isInstanciated() && getLc().getCallsNb() > 0) {
 			LinphoneCall call = getLc().getCalls()[0];
 			if (call.getState() == LinphoneCall.State.IncomingReceived) {
-				LinphoneManager.startIncommingCallActivity(this);
+				LinphoneManager.startIncomingCallActivity(this);
 				//startActivity(new Intent(LinphoneActivity.this, IncomingCallActivity.class));
 			} else if (call.getCurrentParamsCopy().getVideoEnabled()) {
 				startVideoActivity(call);
@@ -1417,7 +1417,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				LinphoneCall call = getLc().getCalls()[0];
 				LinphoneCall.State callState = call.getState();
 				if (callState == State.IncomingReceived) {
-					LinphoneManager.startIncommingCallActivity(this);
+					LinphoneManager.startIncomingCallActivity(this);
 					//startActivity(new Intent(this, IncomingCallActivity.class));
 				} else {
 
@@ -1523,10 +1523,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				incoming.add(LinphoneCall.State.IncomingReceived);
 				if (LinphoneUtils.getCallsInState(getLc(), incoming).size() > 0) {
 					if (InCallActivity.isInstanciated()) {
-						LinphoneManager.startIncommingCallActivity(this);
+						LinphoneManager.startIncomingCallActivity(this);
 						//InCallActivity.instance().startIncomingCallActivity();
 					} else {
-						LinphoneManager.startIncommingCallActivity(this);
+						LinphoneManager.startIncomingCallActivity(this);
 						//startActivity(new Intent(this, IncomingCallActivity.class));
 					}
 				}
