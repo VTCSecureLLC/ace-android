@@ -10,9 +10,6 @@ keepalive_period=30000
 dscp=28
 
 [video]
-display=1
-capture=1
-show_local=1
 enabled=1
 size=cif
 automatically_initiate=1
