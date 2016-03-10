@@ -893,10 +893,10 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	private void initAudioVideoSettings(){
 		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Implicit");
-		LinphoneService.instance().set_RTCP_Feedback("Implicit", 3, LinphoneManager.getLcIfManagerNotDestroyedOrNull().getDefaultProxyConfig());
+		LinphoneService.instance().set_RTCP_Feedback(rtcpFeedbackMode, 3);
 
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
-		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
+		(findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
 
 		boolean isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_camera_mute_key))).setChecked(isCameraMuted);
@@ -935,7 +935,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String value = (String) newValue;
-				LinphoneService.instance().set_RTCP_Feedback(value, 3, LinphoneManager.getLcIfManagerNotDestroyedOrNull().getDefaultProxyConfig());
+				LinphoneService.instance().set_RTCP_Feedback(value, 3);
 				try{
 					preference.setSummary(newValue.toString());
 				}
