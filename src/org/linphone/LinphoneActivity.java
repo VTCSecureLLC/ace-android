@@ -228,6 +228,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
 				first_launch_boolean=false;
+			exit();
 			//}
 
 		}
