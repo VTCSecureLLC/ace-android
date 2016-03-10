@@ -207,6 +207,7 @@ public class SettingsFragment extends PreferencesListFragment {
 										deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
 										getActivity().startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
+										AccountHelper.deleteAccount(getActivity());
 										LinphoneActivity.instance().exit();
 									}
 								}
