@@ -218,32 +218,6 @@ public final class LinphoneService extends Service {
 //					return;
 //				}
 				if (!mDisableRegistrationStatus) {
-					if (state == RegistrationState.RegistrationOk && LinphoneManager.getLc().getDefaultProxyConfig() != null && LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) {
-						sendNotification(IC_LEVEL_ORANGE, R.string.notification_registered);
-						final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.this);
-						//Initialize RTCP feedback preference
-
-						String rtcpFeedback = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
-						if(rtcpFeedback.compareToIgnoreCase("Off") == 0){
-							cfg.enableAvpf(false);
-							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
-						}
-						else if(rtcpFeedback.compareToIgnoreCase("Implicit") == 0){
-							cfg.enableAvpf(false);
-							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-						}
-						else if(rtcpFeedback.compareToIgnoreCase("Explicit") == 0){
-							cfg.enableAvpf(true);
-							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-						}
-						else{//All else fails, set RTCP to off
-							cfg.enableAvpf(false);
-							LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
-						}
-
-						cfg.setAvpfRRInterval(3);
-					}
-			
 					if ((state == RegistrationState.RegistrationFailed || state == RegistrationState.RegistrationCleared) && (LinphoneManager.getLc().getDefaultProxyConfig() == null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered())) {
 						sendNotification(IC_LEVEL_OFFLINE, R.string.notification_register_failure);
 					}
@@ -303,6 +277,41 @@ public final class LinphoneService extends Service {
 
 	};
 		
+	public void set_RTCP_Feedback(String setting, int interval){
+		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.this);
+		//Initialize RTCP feedback preference
+		//Added sanity checks
+		if(setting == null) return;
+
+		prefs.edit().putString(getString(R.string.pref_av_rtcp_feedback_key), setting).apply();
+
+		if(LinphoneManager.getLc() == null) return;
+
+		LinphoneProxyConfig cfg =  LinphoneManager.getLc().getDefaultProxyConfig();
+		if(cfg == null) return;
+
+		if(setting.compareToIgnoreCase("Off") == 0){
+			cfg.enableAvpf(false);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
+			cfg.setAvpfRRInterval(interval);
+		}
+		else if(setting.compareToIgnoreCase("Implicit") == 0){
+			cfg.enableAvpf(false);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+			cfg.setAvpfRRInterval(interval);
+		}
+		else if(setting.compareToIgnoreCase("Explicit") == 0){
+			cfg.enableAvpf(true);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
+			cfg.setAvpfRRInterval(interval);
+		}
+		else{//All else fails, set RTCP to off
+			cfg.enableAvpf(false);
+			LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
+			cfg.setAvpfRRInterval(interval);
+		}
+		cfg.done();
+	}
 
 	private enum IncallIconState {INCALL, PAUSE, VIDEO, IDLE}
 	private IncallIconState mCurrentIncallIconState = IncallIconState.IDLE;

@@ -88,6 +88,8 @@ import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 import org.linphone.core.TunnelConfig;
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.MediastreamException;
+import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
@@ -95,8 +97,6 @@ import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import org.linphone.setup.AccountHelper;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
-import org.linphone.mediastream.MediastreamerAndroidContext;
-import org.linphone.mediastream.MediastreamException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -156,7 +156,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private WakeLock mIncallWakeLock;
 	private static List<LinphoneChatMessage> mPendingChatFileMessage;
 	private static LinphoneChatMessage mUploadPendingFileMessage;
-
 
 
 	public String wizardLoginViewDomain = null;
@@ -687,6 +686,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 						public void run() {
 							if (mLc != null) {
 								mLc.iterate();
+
 							}
 						}
 					});

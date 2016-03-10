@@ -305,8 +305,8 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		if (getResources().getBoolean(R.bool.hide_camera_settings)) {
 			emptyAndHidePreference(R.string.pref_video_key);
-			hidePreference(R.string.pref_video_enable_key);
 		}
+		hidePreference(R.string.pref_video_enable_key);
 
 		if (getResources().getBoolean(R.bool.disable_every_log)) {
 			uncheckAndHidePreference(R.string.pref_debug_key);
@@ -895,9 +895,11 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initAudioVideoSettings(){
-		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Off");
+		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Implicit");
+		LinphoneService.instance().set_RTCP_Feedback(rtcpFeedbackMode, 3);
+
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
-		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
+		(findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
 
 		boolean isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_camera_mute_key))).setChecked(isCameraMuted);
@@ -936,17 +938,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String value = (String) newValue;
-				if (value.compareToIgnoreCase("Off") == 0) {
-					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
-					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 0);
-				} else if (value.compareToIgnoreCase("Implicit") == 0) {
-					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(false);
-					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-				} else if (value.compareToIgnoreCase("Explicit") == 0) {
-					LinphoneManager.getLc().getDefaultProxyConfig().enableAvpf(true);
-					LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_fb_implicit_rtcp_fb", 1);
-				}
-				LinphoneManager.getLc().getDefaultProxyConfig().setAvpfRRInterval(3);
+				LinphoneService.instance().set_RTCP_Feedback(value, 3);
 				try{
 					preference.setSummary(newValue.toString());
 				}
