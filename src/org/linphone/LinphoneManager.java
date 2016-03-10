@@ -783,7 +783,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		copyIfNotExist(R.raw.linphonerc_default, mLinphoneConfigFile);
 		copyFromPackage(R.raw.linphonerc_factory, new File(mLinphoneFactoryConfigFile).getName());
 		copyIfNotExist(R.raw.lpconfig, mLPConfigXsd);
-		//copyIfNotExist(R.raw.rootca, mLinphoneRootCaFile);
+		copyIfNotExist(R.raw.rootca, mLinphoneRootCaFile);
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
@@ -856,8 +856,8 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void doDestroy() {
-//		if (LinphoneService.isReady()) // indeed, no need to crash
-//			ChatStorage.getInstance().close();
+		if (LinphoneService.isReady()) // indeed, no need to crash
+			ChatStorage.getInstance().close();
 
 		BluetoothManager.getInstance().destroy();
 		try {

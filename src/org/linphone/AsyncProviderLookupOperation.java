@@ -26,7 +26,7 @@ import java.util.ArrayList;
 //Helper class to pull all provider domains from the CDN, pass into setup.login for autoconfig
 public class AsyncProviderLookupOperation extends AsyncTask<Void, Void, Void> {
 
-    final String cdnProviderList = "https://cdn.vatrp.net/domains.json";
+    final String cdnProviderList = "http://cdn.vatrp.net/domains.json";
     //  protected SharedPreferences sharedPreferences;
     protected Context context;
     protected ArrayList<ProviderNetworkOperationListener> listeners;
