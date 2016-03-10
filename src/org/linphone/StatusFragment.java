@@ -589,8 +589,8 @@ public class StatusFragment extends Fragment {
 
 									videoResolutionLayout.setVisibility(View.VISIBLE);
 									videoResolution.setText("\u2191 " + params.getSentVideoSize().toDisplayableString() + " / \u2193 " + params.getReceivedVideoSize().toDisplayableString());
-									sentFpsRate.setText(String.valueOf(params.getSentFPSRate()));
-									receivedFpsRate.setText(String.valueOf(params.getReceivedFPSRate()));
+									//sentFpsRate.setText(String.valueOf(params.getSentFPSRate()));
+									//receivedFpsRate.setText(String.valueOf(params.getReceivedFPSRate()));
 
 									getJitterBufferSize.setText(String.valueOf(videoStats.getJitterBufferSize()));
 									getLatePacketsCumulativeNumber.setText(String.valueOf(videoStats.getLatePacketsCumulativeNumber()));
