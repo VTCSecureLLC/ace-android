@@ -783,7 +783,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		copyIfNotExist(R.raw.linphonerc_default, mLinphoneConfigFile);
 		copyFromPackage(R.raw.linphonerc_factory, new File(mLinphoneFactoryConfigFile).getName());
 		copyIfNotExist(R.raw.lpconfig, mLPConfigXsd);
-		copyIfNotExist(R.raw.rootca, mLinphoneRootCaFile);
+		//copyIfNotExist(R.raw.rootca, mLinphoneRootCaFile);
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
@@ -1509,7 +1509,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	public void setRttEnabled(boolean enabled)
 	{
 		SharedPreferences prefs = PreferenceManager.
-				getDefaultSharedPreferences(LinphoneActivity.instance());
+				getDefaultSharedPreferences(getContext());
 
 			SharedPreferences.Editor editor = prefs.edit();
 			// Enable by default
