@@ -155,7 +155,7 @@
 
             <TextView
                 android:id="@+id/micro"
-                android:background="@drawable/micro_on"
+                android:background="@drawable/selector_in_call_microphone"
 	            android:text="@string/button_micro"
 	            android:gravity="center"
 	            android:paddingTop="45dp"
@@ -167,7 +167,7 @@
 
             <TextView
                 android:id="@+id/speaker"
-                android:background="@drawable/speaker_off"
+                android:background="@drawable/selector_in_call_speaker"
 	            android:text="@string/button_speaker"
 	            android:gravity="center"
 	            android:paddingTop="45dp"

@@ -151,7 +151,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 				}
 
 				mGestureDetector.onTouchEvent(event);
-				if (inCallActivity != null) {
+				if (inCallActivity != null && event.getAction() == MotionEvent.ACTION_UP) {
 					try {
 						//If not screen buttons were pressed, toggle controls display
 						if (inCallActivity.instance().mControlsLayout != null && inCallActivity.instance().mControlsLayout.getVisibility() != View.VISIBLE) {
@@ -279,7 +279,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			}
 		}
 
-		mGestureDetector = new GestureDetector(inCallActivity, this); 
+		mGestureDetector = new GestureDetector(inCallActivity, this);
 		mScaleDetector = Compatibility.getScaleGestureDetector(inCallActivity, this);
 	}
 

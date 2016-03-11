@@ -22,22 +22,19 @@ import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,7 +51,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
-import org.linphone.ui.AvatarWithShadow;
+import org.linphone.ui.RoundedImageView;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import java.util.List;
@@ -76,19 +73,21 @@ public class IncomingCallActivity extends Activity {
 
 	private TextView mNameView;
 	private TextView mNumberView;
-	private AvatarWithShadow mPictureView;
+	private RoundedImageView mPictureView;
 	private LinphoneCall mCall;
 	//private LinphoneSliders mIncomingCallWidget;
-	private ImageView accept_call_button;
-	private ImageView decline_call_button;
+	private TextView accept_call_button;
+	private TextView decline_call_button;
+	private TextView mRinging;
 	private LinphoneCoreListenerBase mListener;
 	private RelativeLayout topLayout; 
 	private Boolean backgroundIsRed = false;
 	private Boolean torhcIsOn = false;
-	private Timer flashRedBackgroundTimer;
+	private Timer flashOrangeBackgroundTimer;
 	private Timer vibrateTimer;
 	private boolean terminated = false;
     private int ringCount = 0;
+	private LinearLayout mCallLaterLayout;
 
 	public static IncomingCallActivity instance() {
 		return instance;
@@ -98,27 +97,61 @@ public class IncomingCallActivity extends Activity {
 		return instance != null;
 	}
 
+	View.OnClickListener onClickListener  = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+			switch (v.getId()) {
+				case R.id.label_in_calling_call_later:
+					if (mCallLaterLayout.getVisibility() == View.VISIBLE) {
+						mCallLaterLayout.setVisibility(View.GONE);
+						v.setSelected(false);
+						mRinging.setVisibility(View.VISIBLE);
+					} else {
+						mCallLaterLayout.setVisibility(View.VISIBLE);
+						v.setSelected(true);
+						mRinging.setVisibility(View.GONE);
+					}
+
+					break;
+				case R.id.label_call_later:
+					//TODO: End call when message already send
+					Toast.makeText(IncomingCallActivity.this, "Can't talk now. Call me later?", Toast.LENGTH_SHORT).show();
+					onCallDeclineClick();
+					break;
+				case R.id.label_whats_up:
+					//TODO: End call when message already send
+					Toast.makeText(IncomingCallActivity.this, "Can't talk now. What's up?", Toast.LENGTH_SHORT).show();
+					onCallDeclineClick();
+					break;
+				case R.id.label_in_meeting:
+					//TODO: End call when message already send
+					Toast.makeText(IncomingCallActivity.this, "I'm in meeting", Toast.LENGTH_SHORT).show();
+					onCallDeclineClick();
+					break;
+
+			}
+		}
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		setContentView(R.layout.incoming);
-
+		setContentView(R.layout.new_incoming);
 
 		mNameView = (TextView) findViewById(R.id.incoming_caller_name);
-		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
-		mPictureView = (AvatarWithShadow) findViewById(R.id.incoming_picture);
+//		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
+		mPictureView = (RoundedImageView) findViewById(R.id.incoming_picture);
 		topLayout = (RelativeLayout)findViewById(R.id.topLayout);
-
 		// set this flag so this activity will stay in front of the keyguard
 		int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
 		getWindow().addFlags(flags);
-
 		// "Dial-to-answer" widget for incoming calls.
 //		mIncomingCallWidget = (LinphoneSliders) findViewById(R.id.sliding_widget);
 //		mIncomingCallWidget.setOnTriggerListener(this);
 
-		accept_call_button = (ImageView) findViewById(R.id.accept_call_button);
-		decline_call_button = (ImageView) findViewById(R.id.decline_call_button);
+		accept_call_button = (TextView) findViewById(R.id.accept_call_button);
+		decline_call_button = (TextView) findViewById(R.id.decline_call_button);
 		accept_call_button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -131,6 +164,12 @@ public class IncomingCallActivity extends Activity {
 				onCallDeclineClick();
 			}
 		});
+		mCallLaterLayout = (LinearLayout) findViewById(R.id.layout_call_later);
+		mRinging = (TextView) findViewById(R.id.label_ringing);
+		findViewById(R.id.label_in_calling_call_later).setOnClickListener(onClickListener);
+		findViewById(R.id.label_call_later).setOnClickListener(onClickListener);
+		findViewById(R.id.label_whats_up).setOnClickListener(onClickListener);
+		findViewById(R.id.label_in_meeting).setOnClickListener(onClickListener);
 
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
@@ -179,7 +218,7 @@ public class IncomingCallActivity extends Activity {
 		// VTCSecure
 		HueController.getInstance().startFlashing(null);
 
-		flashRedBackground();
+		flashOrangeBackground();
 		flashTorch();
 		vibrate();
         stopRingCount();
@@ -207,15 +246,20 @@ public class IncomingCallActivity extends Activity {
 		LinphoneAddress address = mCall.getRemoteAddress();
 		// May be greatly sped up using a drawable cache
 		Contact contact = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), address);
-		LinphoneUtils.setImagePictureFromUri(this, mPictureView.getView(), contact != null ? contact.getPhotoUri() : null,
+		LinphoneUtils.setImagePictureFromUri(this, mPictureView, contact != null ? contact.getPhotoUri() : null,
 				contact != null ? contact.getThumbnailUri() : null, R.drawable.unknown_small);
 
-		// To be done after findUriPictureOfContactAndSetDisplayName called
-		mNameView.setText(contact != null ? contact.getName() : "");
-		if (getResources().getBoolean(R.bool.only_display_username_if_unknown)) {
-			mNumberView.setText(address.getUserName());
+
+		if (contact == null) {
+			if (getResources().getBoolean(R.bool.only_display_username_if_unknown) && LinphoneUtils.isSipAddress(address.asStringUriOnly())) {
+				mNameView.setText(address.getUserName());
+				//partnerName.setText(contactName);
+			} else {
+				mNameView.setText(address.asStringUriOnly());
+				// partnerName.setText(contactName);
+			}
 		} else {
-			mNumberView.setText(address.asStringUriOnly());
+			mNameView.setText(contact.getName());
 		}
 	}
 
@@ -247,19 +291,17 @@ public class IncomingCallActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void flashRedBackground () {
-		flashRedBackgroundTimer = new Timer();
+	private void flashOrangeBackground() {
+		flashOrangeBackgroundTimer = new Timer();
 		final float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashred_frequency", 0.3f);
-		flashRedBackgroundTimer.schedule(new TimerTask() {
+		flashOrangeBackgroundTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						Integer colorFrom = Color.TRANSPARENT;
-						Integer colorTo = Color.rgb(90, 17, 17);//RED;
+						Integer colorFrom = getResources().getColor(R.color.incoming_header_drak_bg);
+						Integer colorTo = getResources().getColor(R.color.incoming_light_backgtound);
 
 						AnimatorSet animatorSet = new AnimatorSet();
 						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
@@ -282,11 +324,11 @@ public class IncomingCallActivity extends Activity {
 
 						if (terminated) {
 							//Call is showing terminated on some devices even though it is not, this is preventing red screen flashing. So I'm adding and attempt flash anyway, if it can't flash then we'll execute the anticpated terminate code.
-							try{
+							try {
 								animatorSet.play(colorAnimation).after(reverseColorAnimation);
 								animatorSet.start();
-							}catch(Throwable e){
-								flashRedBackgroundTimer.cancel();
+							} catch (Throwable e) {
+								flashOrangeBackgroundTimer.cancel();
 								e.printStackTrace();
 								Log.d("incoming call is supposedly terminated and we tried to flash anyway, was unable to, so.. cancelling the flash timer");
 							}
@@ -298,7 +340,7 @@ public class IncomingCallActivity extends Activity {
 					}
 				});
 			}
-		}, 0, (long)(flashFrequencyInSeconds*2000));
+		}, 0, (long) (flashFrequencyInSeconds * 2000));
 	}
 
 
@@ -313,16 +355,16 @@ public class IncomingCallActivity extends Activity {
 				IncomingCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (terminated){
-                            vibrateTimer.cancel();
-                        } else {
-                            incrementRingCount();
-                            v.vibrate(500);
-                        }
+						if (terminated) {
+							vibrateTimer.cancel();
+						} else {
+							incrementRingCount();
+							v.vibrate(500);
+						}
 					}
 				});
 			}
-		}, 0, (long)(vibrateFrequencyInSeconds*1000));
+		}, 0, (long) (vibrateFrequencyInSeconds * 1000));
 
 	}
 
@@ -405,18 +447,18 @@ public class IncomingCallActivity extends Activity {
 	}
 
     private void incrementRingCount() {
-        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
-        outgoingRingCountTextView.setVisibility(View.VISIBLE);
-        ringCount++;
-        outgoingRingCountTextView.setText(ringCount + "");
+//        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
+//        outgoingRingCountTextView.setVisibility(View.VISIBLE);
+//        ringCount++;
+//        outgoingRingCountTextView.setText(ringCount + "");
 
     }
 
     private void stopRingCount() {
-        ringCount = 0;
-        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
-        outgoingRingCountTextView.setVisibility(View.GONE);
-        outgoingRingCountTextView.setText(ringCount + "");
+//        ringCount = 0;
+//        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
+//        outgoingRingCountTextView.setVisibility(View.GONE);
+//        outgoingRingCountTextView.setText(ringCount + "");
 
     }
 }
