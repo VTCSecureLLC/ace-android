@@ -1762,9 +1762,9 @@ public class SettingsFragment extends PreferencesListFragment {
 		mSipDSCP = (EditTextPreference) findPreference(getString(R.string.pref_enable_packet_sip_dscp));
 		mSipDSCP.setEnabled(mCheckBoxPreference.isChecked());
 
-		setPreferenceDefaultValueAndSummary(mAudioDSCP, String.valueOf(mPrefs.getPacketAudioValue()));
-		setPreferenceDefaultValueAndSummary(mVideoDSCP, String.valueOf(mPrefs.getPacketVideoValue()));
-		setPreferenceDefaultValueAndSummary(mSipDSCP, String.valueOf(mPrefs.getPacketSipValue()));
+		setPreferenceDefaultValueAndSummary(mAudioDSCP, String.valueOf(mPrefs.getDscpAudioValue()));
+		setPreferenceDefaultValueAndSummary(mVideoDSCP, String.valueOf(mPrefs.getDscpVideoValue()));
+		setPreferenceDefaultValueAndSummary(mSipDSCP, String.valueOf(mPrefs.getDscpSipValue()));
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_image_sharing_server_key, mPrefs.getSharingPictureServerUrl());
 		setPreferenceDefaultValueAndSummary(R.string.pref_remote_provisioning_key, mPrefs.getRemoteProvisioningUrl());
@@ -1813,9 +1813,16 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
+				mPrefs.enablePacketTagging(value);
+
 				mAudioDSCP.setEnabled(value);
 				mVideoDSCP.setEnabled(value);
 				mSipDSCP.setEnabled(value);
+
+				mAudioDSCP.setSummary(String.valueOf(mPrefs.getDscpAudioValue()));
+				mVideoDSCP.setSummary(String.valueOf(mPrefs.getDscpVideoValue()));
+				mSipDSCP.setSummary(String.valueOf(mPrefs.getDscpSipValue()));
+
 				return true;
 			}
 		});
@@ -1824,8 +1831,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		mAudioDSCP.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				mPrefs.setAudioPacket(Integer.parseInt((String) newValue));
-				mAudioDSCP.setSummary(String.valueOf(mPrefs.getPacketAudioValue()));
+				mPrefs.setAudioDscp(Integer.parseInt((String) newValue));
+				mAudioDSCP.setSummary(String.valueOf(mPrefs.getDscpAudioValue()));
 				return true;
 			}
 		});
@@ -1835,8 +1842,8 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int value = Integer.parseInt((String) newValue);
-				mPrefs.setVideoPacket(value);
-				mVideoDSCP.setSummary(String.valueOf(mPrefs.getPacketVideoValue()));
+				mPrefs.setVideoDscp(value);
+				mVideoDSCP.setSummary(String.valueOf(mPrefs.getDscpVideoValue()));
 				return true;
 			}
 		});
@@ -1844,8 +1851,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		mSipDSCP.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				mPrefs.setSipPacket(Integer.parseInt((String) newValue));
-				mSipDSCP.setSummary(String.valueOf(mPrefs.getPacketSipValue()));
+				mPrefs.setSipDscp(Integer.parseInt((String) newValue));
+				mSipDSCP.setSummary(String.valueOf(mPrefs.getDscpSipValue()));
 				return true;
 			}
 		});

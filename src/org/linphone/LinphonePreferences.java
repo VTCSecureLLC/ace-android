@@ -169,6 +169,7 @@ public class LinphonePreferences {
 		getLc().addAuthInfo(authInfo);
 	}
 
+
 	public static class AccountBuilder {
 		private LinphoneCore lc;
 		private String tempUsername;
@@ -1086,28 +1087,46 @@ public class LinphonePreferences {
 		return getLc().getPrimaryContactUsername();
 	}
 
-	public void setAudioPacket(int value) {
+	public void enablePacketTagging(boolean enable) {
+		if(enable)
+		{
+			getLc().setAudioDscp(getConfig().getInt("custom", "audio_dscp", 38));
+			getLc().setVideoDscp(getConfig().getInt("custom", "video_dscp", 38));
+			getLc().setSipDscp(getConfig().getInt("custom", "sip_dscp", 28));
+		}
+		else
+		{
+			getLc().setAudioDscp(DSCPClassSelector.getDefaultDSCP());
+			getLc().setVideoDscp(DSCPClassSelector.getDefaultDSCP());
+			getLc().setSipDscp(DSCPClassSelector.getDefaultDSCP());
+		}
+	}
+
+	public void setAudioDscp(int value) {
+		getConfig().setInt("custom", "audio_dscp", value);
 		getLc().setAudioDscp(value);
 	}
 
 
-	public void setVideoPacket(int value) {
+	public void setVideoDscp(int value) {
+		getConfig().setInt("custom", "video_dscp", value);
 		getLc().setVideoDscp(value);
 	}
 
-	public void setSipPacket(int value) {
+	public void setSipDscp(int value) {
+		getConfig().setInt("custom", "sip_dscp", value);
 		getLc().setSipDscp(value);
 	}
 
-	public int getPacketAudioValue() {
+	public int getDscpAudioValue() {
 		return getLc().getAudioDscp();
 	}
 
-	public int getPacketVideoValue() {
+	public int getDscpVideoValue() {
 		return getLc().getVideoDscp();
 	}
 
-	public int getPacketSipValue() {
+	public int getDscpSipValue() {
 		return getLc().getSipDscp();
 	}
 

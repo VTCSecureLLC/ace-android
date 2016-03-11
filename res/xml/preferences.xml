@@ -385,7 +385,8 @@
 
 			<CheckBoxPreference
 				android:title="@string/pref_enable_packet_tagging"
-				android:key="@string/pref_enable_packet_tagging_key"/>
+				android:key="@string/pref_enable_packet_tagging_key"
+				android:defaultValue="true"/>
 
 			<EditTextPreference
 				android:title="@string/title_audio_dscp"
