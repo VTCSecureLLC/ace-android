@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/topLayout"
+	xmlns:linphone="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/main_app_color">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/layout_accept_call"
+		android:paddingTop="20dp">
+
+		<!--linphone:picture="@drawable/unknown_small"-->
+		<org.linphone.ui.RoundedImageView
+			android:id="@+id/incoming_picture"
+			android:layout_width="200dp"
+			android:layout_height="200dp"
+			android:layout_centerHorizontal="true"
+			android:scaleType="fitCenter"
+			android:src="@drawable/unknown_small"
+			android:minWidth="128dp"
+			android:minHeight="128dp" />
+
+		<TextView
+			android:id="@+id/incoming_caller_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_below="@id/incoming_picture"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="10dp"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:text="User Name"
+			android:textSize="40sp"
+			android:textColor="@android:color/white"/>
+
+		<TextView
+			android:id="@+id/incoming_call_text"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_below="@id/incoming_caller_name"
+			android:gravity="center"
+			android:text="Is video calling ..."
+			android:textColor="@android:color/white"
+			android:textSize="22dp" />
+
+		<TextView
+			android:id="@+id/label_ringing"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="45dp"
+			android:layout_below="@id/incoming_call_text"
+			android:lines="1"
+			android:text="Ringing..."
+			android:textColor="@android:color/white"
+			android:textSize="35sp"
+			android:visibility="visible"/>
+
+	</RelativeLayout>
+
+	<!-- Removing slider widget to add buttons for answer and decline VATRP-1979
+    <org.linphone.ui.LinphoneSliders
+        android:id="@+id/sliding_widget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="80dp" />-->
+
+	<LinearLayout
+		android:id="@+id/layout_call_later"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@+id/label_in_calling_call_later"
+		android:orientation="vertical"
+		android:visibility="gone">
+
+		<TextView
+			android:id="@+id/label_call_later"
+			android:layout_width="match_parent"
+			android:layout_height="45dp"
+			android:background="#52ffffff"
+			android:gravity="center"
+			android:textColor="@android:color/white"
+			android:text="Can't talk now. Call me later?"/>
+
+		<TextView
+			android:id="@+id/label_whats_up"
+			android:layout_width="match_parent"
+			android:layout_height="45dp"
+			android:gravity="center"
+			android:textColor="@android:color/white"
+			android:text="Can't talk now. What's up?"
+			android:background="#52ffffff"/>
+
+		<TextView
+			android:id="@+id/label_in_meeting"
+			android:layout_width="match_parent"
+			android:layout_height="45dp"
+			android:background="#52ffffff"
+			android:gravity="center"
+			android:textColor="@android:color/white"
+			android:text="I'm in meeting"
+			android:layout_marginTop="2dp"/>
+
+	</LinearLayout>
+
+	<TextView
+		android:id="@id/label_in_calling_call_later"
+		android:layout_width="match_parent"
+		android:layout_height="45dp"
+		android:layout_marginBottom="2dp"
+		android:layout_above="@id/layout_accept_call"
+		android:drawableRight="@drawable/ic_up"
+		android:drawableLeft="@drawable/ic_message_later"
+		android:drawablePadding="20dp"
+		android:paddingRight="20dp"
+		android:paddingLeft="100dp"
+		android:background="@drawable/selector_white_transparent"
+		android:singleLine="true"
+		android:gravity="center_vertical"
+		android:textColor="@android:color/white"
+		android:text="@string/call_back"/>
+
+	<LinearLayout
+		android:id="@id/layout_accept_call"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:orientation="horizontal">
+
+		<TextView
+			android:id="@+id/accept_call_button"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:paddingTop="10dp"
+			android:paddingBottom="10dp"
+			android:drawableTop="@drawable/ic_accept_call"
+			android:text="accept"
+			android:textColor="@android:color/white"
+			android:background="@color/call_button_green"/>
+
+		<TextView
+			android:id="@+id/decline_call_button"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:paddingTop="10dp"
+			android:paddingBottom="10dp"
+			android:drawableTop="@drawable/ic_video_reject_incall"
+			android:text="reject"
+			android:textColor="@android:color/white"
+			android:background="@color/call_reject_button_red"/>
+	</LinearLayout>
+
+</RelativeLayout>

@@ -338,10 +338,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void callState(LinphoneCore lc, LinphoneCall call, LinphoneCall.State state, String message) {
-
+				//InCallActivity will handle it
+				if (InCallActivity.isInstanciated())
+					return;
 				if (state == State.IncomingReceived) {
-
-					startActivity(new Intent(LinphoneActivity.instance(), IncomingCallActivity.class));
+					LinphoneManager.startIncomingCallActivity(LinphoneActivity.this);
+					//startActivity(new Intent(LinphoneActivity.instance(), IncomingCallActivity.class));
 				} else if (state == State.OutgoingInit) {
 
 					if (call.getCurrentParamsCopy().getVideoEnabled()) {
@@ -1264,7 +1266,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (LinphoneManager.isInstanciated() && getLc().getCallsNb() > 0) {
 			LinphoneCall call = getLc().getCalls()[0];
 			if (call.getState() == LinphoneCall.State.IncomingReceived) {
-				startActivity(new Intent(LinphoneActivity.this, IncomingCallActivity.class));
+				LinphoneManager.startIncomingCallActivity(this);
+				//startActivity(new Intent(LinphoneActivity.this, IncomingCallActivity.class));
 			} else if (call.getCurrentParamsCopy().getVideoEnabled()) {
 				startVideoActivity(call);
 			} else {
@@ -1416,7 +1419,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				LinphoneCall call = getLc().getCalls()[0];
 				LinphoneCall.State callState = call.getState();
 				if (callState == State.IncomingReceived) {
-					startActivity(new Intent(this, IncomingCallActivity.class));
+					LinphoneManager.startIncomingCallActivity(this);
+					//startActivity(new Intent(this, IncomingCallActivity.class));
 				} else {
 
 						if (call.getCurrentParamsCopy().getVideoEnabled()) {
@@ -1521,9 +1525,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				incoming.add(LinphoneCall.State.IncomingReceived);
 				if (LinphoneUtils.getCallsInState(getLc(), incoming).size() > 0) {
 					if (InCallActivity.isInstanciated()) {
-						InCallActivity.instance().startIncomingCallActivity();
+						LinphoneManager.startIncomingCallActivity(this);
+						//InCallActivity.instance().startIncomingCallActivity();
 					} else {
-						startActivity(new Intent(this, IncomingCallActivity.class));
+						LinphoneManager.startIncomingCallActivity(this);
+						//startActivity(new Intent(this, IncomingCallActivity.class));
 					}
 				}
 			}
