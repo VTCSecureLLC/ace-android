@@ -513,4 +513,11 @@
   <string name="color_picker_background_title">Background Color</string>
 
   <string name="unlock_adv_settings">Unlock Advanced Settings</string>
+  <string name="call_back">I\'ll call you back</string>
+  <string name="pref_enable_packet_audio_dscp">pref_enable_packet_audio_dscp</string>
+  <string name="pref_enable_packet_video_dscp">pref_enable_packet_video_dscp</string>
+  <string name="pref_enable_packet_sip_dscp">pref_enable_packet_sip_dscp</string>
+  <string name="title_audio_dscp">Audio DSCP</string>
+  <string name="title_video_dscp">Video DSCP</string>
+  <string name="title_sip_dscp">Sip DSCP</string>
 </resources>

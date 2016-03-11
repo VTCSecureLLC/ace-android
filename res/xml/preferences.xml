@@ -113,7 +113,7 @@
 	<Preference
 	    android:title="@string/setup_title"
 	    android:key="@string/setup_key"/>
-	
+
 	<Preference
 	    android:title="@string/pref_add_account"
 	    android:key="@string/pref_add_account_key"/>
@@ -256,7 +256,7 @@
 			<CheckBoxPreference
 				android:title="@string/pref_rfc2833_dtmf"
 			    android:key="@string/pref_rfc2833_dtmf_key"/>
-			
+
 			<EditTextPreference
 			android:title="@string/pref_voice_mail"
 			android:key="@string/pref_voice_mail_key"/>
@@ -382,7 +382,24 @@
 			<CheckBoxPreference
 				android:title="@string/pref_auto_answer"
 				android:key="@string/pref_auto_answer_key"/>
-			<CheckBoxPreference android:title="@string/pref_enable_packet_tagging" android:key="@string/pref_enable_packet_tagging_key"/>
+
+			<CheckBoxPreference
+				android:title="@string/pref_enable_packet_tagging"
+				android:key="@string/pref_enable_packet_tagging_key"/>
+
+			<EditTextPreference
+				android:title="@string/title_audio_dscp"
+				android:key="@string/pref_enable_packet_audio_dscp"/>
+
+			<EditTextPreference
+				android:title="@string/title_video_dscp"
+				android:key="@string/pref_enable_packet_video_dscp"/>
+
+			<EditTextPreference
+				android:title="@string/title_sip_dscp"
+				android:key="@string/pref_enable_packet_sip_dscp"/>
+
+
 
 			<EditTextPreference
 			    android:title="@string/pref_incoming_call_timeout_title"

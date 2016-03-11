@@ -1086,31 +1086,31 @@ public class LinphonePreferences {
 		return getLc().getPrimaryContactUsername();
 	}
 
-
-	public void setPacketTagging(boolean enabled) {
-
-		LinphoneCore lc = getLc();
-		if(enabled)
-		{
-			lc.setVideoDscp(DSCPClassSelector.getVideoDSCP());
-			lc.setAudioDscp(DSCPClassSelector.getAudioDSCP());
-			lc.setSipDscp(DSCPClassSelector.getSipDSCP());
-		}
-		else
-		{
-			lc.setVideoDscp(DSCPClassSelector.getDefaultDSCP());
-			lc.setAudioDscp(DSCPClassSelector.getDefaultDSCP());
-			lc.setSipDscp(DSCPClassSelector.getDefaultDSCP());
-		}
+	public void setAudioPacket(int value) {
+		getLc().setAudioDscp(value);
 	}
-	public boolean isPacketTaggingEnabled()
-	{
-		LinphoneCore lc = getLc();
-		boolean isAudioTagged = lc.getAudioDscp() == DSCPClassSelector.getAudioDSCP()? true : false;
-		boolean isVideoTagged = lc.getVideoDscp() == DSCPClassSelector.getVideoDSCP()? true : false;
-		boolean isSipTagged = lc.getSipDscp() == DSCPClassSelector.getSipDSCP()? true : false;
-		return  isAudioTagged && isVideoTagged && isAudioTagged;
+
+
+	public void setVideoPacket(int value) {
+		getLc().setVideoDscp(value);
 	}
+
+	public void setSipPacket(int value) {
+		getLc().setSipDscp(value);
+	}
+
+	public int getPacketAudioValue() {
+		return getLc().getAudioDscp();
+	}
+
+	public int getPacketVideoValue() {
+		return getLc().getVideoDscp();
+	}
+
+	public int getPacketSipValue() {
+		return getLc().getSipDscp();
+	}
+
 
 	// End of advanced settings
 
