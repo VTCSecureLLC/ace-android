@@ -176,27 +176,18 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		sExited = false;
 		mServiceContext = c;
 		basePath = c.getFilesDir().getAbsolutePath();
-//
-//		if(LinphoneManager.user!=null)
-//		{
-//			basePath += "/" + LinphoneManager.user ;
-//		}
-//		else
-//		{
-//
-//		}
 
-		mLPConfigXsd = basePath + "/lpconfig"+user+".xsd";
+		mLPConfigXsd = basePath + "/lpconfig_"+ user +".xsd";
 		mLinphoneFactoryConfigFile = basePath + "/linphonerc";
-		mLinphoneConfigFile = basePath + "/.linphonerc" + user;
+		mLinphoneConfigFile = basePath + "/.linphonerc_" + user;
 		mLinphoneRootCaFile = basePath + "/rootca.pem";
 		mRingSoundFile = basePath + "/oldphone_mono.wav";
 		mRingbackSoundFile = basePath + "/ringback.wav";
 		mPauseSoundFile = basePath + "/toy_mono.wav";
-		mChatDatabaseFile = basePath + "/linphone-history"+user+".db";
-		mFriendsDatabaseFile = basePath + "/linphone-friends"+user+".db";
+		mChatDatabaseFile = basePath + "/linphone-history_" + user + ".db";
+		mFriendsDatabaseFile = basePath + "/linphone-friends_" + user + ".db";
 		mErrorToneFile = basePath + "/error.wav";
-        mUserCertificatePath = basePath;
+		mUserCertificatePath = basePath;
 
 
 		mPrefs = LinphonePreferences.instance();
@@ -783,7 +774,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		copyIfNotExist(R.raw.linphonerc_default, mLinphoneConfigFile);
 		copyFromPackage(R.raw.linphonerc_factory, new File(mLinphoneFactoryConfigFile).getName());
 		copyIfNotExist(R.raw.lpconfig, mLPConfigXsd);
-		//copyIfNotExist(R.raw.rootca, mLinphoneRootCaFile);
+		copyIfNotExist(R.raw.rootca, mLinphoneRootCaFile);
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
