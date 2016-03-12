@@ -1690,4 +1690,24 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
         }
 
+	public static void startIncomingCallActivity(Context context)
+	{
+		LinphoneCore lc = getLc();
+		Log.d("startIncomingCallActivity new call");
+		if(lc.getCalls().length>1)
+		{
+
+				Intent i = new Intent(context, InCallActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				context.startActivity(i);
+
+		}
+		else
+		{
+			Intent i = new Intent(context, IncomingCallActivity.class);
+			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			context.startActivity(i);
+		}
+
+	}
 }

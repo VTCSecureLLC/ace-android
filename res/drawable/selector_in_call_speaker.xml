@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true" 
-        android:drawable="@drawable/options_over" />
+        android:drawable="@drawable/ic_speaker_off" />
     <item android:state_selected="true"
-        android:drawable="@drawable/options_selected" />
+        android:drawable="@drawable/ic_speaker_off" />
     <item android:state_enabled="false"
-		android:drawable="@drawable/options_disabled" />
+	android:drawable="@drawable/ic_speaker_off" />
     <item
-         android:drawable="@drawable/options_default" />
+         android:drawable="@drawable/ic_speaker_on" />
 </selector>
