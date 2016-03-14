@@ -187,6 +187,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			setContentView(R.layout.launcher);
 			startActivity(new Intent().setClass(this, SetupActivity.class));
 			finish();
+			Log.e("LINPHONE ACTIVITY IS OPENED WITHOUT STARTING SERVICE OR MANAGER");
 			return;
 		}
 		ctx=this;
