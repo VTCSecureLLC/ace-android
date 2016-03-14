@@ -22,13 +22,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,6 +167,7 @@ public class Numpad extends LinearLayout implements AddressAware {
 		((Button)view.findViewById(id)).setTextColor(Color.WHITE);
 		((Button)view.findViewById(id)).setText(ss);
 		((Button)view.findViewById(id)).setLineSpacing(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, getResources().getDisplayMetrics()), .8f);
+		((Button)view.findViewById(id)).setGravity(Gravity.CENTER);
 
 	}
 	@Override
