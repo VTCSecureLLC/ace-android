@@ -60,7 +60,7 @@ public class LinphoneLocationManager implements LocationListener {
     public String userLocation() {
     	if (!isLocationProviderEnabled()) return locationDenied;
     	else if (userLocation == null || (userLocation.getLatitude()==0 && userLocation.getLongitude()==0)) return locationNotFound;
-    	else return userLocation.getLatitude()+", "+userLocation.getLongitude();
+    	else return "<geo:"+userLocation.getLatitude()+", "+userLocation.getLongitude()+">";
     }
 
     public void onProviderDisabled(String arg0) {}
