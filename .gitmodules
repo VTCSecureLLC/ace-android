@@ -100,3 +100,9 @@
 [submodule "submodules/externals/mbedtls"]
 	path = submodules/externals/mbedtls
 	url = git://git.linphone.org/mbedtls.git
+[submodule "submodules/cmaKe-builder"]
+	path = submodules/cmaKe-builder
+	url = git://git.linphone.org/linphone-cmake-builder.git
+[submodule "submodules/externals/bv16-floatingpoint"]
+	path = submodules/externals/bv16-floatingpoint
+	url = git://git.linphone.org/bv16-floatingpoint.git
