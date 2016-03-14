@@ -523,12 +523,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		Log.d("onConfigChanged");
 
 		boolean contralersVisible = mControlsLayout.getVisibility() == View.VISIBLE;
-		mainLayout.removeView(mViewsHolder);
-
-
-		mViewsHolder = (ViewGroup) getLayoutInflater().inflate(R.layout.new_incall, null);
-
-		mainLayout.addView(mViewsHolder, 1);
+//		mainLayout.removeView(mViewsHolder);
+//
+//
+//		mViewsHolder = (ViewGroup) getLayoutInflater().inflate(R.layout.new_incall, null);
+//
+//		mainLayout.addView(mViewsHolder, 1);
 		initUI();
 		if(!contralersVisible)
 			mControlsLayout.setVisibility(View.INVISIBLE);
@@ -1842,57 +1842,31 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	private void hideAnimatedLandscapeCallOptions() {
-		Animation animation = slideOutTopToBottom;
-		if (isTransferAllowed) {
-			animation.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationStart(Animation animation) {
-				}
+		Animation animation = slideOutLeftToRight;
+		animation.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
 
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
 
-				@Override
-				public void onAnimationEnd(Animation animation) {
-					transfer.setAnimation(null);
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				if (isTransferAllowed) {
 					transfer.setVisibility(View.INVISIBLE);
-					animation = AnimationUtils.loadAnimation(InCallActivity.this, R.anim.slide_out_top_to_bottom); // Reload animation to prevent transfer button to blink
-					animation.setAnimationListener(new AnimationListener() {
-						@Override
-						public void onAnimationStart(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationEnd(Animation animation) {
-							addCall.setVisibility(View.INVISIBLE);
-						}
-					});
-//					addCall.startAnimation(animation);
 				}
-			});
-			transfer.startAnimation(animation);
-		} else {
-			animation.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationStart(Animation animation) {
-				}
+				switchCamera.setVisibility(View.INVISIBLE);
+				changeVideoLayout.setVisibility(View.INVISIBLE);
+//				addCall.setVisibility(View.INVISIBLE);
+				animation.setAnimationListener(null);
+			}
+		});
 
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-					addCall.setVisibility(View.INVISIBLE);
-				}
-			});
-//			addCall.startAnimation(animation);
-		}
+//		addCall.startAnimation(animation);
+		switchCamera.startAnimation(animation);
+		changeVideoLayout.startAnimation(animation);
 	}
 
 	private void showAnimatedPortraitCallOptions() {
@@ -1922,7 +1896,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	private void showAnimatedLandscapeCallOptions() {
-		Animation animation = slideInBottomToTop;
+		Animation animation = slideInRightToLeft;
 		animation.setAnimationListener(new AnimationListener() {
 			@Override
 			public void onAnimationStart(Animation animation) {
@@ -1934,30 +1908,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				addCall.setAnimation(null);
-//				options.setBackgroundResource(R.drawable.options_alt);
+
+				switchCamera.setVisibility(View.VISIBLE);
+				changeVideoLayout.setVisibility(View.VISIBLE);
 				options.setSelected(true);
-				addCall.setVisibility(View.VISIBLE);
-				if (isTransferAllowed) {
-					animation.setAnimationListener(new AnimationListener() {
-						@Override
-						public void onAnimationStart(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationEnd(Animation animation) {
-							transfer.setVisibility(View.INVISIBLE);
-						}
-					});
-					transfer.startAnimation(animation);
-				}
+//				addCall.setVisibility(View.VISIBLE);
+				animation.setAnimationListener(null);
 			}
 		});
-//		addCall.startAnimation(animation);
+		switchCamera.startAnimation(animation);
+		changeVideoLayout.startAnimation(animation);
 	}
 
 	private void hideOrDisplayAudioRoutes()
