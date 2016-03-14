@@ -25,7 +25,6 @@ import android.media.ToneGenerator;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import org.linphone.InCallActivity;
@@ -38,7 +37,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.custom.HapticFeedback;
 import org.linphone.mediastream.Log;
 
-public class Digit extends Button implements AddressAware {
+public class Digit extends AutoResizeButtonView implements AddressAware {
 
 	private AddressText mAddress;
 	private HapticFeedback feedbackHandler;
