@@ -155,7 +155,7 @@ public class CDNProviders {
 		}
 
 		//Add default ports from srvLookup after all providers are popluated to prevent cross threading
-		for (int i = 0; i < jsonArray.length(); i++) {
+		for (int i = 0; i < providers.size(); i++) {
 			updateProvidersDefaultPorts(i);
 		}
 
