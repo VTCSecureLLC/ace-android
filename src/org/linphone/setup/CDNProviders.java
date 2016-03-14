@@ -53,7 +53,7 @@ public class CDNProviders {
 	public void setContext(Context context)
 	{
 		providers = new ArrayList<Provider>();
-		if (null != LinphoneActivity.ctx) {
+		if (null == LinphoneActivity.ctx) {
 			this.context = context;
 			sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 			load();
