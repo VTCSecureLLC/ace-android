@@ -181,6 +181,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			//navigate to the Welcome (initial set up) page
 		//	startActivity(new Intent(this,HueBridgeSearchActivity.class));
 		//}
+
+		if (!LinphoneManager.isInstanciated())
+		{
+			setContentView(R.layout.launcher);
+			startActivity(new Intent().setClass(this, SetupActivity.class));
+			finish();
+			return;
+		}
 		ctx=this;
 		act=this;
 		instance = this;
@@ -1384,12 +1392,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	protected void onPause() {
 		getIntent().putExtra("PreviousActivity", 0);
 		super.onPause();
+		if (!LinphoneManager.isInstanciated())
+		{
+			return;
+		}
 		unregisterManagers();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		if (!LinphoneManager.isInstanciated())
+		{
+			return;
+		}
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1461,6 +1477,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		instance = null;
 		super.onDestroy();
+		if (!LinphoneManager.isInstanciated())
+		{
+			return;
+		}
+
 
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
