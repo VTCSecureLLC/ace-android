@@ -1090,9 +1090,9 @@ public class LinphonePreferences {
 	public void enablePacketTagging(boolean enable) {
 		if(enable)
 		{
-			getLc().setAudioDscp(getConfig().getInt("custom", "audio_dscp", 38));
-			getLc().setVideoDscp(getConfig().getInt("custom", "video_dscp", 38));
-			getLc().setSipDscp(getConfig().getInt("custom", "sip_dscp", 28));
+			getLc().setAudioDscp(getConfig().getInt("custom", "audio_dscp", DSCPClassSelector.getAudioDSCP()));
+			getLc().setVideoDscp(getConfig().getInt("custom", "video_dscp", DSCPClassSelector.getVideoDSCP()));
+			getLc().setSipDscp(getConfig().getInt("custom", "sip_dscp", DSCPClassSelector.getSipDSCP()));
 		}
 		else
 		{
