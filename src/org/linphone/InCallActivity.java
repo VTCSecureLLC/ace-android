@@ -2126,6 +2126,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onDestroy() {
 		Log.d("onDestroy()");
+		if(isFlashing) {
+			isFlashing = false;
+			LinphoneTorchFlasher.instance().stopFlashTorch();
+			HueController.getInstance().stopFlashing();
+		}
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(LinphoneActivity.class);
 		LinphoneManager.getInstance().changeStatusToOnline();
 
@@ -2468,9 +2473,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (call.getState() == State.IncomingReceived) {
 
 				if (!isFlashing) {
-					vibrate();
+
 					isFlashing = true;
 					HueController.getInstance().startFlashing(null);
+					vibrate();
 					flashOrangeBackground();
 					flashTorch();
 				}
@@ -2555,6 +2561,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				//TODO: set data
 			}
 		} else {
+			stopRingCount();
 			if (isFlashing) {
 				System.out.println("++++++++++++++++++++++" + isFlashing);
 				isFlashing = false;
@@ -2638,7 +2645,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					@Override
 					public void run() {
 						if (!isFlashing) {
-							mRingCount = 0;
 							vibrateTimer.cancel();
 						} else {
 							incrementRingCount();
