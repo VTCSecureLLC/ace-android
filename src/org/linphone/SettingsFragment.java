@@ -1102,7 +1102,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		checkBoxPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				isForce508 = (boolean) newValue;
+				isForce508 = (Boolean) newValue;
 				checkBoxPreference.setChecked(isForce508);
 				mPrefs.setIsForce508(isForce508);
 
@@ -1479,7 +1479,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean enable = (Boolean) newValue;
-				mPrefs.enableVideo(enable,enable);
+				mPrefs.enableVideo(enable, enable);
 				return true;
 			}
 		});
@@ -1525,7 +1525,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.pref_video_preset_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				if(newValue.equals("custom"))
+				if (newValue.equals("custom"))
 					mPrefs.setBandwidthLimit(1500);
 				mPrefs.setVideoPreset(newValue.toString());
 				preference.setSummary(getSummery(mPrefs.getVideoPreset()));
