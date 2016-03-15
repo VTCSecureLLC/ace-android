@@ -215,7 +215,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 		mFragmentHolder = inflator.inflate(R.layout.incall_fragment_holder, null);
-		rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
+		if(LinphonePreferences.instance().isForce508()){
+			rttHolder =  inflator.inflate(R.layout.rtt_holder_508, null);
+		}else{
+			rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
+		}
 		View statusBar = inflator.inflate(R.layout.status_holder, null);
 		RelativeLayout.LayoutParams paramss = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -715,7 +719,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//Log.d("RTT textsize by default="+tv.getTextSize());
 		//Default TextSize is 32dp
 		tv.setTextSize(16);
-		tv.getBackground().setAlpha(180);
+		if(!LinphonePreferences.instance().isForce508()){//use transparency if not 508
+			tv.getBackground().setAlpha(180);
+		}
+
 	}
 	public TextView create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
 		/*if(old_bubble!=null){
@@ -726,7 +733,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		TextView et=new TextView(this);
 		et.setLayoutParams(lp);
-		et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+		if(LinphonePreferences.instance().isForce508()){
+			et.setBackgroundResource(R.drawable.chat_bubble_outgoing_508);
+		}else{
+			et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+		}
 		et.setTag(true);
 		et.setOnClickListener(new OnClickListener() {
 			@Override
@@ -852,7 +863,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		lp1.gravity = Gravity.RIGHT;
 		TextView tv=new TextView(this);
 		tv.setLayoutParams(lp1);
-		tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
+		if(LinphonePreferences.instance().isForce508()){
+			tv.setBackgroundResource(R.drawable.chat_bubble_incoming_508);
+		}else{
+			tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
+		}
 		tv.setTag(false);
 
 		standardize_bubble_view(tv);
