@@ -18,6 +18,11 @@ echo "TRAVIS_BRANCH is not master. Deploy skipped"
 exit 0
 fi
 
+if [ "$TRAVIS_PULL_REQUEST" = "true"  ]; then
+echo "This is a Pull Request. Deploy skipped"
+exit 0
+fi
+
 # Prepare semantic versioning tag
 
 SHA1=$(git rev-parse --short HEAD)

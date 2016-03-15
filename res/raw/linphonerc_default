@@ -7,7 +7,7 @@ contact="VTCSecure Android" <sip:vtcsecure.android@unknown-host>
 use_info=0
 use_ipv6=0
 keepalive_period=30000
-dscp=28
+dscp=24
 
 [video]
 enabled=1
@@ -44,8 +44,8 @@ rtcp_xr_rcvr_rtt_mode=all
 rtcp_xr_rcvr_rtt_max_size=10000
 rtcp_xr_stat_summary_enabled=1
 rtcp_xr_voip_metrics_enabled=1
-audio_dscp=38
-video_dscp=38
+audio_dscp=46
+video_dscp=46
 
 [video_codec_0]
 mime=H264

@@ -169,6 +169,7 @@ public class LinphonePreferences {
 		getLc().addAuthInfo(authInfo);
 	}
 
+
 	public static class AccountBuilder {
 		private LinphoneCore lc;
 		private String tempUsername;
@@ -1086,31 +1087,49 @@ public class LinphonePreferences {
 		return getLc().getPrimaryContactUsername();
 	}
 
-
-	public void setPacketTagging(boolean enabled) {
-
-		LinphoneCore lc = getLc();
-		if(enabled)
+	public void enablePacketTagging(boolean enable) {
+		if(enable)
 		{
-			lc.setVideoDscp(DSCPClassSelector.getVideoDSCP());
-			lc.setAudioDscp(DSCPClassSelector.getAudioDSCP());
-			lc.setSipDscp(DSCPClassSelector.getSipDSCP());
+			getLc().setAudioDscp(getConfig().getInt("custom", "audio_dscp", DSCPClassSelector.getAudioDSCP()));
+			getLc().setVideoDscp(getConfig().getInt("custom", "video_dscp", DSCPClassSelector.getVideoDSCP()));
+			getLc().setSipDscp(getConfig().getInt("custom", "sip_dscp", DSCPClassSelector.getSipDSCP()));
 		}
 		else
 		{
-			lc.setVideoDscp(DSCPClassSelector.getDefaultDSCP());
-			lc.setAudioDscp(DSCPClassSelector.getDefaultDSCP());
-			lc.setSipDscp(DSCPClassSelector.getDefaultDSCP());
+			getLc().setAudioDscp(DSCPClassSelector.getDefaultDSCP());
+			getLc().setVideoDscp(DSCPClassSelector.getDefaultDSCP());
+			getLc().setSipDscp(DSCPClassSelector.getDefaultDSCP());
 		}
 	}
-	public boolean isPacketTaggingEnabled()
-	{
-		LinphoneCore lc = getLc();
-		boolean isAudioTagged = lc.getAudioDscp() == DSCPClassSelector.getAudioDSCP()? true : false;
-		boolean isVideoTagged = lc.getVideoDscp() == DSCPClassSelector.getVideoDSCP()? true : false;
-		boolean isSipTagged = lc.getSipDscp() == DSCPClassSelector.getSipDSCP()? true : false;
-		return  isAudioTagged && isVideoTagged && isAudioTagged;
+
+	public void setAudioDscp(int value) {
+		getConfig().setInt("custom", "audio_dscp", value);
+		getLc().setAudioDscp(value);
 	}
+
+
+	public void setVideoDscp(int value) {
+		getConfig().setInt("custom", "video_dscp", value);
+		getLc().setVideoDscp(value);
+	}
+
+	public void setSipDscp(int value) {
+		getConfig().setInt("custom", "sip_dscp", value);
+		getLc().setSipDscp(value);
+	}
+
+	public int getDscpAudioValue() {
+		return getLc().getAudioDscp();
+	}
+
+	public int getDscpVideoValue() {
+		return getLc().getVideoDscp();
+	}
+
+	public int getDscpSipValue() {
+		return getLc().getSipDscp();
+	}
+
 
 	// End of advanced settings
 
