@@ -13,7 +13,7 @@
 		android:adjustViewBounds="true"
 		android:contentDescription="@string/content_description_history"
 		android:src="@drawable/history_new" />
-    
+
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
@@ -21,7 +21,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignBottom="@id/image"
         android:paddingBottom="10dp"
-        android:textColor="@drawable/text_color"
         android:text="@string/button_history"
         android:textSize="12dp" />
     
