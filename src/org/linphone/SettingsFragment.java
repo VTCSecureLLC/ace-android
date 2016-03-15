@@ -1804,8 +1804,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_image_sharing_server_key, mPrefs.getSharingPictureServerUrl());
 		setPreferenceDefaultValueAndSummary(R.string.pref_remote_provisioning_key, mPrefs.getRemoteProvisioningUrl());
-		setPreferenceDefaultValueAndSummary(R.string.pref_display_name_key, mPrefs.getDefaultDisplayName());
-		setPreferenceDefaultValueAndSummary(R.string.pref_user_name_key, mPrefs.getDefaultUsername());
+
 	}
 
 	private void setAdvancedPreferencesListener() {
@@ -1913,15 +1912,6 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		findPreference(getString(R.string.pref_display_name_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String value = (String) newValue;
-				mPrefs.setDefaultDisplayName(value);
-				preference.setSummary(getSummery(value));
-				return true;
-			}
-		});
 
 		findPreference(getString(R.string.pref_user_name_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
