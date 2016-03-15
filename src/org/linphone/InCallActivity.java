@@ -115,7 +115,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	private boolean isCameraMutedPref;
 
-	private TextView pause, hangUp, addCall, transfer, conference;
+	private TextView chat_button, hangUp, addCall, transfer, conference;
 	private ImageView video, micro, dialer, speaker, options, audioRoute;
 	private TextView routeSpeaker, routeReceiver, routeBluetooth;
 	private LinearLayout routeLayout;
@@ -1091,9 +1091,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		options = (ImageView) findViewById(R.id.options);
 		options.setOnClickListener(this);
 		options.setEnabled(false);
-		pause = (TextView) findViewById(R.id.toggleChat);
-		pause.setOnClickListener(this);
-		pause.setEnabled(false);
+		chat_button = (TextView) findViewById(R.id.toggleChat);
+		chat_button.setOnClickListener(this);
+		chat_button.setEnabled(false);
 		hangUp = (TextView) findViewById(R.id.hangUp);
 		hangUp.setOnClickListener(this);
 
@@ -1251,20 +1251,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if (LinphoneManager.getLc().getCallsNb() > 1) {
 			//TODO: remove
 //			conference.setVisibility(View.VISIBLE);
-			pause.setVisibility(View.GONE);
+			chat_button.setVisibility(View.GONE);
 		} else {
 			//TODO: remove
 //			conference.setVisibility(View.GONE);
 
-			if(pause.getVisibility()!=View.VISIBLE)
-				pause.setVisibility(View.VISIBLE);
+			if(chat_button.getVisibility()!=View.VISIBLE)
+				chat_button.setVisibility(View.VISIBLE);
 
 			List<LinphoneCall> pausedCalls = LinphoneUtils.getCallsInState(LinphoneManager.getLc(), Arrays.asList(State.Paused));
-			if (pausedCalls.size() == 1) {
-				pause.setBackgroundResource(R.drawable.pause_on);
-			} else {
-				pause.setBackgroundResource(R.drawable.pause_off);
-			}
+			chat_button.setBackgroundResource(R.drawable.selector_in_call_chat);
+
 		}
 
 	}
@@ -1281,7 +1278,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		speaker.setEnabled(true);
 
 		transfer.setEnabled(true);
-		pause.setEnabled(true);
+		chat_button.setEnabled(true);
 		dialer.setEnabled(true);
 		//TODO: remove
 //		conference.setEnabled(true);
@@ -1606,7 +1603,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					isVideoCallPaused = true;
 					showAudioView();
 				}
-				pause.setBackgroundResource(R.drawable.pause_on);
+				chat_button.setBackgroundResource(R.drawable.selector_in_call_chat);
 			}
 		} else if (call != null) {
 			if (call.getState() == State.Paused) {
@@ -1615,7 +1612,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					isVideoCallPaused = false;
 					showVideoView();
 				}
-				pause.setBackgroundResource(R.drawable.pause_off);
+				chat_button.setBackgroundResource(R.drawable.selector_in_call_chat);
 			}
 		}
 	}
