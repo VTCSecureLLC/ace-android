@@ -95,6 +95,11 @@ public class SettingsFragment extends PreferencesListFragment {
 	SharedPreferences prefs;
 	SharedPreferences.Editor editor;
 
+	private EditTextPreference mAudioDSCP;
+	private EditTextPreference mVideoDSCP;
+	private EditTextPreference mSipDSCP;
+	CheckBoxPreference mCheckBoxPreference;
+
 	public SettingsFragment() {
 		super(R.xml.preferences);
 		mPrefs = LinphonePreferences.instance();
@@ -125,12 +130,12 @@ public class SettingsFragment extends PreferencesListFragment {
 		initSettings();
 		setListeners();
 		hideSettings();
-		
+
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void ecCalibrationStatus(LinphoneCore lc, final EcCalibratorStatus status, final int delayMs, Object data) {
 				LinphoneManager.getInstance().routeAudioToReceiver();
-				
+
 				CheckBoxPreference echoCancellation = (CheckBoxPreference) findPreference(getString(R.string.pref_echo_cancellation_key));
 				Preference echoCancellerCalibration = findPreference(getString(R.string.pref_echo_canceller_calibration_key));
 
@@ -368,6 +373,13 @@ public class SettingsFragment extends PreferencesListFragment {
 			EditTextPreference etPref = (EditTextPreference) findPreference(getString(pref));
 			etPref.setText(value);
 			etPref.setSummary(value);
+		}
+	}
+
+	private void setPreferenceDefaultValueAndSummary(EditTextPreference pref, String value) {
+		if(value != null) {
+			pref.setText(value);
+			pref.setSummary(value);
 		}
 	}
 
@@ -919,7 +931,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		SharedPreferences prefs = PreferenceManager.
 				getDefaultSharedPreferences(LinphoneActivity.instance());
 
-			//Todo: VATRP-1019 -- Add self view toggle
+		//Todo: VATRP-1019 -- Add self view toggle
 		String selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
 		boolean isSelfViewEnabled = prefs.getBoolean(selfVideoIsEnabledKey, true);
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(isSelfViewEnabled);
@@ -1027,7 +1039,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				//Todo: VATRP-1022 -- Add foreground / background color picker
-								//Black, blue, cyan, grey, green, magenda
+				//Black, blue, cyan, grey, green, magenda
 				int[] colors = {Color.argb(220, 0, 0, 0), Color.argb(200, 0, 50, 150), Color.argb(200, 0, 160, 160), Color.argb(200, 50, 50, 50),
 						Color.argb(200, 0, 160, 50), Color.argb(200, 160, 0, 150), Color.argb(200, 160, 0, 0),
 						Color.argb(200, 255, 255, 255), Color.argb(200, 160, 160, 0)};
@@ -1738,7 +1750,22 @@ public class SettingsFragment extends PreferencesListFragment {
 		((CheckBoxPreference)findPreference(getString(R.string.pref_background_mode_key))).setChecked(mPrefs.isBackgroundModeEnabled());
 		((CheckBoxPreference)findPreference(getString(R.string.pref_animation_enable_key))).setChecked(mPrefs.areAnimationsEnabled());
 		((CheckBoxPreference)findPreference(getString(R.string.pref_autostart_key))).setChecked(mPrefs.isAutoStartEnabled());
-		((CheckBoxPreference)findPreference(getString(R.string.pref_enable_packet_tagging_key))).setChecked(mPrefs.isPacketTaggingEnabled());
+
+		mCheckBoxPreference = ((CheckBoxPreference) findPreference(getString(R.string.pref_enable_packet_tagging_key)));
+
+		mAudioDSCP = (EditTextPreference) findPreference(getString(R.string.pref_enable_packet_audio_dscp));
+		mAudioDSCP.setEnabled(mCheckBoxPreference.isChecked());
+
+		mVideoDSCP = (EditTextPreference) findPreference(getString(R.string.pref_enable_packet_video_dscp));
+		mVideoDSCP.setEnabled(mCheckBoxPreference.isChecked());
+
+		mSipDSCP = (EditTextPreference) findPreference(getString(R.string.pref_enable_packet_sip_dscp));
+		mSipDSCP.setEnabled(mCheckBoxPreference.isChecked());
+
+		setPreferenceDefaultValueAndSummary(mAudioDSCP, String.valueOf(mPrefs.getDscpAudioValue()));
+		setPreferenceDefaultValueAndSummary(mVideoDSCP, String.valueOf(mPrefs.getDscpVideoValue()));
+		setPreferenceDefaultValueAndSummary(mSipDSCP, String.valueOf(mPrefs.getDscpSipValue()));
+
 		setPreferenceDefaultValueAndSummary(R.string.pref_image_sharing_server_key, mPrefs.getSharingPictureServerUrl());
 		setPreferenceDefaultValueAndSummary(R.string.pref_remote_provisioning_key, mPrefs.getRemoteProvisioningUrl());
 		setPreferenceDefaultValueAndSummary(R.string.pref_display_name_key, mPrefs.getDefaultDisplayName());
@@ -1782,11 +1809,50 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		findPreference(getString(R.string.pref_enable_packet_tagging_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		mCheckBoxPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
-				mPrefs.setPacketTagging(value);
+				mPrefs.enablePacketTagging(value);
+
+				mAudioDSCP.setEnabled(value);
+				mVideoDSCP.setEnabled(value);
+				mSipDSCP.setEnabled(value);
+
+				mAudioDSCP.setSummary(String.valueOf(mPrefs.getDscpAudioValue()));
+				mVideoDSCP.setSummary(String.valueOf(mPrefs.getDscpVideoValue()));
+				mSipDSCP.setSummary(String.valueOf(mPrefs.getDscpSipValue()));
+
+				return true;
+			}
+		});
+
+
+		mAudioDSCP.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				mPrefs.setAudioDscp(Integer.parseInt((String) newValue));
+				mAudioDSCP.setSummary(String.valueOf(mPrefs.getDscpAudioValue()));
+				return true;
+			}
+		});
+
+
+		mVideoDSCP.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int value = Integer.parseInt((String) newValue);
+				mPrefs.setVideoDscp(value);
+				mVideoDSCP.setSummary(String.valueOf(mPrefs.getDscpVideoValue()));
+				return true;
+			}
+		});
+
+		mSipDSCP.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				mPrefs.setSipDscp(Integer.parseInt((String) newValue));
+				mSipDSCP.setSummary(String.valueOf(mPrefs.getDscpSipValue()));
 				return true;
 			}
 		});
@@ -1833,7 +1899,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
