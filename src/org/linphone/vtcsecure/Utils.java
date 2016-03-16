@@ -17,7 +17,7 @@ public class Utils {
     public static String removeExtraQuotesFromStringIfPresent(String inputStr){
         String result = inputStr;
         //Check if string has extra quotes
-        if(inputStr.startsWith("\"")&&inputStr.endsWith("\"")){
+        if(inputStr!=null&&inputStr.startsWith("\"")&&inputStr.endsWith("\"")){
             result=removeQuotesFromStartAndEndOfString(inputStr);
         }
         return result;
