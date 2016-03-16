@@ -42,6 +42,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -88,6 +92,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private LinphonePreferences mPrefs;
 
 	public static boolean isAdvancedSettings = false;
+	public static boolean isForce508 = false;
 
 	private static final int WIZARD_INTENT = 1;
 	private Handler mHandler = new Handler();
@@ -141,15 +146,15 @@ public class SettingsFragment extends PreferencesListFragment {
 				Preference echoCancellerCalibration = findPreference(getString(R.string.pref_echo_canceller_calibration_key));
 
 				if (status == EcCalibratorStatus.DoneNoEcho) {
-					echoCancellerCalibration.setSummary(R.string.no_echo);
+					echoCancellerCalibration.setSummary(getSummery(R.string.no_echo));
 					echoCancellation.setChecked(false);
 					LinphonePreferences.instance().setEchoCancellation(false);
 				} else if (status == EcCalibratorStatus.Done) {
-					echoCancellerCalibration.setSummary(String.format(getString(R.string.ec_calibrated), delayMs));
+					echoCancellerCalibration.setSummary(getSummery(String.format(getString(R.string.ec_calibrated), delayMs)));
 					echoCancellation.setChecked(true);
 					LinphonePreferences.instance().setEchoCancellation(true);
 				} else if (status == EcCalibratorStatus.Failed) {
-					echoCancellerCalibration.setSummary(R.string.failed);
+					echoCancellerCalibration.setSummary(getSummery(R.string.failed));
 					echoCancellation.setChecked(true);
 					LinphonePreferences.instance().setEchoCancellation(true);
 				}
@@ -375,7 +380,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		if(value != null) {
 			EditTextPreference etPref = (EditTextPreference) findPreference(getString(pref));
 			etPref.setText(value);
-			etPref.setSummary(value);
+			etPref.setSummary(getSummery(value));
 		}
 	}
 
@@ -391,7 +396,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		setPreferenceDefaultValueAndSummary(R.string.pref_tunnel_port_key, String.valueOf(mPrefs.getTunnelPort()));
 		ListPreference tunnelModePref = (ListPreference) findPreference(getString(R.string.pref_tunnel_mode_key));
 		String tunnelMode = mPrefs.getTunnelMode();
-		tunnelModePref.setSummary(tunnelMode);
+		tunnelModePref.setSummary(getSummery(tunnelMode));
 		tunnelModePref.setValue(tunnelMode);
 	}
 
@@ -401,7 +406,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String host = newValue.toString();
 				mPrefs.setTunnelHost(host);
-				preference.setSummary(host);
+				preference.setSummary(getSummery(host));
 				return true;
 			}
 		});
@@ -411,7 +416,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				try {
 					int port = Integer.parseInt(newValue.toString());
 					mPrefs.setTunnelPort(port);
-					preference.setSummary(String.valueOf(port));
+					preference.setSummary(getSummery(String.valueOf(port)));
 					return true;
 				} catch (NumberFormatException nfe) {
 					return false;
@@ -423,7 +428,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String mode = newValue.toString();
 				mPrefs.setTunnelMode(mode);
-				preference.setSummary(mode);
+				preference.setSummary(getSummery(mode));
 				return true;
 			}
 		});
@@ -469,7 +474,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 
 			if (defaultAccountID == i) {
-				account.setSummary(R.string.default_account_flag);
+				account.setSummary(getSummery(R.string.default_account_flag));
 			}
 
 			account.setOnPreferenceClickListener(new OnPreferenceClickListener()
@@ -548,7 +553,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 
 		MediaEncryption value = mPrefs.getMediaEncryption();
-		pref.setSummary(value.toString());
+		pref.setSummary(getSummery(value.toString()));
 
 		String key = getString(R.string.pref_media_encryption_key_none);
 		if (value.toString().equals(getString(R.string.media_encryption_srtp))) {
@@ -568,7 +573,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add("custom");
 		setListPreferenceValues(pref, entries, values);
 		String value = "custom"; //samson mPrefs.getVideoPreset();
-		pref.setSummary(value);
+		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 	}
 
@@ -591,7 +596,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
 		String value =prefs.getString(getResources().getString(R.string.pref_theme_app_color_key), "Tech");
-		pref.setSummary(value);
+		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 
 	}
@@ -613,7 +618,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
 		String value =prefs.getString(getResources().getString(R.string.pref_theme_background_color_key), "Default");
-		pref.setSummary(value);
+		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 
 	}
@@ -629,7 +634,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		setListPreferenceValues(pref, entries, values);
 
 		String value = mPrefs.getPreferredVideoSize();
-		pref.setSummary(value);
+		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 	}
 
@@ -649,7 +654,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			mPrefs.setPreferredVideoFps(30);
 			value = "30";
 		}
-		pref.setSummary(value);
+		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 	}
 
@@ -685,7 +690,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				}
 			}
 
-			codec.setSummary(pt.getRate() + " Hz");
+			codec.setSummary(getSummery(pt.getRate() + " Hz"));
 			codec.setChecked(lc.isPayloadTypeEnabled(pt));
 
 			codec.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -709,18 +714,18 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		if (mPrefs.isEchoCancellationEnabled()) {
 			Preference echoCalibration = findPreference(getString(R.string.pref_echo_canceller_calibration_key));
-			echoCalibration.setSummary(String.format(getString(R.string.ec_calibrated), mPrefs.getEchoCalibration()));
+			echoCalibration.setSummary(getSummery(String.format(getString(R.string.ec_calibrated), mPrefs.getEchoCalibration())));
 		}
 
 		CheckBoxPreference adaptiveRateControl = (CheckBoxPreference) findPreference(getString(R.string.pref_adaptive_rate_control_key));
 		adaptiveRateControl.setChecked(mPrefs.isAdaptiveRateControlEnabled());
 
 		ListPreference adaptiveRateAlgorithm = (ListPreference) findPreference(getString(R.string.pref_adaptive_rate_algorithm_key));
-		adaptiveRateAlgorithm.setSummary(String.valueOf(mPrefs.getAdaptiveRateAlgorithm()));
+		adaptiveRateAlgorithm.setSummary(getSummery(String.valueOf(mPrefs.getAdaptiveRateAlgorithm())));
 		adaptiveRateAlgorithm.setValue(String.valueOf(mPrefs.getAdaptiveRateAlgorithm()));
 
 		ListPreference bitrateLimit = (ListPreference) findPreference(getString(R.string.pref_codec_bitrate_limit_key));
-		bitrateLimit.setSummary(String.valueOf(mPrefs.getCodecBitrateLimit()));
+		bitrateLimit.setSummary(getSummery(String.valueOf(mPrefs.getCodecBitrateLimit())));
 		bitrateLimit.setValue(String.valueOf(mPrefs.getCodecBitrateLimit()));
 	}
 
@@ -747,7 +752,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				mPrefs.setAdaptiveRateAlgorithm(AdaptiveRateAlgorithm.fromString((String) newValue));
-				preference.setSummary(String.valueOf(mPrefs.getAdaptiveRateAlgorithm()));
+				preference.setSummary(getSummery(String.valueOf(mPrefs.getAdaptiveRateAlgorithm())));
 				return true;
 			}
 		});
@@ -766,7 +771,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					}
 				}
 
-				preference.setSummary(String.valueOf(mPrefs.getCodecBitrateLimit()));
+				preference.setSummary(getSummery(String.valueOf(mPrefs.getCodecBitrateLimit())));
 				return true;
 			}
 		});
@@ -777,7 +782,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				synchronized (SettingsFragment.this) {
 					try {
 						LinphoneManager.getInstance().startEcCalibration(mListener);
-						preference.setSummary(R.string.ec_calibrating);
+						preference.setSummary(getSummery(R.string.ec_calibrating));
 					} catch (LinphoneCoreException e) {
 						Log.w(e, "Cannot calibrate EC");
 					}
@@ -794,7 +799,7 @@ public class SettingsFragment extends PreferencesListFragment {
 //
 //				String color = prefs.getString(getString(R.string.pref_theme_background_color_key), "Default");
 //
-//				preference.setSummary(newValue.toString());
+//				preference.setSummary(getSummery(newValue.toString());
 //				editor.putString(getString(R.string.pref_theme_background_color_key), newValue.toString());
 //				editor.commit();
 //				LinphoneActivity.setBackgroundColorTheme(LinphoneActivity.ctx);
@@ -912,7 +917,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		LinphoneService.instance().set_RTCP_Feedback(rtcpFeedbackMode, 3);
 
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
-		(findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(rtcpFeedbackMode);
+		(findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(getSummery(rtcpFeedbackMode));
 
 		boolean isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_camera_mute_key))).setChecked(isCameraMuted);
@@ -929,7 +934,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		if (mPrefs.isEchoCancellationEnabled()) {
 			Preference echoCalibration = findPreference(getString(R.string.pref_echo_canceller_calibration_key));
-			echoCalibration.setSummary(String.format(getString(R.string.ec_calibrated), mPrefs.getEchoCalibration()));
+			echoCalibration.setSummary(getSummery(String.format(getString(R.string.ec_calibrated), mPrefs.getEchoCalibration())));
 		}
 
 		SharedPreferences prefs = PreferenceManager.
@@ -953,7 +958,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				String value = (String) newValue;
 				LinphoneService.instance().set_RTCP_Feedback(value, 3);
 				try{
-					preference.setSummary(newValue.toString());
+					preference.setSummary(getSummery(newValue.toString()));
 				}
 				catch(Throwable e){
 					e.printStackTrace();
@@ -996,7 +1001,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				synchronized (SettingsFragment.this) {
 					try {
 						LinphoneManager.getInstance().startEcCalibration(mListener);
-						preference.setSummary(R.string.ec_calibrating);
+						preference.setSummary(getSummery(R.string.ec_calibrating));
 					} catch (LinphoneCoreException e) {
 						Log.w(e, "Cannot calibrate EC");
 					}
@@ -1088,10 +1093,41 @@ public class SettingsFragment extends PreferencesListFragment {
 		});
 
 		//Todo: VATRP-1024 Add 508 compliance logic
-		((CheckBoxPreference)findPreference(getString(R.string.pref_theme_force_508_key))).setChecked(false);
+		final CheckBoxPreference checkBoxPreference = (CheckBoxPreference) findPreference(getString(R.string.pref_theme_force_508_key));
 
+		if (checkBoxPreference.isChecked()) {
+			isForce508 = true;
+			getContext().setTheme(R.style.PreferencesTheme);
+		} else {
+			isForce508 = false;
+			getContext().setTheme(R.style.NoTitle);
+		}
+
+		checkBoxPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				isForce508 = (Boolean) newValue;
+				checkBoxPreference.setChecked(isForce508);
+				mPrefs.setIsForce508(isForce508);
+
+				if (isForce508) {
+					getContext().setTheme(R.style.PreferencesTheme);
+				} else {
+					getContext().setTheme(R.style.NoTitle);
+				}
+
+
+				setPreferenceScreen(null);
+				addPreferencesFromResource(R.xml.preferences);
+				initSettings();
+				setListeners();
+				hideSettings();
+				initAccounts();
+				LinphoneActivity.instance().initButtons(isForce508);
+				return true;
+			}
+		});
 	}
-
 
 	private void setThemePreferencesListener() {
 
@@ -1102,7 +1138,7 @@ public class SettingsFragment extends PreferencesListFragment {
 //
 //				String color = prefs.getString(getString(R.string.pref_theme_app_color_key), "Tech");
 //
-//				preference.setSummary(newValue.toString());
+//				preference.setSummary(getSummery(newValue.toString());
 //				editor.putString(getString(R.string.pref_theme_app_color_key), newValue.toString());
 //				editor.commit();
 //				LinphoneActivity.setColorTheme(LinphoneActivity.ctx);
@@ -1342,7 +1378,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				Log.d("text_send_type_pref value", value);
 				editor.putString(getString(R.string.pref_text_settings_send_mode_key), value.toString());
 				try {
-					preference.setSummary(value.toString().replace("_", " "));
+					preference.setSummary(getSummery(value.toString().replace("_", " ")));
 				}catch(Throwable e){
 
 				}
@@ -1352,7 +1388,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		String value=text_send_type_pref.getValue();
 		try {
-			text_send_type_pref.setSummary(value.toString().replace("_", " "));
+			text_send_type_pref.setSummary(getSummery(value.toString().replace("_", " ")));
 		}catch(Throwable e) {
 			//field is still blank.
 		}
@@ -1364,7 +1400,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		initializePreferredVideoFpsPreferences((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key)));
 		EditTextPreference bandwidth = (EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key));
 		bandwidth.setText(Integer.toString(mPrefs.getBandwidthLimit()));
-		bandwidth.setSummary(bandwidth.getText());
+		bandwidth.setSummary(getSummery(bandwidth.getText()));
 		updateVideoPreferencesAccordingToPreset();
 
 		PreferenceCategory codecs = (PreferenceCategory) findPreference(getString(R.string.pref_video_codecs_key));
@@ -1423,15 +1459,15 @@ public class SettingsFragment extends PreferencesListFragment {
 			findPreference(getString(R.string.pref_preferred_video_fps_key)).setEnabled(false);
 			findPreference(getString(R.string.pref_bandwidth_limit_key)).setEnabled(false);
 		}
-		((ListPreference) findPreference(getString(R.string.pref_video_preset_key))).setSummary(mPrefs.getVideoPreset());
+		((ListPreference) findPreference(getString(R.string.pref_video_preset_key))).setSummary(getSummery(mPrefs.getVideoPreset()));
 		int fps = mPrefs.getPreferredVideoFps();
 		String fpsStr = Integer.toString(fps);
 		if (fpsStr.equals("0")) {
 			mPrefs.setPreferredVideoFps(30);
 			fpsStr = "30";
 		}
-		((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key))).setSummary(fpsStr);
-		((EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key))).setSummary(Integer.toString(mPrefs.getBandwidthLimit()));
+		((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key))).setSummary(getSummery(fpsStr));
+		((EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key))).setSummary(getSummery(Integer.toString(mPrefs.getBandwidthLimit())));
 	}
 
 	private void setVideoPreferencesListener() {
@@ -1447,7 +1483,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean enable = (Boolean) newValue;
-				mPrefs.enableVideo(enable,enable);
+				mPrefs.enableVideo(enable, enable);
 				return true;
 			}
 		});
@@ -1493,10 +1529,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.pref_video_preset_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				if(newValue.equals("custom"))
+				if (newValue.equals("custom"))
 					mPrefs.setBandwidthLimit(1500);
 				mPrefs.setVideoPreset(newValue.toString());
-				preference.setSummary(mPrefs.getVideoPreset());
+				preference.setSummary(getSummery(mPrefs.getVideoPreset()));
 				updateVideoPreferencesAccordingToPreset();
 				return true;
 			}
@@ -1505,7 +1541,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				mPrefs.setPreferredVideoSize(newValue.toString());
-				preference.setSummary(mPrefs.getPreferredVideoSize());
+				preference.setSummary(getSummery(mPrefs.getPreferredVideoSize()));
 				updateVideoPreferencesAccordingToPreset();
 				return true;
 			}
@@ -1524,7 +1560,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				mPrefs.setBandwidthLimit(Integer.parseInt(newValue.toString()));
-				preference.setSummary(newValue.toString());
+				preference.setSummary(getSummery(newValue.toString()));
 				return true;
 			}
 		});
@@ -1583,7 +1619,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				EditTextPreference voiceMail = (EditTextPreference) findPreference(getString(R.string.pref_voice_mail_key));
-				voiceMail.setSummary(newValue.toString());
+				voiceMail.setSummary(getSummery(newValue.toString()));
 				voiceMail.setText(newValue.toString());
 				mPrefs.setVoiceMailUri(newValue.toString());
 				return true;
@@ -1593,8 +1629,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.pref_mail_waiting_indicator_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				EditTextPreference mwiUri= (EditTextPreference) findPreference(getString(R.string.pref_mail_waiting_indicator_key));
-				mwiUri.setSummary(newValue.toString());
+				EditTextPreference mwiUri = (EditTextPreference) findPreference(getString(R.string.pref_mail_waiting_indicator_key));
+				mwiUri.setSummary(getSummery(newValue.toString()));
 				mwiUri.setText(newValue.toString());
 				prefs.edit().putString(getString(R.string.pref_mail_waiting_indicator_key), newValue.toString()).commit();
 				return true;
@@ -1637,11 +1673,11 @@ public class SettingsFragment extends PreferencesListFragment {
 //		// Disable sip port choice if port is random
 //		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
 //		sipPort.setEnabled(!randomPort.isChecked());
-//		sipPort.setSummary(mPrefs.getSipPort());
+//		sipPort.setSummary(getSummery(mPrefs.getSipPort());
 //		sipPort.setText(mPrefs.getSipPort());
 
 		EditTextPreference stun = (EditTextPreference) findPreference(getString(R.string.pref_stun_server_key));
-		stun.setSummary(mPrefs.getStunServer());
+		stun.setSummary(getSummery(mPrefs.getStunServer()));
 		stun.setText(mPrefs.getStunServer());
 
 		((CheckBoxPreference) findPreference(getString(R.string.pref_push_notification_key))).setChecked(mPrefs.isPushNotificationEnabled());
@@ -1661,7 +1697,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				mPrefs.setStunServer(newValue.toString());
-				preference.setSummary(newValue.toString());
+				preference.setSummary(getSummery(newValue.toString()));
 				return true;
 			}
 		});
@@ -1709,7 +1745,7 @@ public class SettingsFragment extends PreferencesListFragment {
 //				} catch (NumberFormatException nfe) { }
 //
 //				mPrefs.setSipPort(port);
-//				preference.setSummary(newValue.toString());
+//				preference.setSummary(getSummery(newValue.toString());
 //				return true;
 //			}
 //		});
@@ -1727,7 +1763,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					menc = MediaEncryption.DTLS;
 				mPrefs.setMediaEncryption(menc);
 
-				preference.setSummary(mPrefs.getMediaEncryption().toString());
+				preference.setSummary(getSummery(mPrefs.getMediaEncryption().toString()));
 				return true;
 			}
 		});
@@ -1772,8 +1808,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_image_sharing_server_key, mPrefs.getSharingPictureServerUrl());
 		setPreferenceDefaultValueAndSummary(R.string.pref_remote_provisioning_key, mPrefs.getRemoteProvisioningUrl());
-		setPreferenceDefaultValueAndSummary(R.string.pref_display_name_key, mPrefs.getDefaultDisplayName());
-		setPreferenceDefaultValueAndSummary(R.string.pref_user_name_key, mPrefs.getDefaultUsername());
+
 	}
 
 	private void setAdvancedPreferencesListener() {
@@ -1866,7 +1901,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String value = (String) newValue;
 				mPrefs.setSharingPictureServerUrl(value);
-				preference.setSummary(value);
+				preference.setSummary(getSummery(value));
 				return true;
 			}
 		});
@@ -1876,29 +1911,20 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String value = (String) newValue;
 				mPrefs.setRemoteProvisioningUrl(value);
-				preference.setSummary(value);
+				preference.setSummary(getSummery(value));
 				return true;
 			}
 		});
 
-		findPreference(getString(R.string.pref_display_name_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String value = (String) newValue;
-				mPrefs.setDefaultDisplayName(value);
-				preference.setSummary(value);
-				return true;
-			}
-		});
 
 		findPreference(getString(R.string.pref_user_name_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String value = (String) newValue;
-				if(value.equals("")) return false;
+				if (value.equals("")) return false;
 
 				mPrefs.setDefaultUsername(value);
-				preference.setSummary(value);
+				preference.setSummary(getSummery(value));
 				return true;
 			}
 		});
@@ -1915,7 +1941,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		}
 
-		if(isAdvancedSettings){
+		if(isAdvancedSettings) {
 			setPreferenceScreen(null);
 			addPreferencesFromResource(R.xml.preferences);
 			initSettings();
@@ -1926,5 +1952,19 @@ public class SettingsFragment extends PreferencesListFragment {
 		initAccounts();
 	}
 
+	private Spannable getSummery(String text) {
+		if(TextUtils.isEmpty(text))
+			return null;
+		Spannable summary = new SpannableString(text);
+		if (isForce508)
+			summary.setSpan(new ForegroundColorSpan(Color.WHITE), 0, summary.length(), 0);
+		return summary;
+	}
 
+	private Spannable getSummery(int id) {
+		Spannable summary = new SpannableString(getString(id));
+		if (isForce508)
+			summary.setSpan(new ForegroundColorSpan(Color.WHITE), 0, summary.length(), 0);
+		return summary;
+	}
 }

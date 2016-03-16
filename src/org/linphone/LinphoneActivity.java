@@ -264,7 +264,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
-		initButtons();
+
+		initButtons(LinphonePreferences.instance().isForce508());
 
 		currentFragment = nextFragment = FragmentsAvailable.DIALER;
 		fragmentsHistory.add(currentFragment);
@@ -455,12 +456,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		int n= mPrefs.getDefaultAccountIndex();
 		mPrefs.deleteAccount(n);
 	}
-	private void initButtons() {
+
+	public void initButtons(boolean isForce508) {
 		menu = (LinearLayout) findViewById(R.id.menu);
 		mark = (LinearLayout) findViewById(R.id.mark);
 
 		history = (RelativeLayout) findViewById(R.id.history);
 		history.setOnClickListener(this);
+
 		contacts = (RelativeLayout) findViewById(R.id.contacts);
 		contacts.setOnClickListener(this);
 		dialer = (RelativeLayout) findViewById(R.id.dialer);
@@ -488,6 +491,26 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		setColorTheme(this);
 		setBackgroundColorTheme(this);
+
+		TextView historyView = (TextView) history.findViewById(R.id.text);
+		TextView contactsView = (TextView) contacts.findViewById(R.id.text);
+		TextView dialerView = (TextView) dialer.findViewById(R.id.text);
+		TextView resourcesView = (TextView) chat.findViewById(R.id.text);
+		TextView settingsView = (TextView) settings.findViewById(R.id.text);
+
+		historyView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
+		contactsView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
+		dialerView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
+		resourcesView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
+		settingsView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
+
+		if (isForce508) {
+			historyView.setTextColor(Color.WHITE);
+			contactsView.setTextColor(Color.WHITE);
+			dialerView.setTextColor(Color.WHITE);
+			resourcesView.setTextColor(Color.WHITE);
+			settingsView.setTextColor(Color.WHITE);
+		}
 	}
 
 	public void setColorTheme(Context context){
@@ -501,7 +524,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		((ImageView)settings.findViewById(R.id.image)).setColorFilter(foregroundColor);
 		((ImageView)chat.findViewById(R.id.image)).setColorFilter(foregroundColor);
 	}
-
 
 	public void setBackgroundColorTheme(Context context){
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
