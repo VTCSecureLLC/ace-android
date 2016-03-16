@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -361,15 +360,8 @@ public class JsonConfig {
 					String reponse_str = getFromHttpURLConnection();
 					Log.d("Auto Config JSON: "+reponse_str);
 					return parseJson(reponse_str, request_url);
-
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (ProtocolException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					errorMsg = "Config is incorrect";
+				} catch (Throwable e){
+					Log.d("Issue parsing json");
 					e.printStackTrace();
 				}
 			}
