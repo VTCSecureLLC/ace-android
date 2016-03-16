@@ -52,7 +52,6 @@ public class CDNProviders {
 
 	public void setContext(Context context)
 	{
-		providers = new ArrayList<Provider>();
 		if (null == LinphoneActivity.ctx) {
 			this.context = context;
 			sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -164,6 +163,9 @@ public class CDNProviders {
 	public void updateProvidersDefaultPorts(final int position){
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
+				if(position>=providers.size())
+					return;
+
 					providers.get(position);
 					String recordName = "_sip._tcp."+providers.get(position).domain;
 					Lookup lookup = null;

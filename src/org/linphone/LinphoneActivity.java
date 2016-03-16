@@ -149,6 +149,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private LinphoneCoreListenerBase mListener;
 
 	public static boolean providerLookupOperation_executed=false;
+	boolean stopServiceOnDestroy;
 
 	public static View topLayout;
 	private AsyncProviderLookupOperation providerLookupOperation;
@@ -234,12 +235,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			//This is where the login screen is launched of first run, after accept legal release
 			//if(first_launch_boolean==true) {
 
-			Log.d("test   count "  + LinphonePreferences.instance().getAccountCount());
+			Log.d("test   count " + LinphonePreferences.instance().getAccountCount());
 
 				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 				LinphonePreferences.instance().firstLaunchSuccessful();
 				first_launch_boolean=false;
-			exit();
+			stopServiceOnDestroy = true;
+			finish();
 			//}
 
 		}
@@ -1508,6 +1510,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
+		if(stopServiceOnDestroy && LinphoneService.isReady())
+		{
+			stopService(new Intent(Intent.ACTION_MAIN).setClass(this, LinphoneService.class));
+		}
 
 
 

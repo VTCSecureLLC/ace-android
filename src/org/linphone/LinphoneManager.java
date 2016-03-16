@@ -177,7 +177,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		mServiceContext = c;
 		basePath = c.getFilesDir().getAbsolutePath();
 
-		mLPConfigXsd = basePath + "/lpconfig_"+ user +".xsd";
+		mLPConfigXsd = basePath + "/lpconfig.xsd";
 		mLinphoneFactoryConfigFile = basePath + "/linphonerc";
 		mLinphoneConfigFile = basePath + "/.linphonerc_" + user;
 		mLinphoneRootCaFile = basePath + "/rootca.pem";
