@@ -664,8 +664,13 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			copyAssetsFromPackage();
 			//traces alway start with traces enable to not missed first initialization
 			boolean isDebugLogEnabled = !(mR.getBoolean(R.bool.disable_every_log));
+
+			LinphoneCoreFactory.instance().setLogCollectionPath(c.getFilesDir().getAbsolutePath());
+			LinphoneCoreFactory.instance().enableLogCollection(!(c.getResources().getBoolean(R.bool.disable_every_log)));
+
 			LinphoneCoreFactory.instance().setDebugMode(isDebugLogEnabled, getString(R.string.app_name));
 			LinphoneCoreFactory.instance().enableLogCollection(isDebugLogEnabled);
+
 
 			mLc = LinphoneCoreFactory.instance().createLinphoneCore(this, mLinphoneConfigFile, mLinphoneFactoryConfigFile, null, c);
 
