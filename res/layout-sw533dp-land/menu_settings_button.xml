@@ -29,7 +29,6 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/dummy"
-        android:textColor="@drawable/text_color"
         android:text="@string/button_settings"
         android:textSize="18dp" />
 

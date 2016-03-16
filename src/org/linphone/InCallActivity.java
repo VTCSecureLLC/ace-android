@@ -115,7 +115,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	private boolean isCameraMutedPref;
 
-	private TextView pause, hangUp, addCall, transfer, conference;
+	private TextView chat_button, hangUp, addCall, transfer, conference;
 	private ImageView video, micro, dialer, speaker, options, audioRoute;
 	private TextView routeSpeaker, routeReceiver, routeBluetooth;
 	private LinearLayout routeLayout;
@@ -215,7 +215,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mViewsHolder =  inflator.inflate(R.layout.new_incall, null);
 
 		mFragmentHolder = inflator.inflate(R.layout.incall_fragment_holder, null);
-		rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
+		if(LinphonePreferences.instance().isForce508()){
+			rttHolder =  inflator.inflate(R.layout.rtt_holder_508, null);
+		}else{
+			rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
+		}
 		View statusBar = inflator.inflate(R.layout.status_holder, null);
 		RelativeLayout.LayoutParams paramss = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -716,7 +720,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//Log.d("RTT textsize by default="+tv.getTextSize());
 		//Default TextSize is 32dp
 		tv.setTextSize(16);
-		tv.getBackground().setAlpha(180);
+		if(!LinphonePreferences.instance().isForce508()){//use transparency if not 508
+			tv.getBackground().setAlpha(180);
+		}
+
 	}
 	public TextView create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
 		/*if(old_bubble!=null){
@@ -727,7 +734,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		TextView et=new TextView(this);
 		et.setLayoutParams(lp);
-		et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+		if(LinphonePreferences.instance().isForce508()){
+			et.setBackgroundResource(R.drawable.chat_bubble_outgoing_508);
+		}else{
+			et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+		}
 		et.setTag(true);
 		et.setOnClickListener(new OnClickListener() {
 			@Override
@@ -853,7 +864,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		lp1.gravity = Gravity.RIGHT;
 		TextView tv=new TextView(this);
 		tv.setLayoutParams(lp1);
-		tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
+		if(LinphonePreferences.instance().isForce508()){
+			tv.setBackgroundResource(R.drawable.chat_bubble_incoming_508);
+		}else{
+			tv.setBackgroundResource(R.drawable.chat_bubble_incoming);
+		}
 		tv.setTag(false);
 
 		standardize_bubble_view(tv);
@@ -1090,9 +1105,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		options = (ImageView) findViewById(R.id.options);
 		options.setOnClickListener(this);
 		options.setEnabled(false);
-		pause = (TextView) findViewById(R.id.toggleChat);
-		pause.setOnClickListener(this);
-		pause.setEnabled(false);
+		chat_button = (TextView) findViewById(R.id.toggleChat);
+		chat_button.setOnClickListener(this);
+		chat_button.setEnabled(false);
 		hangUp = (TextView) findViewById(R.id.hangUp);
 		hangUp.setOnClickListener(this);
 
@@ -1248,20 +1263,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if (LinphoneManager.getLc().getCallsNb() > 1) {
 			//TODO: remove
 //			conference.setVisibility(View.VISIBLE);
-			pause.setVisibility(View.GONE);
+			chat_button.setVisibility(View.GONE);
 		} else {
 			//TODO: remove
 //			conference.setVisibility(View.GONE);
 
-			if(pause.getVisibility()!=View.VISIBLE)
-				pause.setVisibility(View.VISIBLE);
+			if(chat_button.getVisibility()!=View.VISIBLE)
+				chat_button.setVisibility(View.VISIBLE);
 
 			List<LinphoneCall> pausedCalls = LinphoneUtils.getCallsInState(LinphoneManager.getLc(), Arrays.asList(State.Paused));
-			if (pausedCalls.size() == 1) {
-				pause.setBackgroundResource(R.drawable.pause_on);
-			} else {
-				pause.setBackgroundResource(R.drawable.pause_off);
-			}
+			chat_button.setBackgroundResource(R.drawable.selector_in_call_chat);
+
 		}
 
 	}
@@ -1278,7 +1290,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		speaker.setEnabled(true);
 
 		transfer.setEnabled(true);
-		pause.setEnabled(true);
+		chat_button.setEnabled(true);
 		dialer.setEnabled(true);
 		//TODO: remove
 //		conference.setEnabled(true);
@@ -1621,7 +1633,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					isVideoCallPaused = true;
 					showAudioView();
 				}
-				pause.setBackgroundResource(R.drawable.pause_on);
+				chat_button.setBackgroundResource(R.drawable.selector_in_call_chat);
 			}
 		} else if (call != null) {
 			if (call.getState() == State.Paused) {
@@ -1630,7 +1642,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					isVideoCallPaused = false;
 					showVideoView();
 				}
-				pause.setBackgroundResource(R.drawable.pause_off);
+				chat_button.setBackgroundResource(R.drawable.selector_in_call_chat);
 			}
 		}
 	}
@@ -2143,6 +2155,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onDestroy() {
 		Log.d("onDestroy()");
+		if(isFlashing) {
+			isFlashing = false;
+			LinphoneTorchFlasher.instance().stopFlashTorch();
+			HueController.getInstance().stopFlashing();
+		}
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(LinphoneActivity.class);
 		LinphoneManager.getInstance().changeStatusToOnline();
 
@@ -2485,9 +2502,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (call.getState() == State.IncomingReceived) {
 
 				if (!isFlashing) {
-					vibrate();
+
 					isFlashing = true;
 					HueController.getInstance().startFlashing(null);
+					vibrate();
 					flashOrangeBackground();
 					flashTorch();
 				}
@@ -2572,6 +2590,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				//TODO: set data
 			}
 		} else {
+			stopRingCount();
 			if (isFlashing) {
 				System.out.println("++++++++++++++++++++++" + isFlashing);
 				isFlashing = false;
@@ -2655,7 +2674,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					@Override
 					public void run() {
 						if (!isFlashing) {
-							mRingCount = 0;
 							vibrateTimer.cancel();
 						} else {
 							incrementRingCount();

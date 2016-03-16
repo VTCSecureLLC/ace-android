@@ -1259,4 +1259,13 @@ public class LinphonePreferences {
 	public Boolean isDebugLogsEnabled(){
 		return getConfig().getBool("app", "debug_logs_enabled", false);
 	}
+
+	public void setIsForce508(boolean isForce508) {
+		getConfig().setBool("app", "is_force_508", isForce508);
+	}
+
+	public boolean isForce508() {
+		return getConfig().getBool("app", "is_force_508", false);
+	}
+
 }
