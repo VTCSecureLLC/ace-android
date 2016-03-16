@@ -521,4 +521,5 @@
   <string name="title_video_dscp">Video DSCP</string>
   <string name="title_sip_dscp">Sip DSCP</string>
   <string name="pref_theme_is_fotce">pref_theme_is_fotce</string>
+  <string name="syncServiceMsg">Syncing VCards</string>
 </resources>
