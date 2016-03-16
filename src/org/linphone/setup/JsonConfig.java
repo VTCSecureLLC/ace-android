@@ -1,9 +1,7 @@
 package org.linphone.setup;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 
@@ -18,6 +16,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.Utils;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -211,23 +209,23 @@ public class JsonConfig {
 		config._version = ob.getInt("version");
 		config._expiration_time = ob.getInt("expiration_time");
 		if (!ob.isNull("configuration_auth_password"))
-			config._configuration_auth_password = ob.getString("configuration_auth_password");
+			config._configuration_auth_password = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("configuration_auth_password"));
 		if (!ob.isNull("configuration_auth_expiration"))
-			config._configuration_auth_expiration = ob.getString("configuration_auth_expiration");
+			config._configuration_auth_expiration = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("configuration_auth_expiration"));
 
 		if (!ob.isNull("sip_registration_maximum_threshold"))
 			config._sip_registration_maximum_threshold = ob.getInt("sip_registration_maximum_threshold");
 		if (!ob.isNull("sip_auth_username"))
-			config._sip_auth_username = ob.getString("sip_auth_username");
+			config._sip_auth_username = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("sip_auth_username"));
 		if (!ob.isNull("sip_auth_password"))
-			config._sip_auth_password = ob.getString("sip_auth_password");
+			config._sip_auth_password = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("sip_auth_password"));
 		if (!ob.isNull("sip_register_domain"))
-			config._sip_register_domain = ob.getString("sip_register_domain");
+			config._sip_register_domain = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("sip_register_domain"));
 
 		//If changes made at login, use those instead of the jsonconfig changes.
 		config._sip_register_port = ob.getInt("sip_register_port");
 		if (!ob.isNull("sip_register_transport"))
-			config._sip_register_transport = ob.getString("sip_register_transport");
+			config._sip_register_transport = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("sip_register_transport"));
 
 
 
@@ -236,20 +234,20 @@ public class JsonConfig {
 		config._enable_rtt = ob.getBoolean("enable_rtt");
 		config._enable_adaptive_rate = ob.getBoolean("enable_adaptive_rate");
 		if (!ob.isNull("bwLimit"))// is not used
-			config._bwLimit = ob.getString("bwLimit");
+			config._bwLimit = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("bwLimit"));
 		config._upload_bandwidth = ob.getInt("upload_bandwidth");
 		config._download_bandwidth = ob.getInt("download_bandwidth");
 		config._enable_stun = ob.getBoolean("enable_stun");
-		config._stun_server = ob.getString("stun_server");
+		config._stun_server = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("stun_server"));
 		config._enable_ice = ob.getBoolean("enable_ice");
 		if (!ob.isNull("logging"))
-			config._logging = ob.getString("logging"); // enabled debug
+			config._logging = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("logging")); // enabled debug
 		if (!ob.isNull("sip_mwi_uri"))
-			config._sip_mwi_uri = ob.getString("sip_mwi_uri");
+			config._sip_mwi_uri = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("sip_mwi_uri"));
 		if (!ob.isNull("sip_videomail_uri")) // not used
-			config._sip_videomail_uri = ob.getString("sip_videomail_uri");
+			config._sip_videomail_uri = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("sip_videomail_uri"));
 		if (!ob.isNull("video_resolution_maximum"))
-			config._video_resolution_maximum = ob.getString("video_resolution_maximum");//prefared res
+			config._video_resolution_maximum = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("video_resolution_maximum"));//prefared res
 
 		//fps
 		if (!ob.isNull("video_preferred_frames_per_second")) {
@@ -261,12 +259,12 @@ public class JsonConfig {
 		JSONArray jsonArray = ob.getJSONArray("sip_register_usernames");// not used
 		config._sip_register_usernames = new String[jsonArray.length()];// codec mapping is required
 		for (int i = 0; i < jsonArray.length(); i++)
-			config._sip_register_usernames[i] = jsonArray.getString(i);
+			config._sip_register_usernames[i] = Utils.removeExtraQuotesFromStringIfPresent(jsonArray.getString(i));
 
 		jsonArray = ob.getJSONArray("enabled_codecs");
 		config._enabled_codecs = new ArrayList<String>();
 		for (int i = 0; i < jsonArray.length(); i++)
-			config._enabled_codecs.add(jsonArray.getString(i).replace(".", ""));// as we don't have mapping yet
+			config._enabled_codecs.add(Utils.removeExtraQuotesFromStringIfPresent(jsonArray.getString(i).replace(".", "")));// as we don't have mapping yet
 
 		if (config._enabled_codecs.contains("G711"))// as we don't have mapping yet
 		{
@@ -362,15 +360,8 @@ public class JsonConfig {
 					String reponse_str = getFromHttpURLConnection();
 					Log.d("Auto Config JSON: "+reponse_str);
 					return parseJson(reponse_str, request_url);
-
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				} catch (ProtocolException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					errorMsg = "Config is incorrect";
+				} catch (Throwable e){
+					Log.d("Issue parsing json");
 					e.printStackTrace();
 				}
 			}
