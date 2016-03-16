@@ -14,6 +14,26 @@ import android.provider.Settings;
  */
 public class Utils {
 
+    public static String removeExtraQuotesFromStringIfPresent(String inputStr){
+        String result = inputStr;
+        //Check if string has extra quotes
+        if(inputStr.startsWith("\"")&&inputStr.endsWith("\"")){
+            result=removeQuotesFromStartAndEndOfString(inputStr);
+        }
+        return result;
+    }
+
+    private static String removeQuotesFromStartAndEndOfString(String inputStr) {
+        String result = inputStr;
+        int firstQuote = inputStr.indexOf('\"');
+        int lastQuote = result.lastIndexOf('\"');
+        int strLength = inputStr.length();
+        if (firstQuote == 0 && lastQuote == strLength - 1) {
+            result = result.substring(1, strLength - 1);
+        }
+        return result;
+    }
+
     private static boolean isNetworkAvailable(Context ctx) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
