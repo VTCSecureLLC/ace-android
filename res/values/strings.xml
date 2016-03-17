@@ -128,7 +128,7 @@
   <string name="pref_ilbc_summary">iLBC might be unavailable depending on ARM processor and Android OS version.</string>
   <string name="pref_echo_cancellation">Echo cancellation</string>
   <string name="pref_autostart">Start at boot time</string>
-  <string name="pref_enable_packet_tagging">Packet Tagging</string>
+  <string name="pref_enable_packet_tagging">Enable QoS</string>
   <string name="pref_enable_outbound_proxy">Outbound proxy</string>
 
   <string name="pref_codecs">Codecs</string>
