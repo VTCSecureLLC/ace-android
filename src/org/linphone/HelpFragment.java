@@ -52,6 +52,10 @@ public class HelpFragment extends PreferencesListFragment {
     public HelpFragment() {
         super(R.xml.help);
     }
+    final private static String default_json ="[\n" +
+            "  {\"name\":\"SBA ASL Line\", \"address\":\"+18554404960\"},\n" +
+            "  {\"name\":\"FCC ASL Line\", \"address\":\"+18444322275\"}\n" +
+            "]";
     SharedPreferences prefs;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,13 @@ public class HelpFragment extends PreferencesListFragment {
                 return true;
             }
         });
+
+        try {
+            populateJson(default_json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         new LoadWebPageASYNC().execute();
     }
 
@@ -91,16 +102,21 @@ public class HelpFragment extends PreferencesListFragment {
             Log.d("textjson="+textjson);
         } catch (Exception e) {
             e.printStackTrace();
-            textjson="[\n" +
-                    "  {\"name\":\"SBA ASL Line\", \"address\":\"+18554404960\"},\n" +
-                    "  {\"name\":\"FCC ASL Line\", \"address\":\"+18444322275\"}\n" +
-                    "]";
+            textjson= default_json;
         }
+        populateJson(textjson);
 
+
+
+    }
+    void populateJson(String textjson) throws JSONException
+    {
         JSONArray reader = new JSONArray(textjson);
 
 
+
         PreferenceScreen hoh_screen=(PreferenceScreen)findPreference("websiteace");
+        hoh_screen.removeAll();
         for(int i=0; i<reader.length(); i++){
             if(getActivity()==null)
                 continue;
@@ -122,9 +138,7 @@ public class HelpFragment extends PreferencesListFragment {
             });
             hoh_screen.addPreference(pref);
         }
-
-
-    };
+    }
     public void showFeedbackActivity() {
         FeedbackManager.register(LinphoneActivity.ctx, "d6280d4d277d6876c709f4143964f0dc", null);
 
