@@ -454,8 +454,11 @@ public class VCardIO extends Service {
 					} else
 					{
 						//insert
+						String uri = friend.getAddress().asStringUriOnly();
+						if(uri.startsWith("sip:"))
+							uri = uri.substring(4);
 						ContactsManager.getInstance().createNewContact(ops,friend.getName() );
-						Compatibility.addSipAddressToContact(VCardIO.this, ops, friend.getAddress().toString());
+						Compatibility.addSipAddressToContact(VCardIO.this, ops, uri);
 					}
 					if(ops.size()>0)
 						try {
