@@ -218,12 +218,12 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="70dp">
 
         <TextView
             android:id="@+id/hangUp"
             android:layout_width="150dp"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
@@ -234,11 +234,12 @@
 
         <TextView
             android:id="@+id/toggleChat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="12dp"
-            android:background="@drawable/about_chat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/hangUp"
+            android:layout_margin="5dp"
+            android:paddingTop="10dp"
+            android:drawableTop="@drawable/ic_chat_off"
             android:contentDescription="@string/content_description_pause"
             />
         </RelativeLayout>

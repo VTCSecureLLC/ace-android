@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -24,6 +25,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.GestureDetector.OnGestureListener;
@@ -52,6 +54,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
  * @author Sylvain Berfini
  */
 public class VideoCallFragment extends Fragment implements OnGestureListener, OnDoubleTapListener, CompatibilityScaleGestureListener {
+
 	private SurfaceView mVideoView;
 	public static ImageView cameraCover;
 	public static SurfaceView mCaptureView;
@@ -65,12 +68,23 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	private int viewId = R.layout.video;
 	private SharedPreferences prefs;
 	private boolean isSelfViewEnabled;
-	@SuppressWarnings("deprecation") // Warning useless because value is ignored and automatically set by new APIs.
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-			Bundle savedInstanceState) {
 
-        LinphoneManager.getLc().setVideoDevice(CameraPreview.findFrontFacingCamera());
+	private ObjectAnimator selfViewDownAnimation;
+	private ObjectAnimator selfViewUpAnimation;
+	float selfViewTranslation;
+	boolean isMovied;
+
+	@SuppressWarnings("deprecation") // Warning useless because value is ignored and automatically set by new APIs.
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+
+		selfViewTranslation = dpToPx(150);
+
+
+
+		LinphoneManager.getLc().setVideoDevice(CameraPreview.findFrontFacingCamera());
 		prefs = PreferenceManager.
 				getDefaultSharedPreferences(LinphoneActivity.instance());
 		isSelfViewEnabled = prefs.getBoolean(getString(R.string.pref_av_show_self_view_key), true);
@@ -80,6 +94,13 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		cameraCover = (ImageView) view.findViewById(R.id.cameraCover);
 		mVideoView = (SurfaceView) view.findViewById(R.id.videoSurface);
 		mCaptureView = (SurfaceView) view.findViewById(R.id.videoCaptureSurface);
+
+		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mCaptureView.getLayoutParams();
+		lp.bottomMargin = (int) selfViewTranslation;
+		mCaptureView.setLayoutParams(lp);
+
+		selfViewDownAnimation = ObjectAnimator.ofFloat(mCaptureView, "translationY", 0,selfViewTranslation);
+		selfViewUpAnimation = ObjectAnimator.ofFloat(mCaptureView, "translationY", selfViewTranslation, 0);
 
 		mCaptureView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS); // Warning useless because value is ignored and automatically set by new APIs.
 
@@ -94,11 +115,14 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 						dy = (int) motionEvent.getY();
 						break;
 					case MotionEvent.ACTION_MOVE:
-						int x = (int) motionEvent.getX();
-						int y = (int) motionEvent.getY();
+						isMovied = true;
+
 						RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mCaptureView.getLayoutParams();
 						lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0); // Clears the rule, as there is no removeRule until API 17.
 						lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+
+						int x = (int) motionEvent.getX();
+						int y = (int) motionEvent.getY();
 						int left = lp.leftMargin + (x - dx);
 						int top = lp.topMargin + (y - dy);
 						lp.leftMargin = left;
@@ -123,7 +147,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 			@Override
 			public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-				LinphoneCore lc = LinphoneManager.getLc(); 
+				LinphoneCore lc = LinphoneManager.getLc();
 				if (lc != null) {
 					lc.setVideoWindow(null);
 				}
@@ -132,7 +156,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			@Override
 			public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
 				mCaptureView = surface;
-			//	isH263();
+				//	isH263();
 				LinphoneManager.getLc().setPreviewWindow(mCaptureView);
 			}
 
@@ -218,27 +242,27 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 	private void adjustH263VideoForCall(LinphoneCall call){
 
-						Activity parent = getActivity();
-						if(parent != null && parent.getWindowManager() != null) {
+		Activity parent = getActivity();
+		if(parent != null && parent.getWindowManager() != null) {
 
-							int orientation = parent.getResources().getConfiguration().orientation;
+			int orientation = parent.getResources().getConfiguration().orientation;
 
-							if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
-								int currentRotation = parent.getWindowManager().getDefaultDisplay().getRotation();
-								int newRotatation = currentRotation;
+			if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
+				int currentRotation = parent.getWindowManager().getDefaultDisplay().getRotation();
+				int newRotatation = currentRotation;
 
-								if(currentRotation <= 180){
-									newRotatation = 90;
-								}
+				if(currentRotation <= 180){
+					newRotatation = 90;
+				}
 
-								else {
-									newRotatation = 270;
-								}
-								LinphoneManager.getLc().setDeviceRotation(newRotatation);
-								LinphoneManager.getLc().updateCall(call, null);
-								viewId = R.layout.video_h263;
-							}
-						}
+				else {
+					newRotatation = 270;
+				}
+				LinphoneManager.getLc().setDeviceRotation(newRotatation);
+				LinphoneManager.getLc().updateCall(call, null);
+				viewId = R.layout.video_h263;
+			}
+		}
 
 	}
 
@@ -246,6 +270,31 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		video.setZOrderOnTop(false);
 		preview.setZOrderOnTop(true);
 		preview.setZOrderMediaOverlay(true); // Needed to be able to display control layout over
+	}
+
+	public void animateDownSelfView(boolean isAnimationDisabled)
+	{
+		if(mCaptureView == null)
+			return;
+		if(!isAnimationDisabled) {
+			if (!isMovied && !selfViewDownAnimation.isRunning())
+				selfViewDownAnimation.start();
+		}
+		else
+			mCaptureView.setTranslationY(selfViewTranslation);
+
+	}
+
+	public void animateUpSelfView(boolean isAnimationDisabled)
+	{
+		if(mCaptureView == null)
+			return;
+		if(!isAnimationDisabled) {
+			if (!isMovied && !selfViewUpAnimation.isRunning())
+				selfViewUpAnimation.start();
+			else
+				mCaptureView.setTranslationY(0);
+		}
 	}
 
 	public void switchCamera() {
@@ -266,7 +315,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	}
 
 	@Override
-	public void onResume() {		
+	public void onResume() {
 		super.onResume();
 
 		if (mVideoView != null) {
@@ -284,7 +333,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	}
 
 	@Override
-	public void onPause() {	
+	public void onPause() {
 		if (androidVideoWindowImpl != null) {
 			synchronized (androidVideoWindowImpl) {
 				/*
@@ -380,6 +429,12 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		mZoomCenterX = mZoomCenterY = 0.5f;
 	}
 
+	public float dpToPx(int dp) {
+		DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+		float px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+		return px;
+	}
+
 	@Override
 	public void onDestroy() {
 		inCallActivity = null;
@@ -389,7 +444,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			mVideoView.setOnTouchListener(null);
 			mVideoView = null;
 		}
-		if (androidVideoWindowImpl != null) { 
+		if (androidVideoWindowImpl != null) {
 			// Prevent linphone from crashing if correspondent hang up while you are rotating
 			androidVideoWindowImpl.release();
 			androidVideoWindowImpl = null;
@@ -433,7 +488,7 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
+						   float velocityY) {
 		return false;
 	}
 
@@ -451,4 +506,6 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 	public boolean onSingleTapUp(MotionEvent e) {
 		return false;
 	}
+
+
 }
