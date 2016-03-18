@@ -75,7 +75,7 @@
   <string name="pref_audio_hacks_use_routing_api_title">Use routing API hack</string>
   <string name="pref_audio_hacks_use_galaxys_hack_title">Use Galaxy S audio hack</string>
   <string name="pref_audio_soft_volume_title">Use software volume</string>
-  <string name="pref_ipv6_title">Use ipv6 instead of ipv4</string>
+  <string name="pref_ipv6_title">Enable IPv6</string>
   <string name="error_while_accepting_pending_call">Error while accepting pending call</string>
   <string name="incoming_call_dialog_title">%s is calling you</string>
   <string name="accept">Accept</string>
@@ -128,7 +128,7 @@
   <string name="pref_ilbc_summary">iLBC might be unavailable depending on ARM processor and Android OS version.</string>
   <string name="pref_echo_cancellation">Echo cancellation</string>
   <string name="pref_autostart">Start at boot time</string>
-  <string name="pref_enable_packet_tagging">Packet Tagging</string>
+  <string name="pref_enable_packet_tagging">Enable QoS</string>
   <string name="pref_enable_outbound_proxy">Outbound proxy</string>
 
   <string name="pref_codecs">Codecs</string>
