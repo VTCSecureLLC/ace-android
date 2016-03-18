@@ -67,7 +67,6 @@ import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
-import org.linphone.setup.AccountHelper;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.LedPreference;
 import org.linphone.ui.PreferencesListFragment;
@@ -217,8 +216,6 @@ public class SettingsFragment extends PreferencesListFragment {
 										deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
 										getActivity().startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
-										AccountHelper.deleteAccount(getActivity());
-										LinphoneActivity.instance().exit();
 									}
 								}
 						)
@@ -436,7 +433,6 @@ public class SettingsFragment extends PreferencesListFragment {
 
 	private void deleteAll()
 	{
-		AccountHelper.deleteAccount(getActivity());
 		PreferenceCategory accounts = (PreferenceCategory) findPreference(getString(R.string.pref_sipaccounts_key));
 		accounts.removeAll();
 

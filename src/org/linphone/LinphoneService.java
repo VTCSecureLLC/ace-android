@@ -132,10 +132,16 @@ public final class LinphoneService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		Log.d("test onCreate");
 		// In case restart after a crash. Main in LinphoneActivity
 		mNotificationTitle = getString(R.string.service_name);
+		try {
+			// Needed in order for the two next calls to succeed, libraries must have been loaded first
+			LinphoneCoreFactory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath());
+			LinphoneCoreFactory.instance().enableLogCollection(!(getResources().getBoolean(R.bool.disable_every_log)));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
 		// Dump some debugging information to the logs
 		Log.i(START_LINPHONE_LOGS);
 		dumpDeviceInformation();
@@ -598,7 +604,6 @@ public final class LinphoneService extends Service {
 
 	@Override
 	public synchronized void onDestroy() {
-		Log.d("test service destoy");
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
