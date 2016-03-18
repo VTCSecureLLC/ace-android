@@ -94,6 +94,7 @@ import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
+import org.linphone.setup.AccountHelper;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
@@ -104,6 +105,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -136,6 +138,8 @@ import static android.media.AudioManager.STREAM_VOICE_CALL;
 public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessage.LinphoneChatMessageListener {
 
 	private static LinphoneManager instance;
+
+
 	private Context mServiceContext;
 	private AudioManager mAudioManager;
 	private PowerManager mPowerManager;
@@ -167,20 +171,24 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	}
 
 	protected LinphoneManager(final Context c) {
+
+		String user = AccountHelper.getAccount(c);
 		sExited = false;
 		mServiceContext = c;
 		basePath = c.getFilesDir().getAbsolutePath();
+
 		mLPConfigXsd = basePath + "/lpconfig.xsd";
 		mLinphoneFactoryConfigFile = basePath + "/linphonerc";
-		mLinphoneConfigFile = basePath + "/.linphonerc";
+		mLinphoneConfigFile = basePath + "/.linphonerc_" + user;
 		mLinphoneRootCaFile = basePath + "/rootca.pem";
 		mRingSoundFile = basePath + "/oldphone_mono.wav";
 		mRingbackSoundFile = basePath + "/ringback.wav";
 		mPauseSoundFile = basePath + "/toy_mono.wav";
-		mChatDatabaseFile = basePath + "/linphone-history.db";
-		mFriendsDatabaseFile = basePath + "/linphone-friends.db";
+		mChatDatabaseFile = basePath + "/linphone-history_" + user + ".db";
+		mFriendsDatabaseFile = basePath + "/linphone-friends_" + user + ".db";
 		mErrorToneFile = basePath + "/error.wav";
-        mUserCertificatePath = basePath;
+		mUserCertificatePath = basePath;
+
 
 		mPrefs = LinphonePreferences.instance();
 		mAudioManager = ((AudioManager) c.getSystemService(Context.AUDIO_SERVICE));
@@ -194,17 +202,17 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private static final int LINPHONE_VOLUME_STREAM = STREAM_VOICE_CALL;
 	private static final int dbStep = 4;
 	/** Called when the activity is first created. */
-	private final String mLPConfigXsd;
-	private final String mLinphoneFactoryConfigFile;
-	private final String mLinphoneRootCaFile;
-	public final String mLinphoneConfigFile;
-	private final String mRingSoundFile;
-	private final String mRingbackSoundFile;
-	private final String mPauseSoundFile;
-	private final String mChatDatabaseFile;
-	private final String mFriendsDatabaseFile;
-	private final String mErrorToneFile;
-	private final String mUserCertificatePath;
+	final private String mLPConfigXsd;
+	final private String mLinphoneFactoryConfigFile;
+	final private String mLinphoneRootCaFile;
+	final public String mLinphoneConfigFile;
+	final private String mRingSoundFile;
+	final private String mRingbackSoundFile;
+	final private String mPauseSoundFile;
+	final private String mChatDatabaseFile;
+	final private String mFriendsDatabaseFile;
+	final private String mErrorToneFile;
+	final private String mUserCertificatePath;
  	private ByteArrayInputStream mUploadingImageStream;
 
 	private Timer mTimer;
@@ -650,13 +658,19 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		sExited = false;
 	}
 
+
 	private synchronized void startLibLinphone(Context c) {
 		try {
 			copyAssetsFromPackage();
 			//traces alway start with traces enable to not missed first initialization
 			boolean isDebugLogEnabled = !(mR.getBoolean(R.bool.disable_every_log));
+
+			LinphoneCoreFactory.instance().setLogCollectionPath(c.getFilesDir().getAbsolutePath());
+			LinphoneCoreFactory.instance().enableLogCollection(!(c.getResources().getBoolean(R.bool.disable_every_log)));
+
 			LinphoneCoreFactory.instance().setDebugMode(isDebugLogEnabled, getString(R.string.app_name));
 			LinphoneCoreFactory.instance().enableLogCollection(isDebugLogEnabled);
+
 
 			mLc = LinphoneCoreFactory.instance().createLinphoneCore(this, mLinphoneConfigFile, mLinphoneFactoryConfigFile, null, c);
 
@@ -770,6 +784,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
 		File lFileToCopy = new File(target);
+
 		if (!lFileToCopy.exists()) {
 			copyFromPackage(ressourceId,lFileToCopy.getName());
 		}
@@ -1463,7 +1478,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	@Override
 	public void notifyReceived(LinphoneCore lc, LinphoneEvent ev,
 			String eventName, LinphoneContent content) {
-		Log.d("Notify received for event "+eventName);
+		Log.d("Notify received for event " + eventName);
 		if (content!=null) Log.d("with content "+content.getType()+"/"+content.getSubtype()+" data:"+content.getDataAsString());
 	}
 	@Override
@@ -1490,7 +1505,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	public void setRttEnabled(boolean enabled)
 	{
 		SharedPreferences prefs = PreferenceManager.
-				getDefaultSharedPreferences(LinphoneActivity.instance());
+				getDefaultSharedPreferences(getContext());
 
 			SharedPreferences.Editor editor = prefs.edit();
 			// Enable by default
@@ -1679,7 +1694,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
                 // TODO Auto-generated method stub
 
         }
-
 
 	public static void startIncomingCallActivity(Context context)
 	{
