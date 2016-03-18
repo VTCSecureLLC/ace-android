@@ -513,7 +513,6 @@
   <string name="color_picker_background_title">Background Color</string>
 
   <string name="unlock_adv_settings">Unlock Advanced Settings</string>
-  <string name="pref_user_account">pref_user_account</string>
   <string name="call_back">I\'ll call you back</string>
   <string name="pref_enable_packet_audio_dscp">pref_enable_packet_audio_dscp</string>
   <string name="pref_enable_packet_video_dscp">pref_enable_packet_video_dscp</string>
