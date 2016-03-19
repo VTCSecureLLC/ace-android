@@ -44,7 +44,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -59,6 +58,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Chronometer;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -206,9 +206,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		Log.d("ttt onCreate()");
 
 		instance = this;
+
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(InCallActivity.class);
+
 		//DialerFragment.instance().mOrientationHelper.disable();
+
 		LinphoneActivity.instance().mOrientationHelper.enable();
+
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		mainLayout = new RelativeLayout(this);
 		mainLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -337,8 +341,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //				}
 				if (lc.getCallsNb() == 0) {
 					finish();
+					stopOutgoingRingCount();
 					return;
 				}
+
+				if(state == State.CallEnd || state == State.Error || state == State.CallReleased
+						|| state == State.Connected
+						|| state == State.StreamsRunning){
+					stopOutgoingRingCount();
+				}
+
 				if (lc.getCallsNb() == 1 && lc.getCalls()[0].getState() == State.Paused) {
 					if(state == State.CallEnd)
 						checkIncomingCall();
@@ -2238,10 +2250,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 
-	private void startOutgoingRingCount(LinearLayout callView) {
+	public void startOutgoingRingCount(FrameLayout callView) {
 		outgoingRingCountTimer = new Timer();
 		float outGoingRingDuration = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "outgoing_ring_duration", 2.0f);
 		final TextView outgoingRingCountTextView = (TextView) callView.findViewById(R.id.outboundRingCount);
+		final TextView ringingTextView = (TextView) callView.findViewById(R.id.label_ringing);
+
+		ringingTextView.setVisibility(View.VISIBLE);
 		outgoingRingCountTextView.setVisibility(View.VISIBLE);
 		outgoingRingCountTimer.schedule(new TimerTask() {
 			int ringCount = 0;
@@ -2264,6 +2279,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			outgoingRingCountTimer.cancel();
 			outgoingRingCountTimer = null;
 			findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
+			findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
 		}
 	}
 
