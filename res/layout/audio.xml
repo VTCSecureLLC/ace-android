@@ -10,6 +10,7 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/outboundRingCount"
 		android:text="1"
+		android:textColor="@android:color/white"
 		android:textSize="64sp"
 		android:visibility="invisible"
 		android:layout_gravity="center" />
@@ -20,6 +21,7 @@
         android:id="@+id/label_ringing"
         android:textSize="64sp"
 		android:text="Ringing..."
+		android:textColor="@android:color/white"
         android:visibility="invisible"
         android:layout_gravity="center_horizontal|top" />
 
