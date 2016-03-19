@@ -62,8 +62,8 @@ import io.App;
 public class ContactsFragment extends Fragment implements OnClickListener, OnItemClickListener {
 	private LayoutInflater mInflater;
 	private ListView contactsList;
-	private TextView import_export_Contacts, allContacts, linphoneContacts, newContact, noSipContact, noContact;
-	private boolean onlyDisplayLinphoneContacts;
+	private TextView import_export_Contacts, allContacts, aceFavorites, newContact, noFavoriteContact, noContact;
+	private boolean onlyDisplayAceFavorites;
 	private int lastKnownPosition;
 	private AlphabetIndexer indexer;
 	private boolean editOnClick = false, editConsumed = false, onlyDisplayChatAddress = false;
@@ -95,7 +95,7 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 	        onlyDisplayChatAddress = getArguments().getBoolean("ChatAddressOnly");
         }
         
-        noSipContact = (TextView) view.findViewById(R.id.noSipContact);
+        noFavoriteContact = (TextView) view.findViewById(R.id.noFavoriteContact);
         noContact = (TextView) view.findViewById(R.id.noContact);
         
         contactsList = (ListView) view.findViewById(R.id.contactsList);
@@ -113,15 +113,15 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		import_export_Contacts = (TextView) view.findViewById(R.id.import_export_Contacts);
 		import_export_Contacts.setOnClickListener(this);
         
-        linphoneContacts = (TextView) view.findViewById(R.id.linphoneContacts);
-        linphoneContacts.setOnClickListener(this);
+        aceFavorites = (TextView) view.findViewById(R.id.aceFavorites);
+        aceFavorites.setOnClickListener(this);
         
         newContact = (TextView) view.findViewById(R.id.newContact);
         newContact.setOnClickListener(this);
         newContact.setEnabled(LinphoneManager.getLc().getCallsNb() == 0);
         
-        allContacts.setEnabled(onlyDisplayLinphoneContacts);
-        linphoneContacts.setEnabled(!allContacts.isEnabled());
+        allContacts.setEnabled(onlyDisplayAceFavorites);
+        aceFavorites.setEnabled(!allContacts.isEnabled());
 		
         
 		clearSearchField = (ImageView) view.findViewById(R.id.clearSearchField);
@@ -154,15 +154,15 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		int id = v.getId();
 		
 		if (id == R.id.allContacts) {
-			onlyDisplayLinphoneContacts = false;
+			onlyDisplayAceFavorites = false;
 			if (searchField.getText().toString().length() > 0) {
 				searchContacts();
 			} else {
 				changeContactsAdapter();
 			}
 		} 
-		else if (id == R.id.linphoneContacts) {
-			onlyDisplayLinphoneContacts = true;
+		else if (id == R.id.aceFavorites) {
+			onlyDisplayAceFavorites = true;
 			if (searchField.getText().toString().length() > 0) {
 				searchContacts();
 			} else {
@@ -198,8 +198,8 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		if (searchCursor != null) {
 			searchCursor.close();
 		}
-		if (onlyDisplayLinphoneContacts) {
-			searchCursor = Compatibility.getSIPContactsCursor(getActivity().getContentResolver(), search, ContactsManager.getInstance().getContactsId());
+		if (onlyDisplayAceFavorites) {
+			searchCursor = Compatibility.getFavoriteContactsCursor(getActivity().getContentResolver(), search, ContactsManager.getInstance().getContactsId());
 			indexer = new AlphabetIndexer(searchCursor, Compatibility.getCursorDisplayNameColumnIndex(searchCursor), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 			contactsList.setAdapter(new ContactsListAdapter(null, searchCursor));
 		} else {
@@ -219,20 +219,21 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		
 		Cursor allContactsCursor = ContactsManager.getInstance().getAllContactsCursor();
 		Cursor sipContactsCursor = ContactsManager.getInstance().getSIPContactsCursor();
+		Cursor favoriteContactsCursor = ContactsManager.getInstance().getFavoriteContactsCursor();
 		if(ContactsManager.getInstance().getAllContactsCursor()==null)
 			return;
 
-		noSipContact.setVisibility(View.GONE);
+		noFavoriteContact.setVisibility(View.GONE);
 		noContact.setVisibility(View.GONE);
 		contactsList.setVisibility(View.VISIBLE);
 		
-		if (onlyDisplayLinphoneContacts) {
-			if (sipContactsCursor != null && sipContactsCursor.getCount() == 0) {
-				noSipContact.setVisibility(View.VISIBLE);
+		if (onlyDisplayAceFavorites) {
+			if (favoriteContactsCursor != null && favoriteContactsCursor.getCount() == 0) {
+				noFavoriteContact.setVisibility(View.VISIBLE);
 				contactsList.setVisibility(View.GONE);
 			} else {
-				indexer = new AlphabetIndexer(sipContactsCursor, Compatibility.getCursorDisplayNameColumnIndex(sipContactsCursor), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-				contactsList.setAdapter(new ContactsListAdapter(ContactsManager.getInstance().getSIPContacts(), sipContactsCursor));
+				indexer = new AlphabetIndexer(favoriteContactsCursor, Compatibility.getCursorDisplayNameColumnIndex(favoriteContactsCursor), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+				contactsList.setAdapter(new ContactsListAdapter(ContactsManager.getInstance().getFavoriteContacts(), favoriteContactsCursor));
 			}
 		} else {
 			if (allContactsCursor != null && allContactsCursor.getCount() == 0) {
@@ -243,16 +244,16 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 				contactsList.setAdapter(new ContactsListAdapter(ContactsManager.getInstance().getAllContacts(), allContactsCursor));
 			}
 		}
-		ContactsManager.getInstance().setLinphoneContactsPrefered(onlyDisplayLinphoneContacts);
+		ContactsManager.getInstance().setLinphoneContactsPrefered(onlyDisplayAceFavorites);
 	}
 	
 	private void changeContactsToggle() {
-		if (onlyDisplayLinphoneContacts) {
+		if (onlyDisplayAceFavorites) {
 			allContacts.setEnabled(true);
-			linphoneContacts.setEnabled(false);
+			aceFavorites.setEnabled(false);
 		} else {
 			allContacts.setEnabled(false);
-			linphoneContacts.setEnabled(true);
+			aceFavorites.setEnabled(true);
 		}
 	}
 
@@ -280,7 +281,7 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 		
 		if (LinphoneActivity.isInstanciated()) {
 			LinphoneActivity.instance().selectMenu(FragmentsAvailable.CONTACTS);
-			onlyDisplayLinphoneContacts = ContactsManager.getInstance().isLinphoneContactsPrefered();
+			onlyDisplayAceFavorites = ContactsManager.getInstance().isLinphoneContactsPrefered();
 			
 			if (getResources().getBoolean(R.bool.show_statusbar_only_on_dialer)) {
 				LinphoneActivity.instance().hideStatusBar();

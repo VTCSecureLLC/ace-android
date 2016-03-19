@@ -246,7 +246,7 @@
   <string name="no_call_history">No call in your history.</string>
   <string name="no_missed_call_history">No missed call in your history.</string>
   <string name="no_contact">No contact in your address book.</string>
-  <string name="no_sip_contact">No SIP contact in your address book.</string>
+  <string name="no_favorite_contact">No Favorite contact in your address book.</string>
   <string name="no_chat_history">No chat history.</string>
   <string name="call_stats_audio">Audio</string>
   <string name="call_stats_video">Video</string>
@@ -273,7 +273,7 @@
   <string name="content_description_validate">Validate button</string>
   <string name="content_description_search">Search</string>
   <string name="content_description_all_contacts">All contacts</string>
-  <string name="content_description_linphone_contacts">VTCSecure contacts</string>
+  <string name="content_description_ace_favorites">ACE favorites</string>
   <string name="content_description_call_direction">Call direction</string>
   <string name="content_description_all_calls">All calls</string>
   <string name="content_description_missed_calls">Missed calls</string>
