@@ -393,52 +393,6 @@
 							android:textSize="12sp"/>
 
 					</TableRow>
-		            <TableRow
-			            android:layout_width="match_parent"
-			            android:layout_height="wrap_content">
-
-			            <TextView
-				            android:layout_width="wrap_content"
-				            android:layout_height="wrap_content"
-				            android:gravity="left|center_vertical"
-				            android:text="Size sent (FPS):"
-				            android:textStyle="bold"
-				            android:textColor="@android:color/white"
-				            android:textSize="12sp"/>
-
-			            <TextView
-				            android:id="@+id/sentFpsRate"
-				            android:layout_width="match_parent"
-				            android:layout_height="wrap_content"
-				            android:paddingLeft="5dp"
-				            android:gravity="right|center_vertical"
-				            android:textColor="@android:color/white"
-				            android:textSize="12sp"/>
-
-		            </TableRow>
-		            <TableRow
-			            android:layout_width="match_parent"
-			            android:layout_height="wrap_content">
-
-			            <TextView
-				            android:layout_width="wrap_content"
-				            android:layout_height="wrap_content"
-				            android:gravity="left|center_vertical"
-				            android:text="Size received (FPS):"
-				            android:textStyle="bold"
-				            android:textColor="@android:color/white"
-				            android:textSize="12sp"/>
-
-			            <TextView
-				            android:id="@+id/receivedFpsRate"
-				            android:layout_width="match_parent"
-				            android:layout_height="wrap_content"
-				            android:paddingLeft="5dp"
-				            android:gravity="right|center_vertical"
-				            android:textColor="@android:color/white"
-				            android:textSize="12sp"/>
-
-		            </TableRow>
 			</TableLayout>
 			
 	        <ListView
