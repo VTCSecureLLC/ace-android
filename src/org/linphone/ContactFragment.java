@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
@@ -113,7 +114,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 	@SuppressLint("InflateParams")
 	private void displayContact(LayoutInflater inflater, View view) {
 		AvatarWithShadow contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
-		int contactID = Integer.parseInt(contact.getID());
+		final int contactID = Integer.parseInt(contact.getID());
 		String rawContactId = ContactsManager.getInstance().findRawContactID(getActivity().getContentResolver(), String.valueOf(contactID));
 		if (contact.getPhotoUri() != null) {
 			InputStream input = Compatibility.getContactPictureInputStream(LinphoneActivity.instance().getContentResolver(), contact.getID());
@@ -126,6 +127,55 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		
 		TextView contactName = (TextView) view.findViewById(R.id.contactName);
 		contactName.setText(contact.getName());
+		final ImageView contactStarred = (ImageView) view.findViewById(R.id.contactStarred);
+		for(Contact contact: ContactsManager.getInstance().getFavoriteContacts()){
+			if(contactID==Integer.parseInt(contact.getID())){
+				((ImageView)contactStarred).setImageResource(R.drawable.selected_star);
+				contact.setFavorite(true);
+				break;
+			}else{
+				((ImageView)contactStarred).setImageResource(R.drawable.unselected_star);
+				contact.setFavorite(false);
+				break;
+			}
+		}
+		contactStarred.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+
+				if(!contact.isFavorite()){
+					((ImageView)v).setImageResource(R.drawable.selected_star);
+					ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+					Boolean status=true;
+
+					ContactsManager.starContact(getActivity(),Long.parseLong(contact.getID()), status);
+//					try {
+//						getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+//						//addLinphoneFriendIfNeeded();
+//						//removeLinphoneTagIfNeeded();
+						ContactsManager.getInstance().prepareContactsInBackground();
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+					contact.setFavorite(true);
+
+				}else{
+					((ImageView)v).setImageResource(R.drawable.unselected_star);
+					ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+					Boolean status=false;
+					ContactsManager.starContact(getActivity(), Long.parseLong(contact.getID()), status);
+//					try {
+//						getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+//						//addLinphoneFriendIfNeeded();
+//						//removeLinphoneTagIfNeeded();
+						ContactsManager.getInstance().prepareContactsInBackground();
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+					contact.setFavorite(false);
+				}
+			}
+		});
 
 		
 		TableLayout controls = (TableLayout) view.findViewById(R.id.controls);

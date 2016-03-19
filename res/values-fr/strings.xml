@@ -231,7 +231,7 @@
   <string name="no_call_history">Aucun appel dans votre historique.</string>
   <string name="no_missed_call_history">Aucun appel manqué dans votre historique.</string>
   <string name="no_contact">Aucun contact dans votre carnet d\'adresse.</string>
-  <string name="no_sip_contact">Aucun contact SIP dans votre carnet d\'adresse.</string>
+  <string name="no_favorite_contact">Aucun contact SIP dans votre carnet d\'adresse.</string>
   <string name="no_chat_history">Aucun historique de chat.</string>
   <string name="call_stats_audio">Audio</string>
   <string name="call_stats_video">Vidéo</string>
@@ -258,7 +258,7 @@
   <string name="content_description_validate">Bouton valider</string>
   <string name="content_description_search">Rechercher</string>
   <string name="content_description_all_contacts">Tous les contacts</string>
-  <string name="content_description_linphone_contacts">Contacts Linphone</string>
+  <string name="content_description_ace_favorites">Contacts Linphone</string>
   <string name="content_description_call_direction">Direction d\'appel</string>
   <string name="content_description_all_calls">Tous les appels</string>
   <string name="content_description_missed_calls">Appels manqués </string>

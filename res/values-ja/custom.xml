@@ -20,6 +20,6 @@
   <string name="setup_linphone_account_hint">linphone.orgのユーザー名とパスワードを入力してください</string>
   <string name="setup_general_account_hint">SIPアカウントのユーザー名とパスワードとドメインを入力してください</string>
   <string name="setup_username_hint">ユーザー名</string>
-  <string name="button_sip_contacts">SIP</string>
+  <string name="button_favorite_contacts">SIP</string>
   <string name="tunnel_host"></string>
 </resources>

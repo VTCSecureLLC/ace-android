@@ -17,6 +17,6 @@
   <string name="setup_linphone_account_hint">Geben Sie Ihren Benutzernamen und Passwort für linphone.org ein</string>
   <string name="setup_general_account_hint">Geben Sie den Benutzernamen, das Passwort und die Domäne Ihres SIP-Kontos ein</string>
   <string name="setup_username_hint">Benutzername</string>
-  <string name="button_sip_contacts">SIP</string>
+  <string name="button_favorite_contacts">SIP</string>
   <string name="tunnel_host"></string>
 </resources>
