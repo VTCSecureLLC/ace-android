@@ -80,6 +80,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphonePlayer;
+import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
@@ -359,6 +360,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					return;
 				}
 				if(state==State.IncomingReceived||state == state.OutgoingInit) {
+					if(LinphoneManager.getLc().getCallsNb() > 2){
+						for(LinphoneCall mCall: LinphoneManager.getLc().getCalls()){
+							if(mCall.getState() == State.IncomingReceived){
+								LinphoneManager.getLc().declineCall(mCall, Reason.Busy);
+							}
+						}
+					}
 					LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
 				}
 				if (state == State.IncomingReceived || State.CallEnd == state) {
