@@ -18,6 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,7 +36,9 @@ import android.widget.Toast;
 
 import org.linphone.AsyncProviderLookupOperation;
 import org.linphone.LinphoneActivity;
+import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
+import org.linphone.LinphoneService;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.mediastream.Log;
@@ -264,4 +267,5 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			AsyncProviderLookupOperation.getInstance().removeListener(this);
 		}
 	}
+
 }
