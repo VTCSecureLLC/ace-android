@@ -293,6 +293,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	 * @param sendEcCalibrationResult Send echo cancellation result
 	 */
 	private void logIn(final String username, final String password, final String domain, final String userId, final TransportType transport_type, final String port, final boolean sendEcCalibrationResult) {
+		saveCreatedAccount(username, password, domain, userId, transport_type, port);
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		if (imm != null && getCurrentFocus() != null) {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -315,7 +316,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 					sip_username = config.getSipAuthUsername();
 					sip_password = config.getSipAuthPassword();
 				}
-				saveCreatedAccount(username, password, domain, userId, transport_type, port);
+
 				config.applySettings(transport_type, port);
 
 				mProgressDialog.dismiss();
