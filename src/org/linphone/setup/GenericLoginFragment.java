@@ -75,7 +75,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 		transportOptions.add("TLS");
 
 		try {
-			ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(LinphoneActivity.ctx,
+			ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
 					android.R.layout.simple_spinner_item, transportOptions);
 			dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			transport.setAdapter(dataAdapter);
@@ -86,7 +86,6 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 //					providerLookupOperation.execute();
 
 					//Toggle port depending on transport selection
-					int n= LinphonePreferences.instance().getDefaultAccountIndex();
 					if(position==0&&port.getText().toString().contains("5061")){//tcp
 						port.setText(port.getText().toString().replace("5061", "5060"));
 						//LinphonePreferences.instance().setAccountProxy(n, LinphonePreferences.instance().getAccountProxy(n).replace("5061", "5060"));

@@ -59,6 +59,14 @@ public class CDNProviders {
 			updateProviders(json, false);
 	}
 
+	public void setContext(Context context) {
+		if (null == LinphoneActivity.ctx) {
+			this.context = context;
+			sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+			load();
+		}
+	}
+
 	public void setSelectedProvider(int possition) {
 		setSelectedProvider(providers.get(possition));
 	}
@@ -144,7 +152,7 @@ public class CDNProviders {
 		}
 
 		//Add default ports from srvLookup after all providers are popluated to prevent cross threading
-		for (int i = 0; i < jsonArray.length(); i++) {
+		for (int i = 0; i < providers.size(); i++) {
 			updateProvidersDefaultPorts(i);
 		}
 
@@ -153,20 +161,22 @@ public class CDNProviders {
 	public void updateProvidersDefaultPorts(final int position){
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
-					providers.get(position);
-					String recordName = "_sip._tcp."+providers.get(position).domain;
-					Lookup lookup = null;
-					try {
-						lookup = new Lookup(recordName, Type.SRV);
-						Record recs[] = lookup.run();
-						providers.get(position).port = ((SRVRecord) recs[0]).getPort();
-						Log.d("Setting Provider Port " + providers.get(position).domain + " port to " + providers.get(position).port);
-					} catch (Throwable e) {
-						providers.get(position).port=5060;
-						Log.d("No port found for provider " + providers.get(position).domain + " setting default port to " + providers.get(position).port);
-						//e.printStackTrace();
+				if (position >= providers.size())
+					return;
+				providers.get(position);
+				String recordName = "_sip._tcp." + providers.get(position).domain;
+				Lookup lookup = null;
+				try {
+					lookup = new Lookup(recordName, Type.SRV);
+					Record recs[] = lookup.run();
+					providers.get(position).port = ((SRVRecord) recs[0]).getPort();
+					Log.d("Setting Provider Port " + providers.get(position).domain + " port to " + providers.get(position).port);
+				} catch (Throwable e) {
+					providers.get(position).port = 5060;
+					Log.d("No port found for provider " + providers.get(position).domain + " setting default port to " + providers.get(position).port);
+					//e.printStackTrace();
 
-					}
+				}
 			}
 		});
 		thread.start();

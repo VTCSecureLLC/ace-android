@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +36,7 @@ import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.LinphonePreferences.AccountBuilder;
+import org.linphone.LinphoneService;
 import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAddress.TransportType;
@@ -69,8 +71,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	final String registrarSRVLookupFormatTLS="_sips._tcp.%domain%";
 	//URL format for autoConfig lookup
 	final String autoConfigSRVLookupFormat="_rueconfig._tls.%domain%";
-
+	private Handler mHandler;
+	private ServiceWaitThread mThread;
 	static int WIFI_ACTIVITY_RESULT=0;
+	private String username;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -78,8 +82,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 //		if (getResources().getBoolean(R.bool.isTablet) && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
 //        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //        }
-		
+
+		mHandler = new Handler();
 		setContentView(R.layout.setup);
+		CDNProviders.getInstance().setContext(getApplicationContext());
 		firstFragment = getResources().getBoolean(R.bool.setup_use_linphone_as_first_fragment) ?
 				SetupFragmentsEnum.LINPHONE_LOGIN : SetupFragmentsEnum.MENU;
 		firstFragment = SetupFragmentsEnum.GENERIC_LOGIN;
@@ -103,7 +109,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								launchEchoCancellerCalibration(true);
 							}
 
-						} else if (state != RegistrationState.RegistrationProgress) {
+						} else if (state != RegistrationState.RegistrationProgress && state != RegistrationState.RegistrationCleared) {
 							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
 							deleteAccounts();
 						}
@@ -119,27 +125,36 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	protected void onResume() {
 		super.onResume();
 		Utils.check_network_status(this, WIFI_ACTIVITY_RESULT);//Anytime activity is resumed and we don't have internet, tell the user.. and offer them to turn on wifi.
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-		if (lc != null) {
-			lc.addListener(mListener);
-		}
+//		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+//		if (lc != null) {
+//			lc.addListener(mListener);
+//		}
 
 	}
 	
 	@Override
 	protected void onPause() {
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-		if (lc != null) {
-			lc.removeListener(mListener);
-		}
-		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
+//		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+//		if (lc != null) {
+//			lc.removeListener(mListener);
+//		}
+		if(accountCreated && !LinphoneService.isReady() && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
+
 		{
 			deleteAccounts();
 		}
 		
 		super.onPause();
 	}
-	
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (!LinphoneService.isReady() && LinphoneManager.isInstanciated()) {
+			LinphoneManager.destroy();
+		}
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putSerializable("CurrentFragment", currentFragment);
@@ -163,6 +178,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	void deleteAccounts()
 	{
+		AccountHelper.deleteAccount(SetupActivity.this);
 		accountCreated = false;
 		int nbAccounts = mPrefs.getAccountCount();
 		for (int i = 0; i < nbAccounts; i++) {
@@ -298,6 +314,14 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 		}
 
+		if (LinphoneManager.isInstanciated())
+			LinphoneManager.destroy();
+		AccountHelper.setAccount(this, username);
+		LinphoneManager.createAndStart(this);
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+		if (lc != null) {
+			lc.addListener(mListener);
+		}
 		mProgressDialog.show();
 		//Create rue config lookup url from domain and attempt to retrieve config
 		String configURL = autoConfigSRVLookupFormat.replace("%domain%", domain.toString().replaceAll("\\s", ""));
@@ -570,6 +594,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		try {
 			builder.saveNewAccount();
 			accountCreated = true;
+			this.username = username;
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
@@ -600,14 +625,56 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		mPrefs.setAccountEnabled(mPrefs.getAccountCount() - 1, true);
 		success();
 	}
-	
+
 	public void success() {
 		mPrefs.firstLaunchSuccessful();
-		LinphoneActivity.instance().isNewProxyConfig();
-		Intent i = new Intent();
 
+		mHandler.post(new Runnable() {
+			@Override
+			public void run() {
+
+				AccountHelper.setAccount(SetupActivity.this, username);
+				LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+				if (lc != null) {
+					lc.removeListener(mListener);
+				}
+				LinphoneManager.destroy();
+				startService(new Intent(Intent.ACTION_MAIN).setClass(SetupActivity.this, LinphoneService.class));
+			}
+		});
+
+		mThread = new ServiceWaitThread();
+		mThread.start();
+
+	}
+
+	void onServiceReady()
+
+	{
+		Intent i = new Intent(SetupActivity.this, LinphoneActivity.class);
 		i.putExtra(AUTO_CONFIG_SUCCED_EXTRA, isJsonConfigSucceed);
-		setResult(Activity.RESULT_OK, i);
+		startActivity(i);
 		finish();
+	}
+
+	private class ServiceWaitThread extends Thread {
+		public void run() {
+
+
+			while (!LinphoneService.isReady()) {
+				try {
+					sleep(30);
+				} catch (InterruptedException e) {
+					throw new RuntimeException("waiting thread sleep() has been interrupted");
+				}
+			}
+			mHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					onServiceReady();
+				}
+			});
+			mThread = null;
+		}
 	}
 }

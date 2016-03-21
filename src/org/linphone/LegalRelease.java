@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.linphone.setup.SetupActivity;
+
 public class LegalRelease extends Activity {
 
 
@@ -125,7 +127,7 @@ public class LegalRelease extends Activity {
             public void onClick(View v) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LegalRelease.this);
                 prefs.edit().putBoolean("accepted_legal_release", true).commit();
-                startActivity(new Intent().setClass(LegalRelease.this, LinphoneActivity.class));
+                startActivity(new Intent().setClass(LegalRelease.this, SetupActivity.class));
                 LegalRelease.this.finish();
             }
         });
