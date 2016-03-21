@@ -1,15 +1,5 @@
 package org.linphone.compatibility;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.linphone.Contact;
-import org.linphone.R;
-import org.linphone.core.LinphoneAddress;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
@@ -37,6 +27,16 @@ import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import org.linphone.Contact;
+import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /*
 ApiFivePlus.java
@@ -149,16 +149,39 @@ public class ApiFivePlus {
 		return getGeneralContactCursor(cr, req, true);
 	}
 
+	public static Cursor getFavoriteContactsCursor(ContentResolver cr, List<String> ids) {
+		String req = null;
+		int is_starred_boolean=1;
+		req =  Contacts.STARRED + " = '" + String.valueOf(is_starred_boolean)+ "'";
+
+		if(ids != null){
+			String s = TextUtils.join(",", ids);
+			req += " OR (" + Data.CONTACT_ID + " IN (" + s + "))";
+		}
+
+		return getGeneralContactCursor(cr, req, true);
+	}
+
+	private static Cursor getFavoriteContactsCursor(ContentResolver cr, String id) {
+		String req = null;
+		req = Contacts.Data.MIMETYPE + " = '" + CommonDataKinds.Im.CONTENT_ITEM_TYPE
+				+ " AND lower(" + CommonDataKinds.Im.CUSTOM_PROTOCOL + ") = 'sip' AND "
+				+ android.provider.ContactsContract.CommonDataKinds.Im.DATA + " LIKE '" + id + "'";
+
+		return getGeneralContactCursor(cr, req, false);
+	}
+
+
 	public static Cursor getSIPContactsCursor(ContentResolver cr, List<String> ids) {
 		String req = null;
-    	req = Contacts.Data.MIMETYPE + " = '" + CommonDataKinds.Im.CONTENT_ITEM_TYPE 
+    	req = Contacts.Data.MIMETYPE + " = '" + CommonDataKinds.Im.CONTENT_ITEM_TYPE
                 + "' AND lower(" + CommonDataKinds.Im.CUSTOM_PROTOCOL + ") = 'sip'";
 
 		if(ids != null){
 			String s = TextUtils.join(",", ids);
 			req += " OR (" + Data.CONTACT_ID + " IN (" + s + "))";
 		}
-		
+
 		return getGeneralContactCursor(cr, req, true);
 	}
 

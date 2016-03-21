@@ -17,14 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.linphone.Contact;
-import org.linphone.core.LinphoneAddress;
-import org.linphone.mediastream.Version;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -39,6 +31,14 @@ import android.net.Uri;
 import android.preference.Preference;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import org.linphone.Contact;
+import org.linphone.core.LinphoneAddress;
+import org.linphone.mediastream.Version;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * @author Sylvain Berfini
  */
@@ -104,6 +104,22 @@ public class Compatibility {
 		}
 	}
 
+	public static Cursor getFavoriteContactsCursor(ContentResolver cr, List<String> contactsId) {
+		if (Version.sdkAboveOrEqual(Version.API09_GINGERBREAD_23)) {
+			return ApiNinePlus.getFavoriteContactsCursor(cr, null, contactsId);
+		} else {
+			return ApiFivePlus.getFavoriteContactsCursor(cr, contactsId);
+		}
+	}
+	
+	public static Cursor getFavoriteContactsCursor(ContentResolver cr, String search, List<String> contactsId) {
+		if (Version.sdkAboveOrEqual(Version.API09_GINGERBREAD_23)) {
+			return ApiNinePlus.getFavoriteContactsCursor(cr, search, contactsId);
+		} else {
+			return ApiFivePlus.getFavoriteContactsCursor(cr, contactsId);
+		}
+	}
+
 	public static Cursor getSIPContactsCursor(ContentResolver cr, List<String> contactsId) {
 		if (Version.sdkAboveOrEqual(Version.API09_GINGERBREAD_23)) {
 			return ApiNinePlus.getSIPContactsCursor(cr, null, contactsId);
@@ -111,7 +127,7 @@ public class Compatibility {
 			return ApiFivePlus.getSIPContactsCursor(cr, contactsId);
 		}
 	}
-	
+
 	public static Cursor getSIPContactsCursor(ContentResolver cr, String search, List<String> contactsId) {
 		if (Version.sdkAboveOrEqual(Version.API09_GINGERBREAD_23)) {
 			return ApiNinePlus.getSIPContactsCursor(cr, search, contactsId);

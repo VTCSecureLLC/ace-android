@@ -20,6 +20,6 @@
   <string name="setup_linphone_account_hint">ادخل إسم المستخدم وكلمة السر لحسابك في linphone.org</string>
   <string name="setup_general_account_hint">ادخل إسم المستخدم وكلمة السر وكذا نطاق SIP.</string>
   <string name="setup_username_hint">إسم المستخدم</string>
-  <string name="button_sip_contacts">SIP</string>
+  <string name="button_favorite_contacts">SIP</string>
   <string name="tunnel_host"></string>
 </resources>

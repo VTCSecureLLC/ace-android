@@ -1,13 +1,5 @@
 package org.linphone.compatibility;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.linphone.Contact;
-import org.linphone.LinphoneUtils;
-import org.linphone.R;
-import org.linphone.core.LinphoneAddress;
-
 import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -16,10 +8,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.text.TextUtils;
+
+import org.linphone.Contact;
+import org.linphone.LinphoneUtils;
+import org.linphone.R;
+import org.linphone.core.LinphoneAddress;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 ApiNinePlus.java
@@ -153,6 +153,29 @@ public class ApiNinePlus {
 		return ApiFivePlus.getGeneralContactCursor(cr, req, true);
 	}
 
+	public static Cursor getFavoriteContactsCursor(ContentResolver cr, String search, List<String> ids) {
+
+		int is_starred_boolean=1;
+		String req = "(" + Data.STARRED + " = '" + String.valueOf(is_starred_boolean)+ "')";
+
+		if(ids != null && ids.size() > 0) {
+			req += " OR (" + Data.CONTACT_ID + " IN (" + TextUtils.join(" , ", ids) + "))";
+		}
+
+		if (search != null) {
+			req += " AND " + Data.DISPLAY_NAME + " LIKE '%" + search + "%'";
+		}
+
+		return ApiFivePlus.getGeneralContactCursor(cr, req, true);
+	}
+
+	private static Cursor getFavoriteContactsCursor(ContentResolver cr, String id) {
+		String req = null;
+		int is_starred_boolean=1;
+		req =  Contacts.STARRED + " = '" + String.valueOf(is_starred_boolean)+ "'";
+
+		return ApiFivePlus.getGeneralContactCursor(cr, req, false);
+	}
 	public static Cursor getSIPContactsCursor(ContentResolver cr, String search, List<String> ids) {
 
 		String req = "(" + Data.MIMETYPE + " = '" + CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE
@@ -173,7 +196,7 @@ public class ApiNinePlus {
 		String req = null;
     	req = Contacts.Data.MIMETYPE + " = '" + CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE
                 + "' AND " + ContactsContract.CommonDataKinds.SipAddress.SIP_ADDRESS + " LIKE '" + id + "'";
-    	
+
 		return ApiFivePlus.getGeneralContactCursor(cr, req, false);
 	}
 
@@ -181,7 +204,7 @@ public class ApiNinePlus {
 		String username = address.getUserName();
 		String domain = address.getDomain();
 		String sipUri = username + "@" + domain;
-		
+
 		Cursor cursor = getSIPContactCursor(cr, sipUri);
 		Contact contact = ApiFivePlus.getContact(cr, cursor, 0);
 		if (contact != null && contact.getNumbersOrAddresses().contains(sipUri)) {

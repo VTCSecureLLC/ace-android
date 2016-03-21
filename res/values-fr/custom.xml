@@ -24,6 +24,6 @@
   <string name="setup_linphone_account_hint">Entrez votre nom d\'utilisateur et mot de passe de VTCSecure</string>
   <string name="setup_general_account_hint">Entrez votre nom d\'utilisateur, mot de passe et nom de domaine de votre compte SIP</string>
   <string name="setup_username_hint">nom d\'utilisateur</string>
-  <string name="button_sip_contacts">SIP</string>
+  <string name="button_favorite_contacts">SIP</string>
   <string name="tunnel_host"></string>
 </resources>
