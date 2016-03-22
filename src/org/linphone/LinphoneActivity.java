@@ -182,6 +182,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         //navigate to the Welcome (initial set up) page
         //	startActivity(new Intent(this,HueBridgeSearchActivity.class));
         //}
+        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
+            setContentView(R.layout.launcher);
+            startActivity(new Intent().setClass(this, SetupActivity.class));
+            finish();
+            Log.e("LINPHONE ACTIVITY IS OPENED WITHOUT STARTING SERVICE OR MANAGER " + LinphoneManager.isInstanciated() + "  :  " + LinphoneManager.isInstanciated());
+            return;
+        }
+
         ctx=this;
         act=this;
         instance = this;
@@ -1410,12 +1418,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     protected void onPause() {
         getIntent().putExtra("PreviousActivity", 0);
         super.onPause();
+        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
+            return;
+        }
         unregisterManagers();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
+            return;
+        }
+
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1487,6 +1502,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
         instance = null;
         super.onDestroy();
+
+        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
+            return;
+        }
 
         unbindDrawables(findViewById(R.id.topLayout));
         System.gc();
