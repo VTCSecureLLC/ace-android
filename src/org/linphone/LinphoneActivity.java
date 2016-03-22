@@ -265,6 +265,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, dialerFragment, currentFragment.toString()).commit();
 				selectMenu(FragmentsAvailable.DIALER);
 			}
+            if (getIntent() != null && getIntent().hasExtra(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA)) {
+                String message = getIntent().getExtras().getBoolean(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA, false) ? "Configuration Loaded Successfully" : "Configuration Not Loaded";
+                Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+                toast.show();
+            }
 		}
 
 		mListener = new LinphoneCoreListenerBase(){
