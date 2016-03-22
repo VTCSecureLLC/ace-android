@@ -522,4 +522,6 @@
   <string name="title_sip_dscp">Sip DSCP</string>
   <string name="pref_theme_is_fotce">pref_theme_is_fotce</string>
   <string name="syncServiceMsg">Syncing VCards</string>
+  <string name="resources_sync_contacts_key">sync_contacts</string>
+  <string name="resources_sync_contacts_value">Sync Contacts</string>
 </resources>

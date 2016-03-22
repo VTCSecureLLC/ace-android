@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import util.ContactUtils;
+
 public class VCardIO extends Service {
 
 	private boolean isRunning = false;
@@ -312,75 +314,6 @@ public class VCardIO extends Service {
 		}
 	}
 
-	public void syncContactsLinphone(final LinphoneCore lc, String username, String password, final String serverUrl, final App app)
-	{
-		if(isRunning)
-		{
-			return;
-		}
-		synchronized (syncMonitor) {
-			mAction = Action.SYNC;
-		}
-		isRunning = true;
-		String serverDomain = serverUrl.replace("http://", "").replace("https://", "").split("/")[0]; // We just want the domain name
-
-		LinphoneAuthInfo authInfo = LinphoneCoreFactory.instance().createAuthInfo(username, null, password, "4747ce2517a985f2fc20234a38f068b6", "SabreDAV", serverDomain);
-		lc.addAuthInfo(authInfo);
-
-		LinphoneFriendList lfl = getLinphoneFriendsFromContacts(lc);
-		if(lfl==null)
-		{
-			app.updateStatus("Error occurred during sync");
-			isRunning = false;
-			stopSelf();
-		}
-		else if(lfl.getFriendList() == null || lfl.getFriendList().length == 0)
-		{
-			app.updateStatus("No contacts found");
-			isRunning = false;
-			stopSelf();
-		}
-		lfl.setUri(serverUrl);
-		lfl.setListener(new LinphoneFriendList.LinphoneFriendListListener() {
-			@Override
-			public void onLinphoneFriendCreated(LinphoneFriendList list, LinphoneFriend lf) {
-
-			}
-
-			@Override
-			public void onLinphoneFriendUpdated(LinphoneFriendList list, LinphoneFriend newFriend, LinphoneFriend oldFriend) {
-
-			}
-
-			@Override
-			public void onLinphoneFriendDeleted(LinphoneFriendList list, LinphoneFriend lf) {
-
-			}
-
-			@Override
-			public void onLinphoneFriendSyncStatusChanged(LinphoneFriendList list, LinphoneFriendList.State status, String message) {
-
-				if (status == LinphoneFriendList.State.SyncStarted) {
-
-				} else if (status == LinphoneFriendList.State.SyncFailure) {
-					isRunning = false;
-					stopSelf();
-				} else if (status == LinphoneFriendList.State.SyncSuccessful) {
-					isRunning = false;
-					synchronized (syncMonitor) {
-						mAction = Action.IDLE;
-						showNotification();
-					}
-
-					stopSelf();
-				}
-
-			}
-		});
-		lfl.synchronizeFriendsFromServer();
-		lc.removeAuthInfo(authInfo);
-	}
-
 
 	public void exportContactsLinphone(final LinphoneCore lc, final String fileName, final App app)
 	{
@@ -401,7 +334,7 @@ public class VCardIO extends Service {
 
 				showNotification();
 
-				LinphoneFriendList lfl = getLinphoneFriendsFromContacts(lc);
+				LinphoneFriendList lfl = ContactUtils.getLinphoneFriendsFromContacts(VCardIO.this, lc);
 				if(lfl==null)
 				{
 					app.updateStatus("Error occurred during export");
@@ -462,7 +395,7 @@ public class VCardIO extends Service {
 					return;
 				}
 				list.importFriendsFromVCardFile(fileName);
-				exportFriendListToContacts(list);
+				ContactUtils.exportFriendListToContacts(VCardIO.this, list);
 
 				synchronized (syncMonitor) {
 					mAction = Action.IDLE;
@@ -481,115 +414,6 @@ public class VCardIO extends Service {
 
 
 
-	private LinphoneFriendList getLinphoneFriendsFromContacts(LinphoneCore lc)
-	{
 
-		Pattern SIP_URI_PATTERN = Pattern.compile(
-				"^(sip(?:s)?):(?:[^:]*(?::[^@]*)?@)?([^:@]*)(?::([0-9]*))?$", Pattern.CASE_INSENSITIVE);
-
-		ContactsManager m = ContactsManager.getInstance();
-		ContentResolver cr = VCardIO.this.getContentResolver();
-		Cursor sipCusrsor = Compatibility.getSIPContactsCursor(cr, null);
-
-
-		ArrayList<org.linphone.Contact> contacts = new ArrayList<org.linphone.Contact>();
-		while (sipCusrsor.moveToNext())
-		{
-			String id = sipCusrsor.getString(sipCusrsor.getColumnIndex(ContactsContract.Data.CONTACT_ID));
-			String name = sipCusrsor.getString(sipCusrsor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-			org.linphone.Contact contact = new org.linphone.Contact(id, name);
-			contact.refresh(cr);
-			contacts.add(contact);
-		}
-		sipCusrsor.close();
-
-
-		LinphoneFriendList lfl = null;
-
-		try {
-			lfl = lc.createLinphoneFriendList();
-			//lc.addFriendList(lfl);
-		} catch (LinphoneCoreException e) {
-			e.printStackTrace();
-			//app.updateStatus("Error occurred during export");
-			//isRunning = false;
-			//stopSelf();
-			return null;
-		}
-
-		if(sipCusrsor.getCount()==0)
-		{
-
-			return lfl;
-		}
-		for (org.linphone.Contact contact : contacts)
-		{
-			LinphoneFriend lf = LinphoneCoreFactory.instance().createLinphoneFriend();
-			lf.setName(contact.getName());
-			lf.setRefKey(contact.getID());
-			boolean hasSip = false;
-			for(String number : contact.getNumbersOrAddresses())
-			{
-				if(SIP_URI_PATTERN.matcher(number).matches()) {
-					try {
-						lf.setAddress(LinphoneCoreFactory.instance().createLinphoneAddress(number));
-						hasSip = true;
-						break;
-					} catch (LinphoneCoreException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-			if(hasSip)
-				lfl.addLocalFriend(lf);
-
-
-		}
-		return lfl;
-	}
-
-	private void exportFriendListToContacts(LinphoneFriendList lfl)
-	{
-		ContentResolver cr = VCardIO.this.getContentResolver();
-		ArrayList<ContentProviderOperation> ops;
-		for (LinphoneFriend friend: lfl.getFriendList()
-				) {
-			ops = new ArrayList<ContentProviderOperation>();
-
-			String [] projection = new String[]  {ContactsContract.Data.CONTACT_ID};
-			String selection = new StringBuilder()
-					.append(ContactsContract.CommonDataKinds.SipAddress.SIP_ADDRESS)
-					.append(" = ?").toString();
-
-			org.linphone.Contact contact_to_udate = ContactsManager.getInstance().findContactWithAddress(cr, friend.getAddress());
-
-
-			if(contact_to_udate!=null)
-			{
-				ContactsManager.getInstance().updateExistingContact(ops, contact_to_udate.getID(), friend.getName());
-
-			} else
-			{
-				//insert
-				String uri = friend.getAddress().asStringUriOnly();
-				if(uri.startsWith("sip:"))
-					uri = uri.substring(4);
-				ContactsManager.getInstance().createNewContact(ops,friend.getName() );
-				Compatibility.addSipAddressToContact(VCardIO.this, ops, uri);
-			}
-			if(ops.size()>0)
-				try {
-					cr.applyBatch(ContactsContract.AUTHORITY, ops);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				} catch (OperationApplicationException e) {
-					e.printStackTrace();
-				}
-
-			//lc.removeFriendList(list);
-
-		}
-	}
 
 }

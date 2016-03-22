@@ -17,11 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.R;
 import org.linphone.mediastream.Log;
-import org.linphone.tutorials.TutorialCardDavSync;
 
 public class App extends Activity {
 	/** Called when the activity is first created. */
@@ -90,7 +88,6 @@ public class App extends Activity {
 
 		Button importButton = (Button) findViewById(R.id.ImportButton);
 		Button exportButton = (Button) findViewById(R.id.ExportButton);
-		Button syncButton = (Button) findViewById(R.id.SyncButton);
 
 		mStatusText = ((TextView) findViewById(R.id.StatusText));
 		mReplaceOnImport = ((CheckBox) findViewById(R.id.ReplaceOnImport));
@@ -138,37 +135,12 @@ public class App extends Activity {
 			}
 		};
 
-		OnClickListener listenerSync = new OnClickListener() {
-			public void onClick(View v) {
-				// Make sure the service is started.  It will continue running
-				// until someone calls stopService().  The Intent we use to find
-				// the service explicitly specifies our service component, because
-				// we want it running in our own process and don't want other
-				// applications to replace it.
-				Log.d("ListenExport started");
-				if(true)
-				{
-					startActivity(new Intent(App.this, TutorialCardDavSync.class));
-				}
-				if (mBoundService != null) {
-					String fileName = ((EditText) findViewById(R.id.ExportFile)).getText().toString();
-					// Update the progress bar
-					setProgress(0);
-					mStatusText.setText("Syncing Contacts...");
-
-					// Start the import
-					mBoundService.syncContactsLinphone(LinphoneManager.getLc(), "admin", "topsecret", "http://ace-sabredav.vatrp.org/", App.this);
-					//mBoundService.doExport(fileName, App.this);
-				}
-			}
-		};
-
 		// Start the service using startService so it won't be stopped when activity is in background.
 		startService(app);
 		bindService(app, mConnection, Context.BIND_AUTO_CREATE);
 		importButton.setOnClickListener(listenImport);
 		exportButton.setOnClickListener(listenExport);
-		syncButton.setOnClickListener(listenerSync);
+//		syncButton.setOnClickListener(listenerSync);
 
 	}
 

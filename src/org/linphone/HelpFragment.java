@@ -2,6 +2,7 @@ package org.linphone;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,8 +21,14 @@ import net.hockeyapp.android.FeedbackManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.linphone.core.LinphoneAuthInfo;
+import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
+import org.linphone.sync.ContactSyncAsyncTask;
 import org.linphone.ui.PreferencesListFragment;
 
 import java.io.BufferedReader;
@@ -31,6 +38,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+
+import io.App;
+import util.ContactUtils;
 
 /**
  * A fragment representing a list of Items.
@@ -73,7 +83,7 @@ public class HelpFragment extends PreferencesListFragment {
         });
 
         int videoMessageCount = LinphoneActivity.instance().getMessageWaitingCount();
-        findPreference("videomail").setTitle("Videomail" + " (" +String.valueOf(videoMessageCount) + ")");
+        findPreference("videomail").setTitle("Videomail" + " (" + String.valueOf(videoMessageCount) + ")");
 
         findPreference("videomail").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -82,6 +92,16 @@ public class HelpFragment extends PreferencesListFragment {
                         newOutgoingCall(prefs.getString(getString(R.string.pref_voice_mail_key), ""), preference.getTitle().toString());
                 LinphoneActivity.instance().resetMessageWaitingCount();
                 preference.setTitle("Videomail");
+                return true;
+            }
+        });
+
+        Preference syncContacts = findPreference(getString(R.string.resources_sync_contacts_key));
+        syncContacts.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ContactSyncAsyncTask syncAsyncTask = new ContactSyncAsyncTask(getContext(), "admin", "topsecret");
+                syncAsyncTask.execute();
                 return true;
             }
         });
@@ -269,5 +289,7 @@ public class HelpFragment extends PreferencesListFragment {
         }
 
     }
+
+
 
 }
