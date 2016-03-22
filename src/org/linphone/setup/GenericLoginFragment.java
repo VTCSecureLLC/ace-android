@@ -48,8 +48,12 @@ import java.util.List;
  * @author Sylvain Berfini
  */
 public class GenericLoginFragment extends Fragment implements OnClickListener, AsyncProviderLookupOperation.ProviderNetworkOperationListener {
-	private EditText login, password, domain, port, userid;
-	private Spinner transport;
+	private EditText login;
+	private EditText password;
+	private EditText domain;
+	public EditText port;
+	private EditText userid;
+	public Spinner transport;
 	private ImageView apply;
 	View advancedLoginPanel;
 	Button advancedLoginPanelToggle;
@@ -58,11 +62,24 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 	List<String> transportOptions = new ArrayList<String>();
 	AsyncProviderLookupOperation providerLookupOperation;
 
+	public Button login_button;
+	private static GenericLoginFragment instance;
+	public GenericLoginFragment()
+	{
+		instance = this;
+	}
+
+	public static final GenericLoginFragment instance() {
+		if (instance != null)
+			return instance;
+		throw new RuntimeException("GenericLoginFragment not instantiated yet");
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 
 		View view = inflater.inflate(R.layout.login_provider, container, false);
+		login_button=(Button)view.findViewById(R.id.btn_prv_login);
 		login = (EditText) view.findViewById(R.id.et_prv_user);
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
 		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
