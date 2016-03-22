@@ -76,6 +76,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	static int WIFI_ACTIVITY_RESULT=0;
 	private String username;
 
+	public static boolean tried_tls_on_tcp_failure =false;
+	public static boolean trying_tls_on_tcp_failure=false;
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -109,9 +112,48 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								launchEchoCancellerCalibration(true);
 							}
 
-						} else if (state != RegistrationState.RegistrationProgress && state != RegistrationState.RegistrationCleared) {
-							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-							deleteAccounts();
+						} else if (state != RegistrationState.RegistrationProgress) {
+							int tcp_position=0;
+							int tls_position=1;
+
+							if(!tried_tls_on_tcp_failure && GenericLoginFragment.instance().transport.getSelectedItemPosition()==tcp_position){
+								//TLS is selection 1
+								trying_tls_on_tcp_failure=true;
+
+								deleteAccounts();
+								//Couldn't register TCP, trying TLS(Login)
+								Toast.makeText(SetupActivity.this, "Initial Login attempt with TCP failed, trying TLS", Toast.LENGTH_SHORT).show();
+
+								GenericLoginFragment.instance().transport.setSelection(tls_position);
+								try {
+									GenericLoginFragment.instance().port.setText(GenericLoginFragment.instance().port.getText().toString().replace("5060", "5061"));
+								}catch(Throwable e){
+									e.printStackTrace();
+								}
+								GenericLoginFragment.instance().login_button.performClick();
+								tried_tls_on_tcp_failure =true;
+
+
+							}else{
+								Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
+								deleteAccounts();
+
+								if(trying_tls_on_tcp_failure){
+									//reset spinner and port in case of failure
+									GenericLoginFragment.instance().transport.setSelection(tcp_position);
+									try {
+										GenericLoginFragment.instance().port.setText(GenericLoginFragment.instance().port.getText().toString().replace("5061", "5060"));
+									}catch(Throwable e){
+										e.printStackTrace();
+									}
+									trying_tls_on_tcp_failure=false;
+									tried_tls_on_tcp_failure=false;
+								}
+								//Couldn't register (Login)
+							}
+
+
+
 						}
 					}
 				}
