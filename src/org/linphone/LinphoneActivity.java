@@ -123,14 +123,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
     public static Context ctx;
     public static Activity act;
-    public static final int WIFI_ACTIVITY_RESULT = 10;
+    public static final int WIFI_ACTIVITY_RESULT=10;
     private static final int SETTINGS_ACTIVITY = 123;
     public static final int FIRST_LOGIN_ACTIVITY = 101;
     private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
     private static final int CALL_ACTIVITY = 19;
     private static final int CHAT_ACTIVITY = 21;
 
-    private static boolean first_launch_boolean = true;
+    private static boolean first_launch_boolean=true;
 
     private static LinphoneActivity instance;
 
@@ -148,7 +148,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     public OrientationEventListener mOrientationHelper;
     private LinphoneCoreListenerBase mListener;
 
-    public static boolean providerLookupOperation_executed = false;
+    public static boolean providerLookupOperation_executed=false;
     boolean stopServiceOnDestroy;
 
     public static View topLayout;
@@ -162,8 +162,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     static final boolean isInstanciated() {
         return instance != null;
     }
-
-    public LinphoneActivity() {
+    public LinphoneActivity()
+    {
         instance = this;
     }
 
@@ -172,7 +172,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             return instance;
         throw new RuntimeException("LinphoneActivity not instantiated yet");
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,15 +182,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         //navigate to the Welcome (initial set up) page
         //	startActivity(new Intent(this,HueBridgeSearchActivity.class));
         //}
-        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
-            setContentView(R.layout.launcher);
-            startActivity(new Intent().setClass(this, SetupActivity.class));
-            finish();
-            Log.e("LINPHONE ACTIVITY IS OPENED WITHOUT STARTING SERVICE OR MANAGER " + LinphoneManager.isInstanciated() + "  :  " + LinphoneManager.isInstanciated());
-            return;
-        }
-        ctx = this;
-        act = this;
+        ctx=this;
+        act=this;
         instance = this;
         checkForUpdates();
 
@@ -199,7 +191,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             new AlertDialog.Builder(this)
                     .setTitle(getString(R.string.location_for_911_disabled_title))
                     .setMessage(getString(R.string.location_for_911_disabled_message))
-                    .setPositiveButton(R.string.button_ok, null)
+                    .setPositiveButton(R.string.button_ok,null)
                     .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
@@ -229,18 +221,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             wizard.setClass(this, RemoteProvisioningLoginActivity.class);
             wizard.putExtra("Domain", LinphoneManager.getInstance().wizardLoginViewDomain);
             startActivityForResult(wizard, REMOTE_PROVISIONING_LOGIN_ACTIVITY);
-        } else if (LinphonePreferences.instance().getAccountCount() == 0 && savedInstanceState == null) {
+        } else if (LinphonePreferences.instance().isFirstLaunch() || LinphonePreferences.instance().getAccountCount() == 0 && savedInstanceState == null) {
 
             //This is where the login screen is launched of first run, after accept legal release
             //if(first_launch_boolean==true) {
             startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
             LinphonePreferences.instance().firstLaunchSuccessful();
-            first_launch_boolean = false;
+            first_launch_boolean=false;
             stopServiceOnDestroy = true;
             finish();
             //}
 
         }
+
 
 
         if (getResources().getBoolean(R.bool.use_linphone_tag)) {
@@ -249,14 +242,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
         }
 
-        if (!LinphonePreferences.instance().isContactsMigrationDone()) {
+        if(!LinphonePreferences.instance().isContactsMigrationDone()){
             ContactsManager.getInstance().migrateContacts();
             LinphonePreferences.instance().contactsMigrationDone();
         }
 
         setContentView(R.layout.main);
 
-        topLayout = findViewById(R.id.topLayout);
+        topLayout=findViewById(R.id.topLayout);
+
 
 
         fragmentsHistory = new ArrayList<FragmentsAvailable>();
@@ -272,7 +266,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                 getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, dialerFragment, currentFragment.toString()).commit();
                 selectMenu(FragmentsAvailable.DIALER);
             }
-
             if (getIntent() != null && getIntent().hasExtra(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA)) {
                 String message = getIntent().getExtras().getBoolean(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA, false) ? "Configuration Loaded Successfully" : "Configuration Not Loaded";
                 Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
@@ -280,7 +273,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             }
         }
 
-        mListener = new LinphoneCoreListenerBase() {
+        mListener = new LinphoneCoreListenerBase(){
             @Override
             public void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content) {
                 super.notifyReceived(lc, ev, eventName, content);
@@ -305,7 +298,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
             @Override
             public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
-                if (!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
+                if(!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
                     cr.markAsRead();
                 }
                 //displayMissedChats(getChatStorage().getUnreadMessageCount());
@@ -324,7 +317,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                     }
                 }
 
-                if (state.equals(RegistrationState.RegistrationFailed) && newProxyConfig) {
+                if(state.equals(RegistrationState.RegistrationFailed) && newProxyConfig) {
                     newProxyConfig = false;
 
 
@@ -418,15 +411,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
         reloadMwiCount();
 
-        if (!AsyncProviderLookupOperation.isAsyncTaskRuning && !providerLookupOperation_executed) {
+        if(!AsyncProviderLookupOperation.isAsyncTaskRuning&&!providerLookupOperation_executed){
             Log.e("ttt LinphoneActivity AsyncProviderLookupOperation..");
             providerLookupOperation = new AsyncProviderLookupOperation(null, ctx);
             providerLookupOperation.execute();
-            providerLookupOperation_executed = true;
+            providerLookupOperation_executed=true;
         }
     }
 
-    public void reloadMwiCount() {
+    public void reloadMwiCount(){
         View resources = findViewById(R.id.chat);
         if (resources != null) {
             View mwi_badge = resources.findViewById(R.id.mwi_badge);
@@ -435,9 +428,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                 if (notificationCountTextView != null) {
                     SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
                     int count = prefs.getInt("mwi_count", 0);
-                    if (count == 0) {
-                        mwi_badge.setVisibility(View.GONE);
-                    } else {
+                    if(count == 0){ mwi_badge.setVisibility(View.GONE); }
+                    else{
                         notificationCountTextView.setText(String.valueOf(count));
                         mwi_badge.setVisibility(View.VISIBLE);
                     }
@@ -453,10 +445,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //		startActivityForResult(intent, FIRST_LOGIN_ACTIVITY);
 //	}
 
-    private void deleteDefaultAccount() {
+    private void deleteDefaultAccount(){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
         LinphonePreferences mPrefs = LinphonePreferences.instance();
-        int n = mPrefs.getDefaultAccountIndex();
+        int n= mPrefs.getDefaultAccountIndex();
         mPrefs.deleteAccount(n);
     }
 
@@ -516,27 +508,26 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         }
     }
 
-    public void setColorTheme(Context context) {
+    public void setColorTheme(Context context){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         int foregroundColor = prefs.getInt(getString(R.string.pref_theme_foreground_color_setting_key), Color.TRANSPARENT);
-        ((ImageView) history.findViewById(R.id.image)).setColorFilter(foregroundColor);
+        ((ImageView)history.findViewById(R.id.image)).setColorFilter(foregroundColor);
 
-        ((ImageView) contacts.findViewById(R.id.image)).setColorFilter(foregroundColor);
-        ((ImageView) dialer.findViewById(R.id.image)).setColorFilter(foregroundColor);
-        ((ImageView) settings.findViewById(R.id.image)).setColorFilter(foregroundColor);
-        ((ImageView) chat.findViewById(R.id.image)).setColorFilter(foregroundColor);
+        ((ImageView)contacts.findViewById(R.id.image)).setColorFilter(foregroundColor);
+        ((ImageView)dialer.findViewById(R.id.image)).setColorFilter(foregroundColor);
+        ((ImageView)settings.findViewById(R.id.image)).setColorFilter(foregroundColor);
+        ((ImageView)chat.findViewById(R.id.image)).setColorFilter(foregroundColor);
     }
 
-    public void setBackgroundColorTheme(Context context) {
+    public void setBackgroundColorTheme(Context context){
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int backgroundColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.TRANSPARENT);
         //set background color independent
-        if (topLayout != null) {
+        if(topLayout!=null) {
             topLayout.setBackgroundColor(backgroundColor);
         }
     }
-
     public boolean isTablet() {
         return getResources().getBoolean(R.bool.isTablet);
     }
@@ -564,7 +555,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         findViewById(R.id.fragmentContainer).setPadding(0, LinphoneUtils.pixelsToDpi(getResources(), 40), 0, 0);
     }
 
-    public void isNewProxyConfig() {
+    public void isNewProxyConfig(){
         newProxyConfig = true;
     }
 
@@ -767,7 +758,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         try {
             lAddress = LinphoneCoreFactory.instance().createLinphoneAddress(sipUri);
         } catch (LinphoneCoreException e) {
-            Log.e("Cannot display history details", e);
+            Log.e("Cannot display history details",e);
             return;
         }
         Contact c = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
@@ -852,9 +843,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         settings.setSelected(true);
     }
 
-    public boolean displayChatMessageNotification(String address) {
-        if (chatFragment != null) {
-            if (chatFragment.getSipUri().equals(address)) {
+    public boolean displayChatMessageNotification(String address){
+        if(chatFragment != null) {
+            if(chatFragment.getSipUri().equals(address)){
                 return false;
             }
         }
@@ -870,7 +861,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         try {
             lAddress = LinphoneCoreFactory.instance().createLinphoneAddress(sipUri);
         } catch (LinphoneCoreException e) {
-            Log.e("Cannot display chat", e);
+            Log.e("Cannot display chat",e);
             return;
         }
         Contact contact = ContactsManager.getInstance().findContactWithAddress(getContentResolver(), lAddress);
@@ -878,13 +869,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
         String pictureUri = null;
         String thumbnailUri = null;
-        if (contact != null && contact.getPhotoUri() != null) {
+        if(contact != null && contact.getPhotoUri() != null){
             pictureUri = contact.getPhotoUri().toString();
             thumbnailUri = contact.getThumbnailUri().toString();
         }
 
-        if (isTablet()) {
-            if (currentFragment == FragmentsAvailable.CHATLIST || currentFragment == FragmentsAvailable.CHAT) {
+        if (isTablet()){
+            if (currentFragment == FragmentsAvailable.CHATLIST || currentFragment == FragmentsAvailable.CHAT){
                 Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
                 if (fragment2 != null && fragment2.isVisible() && currentFragment == FragmentsAvailable.CHAT) {
                     ChatFragment chatFragment = (ChatFragment) fragment2;
@@ -924,18 +915,16 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         //displayMissedChats(getChatStorage().getUnreadMessageCount());
     }
 
-    public int getMessageWaitingCount() {
+    public int getMessageWaitingCount(){
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         int count = prefs.getInt("mwi_count", 0);
         return count;
     }
-
-    public void resetMessageWaitingCount() {
+    public void resetMessageWaitingCount(){
         SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         prefs.edit().putInt("mwi_count", 0).commit();
         reloadMwiCount();
     }
-
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -951,14 +940,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
             contacts.setSelected(true);
             contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
-            if (!ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_CONTACTS)) {
+            if(!ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_CONTACTS))
+            {
                 ApplicationPermissionManager.askPermission(this, Manifest.permission.WRITE_CONTACTS, REQUEST_CONTACTS_PERMISSION);
 
             }
         } else if (id == R.id.dialer) {
             changeCurrentFragment(FragmentsAvailable.DIALER, null);
-            if (!isTablet()) {
-                if (DialerFragment.instance() != null) {
+            if(!isTablet()) {
+                if(DialerFragment.instance() != null) {
                     if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
                         DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
                         DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
@@ -1101,6 +1091,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     }
 
 
+
     public void updateMissedChatCount() {
         //displayMissedChats(getChatStorage().getUnreadMessageCount());
     }
@@ -1140,7 +1131,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         }
     }
 /*
-    private void displayMissedChats(final int missedChatCount) {
+	private void displayMissedChats(final int missedChatCount) {
 		if (missedChatCount > 0) {
 			missedChats.setText(missedChatCount + "");
 			if (missedChatCount > 99) {
@@ -1211,11 +1202,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         startActivityForResult(intent, CALL_ACTIVITY);
     }
 
-    public void sendLogs(Context context, String info) {
+    public void sendLogs(Context context, String info){
         final String appName = context.getString(R.string.app_name);
 
         Intent i = new Intent(Intent.ACTION_SEND);
-        i.putExtra(Intent.EXTRA_EMAIL, new String[]{context.getString(R.string.about_bugreport_email)});
+        i.putExtra(Intent.EXTRA_EMAIL, new String[]{ context.getString(R.string.about_bugreport_email) });
         i.putExtra(Intent.EXTRA_SUBJECT, appName + " Logs");
         i.putExtra(Intent.EXTRA_TEXT, info);
         i.setType("application/zip");
@@ -1239,8 +1230,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
     public int mAlwaysChangingPhoneAngle = -1;
     public int lastDeviceAngle = 0;
-
-    public int getDeviceOrientation() {
+    public int getDeviceOrientation(){
         return lastDeviceAngle;
     }
 
@@ -1254,6 +1244,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             if (o == OrientationEventListener.ORIENTATION_UNKNOWN) {
                 return;
             }
+
 
 
             int degrees = 270;
@@ -1323,7 +1314,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         return ChatStorage.getInstance();
     }
 
-    public void addContact(String displayName, String sipUri) {
+    public void addContact(String displayName, String sipUri)
+    {
         if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
             Intent intent = Compatibility.prepareAddContactIntent(displayName, sipUri);
             startActivity(intent);
@@ -1334,7 +1326,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         }
     }
 
-    public void editContact(Contact contact) {
+    public void editContact(Contact contact)
+    {
         if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
             Intent intent = Compatibility.prepareEditContactIntent(Integer.parseInt(contact.getID()));
             startActivity(intent);
@@ -1346,7 +1339,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
     }
 
-    public void editContact(Contact contact, String sipAddress) {
+    public void editContact(Contact contact, String sipAddress)
+    {
         if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
             Intent intent = Compatibility.prepareEditContactIntentWithSipAddress(Integer.parseInt(contact.getID()), sipAddress);
             startActivity(intent);
@@ -1365,17 +1359,27 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == WIFI_ACTIVITY_RESULT) {
+        if(resultCode==WIFI_ACTIVITY_RESULT){
             Intent refresh = new Intent(this, LinphoneActivity.class);
             startActivity(refresh);
             this.finish();
         }
 
         if (resultCode == Activity.RESULT_OK && requestCode == FIRST_LOGIN_ACTIVITY) {
-            if (data != null && data.getExtras() != null) {
-                if (data.getExtras().getBoolean("Exit", false)) {
+            if (data != null && data.getExtras()!= null ) {
+                if(data.getExtras().getBoolean("Exit", false)) {
                     exit();
                     return;
+                }
+                else if(data.hasExtra(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA)) {
+                    String message = data.getExtras().getBoolean(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA, false) ? "Configuration Loaded Successfully" : "Configuration Not Loaded";
+//					new AlertDialog.Builder(LinphoneActivity.instance())
+//							.setMessage(message)
+//							.setTitle("Auto-Configuration")
+//							.setPositiveButton("OK", null)
+//							.show();
+                    Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             }
         }
@@ -1401,22 +1405,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     }
 
 
+
     @Override
     protected void onPause() {
         getIntent().putExtra("PreviousActivity", 0);
         super.onPause();
-        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
-            return;
-        }
         unregisterManagers();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
-            return;
-        }
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1429,10 +1428,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             } else {
                 Log.d("TAG", "NO GPS");
             }
-        } catch (NullPointerException e) {
+        }
+        catch(NullPointerException e){
             Log.e("E", "Device does not have GPS support");
         }
-        if (!LinphoneService.isReady()) {
+        if (!LinphoneService.isReady())  {
             startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
         }
 
@@ -1444,7 +1444,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
         LinphoneManager.getInstance().changeStatusToOnline();
 
-        if (getIntent().getIntExtra("PreviousActivity", 0) != CALL_ACTIVITY) {
+        if(getIntent().getIntExtra("PreviousActivity", 0) != CALL_ACTIVITY){
             if (getLc().getCalls().length > 0) {
                 LinphoneCall call = getLc().getCalls()[0];
                 LinphoneCall.State callState = call.getState();
@@ -1462,10 +1462,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             }
         }
 
-        if (BuildConfig.DEBUG) {
+        if(BuildConfig.DEBUG) {
             //Debug
             checkForCrashes();
-        } else {
+        } else{
             //Release
             checkForCrashes();
         }
@@ -1487,12 +1487,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
         instance = null;
         super.onDestroy();
-        if (!LinphoneManager.isInstanciated() || !LinphoneService.isReady()) {
-            return;
-        }
 
         unbindDrawables(findViewById(R.id.topLayout));
         System.gc();
+
         if (stopServiceOnDestroy && LinphoneService.isReady()) {
             stopService(new Intent(Intent.ACTION_MAIN).setClass(this, LinphoneService.class));
         }
@@ -1582,7 +1580,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                     || currentFragment == FragmentsAvailable.SETTINGS
                     || currentFragment == FragmentsAvailable.ABOUT) {
 
-                if (currentFragment == FragmentsAvailable.DIALER) {
+                if(currentFragment == FragmentsAvailable.DIALER) {
                     boolean isBackgroundModeActive = LinphonePreferences.instance().isBackgroundModeEnabled();
                     if (!isBackgroundModeActive) {
                         stopService(new Intent(Intent.ACTION_MAIN).setClass(this, LinphoneService.class));
@@ -1590,7 +1588,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                     } else if (LinphoneUtils.onKeyBackGoHome(this, keyCode, event)) {
                         return true;
                     }
-                } else {
+                }
+                else{
                     goToDialer();
                     return true;
                 }
@@ -1608,26 +1607,22 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         }
         return super.onKeyDown(keyCode, event);
     }
-
     private void checkForCrashes() {
 
-        CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc", new CrashManagerListener() {
+        CrashManager.register(this, "d6280d4d277d6876c709f4143964f0dc",new CrashManagerListener() {
             public boolean shouldAutoUploadCrashes() {
                 return true;
             }
-
             public boolean ignoreDefaultHandler() {
                 return true;
             }
-
             public String getContact() {
                 LinphonePreferences mPrefs = LinphonePreferences.instance();
                 String username = mPrefs.getAccountUsername(mPrefs.getDefaultAccountIndex());
                 String domain = mPrefs.getAccountDomain(mPrefs.getDefaultAccountIndex());
-                String user = username + "@" + domain;
+                String user=username + "@" + domain;
                 return user;
             }
-
             public String getDescription() {
                 String description = "";
 
@@ -1645,11 +1640,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                     bufferedReader.close();
 
                     description = log.toString();
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                 }
 
                 File crashStacktrace = null;
-                try {
+                try
+                {
                     File root = new File(Environment.getExternalStorageDirectory(), "ACE");
                     if (!root.exists()) {
                         root.mkdirs();
@@ -1660,7 +1657,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                     writer.flush();
                     writer.close();
                     Toast.makeText(LinphoneActivity.ctx, "Crash feedback saved", Toast.LENGTH_SHORT).show();
-                } catch (IOException e) {
+                }
+                catch(IOException e)
+                {
                     e.printStackTrace();
                 }
                 android.util.Log.e("Info", "Uri.fromFile(Crash feedback) = " + Uri.fromFile(crashStacktrace));
@@ -1668,12 +1667,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
                 return description;
             }
-
             public String getUserID() {
                 return Settings.Secure.getString(getContentResolver(),
                         Settings.Secure.ANDROID_ID);
             }
-
             public void onCrashesSent() {
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -1682,7 +1679,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                 });
 
             }
-
             public void onCrashesNotSent() {
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -1698,20 +1694,24 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         // Remove this for store / production builds!
         UpdateManager.register(this, "d6280d4d277d6876c709f4143964f0dc");
     }
-
     private void unregisterManagers() {
         UpdateManager.unregister();
         // unregister other managers if necessary...
     }
 
 
-    void onPermissionGrandted(int permission_code) {
+
+
+    void onPermissionGrandted(int permission_code)
+    {
         Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
-        if (permission_code == REQUEST_CONTACTS_PERMISSION && currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment) {
+        if(permission_code==REQUEST_CONTACTS_PERMISSION && currentFragment == FragmentsAvailable.CONTACTS && fragment2 instanceof ContactsFragment)
+        {
             //((ContactsFragment)fragment2).invalidate();
         }
         //if contacts and currentfragment is contact
         //reload contacts
+
 
 
     }
@@ -1722,9 +1722,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
     public final static int REQUEST_MIC_PERMISSION = 4;
 
 
+
+
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults)
+    {
         Log.d("permission result jan");
         if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             onPermissionGrandted(requestCode);
@@ -1733,7 +1738,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
     }
 
-    public ArrayList<String> display_all_core_values(LinphoneCore lc, final String filename) {
+    public ArrayList<String> display_all_core_values(LinphoneCore lc, final String filename){
         ArrayList<String> stats_list = new ArrayList<String>();
         try {
 
@@ -2163,13 +2168,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
             stats_list.add("tunnelGetServers," + tunnelGetServers);
             stats_list.add("tunnelSipEnabled," + tunnelSipEnabled);
             stats_list.add("CameraParameters," + CameraParameters);
-        } catch (Throwable e) {
+        }catch(Throwable e){
             e.printStackTrace();
         }
         return stats_list;
     }
-
-    public String LC_Object_to_String(Object object) {
+    public String LC_Object_to_String(Object object){
         String string;
         try {
 
@@ -2185,11 +2189,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //				for(int i=0; i<String.length; i++){
 //					string=string+String[i].toString()+",";
 //				}
-            string = "";
-            if (object.getClass().isArray()) {//Handle Arrays
+            string="";
+            if(object.getClass().isArray()) {//Handle Arrays
 
 
-                for (int i = 0; i < Array.getLength(object); i++) {
+                for(int i=0; i< Array.getLength(object); i++) {
                     if (Array.get(object, i) instanceof LinphoneAuthInfo) {
                         LinphoneAuthInfo lai = (LinphoneAuthInfo) Array.get(object, i);
                         string = string + "\n ,getUsername(): " + lai.getUsername() +
@@ -2198,31 +2202,31 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                                 "\n ,getDomain(): " + lai.getDomain() +
                                 "\n ,getHa1(): " + lai.getHa1() +
                                 "\n ,getRealm(): " + lai.getRealm();
-                    } else if (Array.get(object, i) instanceof PayloadType) {
-                        string = string + "\n ," + Array.get(object, i).toString() + ",";
-                        string = string + "\n ,isPayloadTypeEnabled()," + LC_Object_to_String(getLc().isPayloadTypeEnabled((PayloadType) Array.get(object, i)));
-                        string = string + "\n ,payloadTypeIsVbr()," + LC_Object_to_String(getLc().payloadTypeIsVbr((PayloadType) Array.get(object, i)));
+                    }else if(Array.get(object, i) instanceof PayloadType){
+                        string = string + "\n ,"+Array.get(object, i).toString()+",";
+                        string = string+"\n ,isPayloadTypeEnabled(),"+LC_Object_to_String(getLc().isPayloadTypeEnabled((PayloadType) Array.get(object, i)));
+                        string = string+"\n ,payloadTypeIsVbr(),"+LC_Object_to_String(getLc().payloadTypeIsVbr((PayloadType) Array.get(object, i)));
 
 
-                    } else if (Array.get(object, i) instanceof LinphoneProxyConfig) {
+                    }else if(Array.get(object, i) instanceof LinphoneProxyConfig) {
                         LinphoneProxyConfig linphoneproxyconfig = (LinphoneProxyConfig) Array.get(object, i);
-                        string = LC_Object_to_String(linphoneproxyconfig);
-                    } else if (Array.get(object, i) instanceof LinphoneAddress) {
+                        string=LC_Object_to_String(linphoneproxyconfig);
+                    }else if(Array.get(object, i) instanceof LinphoneAddress) {
                         LinphoneAddress linphoneaddress = (LinphoneAddress) Array.get(object, i);
-                        string = LC_Object_to_String(linphoneaddress);
-                    } else if (Array.get(object, i) instanceof LinphoneCallLog) {
+                        string=LC_Object_to_String(linphoneaddress);
+                    }else if(Array.get(object, i) instanceof LinphoneCallLog) {
                         LinphoneCallLog linphonecalllog = (LinphoneCallLog) Array.get(object, i);
-                        string = LC_Object_to_String(linphonecalllog);
-                    } else {
+                        string=LC_Object_to_String(linphonecalllog);
+                    }else {
                         try {
-                            string = string + Array.get(object, i).toString() + ",";
+                            string = string + Array.get(object, i).toString()+",";
                         } catch (Throwable e) {
                             string = object.toString();
                         }
                     }
                 }
 
-            } else {//Handle Objects
+            }else {//Handle Objects
 
                 if (object instanceof LpConfig) {
                     LpConfig lpconfig = (LpConfig) object;
@@ -2230,18 +2234,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                     String path = LinphoneActivity.instance().getFilesDir().getAbsolutePath() + "/.linphonerc";
                     //string=path+"\n"+readFromFile(path);
                     string = path;
-                } else if (object instanceof LinphoneAddress) {
+                }else if(object instanceof LinphoneAddress) {
                     LinphoneAddress linephoneaddress = (LinphoneAddress) object;
                     string = string + "\n ,linephoneaddress.asString():" + LC_Object_to_String(linephoneaddress.asString()) +
-                            "\n ,linephoneaddress.asStringUriOnly(): " + LC_Object_to_String(linephoneaddress.asStringUriOnly()) +
-                            "\n ,linephoneaddress.getDisplayName(): " + LC_Object_to_String(linephoneaddress.getDisplayName()) +
-                            "\n ,linephoneaddress.getDomain(): " + LC_Object_to_String(linephoneaddress.getDomain()) +
-                            "\n ,linephoneaddress.getPort(): " + LC_Object_to_String(linephoneaddress.getPort()) +
-                            "\n ,linephoneaddress.getTransport(): " + LC_Object_to_String(linephoneaddress.getTransport()) +
+                            "\n ,linephoneaddress.asStringUriOnly(): " + LC_Object_to_String(linephoneaddress.asStringUriOnly())+
+                            "\n ,linephoneaddress.getDisplayName(): " + LC_Object_to_String(linephoneaddress.getDisplayName())+
+                            "\n ,linephoneaddress.getDomain(): " + LC_Object_to_String(linephoneaddress.getDomain())+
+                            "\n ,linephoneaddress.getPort(): " + LC_Object_to_String(linephoneaddress.getPort())+
+                            "\n ,linephoneaddress.getTransport(): " + LC_Object_to_String(linephoneaddress.getTransport())+
                             "\n ,linephoneaddress.getUserName(): " + LC_Object_to_String(linephoneaddress.getUserName());
 
 
-                } else if (object instanceof LinphoneCallLog) {
+                }else if(object instanceof LinphoneCallLog) {
 
                     try {
                         LinphoneCallLog linephonecalllog = (LinphoneCallLog) object;
@@ -2253,47 +2257,48 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                                 "\n ,linephonecalllog.getStatus(): " + LC_Object_to_String(linephonecalllog.getStatus()) +
                                 "\n ,linephonecalllog.getTimestamp(): " + new SimpleDateFormat("MM/dd/yyyy HH:mm:ss Z").format(new Date(linephonecalllog.getTimestamp())) +
                                 "\n ,linephonecalllog.getTo(): " + LC_Object_to_String(linephonecalllog.getTo());
-                    } catch (Throwable e) {
-                        string = "CORRUPT";
+                    }catch(Throwable e){
+                        string="CORRUPT";
                     }
 
 
-                } else if (object instanceof LinphoneProxyConfig) {
+                }else if(object instanceof LinphoneProxyConfig) {
                     LinphoneProxyConfig linphoneproxyconfig = (LinphoneProxyConfig) object;
                     string = string + "\n ,linphoneproxyconfig.avpfEnabled():" + LC_Object_to_String(linphoneproxyconfig.avpfEnabled()) +
-                            "\n ,linphoneproxyconfig.getAddress(): " + LC_Object_to_String(linphoneproxyconfig.getAddress()) +
-                            "\n ,linphoneproxyconfig.getAvpfRRInterval(): " + LC_Object_to_String(linphoneproxyconfig.getAvpfRRInterval()) +
-                            "\n ,linphoneproxyconfig.getContactParameters(): " + LC_Object_to_String(linphoneproxyconfig.getContactParameters()) +
-                            "\n ,linphoneproxyconfig.getContactUriParameters(): " + LC_Object_to_String(linphoneproxyconfig.getContactUriParameters()) +
-                            "\n ,linphoneproxyconfig.getDialPrefix(): " + LC_Object_to_String(linphoneproxyconfig.getDialPrefix()) +
-                            "\n ,linphoneproxyconfig.getDomain(): " + LC_Object_to_String(linphoneproxyconfig.getDomain()) +
-                            "\n ,linphoneproxyconfig.getError(): " + LC_Object_to_String(linphoneproxyconfig.getError()) +
-                            "\n ,linphoneproxyconfig.getErrorInfo(): " + LC_Object_to_String(linphoneproxyconfig.getErrorInfo()) +
-                            "\n ,linphoneproxyconfig.getIdentity(): " + LC_Object_to_String(linphoneproxyconfig.getIdentity()) +
-                            "\n ,linphoneproxyconfig.getPrivacy(): " + LC_Object_to_String(linphoneproxyconfig.getPrivacy()) +
-                            "\n ,linphoneproxyconfig.getProxy(): " + LC_Object_to_String(linphoneproxyconfig.getProxy()) +
-                            "\n ,linphoneproxyconfig.getPublishExpires(): " + LC_Object_to_String(linphoneproxyconfig.getPublishExpires()) +
-                            "\n ,linphoneproxyconfig.getQualityReportingCollector(): " + LC_Object_to_String(linphoneproxyconfig.getQualityReportingCollector()) +
-                            "\n ,linphoneproxyconfig.getQualityReportingInterval(): " + LC_Object_to_String(linphoneproxyconfig.getQualityReportingInterval()) +
-                            "\n ,linphoneproxyconfig.getRealm(): " + LC_Object_to_String(linphoneproxyconfig.getRealm()) +
-                            "\n ,linphoneproxyconfig.getRoute(): " + LC_Object_to_String(linphoneproxyconfig.getRoute()) +
-                            "\n ,linphoneproxyconfig.getState(): " + LC_Object_to_String(linphoneproxyconfig.getState()) +
-                            "\n ,linphoneproxyconfig.getUserData(): " + LC_Object_to_String(linphoneproxyconfig.getUserData()) +
+                            "\n ,linphoneproxyconfig.getAddress(): " + LC_Object_to_String(linphoneproxyconfig.getAddress())+
+                            "\n ,linphoneproxyconfig.getAvpfRRInterval(): " + LC_Object_to_String(linphoneproxyconfig.getAvpfRRInterval())+
+                            "\n ,linphoneproxyconfig.getContactParameters(): " + LC_Object_to_String(linphoneproxyconfig.getContactParameters())+
+                            "\n ,linphoneproxyconfig.getContactUriParameters(): " + LC_Object_to_String(linphoneproxyconfig.getContactUriParameters())+
+                            "\n ,linphoneproxyconfig.getDialPrefix(): " + LC_Object_to_String(linphoneproxyconfig.getDialPrefix())+
+                            "\n ,linphoneproxyconfig.getDomain(): " + LC_Object_to_String(linphoneproxyconfig.getDomain())+
+                            "\n ,linphoneproxyconfig.getError(): " + LC_Object_to_String(linphoneproxyconfig.getError())+
+                            "\n ,linphoneproxyconfig.getErrorInfo(): " + LC_Object_to_String(linphoneproxyconfig.getErrorInfo())+
+                            "\n ,linphoneproxyconfig.getIdentity(): " + LC_Object_to_String(linphoneproxyconfig.getIdentity())+
+                            "\n ,linphoneproxyconfig.getPrivacy(): " + LC_Object_to_String(linphoneproxyconfig.getPrivacy())+
+                            "\n ,linphoneproxyconfig.getProxy(): " + LC_Object_to_String(linphoneproxyconfig.getProxy())+
+                            "\n ,linphoneproxyconfig.getPublishExpires(): " + LC_Object_to_String(linphoneproxyconfig.getPublishExpires())+
+                            "\n ,linphoneproxyconfig.getQualityReportingCollector(): " + LC_Object_to_String(linphoneproxyconfig.getQualityReportingCollector())+
+                            "\n ,linphoneproxyconfig.getQualityReportingInterval(): " + LC_Object_to_String(linphoneproxyconfig.getQualityReportingInterval())+
+                            "\n ,linphoneproxyconfig.getRealm(): " + LC_Object_to_String(linphoneproxyconfig.getRealm())+
+                            "\n ,linphoneproxyconfig.getRoute(): " + LC_Object_to_String(linphoneproxyconfig.getRoute())+
+                            "\n ,linphoneproxyconfig.getState(): " + LC_Object_to_String(linphoneproxyconfig.getState())+
+                            "\n ,linphoneproxyconfig.getUserData(): " + LC_Object_to_String(linphoneproxyconfig.getUserData())+
                             //"\n ,linphoneproxyconfig.isPhoneNumber(): " + LC_Object_to_String(linphoneproxyconfig.isPhoneNumber())+
-                            "\n ,linphoneproxyconfig.isRegistered(): " + LC_Object_to_String(linphoneproxyconfig.isRegistered()) +
-                            "\n ,linphoneproxyconfig.publishEnabled(): " + LC_Object_to_String(linphoneproxyconfig.publishEnabled()) +
-                            "\n ,linphoneproxyconfig.qualityReportingEnabled(): " + LC_Object_to_String(linphoneproxyconfig.qualityReportingEnabled()) +
+                            "\n ,linphoneproxyconfig.isRegistered(): " + LC_Object_to_String(linphoneproxyconfig.isRegistered())+
+                            "\n ,linphoneproxyconfig.publishEnabled(): " + LC_Object_to_String(linphoneproxyconfig.publishEnabled())+
+                            "\n ,linphoneproxyconfig.qualityReportingEnabled(): " + LC_Object_to_String(linphoneproxyconfig.qualityReportingEnabled())+
                             "\n ,linphoneproxyconfig.registerEnabled(): " + LC_Object_to_String(linphoneproxyconfig.registerEnabled());
 
 
-                } else if (object instanceof LinphoneCore.MediaEncryption) {
+
+                }else if(object instanceof LinphoneCore.MediaEncryption){
                     try {
                         string = object != null ? object.toString() : "null";
                     } catch (Throwable e) {
                         string = object != null ? String.valueOf(object) : "null";
                     }
-                    string = string + "\nmediaEncryptionSupported," + LC_Object_to_String(getLc().mediaEncryptionSupported((LinphoneCore.MediaEncryption) object));
-                } else {
+                    string = string+"\nmediaEncryptionSupported,"+LC_Object_to_String(getLc().mediaEncryptionSupported((LinphoneCore.MediaEncryption)object));
+                }else {
                     try {
                         string = object != null ? object.toString() : "null";
                     } catch (Throwable e) {
@@ -2302,7 +2307,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
                 }
 
             }
-        } catch (Throwable e) {
+        }catch(Throwable e){
             string = "null";
             e.printStackTrace();
         }
@@ -2316,20 +2321,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
         try {
             InputStream inputStream = openFileInput(".linphonerc");
 
-            if (inputStream != null) {
+            if ( inputStream != null ) {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 String receiveString = "";
                 StringBuilder stringBuilder = new StringBuilder();
 
-                while ((receiveString = bufferedReader.readLine()) != null) {
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
                     stringBuilder.append(receiveString);
                 }
 
                 inputStream.close();
                 ret = stringBuilder.toString();
             }
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
             Log.e("login activity", "File not found: " + e.toString());
         } catch (IOException e) {
             Log.e("login activity", "Can not read file: " + e.toString());
@@ -2337,10 +2343,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
         return ret;
     }
-
-    public String formatHHMMSS(int secondsCount) {
+    public String formatHHMMSS(int secondsCount){
         //Calculate the seconds to display:
-        int seconds = secondsCount % 60;
+        int seconds = secondsCount %60;
         secondsCount -= seconds;
         //Calculate the minutes:
         long minutesCount = secondsCount / 60;
@@ -2355,6 +2360,5 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 interface ContactPicked {
     void setAddresGoToDialerAndCall(String number, String name, Uri photo);
-
     void goToDialer();
 }
