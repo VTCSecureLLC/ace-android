@@ -112,7 +112,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								launchEchoCancellerCalibration(true);
 							}
 
-						} else if (state != RegistrationState.RegistrationProgress) {
+						} else if (state != RegistrationState.RegistrationProgress && state !=RegistrationState.RegistrationCleared) {
 							int tcp_position=0;
 							int tls_position=1;
 
@@ -130,7 +130,14 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								}catch(Throwable e){
 									e.printStackTrace();
 								}
-								GenericLoginFragment.instance().login_button.performClick();
+								// preform click will cause linphone core to restart and restating core in the listener will cause crash
+								GenericLoginFragment.instance().login_button.postDelayed(
+										new Runnable() {
+											@Override
+											public void run() {
+												GenericLoginFragment.instance().login_button.performClick();
+											}
+										}, 500);
 								tried_tls_on_tcp_failure =true;
 
 
