@@ -942,7 +942,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			if(!isTablet()) {
 				if(DialerFragment.instance() != null) {
 						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
-							DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
+
+							try {//VATRP-3163 Crash occuring here on Android TV (Zidoo) Devices, adding try catch to see if problem is resolved.
+								DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
+							}catch(Throwable e){
+								e.printStackTrace();
+							}
 							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
 						} else {
 							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
