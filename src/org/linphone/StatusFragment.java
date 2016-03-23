@@ -362,10 +362,10 @@ public class StatusFragment extends Fragment {
 		{
 			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_bad);
 		}
-		else if (quality==2)
-		{
-			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_normal);
-		}
+//		else if (quality==2)
+//		{
+//			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_normal);
+//		}
 		else
 		{
 			int sdk = android.os.Build.VERSION.SDK_INT;
