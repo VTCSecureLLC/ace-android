@@ -113,12 +113,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private Handler mControlsHandler = new Handler();
 	private Runnable mControls;
 	private TextView switchCamera;
-	private TextView changeVideoLayout;
+	private TextView toggleSpeaker;
 
 	private boolean isCameraMutedPref;
 
 	private TextView chat_button, hangUp, addCall, transfer, conference;
-	private ImageView video, micro, dialer, speaker, options, audioRoute;
+	private ImageView video, micro, dialer, audioMute, options, audioRoute;
 	private TextView routeSpeaker, routeReceiver, routeBluetooth;
 	private LinearLayout routeLayout;
 	private boolean isAnimatingHideControllers;
@@ -130,7 +130,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private VideoCallFragment videoCallFragment;
 	private boolean isCameraMutedOnStart=false, isCameraMuted=false, isMicMuted = false, isTransferAllowed, isAnimationDisabled,
 			isRTTLocallyEnabled = false, isRTTEnabled=true;
-	private boolean isSpeakerMuted;
+	private boolean isAudioMuted;
+	private boolean isSpeakerOn;
 	public ViewGroup mControlsLayout;
 	public LinearLayout mIncomingcallsLayout;
 	private View acceptBtn, declineBtn, callLaterBtn;
@@ -275,7 +276,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		LinphoneManager.getLc().muteMic(isMicMuted);
 		micro.setSelected(isMicMuted);
 
-		isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		isAudioMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+
+		//set speaker on initially. This does not mean that audio isn't muted. If audio is muted, and speaker is on, there will still be no sound! Until audio is unmutted
+		isSpeakerOn = true;
+
 
 		status.callStats.setOnClickListener(new View.OnClickListener(){
 			@Override
@@ -409,7 +414,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						video.setEnabled(true);
 					}
 					isMicMuted = lc.isMicMuted();
-					isSpeakerMuted = lc.getPlaybackGain() == mute_db;
+					isAudioMuted = lc.getPlaybackGain() == mute_db;
 
 					enableAndRefreshInCallActions();
 
@@ -485,7 +490,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				// Fragment already created, no need to create it again (else it will generate a memory leak with duplicated fragments)
 				isRTTMaximized = savedInstanceState.getBoolean("isRTTMaximized");
 				isMicMuted = savedInstanceState.getBoolean("Mic");
-				isSpeakerMuted = savedInstanceState.getBoolean("Speaker");
+				isAudioMuted = savedInstanceState.getBoolean("AudioMuted");
 				isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
 				refreshInCallActions();
 
@@ -1033,7 +1038,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean("isRTTMaximized", isRTTMaximized);
 		outState.putBoolean("Mic", LinphoneManager.getLc().isMicMuted());
-		outState.putBoolean("Speaker", LinphoneManager.getLc().getPlaybackGain() == mute_db);
+		outState.putBoolean("AudioMuted", LinphoneManager.getLc().getPlaybackGain() == mute_db);
 		outState.putBoolean("VideoCallPaused", isVideoCallPaused);
 
 		super.onSaveInstanceState(outState);
@@ -1109,16 +1114,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		micro = (ImageView) findViewById(R.id.micro);
 		micro.setOnClickListener(this);
 //		micro.setEnabled(false);
-		speaker = (ImageView) findViewById(R.id.speaker);
-		speaker.setOnClickListener(this);
-		toggleSpeaker(isSpeakerMuted);
+		audioMute = (ImageView) findViewById(R.id.audioMute);
+		audioMute.setOnClickListener(this);
+		//toggleSpeaker(isSpeakerMuted);
 
 		addCall = (TextView) findViewById(R.id.addCall);
 		addCall.setOnClickListener(this);
 		addCall.setEnabled(false);
 
-		changeVideoLayout = (TextView) findViewById(R.id.change_video_layout);
-		changeVideoLayout.setOnClickListener(this);
+		toggleSpeaker = (TextView) findViewById(R.id.toggleSpeaker);
+		toggleSpeaker.setOnClickListener(this);
 
 		transfer = (TextView) findViewById(R.id.transfer);
 		transfer.setOnClickListener(this);
@@ -1193,8 +1198,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if (Version.sdkAboveOrEqual(Version.API11_HONEYCOMB_30)) {
 			if(!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
 				BluetoothManager.getInstance().initBluetooth();
-			} else {
-				isSpeakerMuted = true;
 			}
 		}
 
@@ -1212,14 +1215,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				if (routeLayout != null)
 					routeLayout.setVisibility(View.VISIBLE);
 				audioRoute.setVisibility(View.VISIBLE);
-				speaker.setVisibility(View.GONE);
+				audioMute.setVisibility(View.GONE);
 			} catch (NullPointerException npe) { Log.e("Bluetooth: Audio routes menu disabled on tablets for now (2)"); }
 		} else {
 			try {
 				if (routeLayout != null)
 					routeLayout.setVisibility(View.GONE);
 				audioRoute.setVisibility(View.GONE);
-				speaker.setVisibility(View.VISIBLE);
+				audioMute.setVisibility(View.VISIBLE);
 			} catch (NullPointerException npe) { Log.e("Bluetooth: Audio routes menu disabled on tablets for now (3)"); }
 		}
 
@@ -1252,16 +1255,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 		try {
-			if (!isSpeakerMuted) {
+			if (!isAudioMuted) {
 //				speaker.setBackgroundResource(R.drawable.speaker_on);
-				speaker.setSelected(false);
+				audioMute.setSelected(false);
 
 				routeSpeaker.setSelected(true);
 				routeReceiver.setSelected(false);
 				routeBluetooth.setSelected(false);
 			} else {
 //				speaker.setBackgroundResource(R.drawable.selector_in_call_speaker);
-				speaker.setSelected(true);
+				audioMute.setSelected(true);
 				routeSpeaker.setSelected(false);
 				if (BluetoothManager.getInstance().isUsingBluetoothAudioRoute()) {
 					routeReceiver.setSelected(false);
@@ -1307,7 +1310,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			video.setEnabled(true);
 		}
 		micro.setEnabled(true);
-		speaker.setEnabled(true);
+		audioMute.setEnabled(true);
 
 		transfer.setEnabled(true);
 		chat_button.setEnabled(true);
@@ -1342,8 +1345,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		else if (id == R.id.micro) {
 			toggleMicro();
 		}
-		else if (id == R.id.speaker) {
-			toggleSpeaker(!isSpeakerMuted);
+		else if (id == R.id.audioMute) {
+			toggleAudioMute();
 
 		}
 		else if (id == R.id.addCall) {
@@ -1351,8 +1354,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			goBackToDialer();
 		}
 
-		else if (id == R.id.change_video_layout) {
-			Toast.makeText(this, "Do something", Toast.LENGTH_SHORT).show();
+		else if (id == R.id.toggleSpeaker) {
+			toggleSpeaker();
 		}
 		else if (id == R.id.toggleChat) {
 			if(isRTTEnabled) {
@@ -1385,33 +1388,33 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		else if (id == R.id.options) {
 			hideOrDisplayCallOptions();
 		}
-		else if (id == R.id.audioRoute) {
-			hideOrDisplayAudioRoutes();
-		}
-		else if (id == R.id.routeBluetooth) {
-			if (BluetoothManager.getInstance().routeAudioToBluetooth()) {
-				isSpeakerMuted = true;
-				routeBluetooth.setSelected(true);
-				routeReceiver.setSelected(false);
-				routeSpeaker.setSelected(false);
-			}
-			hideOrDisplayAudioRoutes();
-		}
-		else if (id == R.id.routeReceiver) {
-			LinphoneManager.getInstance().routeAudioToReceiver();
-			isSpeakerMuted = true;
-			routeBluetooth.setSelected(false);
-			routeReceiver.setSelected(true);
-			routeSpeaker.setSelected(false);
-			hideOrDisplayAudioRoutes();
-		}
-		else if (id == R.id.routeSpeaker) {
-			LinphoneManager.getInstance().routeAudioToSpeaker();
-			routeBluetooth.setSelected(false);
-			routeReceiver.setSelected(true);
-			routeSpeaker.setSelected(true);
-			hideOrDisplayAudioRoutes();
-		}
+//		else if (id == R.id.audioRoute) {
+//			hideOrDisplayAudioRoutes();
+//		}
+//		else if (id == R.id.routeBluetooth) {
+//			if (BluetoothManager.getInstance().routeAudioToBluetooth()) {
+//				isAudioMuted = false;
+//				routeBluetooth.setSelected(true);
+//				routeReceiver.setSelected(false);
+//				routeSpeaker.setSelected(false);
+//			}
+//			hideOrDisplayAudioRoutes();
+//		}
+//		else if (id == R.id.routeReceiver) {
+//			LinphoneManager.getInstance().routeAudioToReceiver();
+//			isAudioMuted = false;
+//			routeBluetooth.setSelected(false);
+//			routeReceiver.setSelected(true);
+//			routeSpeaker.setSelected(false);
+//			hideOrDisplayAudioRoutes();
+//		}
+//		else if (id == R.id.routeSpeaker) {
+//			LinphoneManager.getInstance().routeAudioToSpeaker();
+//			routeBluetooth.setSelected(false);
+//			routeReceiver.setSelected(true);
+//			routeSpeaker.setSelected(true);
+//			hideOrDisplayAudioRoutes();
+//		}
 
 		else if (id == R.id.callStatus) {
 			LinphoneCall call = (LinphoneCall) v.getTag();
@@ -1558,8 +1561,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.w("Bluetooth not available, using speaker");
 			LinphoneManager.getInstance().routeAudioToSpeaker();
 //				speaker.setBackgroundResource(R.drawable.speaker_on);
-			speaker.setSelected(false);
-
+			audioMute.setSelected(false);
 		}
 		video.setSelected(true);
 		video.setEnabled(true);
@@ -1610,18 +1612,34 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 	}
 
-	private void toggleSpeaker(boolean isMuted) {
+	private void toggleAudioMute() {
 		final float mute_db = -1000.0f;
-		isSpeakerMuted = isMuted;
-		if (isSpeakerMuted) {
-			LinphoneManager.getLc().setPlaybackGain(mute_db);
-			speaker.setSelected(true);
-
-		} else {
+		if (isAudioMuted) {
 			LinphoneManager.getLc().setPlaybackGain(0);
-			speaker.setSelected(false);
-
+			isAudioMuted=false;
+		} else {
+			LinphoneManager.getLc().setPlaybackGain(mute_db);
+			isAudioMuted=true;
 		}
+		audioMute.setSelected(isAudioMuted);
+	}
+
+	private void toggleSpeaker(){
+		final float mute_db = -1000.0f;
+		if(isAudioMuted){
+			//Unmute it first
+			LinphoneManager.getLc().setPlaybackGain(0);
+		}
+
+		if(isSpeakerOn){
+			LinphoneManager.getInstance().routeAudioToReceiver();
+			isSpeakerOn=false;
+		}else{
+			LinphoneManager.getInstance().routeAudioToSpeaker();
+			isSpeakerOn=true;
+		}
+
+
 	}
 
 	private void pauseOrResumeCall() {
@@ -1757,7 +1775,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 								public void onAnimationStart(Animation animation) {
 									video.setEnabled(false); // HACK: Used to avoid controls from being hided if video is switched while controls are hiding
 									switchCamera.setVisibility(View.INVISIBLE);
-									changeVideoLayout.setVisibility(View.INVISIBLE);
+									toggleSpeaker.setVisibility(View.INVISIBLE);
 									isAnimatingHideControllers = true;
 								}
 
@@ -1879,7 +1897,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					transfer.setVisibility(View.INVISIBLE);
 				}
 				switchCamera.setVisibility(View.INVISIBLE);
-				changeVideoLayout.setVisibility(View.INVISIBLE);
+				toggleSpeaker.setVisibility(View.INVISIBLE);
 //				addCall.setVisibility(View.INVISIBLE);
 				animation.setAnimationListener(null);
 			}
@@ -1887,7 +1905,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 //		addCall.startAnimation(animation);
 		switchCamera.startAnimation(animation);
-		changeVideoLayout.startAnimation(animation);
+		toggleSpeaker.startAnimation(animation);
 	}
 
 	private void hideAnimatedLandscapeCallOptions() {
@@ -1907,7 +1925,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					transfer.setVisibility(View.INVISIBLE);
 				}
 				switchCamera.setVisibility(View.INVISIBLE);
-				changeVideoLayout.setVisibility(View.INVISIBLE);
+				toggleSpeaker.setVisibility(View.INVISIBLE);
 //				addCall.setVisibility(View.INVISIBLE);
 				animation.setAnimationListener(null);
 			}
@@ -1915,7 +1933,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 //		addCall.startAnimation(animation);
 		switchCamera.startAnimation(animation);
-		changeVideoLayout.startAnimation(animation);
+		toggleSpeaker.startAnimation(animation);
 	}
 
 	private void showAnimatedPortraitCallOptions() {
@@ -1933,7 +1951,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void onAnimationEnd(Animation animation) {
 
 				switchCamera.setVisibility(View.VISIBLE);
-				changeVideoLayout.setVisibility(View.VISIBLE);
+				toggleSpeaker.setVisibility(View.VISIBLE);
 				options.setSelected(true);
 //				addCall.setVisibility(View.VISIBLE);
 				animation.setAnimationListener(null);
@@ -1941,7 +1959,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		});
 //		addCall.startAnimation(animation);
 		switchCamera.startAnimation(animation);
-		changeVideoLayout.startAnimation(animation);
+		toggleSpeaker.startAnimation(animation);
 	}
 
 	private void showAnimatedLandscapeCallOptions() {
@@ -1959,14 +1977,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void onAnimationEnd(Animation animation) {
 
 				switchCamera.setVisibility(View.VISIBLE);
-				changeVideoLayout.setVisibility(View.VISIBLE);
+				toggleSpeaker.setVisibility(View.VISIBLE);
 				options.setSelected(true);
 //				addCall.setVisibility(View.VISIBLE);
 				animation.setAnimationListener(null);
 			}
 		});
 		switchCamera.startAnimation(animation);
-		changeVideoLayout.startAnimation(animation);
+		toggleSpeaker.startAnimation(animation);
 	}
 
 	private void hideOrDisplayAudioRoutes() {
@@ -1993,7 +2011,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (isAnimationDisabled) {
 //				addCall.setVisibility(View.INVISIBLE);
 				switchCamera.setVisibility(View.INVISIBLE);
-				changeVideoLayout.setVisibility(View.INVISIBLE);
+				toggleSpeaker.setVisibility(View.INVISIBLE);
 			} else {
 				if (isOrientationLandscape) {
 					hideAnimatedLandscapeCallOptions();
@@ -2008,7 +2026,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (isAnimationDisabled)
 			{
 				switchCamera.setVisibility(View.VISIBLE);
-				changeVideoLayout.setVisibility(View.VISIBLE);
+				toggleSpeaker.setVisibility(View.VISIBLE);
 			}
 			else
 			{
@@ -2108,8 +2126,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		refreshCallList(getResources());
 
 		handleViewIntent();
-
-		toggleSpeaker(isSpeakerMuted);
 
 		IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 		registerReceiver(myReceiver, filter);
