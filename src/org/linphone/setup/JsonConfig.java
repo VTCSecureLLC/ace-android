@@ -379,12 +379,12 @@ public class JsonConfig {
 				Log.d("can't display core values");
 			}
 			Log.d("Starting autoconfig download");
-			LinphoneActivity.instance().generic_ace_loading_dialog = new ProgressDialog(LinphoneActivity.instance());
-			LinphoneActivity.instance().generic_ace_loading_dialog.setCancelable(true);
-			LinphoneActivity.instance().generic_ace_loading_dialog.setMessage("Loading Auto Configuration Based on User...");
-			LinphoneActivity.instance().generic_ace_loading_dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			LinphoneActivity.instance().generic_ace_loading_dialog.setProgress(0);
-			LinphoneActivity.instance().generic_ace_loading_dialog.show();
+//			LinphoneActivity.instance().generic_ace_loading_dialog = new ProgressDialog(LinphoneActivity.instance());
+//			LinphoneActivity.instance().generic_ace_loading_dialog.setCancelable(true);
+//			LinphoneActivity.instance().generic_ace_loading_dialog.setMessage("Loading Auto Configuration Based on User...");
+//			LinphoneActivity.instance().generic_ace_loading_dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//			LinphoneActivity.instance().generic_ace_loading_dialog.setProgress(0);
+//			LinphoneActivity.instance().generic_ace_loading_dialog.show();
 
 		}
 		@Override
@@ -393,7 +393,7 @@ public class JsonConfig {
 			if (res != null) {
 				if (listener != null) {
 					listener.onParsed(res);
-					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
+//					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
 //					new AlertDialog.Builder(LinphoneActivity.instance())
 //							.setMessage("Configuration Loaded Successfully")
 //							.setTitle("Auto-Configuration")
@@ -406,7 +406,7 @@ public class JsonConfig {
 			} else {
 				if (listener != null) {
 					listener.onFailed(errorMsg);
-					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
+//					LinphoneActivity.instance().generic_ace_loading_dialog.cancel();
 //					new AlertDialog.Builder(LinphoneActivity.instance())
 //							.setMessage("Configuration Not Loaded")
 //							.setTitle("Auto-Configuration")

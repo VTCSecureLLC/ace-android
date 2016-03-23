@@ -1,17 +1,14 @@
 /*
 LinphoneLauncherActivity.java
 Copyright (C) 2011  Belledonne Communications, Grenoble, France
-
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -32,14 +29,16 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.mediastream.Log;
+import org.linphone.setup.AccountHelper;
+import org.linphone.setup.SetupActivity;
 
 import static android.content.Intent.ACTION_MAIN;
 
 
 /**
- * 
+ *
  * Launch Linphone main activity when Service is ready.
- * 
+ *
  * @author Guillaume Beraudo
  *
  */
@@ -47,11 +46,12 @@ public class LinphoneLauncherActivity extends Activity {
 
 	private Handler mHandler;
 	private ServiceWaitThread mThread;
+	boolean hasAccount;
+	boolean hasAcceptedRelease;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Used to change for the lifetime of the app the name used to tag the logs
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
 		Log.TAG = "Linphone";
 		// Hack to avoid to draw twice LinphoneActivity on tablets
@@ -61,34 +61,48 @@ public class LinphoneLauncherActivity extends Activity {
 		View view=LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
 		setContentView(view);
 		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.bounce));
-		mHandler = new Handler();
+		hasAccount = AccountHelper.hasAccount(this);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
 
-
-			if (LinphoneService.isReady()) {
-				onServiceReady();
-			} else {
-				// start linphone as background
-				startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
+		if(savedInstanceState == null)
+		{
+			mHandler = new Handler();
+			if(hasAccount && hasAcceptedRelease)
+			{
+				//start service
 				mThread = new ServiceWaitThread();
 				mThread.start();
+				startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
+
 			}
-
-
+			else {
+				mHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						onServiceReady();
+					}
+				}, 1000);
+			}
+		}
 
 
 	}
 
 	protected void onServiceReady() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean hasAcceptedRelease = prefs.getBoolean("accepted_legal_release", false);
+
 		final Class<? extends Activity> classToStart;
 		if(!hasAcceptedRelease){
 			classToStart = LegalRelease.class;
 		}
-		else {
-			classToStart = /*LoginMainActivity.class;//*/LinphoneActivity.class;
+		else if (!hasAccount) {
+			classToStart = /*LoginMainActivity.class;//*/SetupActivity.class;
 		}
-		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(classToStart);
+		else{
+			classToStart = LinphoneActivity.class;
+		}
+
+		//LinphoneService.instance().setActivityToLaunchOnIncomingReceived(classToStart);
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -102,12 +116,19 @@ public class LinphoneLauncherActivity extends Activity {
 
 	private class ServiceWaitThread extends Thread {
 		public void run() {
+
 			while (!LinphoneService.isReady()) {
 				try {
 					sleep(30);
 				} catch (InterruptedException e) {
 					throw new RuntimeException("waiting thread sleep() has been interrupted");
 				}
+			}
+
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 
 			mHandler.post(new Runnable() {
@@ -148,5 +169,3 @@ public class LinphoneLauncherActivity extends Activity {
 		// unregister other managers if necessary...
 	}
 }
-
-

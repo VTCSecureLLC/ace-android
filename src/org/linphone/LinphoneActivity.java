@@ -143,7 +143,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
 	private ChatFragment chatFragment;
 	private SavedState dialerSavedState;
-	private boolean newProxyConfig;
+	private boolean newProxyConfig, stopServiceOnDestroy;
 	private boolean isAnimationDisabled = false, preferLinphoneContacts = false;
 	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
@@ -188,14 +188,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
 				new AlertDialog.Builder(this)
-		        .setTitle(getString(R.string.location_for_911_disabled_title))
-		        .setMessage(getString(R.string.location_for_911_disabled_message))
-		        .setPositiveButton(R.string.button_ok,null)
-		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
-		            }
-		         })
+                        .setTitle(getString(R.string.location_for_911_disabled_title))
+                        .setMessage(getString(R.string.location_for_911_disabled_message))
+                        .setPositiveButton(R.string.button_ok,null)
+                        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
+                            }
+                        })
 		         .show();
 		}
 
@@ -228,6 +228,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				LinphonePreferences.instance().firstLaunchSuccessful();
 				first_launch_boolean=false;
 			//}
+			stopServiceOnDestroy = true;
+            		finish(); //service will be stoped when activity destroy is called
 
 		}
 
@@ -263,6 +265,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, dialerFragment, currentFragment.toString()).commit();
 				selectMenu(FragmentsAvailable.DIALER);
 			}
+            if (getIntent() != null && getIntent().hasExtra(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA)) {
+                String message = getIntent().getExtras().getBoolean(SetupActivity.AUTO_CONFIG_SUCCED_EXTRA, false) ? "Configuration Loaded Successfully" : "Configuration Not Loaded";
+                Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+                toast.show();
+            }
 		}
 
 		mListener = new LinphoneCoreListenerBase(){
@@ -1483,7 +1490,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
 
-
+		if (stopServiceOnDestroy && LinphoneService.isReady()) {
+            		stopService(new Intent(Intent.ACTION_MAIN).setClass(this, LinphoneService.class)); // when opening setupActivity service should be stoped
+        	}
 
 	}
 
@@ -2351,3 +2360,4 @@ interface ContactPicked {
 	void setAddresGoToDialerAndCall(String number, String name, Uri photo);
 	void goToDialer();
 }
+
