@@ -137,7 +137,17 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 		if(isSelfViewEnabled){
 			fixZOrder(mVideoView, mCaptureView);
 		}
-		LinphoneManager.getLc().setPreviewWindow(mCaptureView);
+
+		if(!((InCallActivity)getActivity()).isCameraMuted())
+		{
+			LinphoneManager.getLc().setPreviewWindow(mCaptureView);
+		}
+		else
+		{
+			LinphoneManager.getLc().setPreviewWindow(null);
+			mCaptureView.setVisibility(View.INVISIBLE);
+		}
+
 		androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView, new AndroidVideoWindowImpl.VideoWindowListener() {
 			@Override
 			public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
@@ -157,7 +167,8 @@ public class VideoCallFragment extends Fragment implements OnGestureListener, On
 			public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
 				mCaptureView = surface;
 				//	isH263();
-				LinphoneManager.getLc().setPreviewWindow(mCaptureView);
+				if(!((InCallActivity) getActivity()).isCameraMuted())
+					LinphoneManager.getLc().setPreviewWindow(mCaptureView);
 			}
 
 			@Override

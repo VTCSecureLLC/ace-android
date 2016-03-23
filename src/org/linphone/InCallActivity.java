@@ -324,7 +324,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					VideoCallFragment.cameraCover.setImageResource(R.drawable.camera_mute);
 					VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
 
-				}else if(info.getHeader("action").equals("isCameraMuted") || info.getHeader("action").equals("camera_mute_on")){
+				}else if(info.getHeader("action").equals("camera_mute_on")){
 					VideoCallFragment.cameraCover.setVisibility(View.GONE);
 
 				}
@@ -1470,51 +1470,46 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 
-	private void setCameraMute(boolean enabled)	{
+	private void setCameraMute(boolean muted)	{
 
-		isCameraMuted = enabled;
+		isCameraMuted = muted;
 
-		LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
+		final LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
 		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 
-		if (enabled) {
-			message.addHeader("action", "camera_mute_off");
-			LinphoneManager.getLc().setPreviewWindow(null);
-		} else {
-			message.addHeader("action", "isCameraMuted");
+		if (!muted) {
+			message.addHeader("action", "camera_mute_on");
+			if(VideoCallFragment.mCaptureView!=null)
+				VideoCallFragment.mCaptureView.setVisibility(View.VISIBLE);
 			LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
+		} else {
+			message.addHeader("action", "camera_mute_off");
+			if(VideoCallFragment.mCaptureView!=null)
+				VideoCallFragment.mCaptureView.setVisibility(View.INVISIBLE);
+			LinphoneManager.getLc().setPreviewWindow(null);
 		}
 
-		call.sendInfoMessage(message);
+
+		video.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				call.sendInfoMessage(message);
+
+			}
+		}, 3000);
 
 		//This line remains for other platforms. To force the video to unfreeze.
 
 	}
+	public boolean isCameraMuted()
+	{
+		return  isCameraMuted;
+	}
 
 	public void toggleCamera_mute() {
-		if (isCameraMuted) {
-			video.setSelected(false);
-
-			LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
-			message.addHeader("action", "isCameraMuted");
-			final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
-			call.sendInfoMessage(message);
-
-			//This line remains for other platforms. To force the video to unfreeze.
-			LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
-			isCameraMuted = false;
-		} else {
-			video.setSelected(true);
-
-			LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
-			message.addHeader("action", "camera_mute_off");
-			final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
-			call.sendInfoMessage(message);
-
-			//This line remains for other platforms. To force the video to freeze.
-			LinphoneManager.getLc().setPreviewWindow(null);
-			isCameraMuted = true;
-		}
+		video.setSelected(!isCameraMuted);
+		setCameraMute(!isCameraMuted);
+		
 	}
 
 	public void displayCustomToast(final String message, final int duration) {
