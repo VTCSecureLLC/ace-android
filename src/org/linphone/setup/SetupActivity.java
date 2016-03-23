@@ -105,13 +105,15 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
 								launchEchoCancellerCalibration(true);
 							}
-
+							//Only cancel login dialog if registration was successful, or failed. Dont cancel in try_tls_on_tcp_failure
+							mProgressDialog.dismiss();
 						} else if (state != RegistrationState.RegistrationProgress) {
 							int tcp_position=0;
 							int tls_position=1;
 
 							if(!tried_tls_on_tcp_failure && GenericLoginFragment.instance().transport.getSelectedItemPosition()==tcp_position){
 								//TLS is selection 1
+
 								trying_tls_on_tcp_failure=true;
 
 								deleteAccounts();
@@ -129,8 +131,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 
 							}else{
-								Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-								deleteAccounts();
+
 
 								if(trying_tls_on_tcp_failure){
 									//reset spinner and port in case of failure
@@ -142,8 +143,15 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 									}
 									trying_tls_on_tcp_failure=false;
 									tried_tls_on_tcp_failure=false;
+
+
+								}else{
+									//Couldn't register (Login)
+									mProgressDialog.dismiss();
+									Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
+									deleteAccounts();
 								}
-								//Couldn't register (Login)
+
 							}
 
 
@@ -360,12 +368,12 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				saveCreatedAccount(username, password, domain, userId, transport_type, port);
 				config.applySettings(transport_type, port);
 
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 			}
 
 			@Override
 			public void onFailed(String reason) {
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 				isJsonConfigSucceed = false;
 				try {
 					saveCreatedAccount(username, password, domain, userId, transport_type, port);
@@ -405,13 +413,13 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				saveCreatedAccount(sip_username, sip_password, sip_username, domain, transport_type, port);
 				config.applySettings(transport_type, port);
 
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 			}
 
 			@Override
 			public void onFailed(String reason) {
 				Toast.makeText(LinphoneManager.getInstance().getContext(), reason, Toast.LENGTH_LONG).show();
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 			}
 		});
 
