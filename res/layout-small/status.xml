@@ -226,8 +226,7 @@
 		        android:layout_centerVertical="true"
 		        android:src="@drawable/call_quality_indicator_0" 
 		        android:adjustViewBounds="true"
-		        android:layout_centerHorizontal="true"
-		        android:visibility="gone" />
+		        android:layout_centerHorizontal="true"/>
 		    
 		    <ImageView
 		        android:contentDescription="@string/content_description_encryption"

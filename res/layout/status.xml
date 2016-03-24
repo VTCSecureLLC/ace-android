@@ -449,14 +449,12 @@
 		    <ImageView
 		        android:contentDescription="@string/content_description_call_quality"
 		        android:id="@+id/callQuality"
-
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_centerVertical="true"
 		        android:src="@drawable/call_quality_indicator_0" 
 		        android:adjustViewBounds="true"
-		        android:layout_centerHorizontal="true"
-		        android:visibility="gone" />
+		        android:layout_centerHorizontal="true"/>
 		    
 		    <TextView
 		        android:id="@+id/exit"

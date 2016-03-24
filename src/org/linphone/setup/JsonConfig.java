@@ -85,6 +85,7 @@ public class JsonConfig {
 
 
 	public void applySettings(LinphoneAddress.TransportType transport_type, String port) {
+		//Apply default or autoconfig app settings here.
 		applyAudioCodecs();
 		applyVideoCodecs();
 		applyOtherConfig(transport_type, port);
@@ -197,6 +198,13 @@ public class JsonConfig {
 			if (_bwLimit != null)
 				lc.setVideoPreset(_bwLimit);
 		}
+
+		//VATRP-3143 set ipv6 enabled by default.
+		mPrefs.useIpv6(true);
+		//VATRP-3143 set ice enabled by default.
+		mPrefs.setIceEnabled(true);
+		//VATRP-
+		mPrefs.setStunServer(_sip_register_domain);
 	}
 
 
