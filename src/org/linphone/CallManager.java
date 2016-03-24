@@ -61,7 +61,9 @@ public class CallManager {
 		bm().updateWithProfileSettings(lc, params);
 		
 		String emergencyNumber = LinphonePreferences.instance().getConfig().getString("vtcsecure", "emergency_username", "911");
-		if (lAddress.getUserName().startsWith(emergencyNumber) && LinphoneActivity.isInstanciated()) {
+		String emergencyNumber_alt="+1"+emergencyNumber;
+
+		if ((lAddress.getUserName().startsWith(emergencyNumber)||lAddress.getUserName().startsWith(emergencyNumber_alt)) && LinphoneActivity.isInstanciated()) {
 			params.addCustomHeader("Geolocation", LinphoneLocationManager.instance(LinphoneActivity.instance()).userLocation());
 		}
 		
