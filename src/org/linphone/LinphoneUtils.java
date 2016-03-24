@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCore;
@@ -86,7 +87,22 @@ public final class LinphoneUtils {
 			return false;
 		}
 	}
-	
+
+	public static String getDomain(String sipaddress) {
+		if(!sipaddress.startsWith("sip:"))
+			sipaddress = "sip:" + sipaddress;
+		String res = null;
+		try {
+			LinphoneAddress address = LinphoneCoreFactory.instance().createLinphoneAddress(sipaddress);
+			if(address!=null)
+				res = address.getDomain();
+
+		} catch (LinphoneCoreException e) {
+			e.toString();
+		}
+		return  res;
+	}
+
 	public static boolean isNumberAddress(String numberOrAddress) {
 		LinphoneProxyConfig proxy = LinphoneManager.getLc().createProxyConfig();
 		if(proxy.normalizePhoneNumber(numberOrAddress) != null){

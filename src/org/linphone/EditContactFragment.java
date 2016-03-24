@@ -308,8 +308,9 @@ public class EditContactFragment extends Fragment {
 	@SuppressLint("InflateParams")
 	private View displayNumberOrAddress(final TableLayout controls, String numberOrAddress, boolean forceAddNumber) {
 		boolean isSip = LinphoneUtils.isStrictSipAddress(numberOrAddress) || !LinphoneUtils.isNumberAddress(numberOrAddress);
-		
+		String domain = null;
 		if (isSip) {
+			domain = LinphoneUtils.getDomain(numberOrAddress);
 			if (firstSipAddressIndex == -1) {
 				firstSipAddressIndex = controls.getChildCount();
 			}
@@ -321,7 +322,8 @@ public class EditContactFragment extends Fragment {
 			else
 				return null;
 		}
-		
+
+
 		NewOrUpdatedNumberOrAddress tempNounoa;
 		if (forceAddNumber) {
 			tempNounoa = new NewOrUpdatedNumberOrAddress(isSip);
@@ -375,7 +377,18 @@ public class EditContactFragment extends Fragment {
 		}
 		setProviderData(sp_provider, domains);
 		sp_provider.setTag(-1); //Setting tag to -1 infers no item has been selected, this prevents domain being overwritten
-		sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
+
+		int pos = -1;
+		if(domain!= null)
+		{
+			pos = CDNProviders.getInstance().getProviderPossition(domain);
+		}
+
+		if(pos!=-1)
+			sp_provider.setSelection(pos);
+		else
+			sp_provider.setSelection(CDNProviders.getInstance().getSelectedProviderPosition());
+
 		sp_provider.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
