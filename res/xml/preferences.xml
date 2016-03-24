@@ -384,9 +384,9 @@
 				android:key="@string/pref_autostart_key"
 				android:layout="@layout/hidden"/>
 
-			<CheckBoxPreference
-				android:title="@string/pref_auto_answer"
-				android:key="@string/pref_auto_answer_key"/>
+			<!--<CheckBoxPreference-->
+				<!--android:title="@string/pref_auto_answer"-->
+				<!--android:key="@string/pref_auto_answer_key"/>-->
 
 			<CheckBoxPreference
 				android:title="@string/pref_enable_packet_tagging"
