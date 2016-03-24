@@ -79,6 +79,24 @@ public class CDNProviders {
 		return position;
 	}
 
+	public int getProviderPossition(String domain)
+	{
+		if(providers==null || providers.size() ==0)
+			return -1;
+		int poss = -1;
+		int i = 0;
+		for (Provider pItem : providers) {
+			if (pItem.getDomain().equals(domain))
+			{
+				poss = i;
+				break;
+			}
+			i++;
+		}
+		return  poss;
+	}
+
+
 	public Provider getProvider(int poss) {
 		return providers.get(poss);
 	}
