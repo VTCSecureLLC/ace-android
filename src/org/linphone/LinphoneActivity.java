@@ -1828,8 +1828,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			final String tunnelGetMode = LC_Object_to_String(lc.tunnelGetMode());
 			final String tunnelGetServers = LC_Object_to_String(lc.tunnelGetServers());
 			final String tunnelSipEnabled = LC_Object_to_String(lc.tunnelSipEnabled());
-
-
+			final boolean HWAcellDecode = lc.getMSFactory().filterFromNameEnabled("MSMediaCodecH264Dec");
+			final boolean HWAcellEncode = lc.getMSFactory().filterFromNameEnabled("MSMediaCodecH264Enc");
 			final String CameraParameters = "--------Device Camera Stats---------";
 
 
@@ -1924,10 +1924,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			Log.d("tunnelGetMode,", tunnelGetMode);
 			Log.d("tunnelGetServers,", tunnelGetServers);
 			Log.d("tunnelSipEnabled,", tunnelSipEnabled);
-
+			Log.d("HWAccelDecode,", HWAcellDecode);
+			Log.d("HWAccelEncode,", HWAcellEncode);
 			Log.d("CameraParameters,", CameraParameters);
-
-
 			new Thread() {
 				public void run() {
 					try {
@@ -2038,6 +2037,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						fw.append("tunnelGetMode," + tunnelGetMode + "\n");
 						fw.append("tunnelGetServers," + tunnelGetServers + "\n");
 						fw.append("tunnelSipEnabled," + tunnelSipEnabled + "\n");
+						fw.append("HWAccelDecode," + HWAcellDecode + "\n");
+						fw.append("HWAccelEncode,"+HWAcellEncode+"\n");
 						fw.append("CameraParameters," + CameraParameters + "\n");
 						fw.close();
 
@@ -2161,6 +2162,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			stats_list.add("tunnelGetMode," + tunnelGetMode);
 			stats_list.add("tunnelGetServers," + tunnelGetServers);
 			stats_list.add("tunnelSipEnabled," + tunnelSipEnabled);
+			stats_list.add("HWAccelDecode,"+ HWAcellDecode);
+			stats_list.add("HWAccelEncode," + HWAcellEncode);
+
 			stats_list.add("CameraParameters," + CameraParameters);
 		}catch(Throwable e){
 			e.printStackTrace();
