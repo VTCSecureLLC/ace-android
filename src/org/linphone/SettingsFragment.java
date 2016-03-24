@@ -821,20 +821,20 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		((CheckBoxPreference) findPreference(getString(R.string.pref_wifi_only_key))).setChecked(mPrefs.isWifiOnlyEnabled());
 
-		CheckBoxPreference autoAnswer = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_answer_key));
-		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
-
-		if (auto_answer) {
-			autoAnswer.setChecked(true);
-			autoAnswer.setEnabled(true);
-			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
-			editor.commit();
-		} else {
-			autoAnswer.setChecked(false);
-			autoAnswer.setEnabled(true);
-			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
-			editor.commit();
-		}
+//		CheckBoxPreference autoAnswer = (CheckBoxPreference) findPreference(getString(R.string.pref_auto_answer_key));
+//		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
+//
+//		if (auto_answer) {
+//			autoAnswer.setChecked(true);
+//			autoAnswer.setEnabled(true);
+//			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
+//			editor.commit();
+//		} else {
+//			autoAnswer.setChecked(false);
+//			autoAnswer.setEnabled(true);
+//			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
+//			editor.commit();
+//		}
 
 
 		//if(isAdvancedSettings) {
@@ -1578,19 +1578,19 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 
 
-		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
-
-		if (auto_answer) {
-			autoAnswer.setChecked(true);
-			autoAnswer.setEnabled(true);
-			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
-			editor.commit();
-		} else {
-			autoAnswer.setChecked(false);
-			autoAnswer.setEnabled(true);
-			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
-			editor.commit();
-		}
+//		boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), this.getResources().getBoolean(R.bool.auto_answer_calls));
+//
+//		if (auto_answer) {
+//			autoAnswer.setChecked(true);
+//			autoAnswer.setEnabled(true);
+//			editor.putBoolean(getString(R.string.pref_auto_answer_key), true);
+//			editor.commit();
+//		} else {
+//			autoAnswer.setChecked(false);
+//			autoAnswer.setEnabled(true);
+//			editor.putBoolean(getString(R.string.pref_auto_answer_key), false);
+//			editor.commit();
+//		}
 
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_voice_mail_key, mPrefs.getVoiceMailUri());
