@@ -1311,6 +1311,10 @@ public class SettingsFragment extends PreferencesListFragment {
 		String uploadBW = "upload_bandwidth = " + String.valueOf(lc.getUploadBandwidth());
 		values.add(uploadBW);
 
+        final boolean HWAcellDecode = lc.getMSFactory().filterFromNameEnabled("MSMediaCodecH264Dec");
+        final boolean HWAcellEncode = lc.getMSFactory().filterFromNameEnabled("MSMediaCodecH264Enc");
+        values.add("HWAccelDecode = " + HWAcellDecode); 
+        values.add("HWAccelEncode = " + HWAcellEncode);
 		for(int i = 0; i < values.size(); i++){
 			config = config + values.get(i) + "\n";
 		}
