@@ -129,8 +129,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 					isCalled = true;
 					return;
 				}
-
 				CDNProviders.getInstance().setSelectedProvider(position);
+				mAddress.setTag(CDNProviders.getInstance().getSelectedProvider().getDomain());
 			}
 
 			@Override
