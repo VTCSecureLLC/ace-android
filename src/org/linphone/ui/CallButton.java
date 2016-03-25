@@ -68,10 +68,11 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 							name = oldAddr.substring(0, domainStart);
 						}
 						//Combine username with new address to get the proper SIP uri
-						String fullAddr = name + mAddress.getTag();
+						String fullAddr = name + "@" + mAddress.getTag();
 						mAddress.setText(fullAddr);
 						mAddress.setDisplayedName(mAddress.getText().toString());
 						mAddress.setTag(null);
+						LinphoneManager.getInstance().newOutgoingCall(mAddress);
 					}
 					else {
 						LinphoneManager.getInstance().newOutgoingCall(mAddress);

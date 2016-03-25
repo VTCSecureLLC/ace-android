@@ -36,6 +36,7 @@ public class CDNProviders {
 	public static CDNProviders getInstance() {
 		if (instance == null) {
 			instance = new CDNProviders();
+			instance.load();
 		}
 		return instance;
 	}
@@ -53,7 +54,6 @@ public class CDNProviders {
 
 	private void load() {
 		//Load cached providers and their domains
-
 		String json = sharedPreferences.getString(PROVIDERS_KEY, "");
 		if (json.length() > 0)
 			updateProviders(json, false);
@@ -107,13 +107,11 @@ public class CDNProviders {
 				this.selectedProvider = provider1;
 				try {
 					SharedPreferences.Editor editor = sharedPreferences.edit();
-					editor.putString(SELECTED_PROVIDER_NAME, provider1.getName());
-					editor.commit();
+					editor.putString(SELECTED_PROVIDER_NAME, provider1.getName()).apply();
 				}catch(Throwable e){
-
+						e.printStackTrace();
 				}
 				break;
-
 			}
 		}
 	}
