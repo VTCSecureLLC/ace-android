@@ -1041,7 +1041,7 @@ public class LinphonePreferences {
 	}
 
 	public boolean areAnimationsEnabled() {
-		return getConfig().getBool("app", "animations", true);
+		return getConfig().getBool("app", "animations", false);
 	}
 
 	public boolean isAutoStartEnabled() {
