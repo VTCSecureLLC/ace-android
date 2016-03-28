@@ -1359,7 +1359,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		else if (id == R.id.toggleChat) {
 			if(isRTTEnabled) {
-				toggle_chat();
+				try {
+					toggle_chat();
+				}catch(Throwable e){
+					e.printStackTrace();
+				}
 			}
 			else{
 				Toast.makeText(InCallActivity.this, "RTT has been disabled for this call", Toast.LENGTH_SHORT).show();
