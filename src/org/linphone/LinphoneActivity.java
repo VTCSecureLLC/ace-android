@@ -21,6 +21,7 @@ package org.linphone;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -34,6 +35,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -1345,8 +1347,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	public void exit() {
-		finish();
 		stopService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
+			exitApi16();
+		} else{
+			finish();
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void exitApi16(){
+		finishAffinity();
 	}
 
 	@Override
