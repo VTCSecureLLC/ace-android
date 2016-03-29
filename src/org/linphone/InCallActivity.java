@@ -2211,6 +2211,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if (!isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 			LinphoneManager.stopProximitySensorForActivity(this);
 		}
+
 	}
 
 	@Override
@@ -2234,6 +2235,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		instance = null;
 		super.onDestroy();
 		System.gc();
+
+		if(wakeLock.isHeld()) {
+			wakeLock.release();
+		}
 	}
 
 	private void unbindDrawables(View view) {
