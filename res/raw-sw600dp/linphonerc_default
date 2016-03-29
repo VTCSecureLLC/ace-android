@@ -56,7 +56,7 @@ mime=VP8
 rate=90000
 enabled=1
 
-[video_codec_4]
+[video_codec_3]
 mime=MP4V-ES
 rate=90000
 enabled=0
