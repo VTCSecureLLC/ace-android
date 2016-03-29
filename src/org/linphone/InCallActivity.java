@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -192,6 +193,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private RelativeLayout mInComingCallHeader;
 	private RelativeLayout mInPassiveCallHeader;
 
+	private PowerManager powerManager;
+	private PowerManager.WakeLock wakeLock;
+	private int field = 0x00000020;
+
 	private HeadPhoneJackIntentReceiver myReceiver;
 
 	public static InCallActivity instance() {
@@ -206,6 +211,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("ttt onCreate()");
+
+		try {
+			// Yeah, this is hidden field.
+			field = PowerManager.class.getField("PROXIMITY_SCREEN_OFF_WAKE_LOCK").getInt(null);
+		} catch (Throwable ignored) {
+		}
+
+		powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+		wakeLock = powerManager.newWakeLock(field, getLocalClassName());
 
 		instance = this;
 
@@ -1638,9 +1652,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(isSpeakerOn){
 			LinphoneManager.getInstance().routeAudioToReceiver();
 			isSpeakerOn=false;
+			if(!wakeLock.isHeld()) {
+				wakeLock.acquire();
+			}
+
+
 		}else{
 			LinphoneManager.getInstance().routeAudioToSpeaker();
 			isSpeakerOn=true;
+			if(wakeLock.isHeld()) {
+				wakeLock.release();
+			}
 		}
 
 
