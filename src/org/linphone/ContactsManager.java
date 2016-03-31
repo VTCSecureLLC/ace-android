@@ -20,8 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -45,8 +48,8 @@ import java.util.List;
 
 public class ContactsManager {
 	private static ContactsManager instance;
-	private List<Contact> contactList, sipContactList;
-	private Cursor contactCursor, sipContactCursor;
+	private List<Contact> contactList, sipContactList, favoriteContactList;
+	private Cursor contactCursor, sipContactCursor, favoriteContactCursor;
 	private Account mAccount;
 	private boolean preferLinphoneContacts = false, isContactPresenceDisabled = true;
 	private ContentResolver contentResolver;
@@ -67,12 +70,20 @@ public class ContactsManager {
 		return sipContactList;
 	}
 
+	public List<Contact> getFavoriteContacts() {
+		return favoriteContactList;
+	}
+
 	public Cursor getAllContactsCursor() {
 		return contactCursor;
 	}
 
 	public Cursor getSIPContactsCursor() {
 		return sipContactCursor;
+	}
+
+	public Cursor getFavoriteContactsCursor() {
+		return favoriteContactCursor;
 	}
 
 	public void setLinphoneContactsPrefered(boolean isPrefered) {
@@ -193,7 +204,22 @@ public class ContactsManager {
 
 	}
 
-//Manage Linphone Friend if we cannot use Sip address
+	/**
+	 * Given a contact id, update the contact corresponding to that contactId so that it now shows
+	 * up in the user's favorites/starred contacts.
+	 *
+	 * @param contactId Contact ID corresponding to the contact to star
+	 */
+	public static void starContact(Activity activity, Long contactId, Boolean favoritesStatus) {
+		int is_starred_boolean = (favoritesStatus) ? 1 : 0;
+		ContentValues values = new ContentValues();
+		values.put(ContactsContract.Contacts.STARRED, is_starred_boolean);
+		activity.getContentResolver().update(ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId), values,
+				null, null);
+	}
+
+
+	//Manage Linphone Friend if we cannot use Sip address
 	public boolean createNewFriend(Contact contact, String sipUri) {
 		if (!sipUri.startsWith("sip:")) {
 			sipUri = "sip:" + sipUri;
@@ -453,6 +479,15 @@ public class ContactsManager {
 				break;
 			}
 		}
+
+		for (Contact c : favoriteContactList) {
+			if (c != null && c.getID().equals(contact.getID())) {
+				favoriteContactList.remove(c);
+				favoriteContactCursor = Compatibility.getFavoriteContactsCursor(contentResolver, getContactsId());
+				break;
+			}
+		}
+
 	}
 
 	public boolean isContactHasAddress(Contact contact, String address){
@@ -589,8 +624,12 @@ public class ContactsManager {
 		if (sipContactCursor != null) {
 			sipContactCursor.close();
 		}
+		if (favoriteContactCursor != null) {
+			favoriteContactCursor.close();
+		}
 
 		contactCursor = Compatibility.getContactsCursor(contentResolver, getContactsId());
+		favoriteContactCursor = Compatibility.getFavoriteContactsCursor(contentResolver, getContactsId());
 		sipContactCursor = Compatibility.getSIPContactsCursor(contentResolver, getContactsId());
 		Thread sipContactsHandler = new Thread(new Runnable() {
 			@Override
@@ -611,6 +650,24 @@ public class ContactsManager {
 						}
 
 						sipContactList.add(contact);
+					}
+				}
+				if(favoriteContactCursor != null && favoriteContactCursor.getCount() > 0) {
+					for (int i = 0; i < favoriteContactCursor.getCount(); i++) {
+						Contact contact = Compatibility.getContact(contentResolver, favoriteContactCursor, i);
+						if (contact == null)
+							continue;
+
+						contact.refresh(contentResolver);
+						//Add tag to Linphone contact if it not existed
+						if (LinphoneActivity.isInstanciated()) {
+							if (!isContactHasLinphoneTag(contact, contentResolver)) {
+								Compatibility.createLinphoneContactTag(context, contentResolver, contact,
+										findRawContactID(contentResolver, String.valueOf(contact.getID())));
+							}
+						}
+
+						favoriteContactList.add(contact);
 					}
 				}
 				if (contactCursor != null) {
@@ -639,6 +696,7 @@ public class ContactsManager {
 
 		contactList = new ArrayList<Contact>();
 		sipContactList = new ArrayList<Contact>();
+		favoriteContactList = new ArrayList<Contact>();
 
 		sipContactsHandler.start();
 	}

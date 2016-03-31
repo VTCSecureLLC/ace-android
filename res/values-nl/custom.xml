@@ -20,6 +20,6 @@
   <string name="setup_linphone_account_hint">Vul uw linphone.org-gebruikersnaam en -wachtwoord in</string>
   <string name="setup_general_account_hint">Vul uw SIP-account-gebruikersnaam, -wachtwoord en -domeinnaam in</string>
   <string name="setup_username_hint">gebruikersnaam</string>
-  <string name="button_sip_contacts">SIP</string>
+  <string name="button_favorite_contacts">SIP</string>
   <string name="tunnel_host"></string>
 </resources>

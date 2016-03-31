@@ -17,17 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.net.Uri;
 
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneFriend;
 
-import android.content.ContentResolver;
-import android.graphics.Bitmap;
-import android.net.Uri;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Sylvain Berfini
@@ -42,6 +42,7 @@ public class Contact implements Serializable {
 	private transient Bitmap photo;
 	private List<String> numbersOrAddresses;
 	private boolean hasFriends;
+	private boolean isFavorite;
 	
 	public Contact(String id, String name) {
 		super();
@@ -50,6 +51,7 @@ public class Contact implements Serializable {
 		this.photoUri = null;
 		this.thumbnailUri = null;
 		this.hasFriends = false;
+		this.isFavorite = false;
 	}
 	
 	public Contact(String id, String name, Uri photo, Uri thumbnail) {
@@ -60,6 +62,7 @@ public class Contact implements Serializable {
 		this.thumbnailUri = thumbnail;
 		this.photo = null;
 		this.hasFriends = false;
+		this.isFavorite = false;
 	}
 	
 	public Contact(String id, String name, Uri photo, Uri thumbnail, Bitmap picture) {
@@ -70,13 +73,21 @@ public class Contact implements Serializable {
 		this.thumbnailUri = thumbnail;
 		this.photo = picture;
 		this.hasFriends = false;
+		this.isFavorite = false;
 	}
 
 
 	public boolean hasFriends() {
 		return hasFriends;
 	}
-	
+
+	public boolean isFavorite() {
+		return isFavorite;
+	}
+	public void setFavorite(boolean value) {
+		isFavorite=value;
+	}
+
 	public String getID() {
 		return id;
 	}

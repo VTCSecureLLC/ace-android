@@ -42,10 +42,10 @@
 			android:layout_weight="1"/>
 
 		<TextView
-			android:contentDescription="@string/content_description_linphone_contacts"
-			android:id="@+id/linphoneContacts"
+			android:contentDescription="@string/content_description_ace_favorites"
+			android:id="@+id/aceFavorites"
 			android:background="@drawable/contacts_sip"
-			android:text="@string/button_sip_contacts"
+			android:text="@string/button_favorite_contacts"
 			android:gravity="center"
 			android:paddingTop="20dp"
 			android:textSize="13sp"
@@ -119,13 +119,24 @@
 			android:dividerHeight="1dp" />
 
 		<TextView
+			android:id="@+id/noFavoriteContact"
+			android:visibility="gone"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:layout_centerVertical="true"
+			android:text="@string/no_favorite_contact"
+			android:textColor="@drawable/text_color"
+			android:textAppearance="@android:style/TextAppearance.Large"/>
+
+		<TextView
 			android:id="@+id/noSipContact"
 			android:visibility="gone"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:layout_centerVertical="true"
-			android:text="@string/no_sip_contact"
+			android:text="@string/no_favorite_contact"
 			android:textColor="@drawable/text_color"
 			android:textAppearance="@android:style/TextAppearance.Large"/>
 

@@ -230,7 +230,7 @@
   <string name="no_call_history">لا وجود لأي مكالمة في التاريخ.</string>
   <string name="no_missed_call_history">لا وجود لأي مكالمة فائتة في التاريخ.</string>
   <string name="no_contact">لا وجود لأي جهة اتصال في دفتر عناوينك.</string>
-  <string name="no_sip_contact">لا وجود لأي جهة اتصال SIP في دفتر عناوينك.</string>
+  <string name="no_favorite_contact">لا وجود لأي جهة اتصال SIP في دفتر عناوينك.</string>
   <string name="no_chat_history">لا وجود لتاريخ أي محادثة.</string>
   <string name="call_stats_audio">الصوت</string>
   <string name="call_stats_video">الفيديو</string>
@@ -257,7 +257,7 @@
   <string name="content_description_validate">التحقق من الزر</string>
   <string name="content_description_search">بحث</string>
   <string name="content_description_all_contacts">كل جهات الاتصال</string>
-  <string name="content_description_linphone_contacts">جهات اتصال Linphone</string>
+  <string name="content_description_ace_favorites">جهات اتصال Linphone</string>
   <string name="content_description_call_direction">اتجاه الاتصال</string>
   <string name="content_description_all_calls">كل الاتصالات</string>
   <string name="content_description_missed_calls">الاتصالات الفائتة</string>

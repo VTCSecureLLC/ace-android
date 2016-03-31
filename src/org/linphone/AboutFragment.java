@@ -157,7 +157,7 @@ public class AboutFragment extends Fragment implements OnClickListener, EnterTex
 			editor.putBoolean("advanced_settings_enabled", true);
 			editor.commit();
 
-			boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
+//			boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
 			SettingsFragment.isAdvancedSettings = true;
 			Toast.makeText(getActivity(), "Advanced settings unlocked", Toast.LENGTH_SHORT).show();
 		}

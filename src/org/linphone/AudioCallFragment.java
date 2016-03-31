@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,19 +26,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-
-import org.linphone.R;
+import android.widget.FrameLayout;
 
 /**
  * @author Sylvain Berfini
  */
 public class AudioCallFragment extends Fragment {	
 	private InCallActivity incallActvityInstance;
-	
+	private View view;
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, 
         Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.audio, container, false);
+		view = inflater.inflate(R.layout.audio, container, false);
         return view;
     }
 
@@ -58,6 +58,7 @@ public class AudioCallFragment extends Fragment {
 		// Just to be sure we have incall controls
 		if (incallActvityInstance != null) {
 			incallActvityInstance.setCallControlsVisibleAndRemoveCallbacks();
+			incallActvityInstance.startOutgoingRingCount((FrameLayout)view.findViewById(R.id.audioContainer));
 		}
 	}
 	

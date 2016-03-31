@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="video_surface_view_width">130dp</dimen>
+    <dimen name="video_surface_view_height">155dp</dimen>
+</resources>

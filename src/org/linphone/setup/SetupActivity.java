@@ -72,6 +72,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	static int WIFI_ACTIVITY_RESULT=0;
 
+	public static boolean tried_tls_on_tcp_failure =false;
+	public static boolean trying_tls_on_tcp_failure=false;
+
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -102,10 +105,57 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 							if (LinphoneManager.getLc().getDefaultProxyConfig() != null) {
 								launchEchoCancellerCalibration(true);
 							}
-
+							//Only cancel login dialog if registration was successful, or failed. Dont cancel in try_tls_on_tcp_failure
+							mProgressDialog.dismiss();
 						} else if (state != RegistrationState.RegistrationProgress) {
-							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-							deleteAccounts();
+							int tcp_position=0;
+							int tls_position=1;
+
+							if(!tried_tls_on_tcp_failure && GenericLoginFragment.instance().transport.getSelectedItemPosition()==tcp_position){
+								//TLS is selection 1
+
+								trying_tls_on_tcp_failure=true;
+
+								deleteAccounts();
+								//Couldn't register TCP, trying TLS(Login)
+								Toast.makeText(SetupActivity.this, "Initial Login attempt with TCP failed, trying TLS", Toast.LENGTH_SHORT).show();
+
+								GenericLoginFragment.instance().transport.setSelection(tls_position);
+								try {
+									GenericLoginFragment.instance().port.setText(GenericLoginFragment.instance().port.getText().toString().replace("5060", "5061"));
+								}catch(Throwable e){
+									e.printStackTrace();
+								}
+								GenericLoginFragment.instance().login_button.performClick();
+								tried_tls_on_tcp_failure =true;
+
+
+							}else{
+
+
+								if(trying_tls_on_tcp_failure){
+									//reset spinner and port in case of failure
+									GenericLoginFragment.instance().transport.setSelection(tcp_position);
+									try {
+										GenericLoginFragment.instance().port.setText(GenericLoginFragment.instance().port.getText().toString().replace("5061", "5060"));
+									}catch(Throwable e){
+										e.printStackTrace();
+									}
+									trying_tls_on_tcp_failure=false;
+									tried_tls_on_tcp_failure=false;
+
+
+								}else{
+									//Couldn't register (Login)
+									mProgressDialog.dismiss();
+									Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
+									deleteAccounts();
+								}
+
+							}
+
+
+
 						}
 					}
 				}
@@ -318,12 +368,12 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				saveCreatedAccount(username, password, domain, userId, transport_type, port);
 				config.applySettings(transport_type, port);
 
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 			}
 
 			@Override
 			public void onFailed(String reason) {
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 				isJsonConfigSucceed = false;
 				try {
 					saveCreatedAccount(username, password, domain, userId, transport_type, port);
@@ -363,13 +413,13 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 				saveCreatedAccount(sip_username, sip_password, sip_username, domain, transport_type, port);
 				config.applySettings(transport_type, port);
 
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 			}
 
 			@Override
 			public void onFailed(String reason) {
 				Toast.makeText(LinphoneManager.getInstance().getContext(), reason, Toast.LENGTH_LONG).show();
-				mProgressDialog.dismiss();
+				//mProgressDialog.dismiss();
 			}
 		});
 

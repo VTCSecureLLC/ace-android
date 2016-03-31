@@ -47,3 +47,6 @@ liblinphone_tester/tests.output
 tests/linphonetester_*
 tests/tests.output
 WORK
+test_servers
+screenshot_*.png
+ace-android*.iml

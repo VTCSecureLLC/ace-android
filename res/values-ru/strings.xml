@@ -217,7 +217,7 @@
   <string name="no_call_history">Нет звонков в вашей истории.</string>
   <string name="no_missed_call_history">Нет пропущенных звонков в вашей истории.</string>
   <string name="no_contact">Нет контакта в Вашей адресной книге.</string>
-  <string name="no_sip_contact">Нет SIP контакта в Вашей адресной книге.</string>
+  <string name="no_favorite_contact">Нет SIP контакта в Вашей адресной книге.</string>
   <string name="no_chat_history">Нет истории чата.</string>
   <string name="call_stats_audio">Аудио</string>
   <string name="call_stats_video">Видео</string>

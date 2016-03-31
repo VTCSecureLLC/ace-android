@@ -88,6 +88,7 @@ public class IncomingCallActivity extends Activity {
 	private boolean terminated = false;
     private int ringCount = 0;
 	private LinearLayout mCallLaterLayout;
+	private TextView mOutgoingRingCountTextView;
 
 	public static IncomingCallActivity instance() {
 		return instance;
@@ -170,6 +171,8 @@ public class IncomingCallActivity extends Activity {
 		findViewById(R.id.label_call_later).setOnClickListener(onClickListener);
 		findViewById(R.id.label_whats_up).setOnClickListener(onClickListener);
 		findViewById(R.id.label_in_meeting).setOnClickListener(onClickListener);
+
+		mOutgoingRingCountTextView = (TextView)findViewById(R.id.label_incoming_first_call_count);
 
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
@@ -365,7 +368,6 @@ public class IncomingCallActivity extends Activity {
 				});
 			}
 		}, 0, (long) (vibrateFrequencyInSeconds * 1000));
-
 	}
 
 	private void flashTorch() {
@@ -447,18 +449,13 @@ public class IncomingCallActivity extends Activity {
 	}
 
     private void incrementRingCount() {
-//        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
-//        outgoingRingCountTextView.setVisibility(View.VISIBLE);
-//        ringCount++;
-//        outgoingRingCountTextView.setText(ringCount + "");
-
+		mOutgoingRingCountTextView.setVisibility(View.VISIBLE);
+        ringCount++;
+		mOutgoingRingCountTextView.setText(String.valueOf(ringCount));
     }
 
     private void stopRingCount() {
-//        ringCount = 0;
-//        final TextView outgoingRingCountTextView = (TextView)findViewById(R.id.outboundRingCount);
-//        outgoingRingCountTextView.setVisibility(View.GONE);
-//        outgoingRingCountTextView.setText(ringCount + "");
-
+        ringCount = 0;
+		mOutgoingRingCountTextView.setVisibility(View.GONE);
     }
 }

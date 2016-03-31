@@ -75,7 +75,7 @@
   <string name="pref_audio_hacks_use_routing_api_title">Use routing API hack</string>
   <string name="pref_audio_hacks_use_galaxys_hack_title">Use Galaxy S audio hack</string>
   <string name="pref_audio_soft_volume_title">Use software volume</string>
-  <string name="pref_ipv6_title">Use ipv6 instead of ipv4</string>
+  <string name="pref_ipv6_title">Enable IPv6</string>
   <string name="error_while_accepting_pending_call">Error while accepting pending call</string>
   <string name="incoming_call_dialog_title">%s is calling you</string>
   <string name="accept">Accept</string>
@@ -128,7 +128,7 @@
   <string name="pref_ilbc_summary">iLBC might be unavailable depending on ARM processor and Android OS version.</string>
   <string name="pref_echo_cancellation">Echo cancellation</string>
   <string name="pref_autostart">Start at boot time</string>
-  <string name="pref_enable_packet_tagging">Packet Tagging</string>
+  <string name="pref_enable_packet_tagging">Enable QoS</string>
   <string name="pref_enable_outbound_proxy">Outbound proxy</string>
 
   <string name="pref_codecs">Codecs</string>
@@ -246,7 +246,7 @@
   <string name="no_call_history">No call in your history.</string>
   <string name="no_missed_call_history">No missed call in your history.</string>
   <string name="no_contact">No contact in your address book.</string>
-  <string name="no_sip_contact">No SIP contact in your address book.</string>
+  <string name="no_favorite_contact">No Favorite contact in your address book.</string>
   <string name="no_chat_history">No chat history.</string>
   <string name="call_stats_audio">Audio</string>
   <string name="call_stats_video">Video</string>
@@ -273,7 +273,7 @@
   <string name="content_description_validate">Validate button</string>
   <string name="content_description_search">Search</string>
   <string name="content_description_all_contacts">All contacts</string>
-  <string name="content_description_linphone_contacts">VTCSecure contacts</string>
+  <string name="content_description_ace_favorites">ACE favorites</string>
   <string name="content_description_call_direction">Call direction</string>
   <string name="content_description_all_calls">All calls</string>
   <string name="content_description_missed_calls">Missed calls</string>
@@ -514,4 +514,11 @@
 
   <string name="unlock_adv_settings">Unlock Advanced Settings</string>
   <string name="call_back">I\'ll call you back</string>
+  <string name="pref_enable_packet_audio_dscp">pref_enable_packet_audio_dscp</string>
+  <string name="pref_enable_packet_video_dscp">pref_enable_packet_video_dscp</string>
+  <string name="pref_enable_packet_sip_dscp">pref_enable_packet_sip_dscp</string>
+  <string name="title_audio_dscp">Audio DSCP</string>
+  <string name="title_video_dscp">Video DSCP</string>
+  <string name="title_sip_dscp">Sip DSCP</string>
+  <string name="pref_theme_is_fotce">pref_theme_is_fotce</string>
 </resources>

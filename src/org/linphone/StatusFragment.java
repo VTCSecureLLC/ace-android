@@ -358,24 +358,24 @@ public class StatusFragment extends Fragment {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	void updateQualityOfSignalIcon(int quality) {
 
-		if(quality<=1)
-		{
-			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_bad);
-		}
-		else if (quality==2)
-		{
-			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_normal);
-		}
-		else
-		{
-			int sdk = android.os.Build.VERSION.SDK_INT;
-			if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-				qualityIdentifier.setBackgroundDrawable(null);
-			} else {
-				qualityIdentifier.setBackground(null);
-			}
-		}
-/*
+//		if(quality<=1)
+//		{
+//			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_bad);
+//		}
+//		else if (quality==2)
+//		{
+//			qualityIdentifier.setBackgroundResource(R.drawable.call_quality_normal);
+//		}
+//		else
+//		{
+//			int sdk = android.os.Build.VERSION.SDK_INT;
+//			if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+//				qualityIdentifier.setBackgroundDrawable(null);
+//			} else {
+//				qualityIdentifier.setBackground(null);
+//			}
+//		}
+
 		if (quality >= 4) // Good Quality
 		{
 			callQuality.setImageResource(
@@ -396,7 +396,7 @@ public class StatusFragment extends Fragment {
 		{
 			callQuality.setImageResource(
 					R.drawable.call_quality_indicator_0);
-		}*/
+		}
 	}
 	
 	@Override
@@ -545,8 +545,6 @@ public class StatusFragment extends Fragment {
 				final TextView getRoundTripDelay = (TextView) view.findViewById(R.id.getRoundTripDelay);
 				final TextView getSenderInterarrivalJitter = (TextView) view.findViewById(R.id.getSenderInterarrivalJitter);
 				final TextView getSenderLossRate = (TextView) view.findViewById(R.id.getSenderLossRate);
-				final TextView sentFpsRate = (TextView) view.findViewById(R.id.sentFpsRate);
-				final TextView receivedFpsRate = (TextView) view.findViewById(R.id.receivedFpsRate);
 
 				final View videoResolutionLayout = view.findViewById(R.id.video_resolution_layout);
 
