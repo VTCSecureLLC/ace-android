@@ -446,9 +446,9 @@ public final class LinphoneService extends Service {
 		} else {
 			bm = BitmapFactory.decodeResource(getResources(), R.drawable.unknown_small);
 		}
-		//mMsgNotif = Compatibility.createMessageNotification(getApplicationContext(), mMsgNotifCount, fromName, message, bm, notifContentIntent);
+	 	Notification mMsgNotif = Compatibility.createMessageNotification(getApplicationContext(), 1, fromName, message, bm, notifContentIntent);
 		
-		//notifyWrapper(MESSAGE_NOTIF_ID, mMsgNotif);
+		notifyWrapper(MESSAGE_NOTIF_ID, mMsgNotif);
 	}
 	
 	public void removeMessageNotification() {

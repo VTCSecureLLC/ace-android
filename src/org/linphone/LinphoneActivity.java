@@ -292,10 +292,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
-				if(!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
-					cr.markAsRead();
-				}
-		        //displayMissedChats(getChatStorage().getUnreadMessageCount());
 		        if (messageListFragment != null && messageListFragment.isVisible()) {
 		            ((ChatListFragment) messageListFragment).refresh();
 		        }
