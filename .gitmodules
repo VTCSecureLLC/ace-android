@@ -1,6 +1,6 @@
 [submodule "linphone"]
 	path = submodules/linphone
-	url = git://git.linphone.org/linphone.git
+	url = git://github.com/VTCSecure/linphone.git
 [submodule "submodules/externals/gsm"]
 	path = submodules/externals/gsm
 	url = git://git.linphone.org/gsm.git
