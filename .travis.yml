@@ -39,6 +39,8 @@ addons:
     - ruby
     - cmake
     - python
+  sources:
+        - kalakris-cmake
 cache:
   apt: true
   bundler: true
