@@ -37,6 +37,7 @@ addons:
     - bc
     - libwww-perl
     - ruby
+    - cmake
 cache:
   apt: true
   bundler: true
