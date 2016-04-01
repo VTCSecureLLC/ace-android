@@ -40,7 +40,7 @@ addons:
     - cmake
     - python
   sources:
-        - kalakris-cmake
+    - george-edison55-precise-backports
 cache:
   apt: true
   bundler: true
