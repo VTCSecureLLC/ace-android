@@ -48,6 +48,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -353,7 +354,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
-				Log.d("callState change");
+				Log.d("TAG", "callState change");
 //				try {
 //					LinphoneActivity.instance().display_all_core_values(lc, state.toString());
 //				}catch(Throwable e){
@@ -378,7 +379,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 					return;
 				}
-				if(state==State.IncomingReceived||state == state.OutgoingInit) {
+				if(state==State.IncomingReceived||state == State.OutgoingInit) {
 					if(LinphoneManager.getLc().getCallsNb() > 2){
 						for(LinphoneCall mCall: LinphoneManager.getLc().getCalls()){
 							if(mCall.getState() == State.IncomingReceived){
@@ -386,11 +387,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 							}
 						}
 					}
+
 					LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
 				}
 				if (state == State.IncomingReceived || State.CallEnd == state) {
 					//startIncomingCallActivity();
 					checkIncomingCall();
+
 					return;
 				}
 
@@ -400,6 +403,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					if(!isVideoEnabled(call)){
 						showAudioView();
 					}
+
 				}
 
 				if (state == State.Resuming) {
@@ -415,6 +419,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					if(isCameraMuted)
 						setCameraMute(isCameraMuted);
 
+					if(VideoCallFragment.mCaptureView != null)
+						invalidateSelfView(VideoCallFragment.mCaptureView);
 					if(isRTTLocallyEnabled) {
 						isRTTEnabled = call.getRemoteParams().realTimeTextEnabled();
 					}
@@ -475,7 +481,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //        				});
 //        			}
 				}
-
 				transfer.setEnabled(LinphoneManager.getLc().getCurrentCall() != null);
 			}
 
@@ -552,6 +557,40 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	}
 
+	public void invalidateSelfView(SurfaceView sv) {
+
+		LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+		if(call == null)
+			return;
+
+		LinphoneCallParams params = call.getCurrentParamsCopy();
+		int sent_video_height = params.getSentVideoSize().height;
+		int sent_video_width = params.getSentVideoSize().width;
+
+		if(sent_video_height == 0 || sent_video_width == 0)
+		{
+			return;
+		}
+		float ratio = sent_video_height / (float) sent_video_width;
+		if(sv!= null)
+		{
+			ViewGroup.LayoutParams layoutParams = sv.getLayoutParams();
+			float currentratio = layoutParams.height / (float) layoutParams.width;
+			float diff = currentratio / ratio;
+			Log.d("difference in selfview = " + diff + "  send widthxheight " + sent_video_width+ "X" + sent_video_height);
+			if (diff>1.02f || diff < 0.98f)
+			{
+				layoutParams.height = (int) (ratio * layoutParams.width);
+				sv.setLayoutParams(layoutParams);
+			}
+		}
+		else
+		{
+			Log.d("difference in selfview NULLLLLL");
+		}
+
+	}
+
 	private void initIncomingCallsViews() {
 		mIncomingUserName = (TextView) findViewById(R.id.label_incoming_call_user_name);
 		mIncomingCallType = (TextView) findViewById(R.id.label_incoming_call_type);
@@ -566,6 +605,36 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		Log.d("onConfigChanged");
+
+		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			if (VideoCallFragment.mCaptureView != null) {
+				ViewGroup.LayoutParams params = VideoCallFragment.mCaptureView.getLayoutParams();
+				int width = params.width;
+				int height = params.height;
+				if (params.width < params.height) {
+					params.height = width;
+					params.width = height;
+					VideoCallFragment.mCaptureView.setLayoutParams(params);
+				}
+
+			}
+		}
+		else
+		{
+			if (VideoCallFragment.mCaptureView != null) {
+				ViewGroup.LayoutParams params = VideoCallFragment.mCaptureView.getLayoutParams();
+				int width = params.width;
+				int height = params.height;
+				if (params.width > params.height) {
+					params.height = width;
+					params.width = height;
+					VideoCallFragment.mCaptureView.setLayoutParams(params);
+				}
+
+			}
+		}
+
+
 
 		boolean contralersVisible = mControlsLayout.getVisibility() == View.VISIBLE;
 //		mainLayout.removeView(mViewsHolder);
@@ -675,13 +744,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				enter_pressed=false;
 
 
-
-				if (s.length()>0 && s.subSequence(s.length()-1, s.length()).toString().equalsIgnoreCase("\n")) {
-					enter_pressed=true;
-				}
+				enter_pressed = s.length() > 0 && s.subSequence(s.length() - 1, s.length()).toString().equalsIgnoreCase("\n");
 
 				char enter_button=(char) 10;
 				char back_space_button=(char) 8;
