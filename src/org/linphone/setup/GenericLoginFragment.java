@@ -31,7 +31,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.linphone.AsyncProviderLookupOperation;
@@ -51,7 +50,7 @@ import java.util.List;
 public class GenericLoginFragment extends Fragment implements OnClickListener, AsyncProviderLookupOperation.ProviderNetworkOperationListener {
 	private EditText login;
 	private EditText password;
-	private TextView domain;
+	private EditText domain;
 	public EditText port;
 	private EditText userid;
 	public Spinner transport;
@@ -84,7 +83,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 		login = (EditText) view.findViewById(R.id.et_prv_user);
 		password = (EditText) view.findViewById(R.id.et_prv_pass);
 		password.setImeOptions(EditorInfo.IME_ACTION_DONE);
-		domain = (TextView) view.findViewById(R.id.et_prv_domain);
+		domain = (EditText) view.findViewById(R.id.et_prv_domain);
 
 		port = (EditText) view.findViewById(R.id.et_prv_port);
 		transport = (Spinner) view.findViewById(R.id.spin_prv_transport);
