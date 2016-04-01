@@ -88,8 +88,6 @@ import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 import org.linphone.core.TunnelConfig;
 import org.linphone.mediastream.Log;
-import org.linphone.mediastream.MediastreamException;
-import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.AndroidCamera;
@@ -919,15 +917,11 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		try {
 			Contact contact = ContactsManager.getInstance().findContactWithAddress(mServiceContext.getContentResolver(), from);
 			if (!mServiceContext.getResources().getBoolean(R.bool.disable_chat__message_notification)) {
-				if (LinphoneActivity.isInstanciated() && !LinphoneActivity.instance().displayChatMessageNotification(from.asStringUriOnly())) {
-					return;
-				} else {
-//					if (contact != null) {
-//						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
-//					} else {
-//						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
-//					}
-				}
+					if (contact != null) {
+						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
+					} else {
+						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
+					}
 			}
 		} catch (Exception e) {
 			Log.e(e);
