@@ -21,7 +21,7 @@ export RELEASE_NOTES="$(git log -1 --pretty=format:%B)"
 MUTED_PID=$!
 
 echo "Running make for dependencies"
-sh ./Tools/build.sh >> /tmp/make.out 2>&1
+$DIR/build.sh >> $LOGFILE 2>&1
 
 tail -1000 /tmp/make.out
 kill $MUTED_PID
