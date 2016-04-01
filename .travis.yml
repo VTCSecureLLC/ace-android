@@ -35,6 +35,7 @@ addons:
     - automake
     - ccache
     - libtool
+    - intltool
     - pkg-config
     - bc
     - libwww-perl
