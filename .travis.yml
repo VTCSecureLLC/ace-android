@@ -40,6 +40,7 @@ addons:
     - libwww-perl
     - ruby
     - cmake
+    - cmake-data
     - python
 cache:
   apt: true
