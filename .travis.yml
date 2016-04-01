@@ -38,7 +38,7 @@ addons:
     - libwww-perl
     - ruby
     - cmake
-    - python2
+    - python
 cache:
   apt: true
   bundler: true
