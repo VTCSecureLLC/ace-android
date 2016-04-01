@@ -291,6 +291,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		micro.setSelected(isMicMuted);
 
 		isAudioMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		if(isAudioMuted)
+		{
+			LinphoneManager.getLc().setPlaybackGain(mute_db);
+		}
 
 		//set speaker on initially. This does not mean that audio isn't muted. If audio is muted, and speaker is on, there will still be no sound! Until audio is unmutted
 		isSpeakerOn = true;
@@ -1579,7 +1583,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.w("Bluetooth not available, using speaker");
 			LinphoneManager.getInstance().routeAudioToSpeaker();
 //				speaker.setBackgroundResource(R.drawable.speaker_on);
-			audioMute.setSelected(false);
+			audioMute.setSelected(isAudioMuted);
 		}
 		video.setSelected(true);
 		video.setEnabled(true);
