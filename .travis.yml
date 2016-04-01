@@ -92,8 +92,7 @@ before_script:
 - android list target -c
 script:
 - ./Tools/git_version.sh
-- ./Tools/travis_script.sh
-- ccache -s 
+- ./Tools/build.sh
 after_failure:
 - tail -1000 /tmp/build_script.out
 after_success:
