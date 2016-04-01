@@ -22,6 +22,8 @@ env:
     BUILD_MPEG4=0 BUILD_H263P=0 BUILD_VCARD=1 BUILD_GSM=0 BUILD_BV16=0 BUILD_MKV=0 BUILD_SPEEX=0
 sudo: false
 addons:
+  sources:
+    - george-edison55-precise-backports
   apt:
     packages:
     - yasm
@@ -39,8 +41,6 @@ addons:
     - ruby
     - cmake
     - python
-  sources:
-    - george-edison55-precise-backports
 cache:
   apt: true
   bundler: true
