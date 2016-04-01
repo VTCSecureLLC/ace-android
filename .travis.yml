@@ -95,7 +95,7 @@ script:
 - ./Tools/travis_script.sh
 - ccache -s 
 after_failure:
-- tail -1000 $LOGFILE
+- tail -1000 /tmp/build_script.out
 after_success:
 - ./Tools/release.sh
 - ccache -s
