@@ -4,7 +4,7 @@
 
 
   <string name="importServiceMsg">Importing VCards</string>
-  <string name="logOutMessage">Logout Now?</string>
+  <string name="AddNewAccountMessage">Would you like to add another SIP account?</string>
   <string name="reset">Factory Reset</string>
   <string name="reset_question">All settings will be reset and the application will be Restarted.</string>
 

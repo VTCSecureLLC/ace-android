@@ -209,11 +209,11 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				new AlertDialog.Builder(getActivity())
-						.setTitle(R.string.logOutMessage)
+						.setTitle(R.string.AddNewAccountMessage)
 						.setPositiveButton(R.string.yes,
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int whichButton) {
-										deleteDefaultAccount();
+										//deleteDefaultAccount();
 										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
 										getActivity().startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
 									}
