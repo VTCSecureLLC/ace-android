@@ -19,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -217,21 +218,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.setup_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				new AlertDialog.Builder(getActivity())
-						.setTitle(R.string.AddNewAccountMessage)
-						.setPositiveButton(R.string.yes,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int whichButton) {
-										//deleteDefaultAccount();
-										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
-										getActivity().startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
-									}
-								}
-						)
-						.setNegativeButton(R.string.no,
-								null
-						)
-						.create().show();
+				showNewAccountDialog(getActivity());
 				return true;
 			}
 		});
@@ -1967,5 +1954,23 @@ public class SettingsFragment extends PreferencesListFragment {
 		if (isForce508)
 			summary.setSpan(new ForegroundColorSpan(Color.WHITE), 0, summary.length(), 0);
 		return summary;
+	}
+
+	public static void showNewAccountDialog(final Activity activity){
+		new AlertDialog.Builder(activity)
+				.setTitle(R.string.AddNewAccountMessage)
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								//deleteDefaultAccount();
+								Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+								activity.startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
+							}
+						}
+				)
+				.setNegativeButton(R.string.no,
+						null
+				)
+				.create().show();
 	}
 }

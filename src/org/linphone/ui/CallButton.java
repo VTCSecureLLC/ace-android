@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -34,6 +35,7 @@ import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
 import org.linphone.R;
+import org.linphone.SettingsFragment;
 import org.linphone.core.CallDirection;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCallLog;
@@ -41,8 +43,14 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.setup.CDNProviders;
 import org.linphone.vtcsecure.AccountsList;
+import org.linphone.vtcsecure.Utils;
 import org.linphone.vtcsecure.g;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * @author Guillaume Beraudo
@@ -67,10 +75,10 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 		}else {
 			final SharedPreferences non_linphone_prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
 			Boolean dial_out_using_default_account = non_linphone_prefs.getBoolean(getResources().getString(R.string.dial_out_using_default_account_key), true);
-			if (dial_out_using_default_account == true || LinphonePreferences.instance().getAccountCount() == 1) {
+			if (dial_out_using_default_account == true) {
 				performOutgoingCall();
 			} else {
-				show_account_selector();
+				show_account_selector_only_if_multiple_registrations_to_selected_outbound_provider();
 			}
 		}
 	}
@@ -151,9 +159,6 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 		String[] accountString=new String[nbAccounts];
 		Uri[] providerImage=new Uri[nbAccounts];
 
-
-
-
 		for (int i = 0; i < nbAccounts; i++) {
 			final int accountId = i;
 
@@ -208,5 +213,120 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 					}
 				})
 				.create().show();
+	}
+
+
+
+	public void show_account_selector_only_if_multiple_registrations_to_selected_outbound_provider(){
+		// Get already configured extra accounts
+		original_default_account_index= LinphonePreferences.instance().getDefaultAccountIndex();
+		int nbAccounts = LinphonePreferences.instance().getAccountCount();
+
+		ArrayList<Integer> accounts_registered_to_selected_outbound_provider=new ArrayList();
+		//Get only registered accounts with provider
+		for(int y=0; y<nbAccounts; y++){
+			String domain=LinphonePreferences.instance().getAccountDomain(y);
+			if(domain.equals(CDNProviders.getInstance().getSelectedProvider().getDomain())){
+				accounts_registered_to_selected_outbound_provider.add(y);
+			}
+		}
+
+		Integer[] registeredLED=new Integer[accounts_registered_to_selected_outbound_provider.size()];
+		String[] accountString=new String[accounts_registered_to_selected_outbound_provider.size()];
+		Uri[] providerImage=new Uri[accounts_registered_to_selected_outbound_provider.size()];
+
+		int i=0;
+		for (int index:accounts_registered_to_selected_outbound_provider) {
+
+			String username = LinphonePreferences.instance().getAccountUsername(index);
+			String domain = LinphonePreferences.instance().getAccountDomain(index);
+
+			if (LinphoneManager.getLcIfManagerNotDestroyedOrNull() != null) {
+				for (LinphoneProxyConfig lpc : LinphoneManager.getLc().getProxyConfigList()) {
+					LinphoneAddress addr = null;
+					try {
+						addr = LinphoneCoreFactory.instance().createLinphoneAddress(lpc.getIdentity());
+					} catch (LinphoneCoreException e) {
+						registeredLED[i]=R.drawable.led_disconnected;
+						return;
+					}
+					if (addr.getUserName().equals(username) && addr.getDomain().equals(domain)) {
+						if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationOk) {
+							registeredLED[i]=R.drawable.led_connected;
+						} else if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationFailed) {
+							registeredLED[i]=R.drawable.led_error;
+						} else if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationProgress) {
+							registeredLED[i]=R.drawable.led_inprogress;
+						} else {
+							registeredLED[i]=R.drawable.led_disconnected;
+						}
+						break;
+					}
+				}
+			}
+
+
+			accountString[i]=username + "@" + domain;
+			providerImage[i]= g.domain_image_hash.get(domain);
+
+			i++;
+		}
+
+		final AccountsList accountsList=new AccountsList(LinphoneActivity.instance(), registeredLED, accountString, providerImage);
+
+		if(accounts_registered_to_selected_outbound_provider.size()>1) {
+			new AlertDialog.Builder(LinphoneActivity.instance().ctx)
+					.setTitle("Which account would you like to use to place this call?")
+					.setSingleChoiceItems(accountsList, original_default_account_index, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							//change default account to force call through the selected account. Set default account back after call is started.
+							LinphonePreferences.instance().setDefaultAccount(whichButton);
+							performOutgoingCall();
+							LinphonePreferences.instance().setDefaultAccount(original_default_account_index);
+							dialog.dismiss();
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							dialog.dismiss();
+                        /* User clicked No so do some stuff */
+						}
+					})
+					.create().show();
+		}else if(accounts_registered_to_selected_outbound_provider.size()==1){
+			LinphonePreferences.instance().setDefaultAccount(CDNProviders.getInstance().getSelectedProviderPosition());
+			performOutgoingCall();
+			LinphonePreferences.instance().setDefaultAccount(original_default_account_index);
+		}else if(accounts_registered_to_selected_outbound_provider.size()==0){
+			Drawable selected_provider_drawable;
+			try {
+				InputStream inputStream = LinphoneActivity.instance().ctx.getContentResolver().openInputStream(g.domain_image_hash.get(CDNProviders.getInstance().getSelectedProvider().getDomain()));
+				selected_provider_drawable = Drawable.createFromStream(inputStream, g.domain_image_hash.get(CDNProviders.getInstance().getSelectedProvider().getDomain()).toString() );
+			} catch (FileNotFoundException e) {
+				selected_provider_drawable = getResources().getDrawable(R.drawable.provider_logo_zvrs);
+			}
+			selected_provider_drawable=Utils.resize(selected_provider_drawable, LinphoneActivity.instance(), 3);
+			new AlertDialog.Builder(LinphoneActivity.instance().ctx)
+					.setTitle("No registration found!")
+					.setIcon(selected_provider_drawable)
+					.setMessage("You do not have a registered account with this provider. Please select a different Provider. \n\n\t\t\t\t or \n\n" +
+							"If you have an account with this provider please add it using 'Account Setup Assistant'. " +
+							"If you do not have an account for this provider please contact the provider" +
+							"to have one created.")
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							dialog.dismiss();
+                        /* User clicked No so do some stuff */
+						}
+					})
+					.setPositiveButton("Go to Account Setup Assistant", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							SettingsFragment.showNewAccountDialog(LinphoneActivity.instance());
+							dialog.dismiss();
+                        /* User clicked No so do some stuff */
+						}
+					})
+					.create().show();
+		}
 	}
 }
