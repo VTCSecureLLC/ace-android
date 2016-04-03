@@ -18,19 +18,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.linphone.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
+import org.linphone.LinphonePreferences;
 import org.linphone.R;
 import org.linphone.core.CallDirection;
+import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCallLog;
+import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.vtcsecure.AccountsList;
+import org.linphone.vtcsecure.g;
 
 /**
  * @author Guillaume Beraudo
@@ -38,6 +50,7 @@ import org.linphone.core.LinphoneProxyConfig;
 public class CallButton extends ImageView implements OnClickListener, AddressAware {
 
 	private AddressText mAddress;
+	int original_default_account_index;
 	public void setAddressWidget(AddressText a) { mAddress = a; }
 
 	public void setExternalClickListener(OnClickListener e) { setOnClickListener(e); }
@@ -49,6 +62,50 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 	}
 
 	public void onClick(View v) {
+		if (getContext().getResources().getBoolean(R.bool.call_last_log_if_adress_is_empty)&&mAddress.getText().length() == 0) {
+			populateAddressBarWithLastDialedNumber();
+		}else {
+			final SharedPreferences non_linphone_prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+			Boolean dial_out_using_default_account = non_linphone_prefs.getBoolean(getResources().getString(R.string.dial_out_using_default_account_key), true);
+			if (dial_out_using_default_account == true || LinphonePreferences.instance().getAccountCount() == 1) {
+				performOutgoingCall();
+			} else {
+				show_account_selector();
+			}
+		}
+	}
+	
+	protected void onWrongDestinationAddress() {
+		Toast.makeText(getContext()
+				,String.format(getResources().getString(R.string.warning_wrong_destination_address),mAddress.getText().toString())
+				,Toast.LENGTH_LONG).show();
+	}
+
+	public void populateAddressBarWithLastDialedNumber(){
+		LinphoneCallLog[] logs = LinphoneManager.getLc().getCallLogs();
+		LinphoneCallLog log = null;
+		for (LinphoneCallLog l : logs) {
+			if (l.getDirection() == CallDirection.Outgoing) {
+				log = l;
+				break;
+			}
+		}
+		if (log == null) {
+			return;
+		}
+
+		LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
+		if (lpc != null && log.getTo().getDomain().equals(lpc.getDomain())) {
+			mAddress.setText(log.getTo().getUserName());
+		} else {
+			mAddress.setText(log.getTo().asStringUriOnly());
+		}
+		mAddress.setSelection(mAddress.getText().toString().length());
+		mAddress.setDisplayedName(log.getTo().getDisplayName());
+	}
+
+	public void performOutgoingCall(){
+
 		try {
 			if (!LinphoneManager.getInstance().acceptCallIfIncomingPending()) {
 				//Parse SIP address url
@@ -72,33 +129,11 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 						mAddress.setText(fullAddr);
 						mAddress.setDisplayedName(mAddress.getText().toString());
 						mAddress.setTag(null);
+
 						LinphoneManager.getInstance().newOutgoingCall(mAddress);
-					}
-					else {
+
+					}else {
 						LinphoneManager.getInstance().newOutgoingCall(mAddress);
-					}
-				} else {
-					if (getContext().getResources().getBoolean(R.bool.call_last_log_if_adress_is_empty)) {
-						LinphoneCallLog[] logs = LinphoneManager.getLc().getCallLogs();
-						LinphoneCallLog log = null;
-						for (LinphoneCallLog l : logs) {
-							if (l.getDirection() == CallDirection.Outgoing) {
-								log = l;
-								break;
-							}
-						}
-						if (log == null) {
-							return;
-						}
-						
-						LinphoneProxyConfig lpc = LinphoneManager.getLc().getDefaultProxyConfig();
-						if (lpc != null && log.getTo().getDomain().equals(lpc.getDomain())) {
-							mAddress.setText(log.getTo().getUserName());
-						} else {
-							mAddress.setText(log.getTo().asStringUriOnly());
-						}
-						mAddress.setSelection(mAddress.getText().toString().length());
-						mAddress.setDisplayedName(log.getTo().getDisplayName());
 					}
 				}
 			}
@@ -107,10 +142,71 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 			onWrongDestinationAddress();
 		};
 	}
-	
-	protected void onWrongDestinationAddress() {
-		Toast.makeText(getContext()
-				,String.format(getResources().getString(R.string.warning_wrong_destination_address),mAddress.getText().toString())
-				,Toast.LENGTH_LONG).show();
+	public void show_account_selector(){
+		// Get already configured extra accounts
+		original_default_account_index= LinphonePreferences.instance().getDefaultAccountIndex();
+		int nbAccounts = LinphonePreferences.instance().getAccountCount();
+
+		Integer[] registeredLED=new Integer[nbAccounts];
+		String[] accountString=new String[nbAccounts];
+		Uri[] providerImage=new Uri[nbAccounts];
+
+
+
+
+		for (int i = 0; i < nbAccounts; i++) {
+			final int accountId = i;
+
+			String username = LinphonePreferences.instance().getAccountUsername(accountId);
+			String domain = LinphonePreferences.instance().getAccountDomain(accountId);
+
+			if (LinphoneManager.getLcIfManagerNotDestroyedOrNull() != null) {
+				for (LinphoneProxyConfig lpc : LinphoneManager.getLc().getProxyConfigList()) {
+					LinphoneAddress addr = null;
+					try {
+						addr = LinphoneCoreFactory.instance().createLinphoneAddress(lpc.getIdentity());
+					} catch (LinphoneCoreException e) {
+						registeredLED[i]=R.drawable.led_disconnected;
+						return;
+					}
+					if (addr.getUserName().equals(username) && addr.getDomain().equals(domain)) {
+						if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationOk) {
+							registeredLED[i]=R.drawable.led_connected;
+						} else if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationFailed) {
+							registeredLED[i]=R.drawable.led_error;
+						} else if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationProgress) {
+							registeredLED[i]=R.drawable.led_inprogress;
+						} else {
+							registeredLED[i]=R.drawable.led_disconnected;
+						}
+						break;
+					}
+				}
+			}
+
+
+			accountString[i]=username + "@" + domain;
+			providerImage[i]= g.domain_image_hash.get(domain);
+		}
+
+		final AccountsList accountsList=new AccountsList(LinphoneActivity.instance(), registeredLED, accountString, providerImage);
+		new AlertDialog.Builder(LinphoneActivity.instance().ctx)
+				.setTitle("Which account would you like to use to place this call?")
+				.setSingleChoiceItems(accountsList, original_default_account_index, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						//change default account to force call through the selected account. Set default account back after call is started.
+						LinphonePreferences.instance().setDefaultAccount(whichButton);
+						performOutgoingCall();
+						LinphonePreferences.instance().setDefaultAccount(original_default_account_index);
+						dialog.dismiss();
+					}
+				})
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						dialog.dismiss();
+                        /* User clicked No so do some stuff */
+					}
+				})
+				.create().show();
 	}
 }
