@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -64,6 +65,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
+import org.linphone.custom.FontListParser;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
@@ -75,7 +77,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import joanbempong.android.HueBridgeSearchActivity;
 import joanbempong.android.HueSharedPreferences;
@@ -130,6 +134,20 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 
 		editor = prefs.edit();
+
+		try {
+			List<FontListParser.SystemFont> fonts = FontListParser.getSystemFonts();
+			HashSet<String> fonts_collection = new HashSet<String>();
+
+			for (FontListParser.SystemFont f : fonts) {
+				Log.d("fonts avialable : " + f.name );
+				fonts_collection.add(f.name);
+			}
+			prefs.edit().putStringSet(getString(R.string.pref_text_settings_aviable_fonts), fonts_collection).commit();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// Init the settings page interface
 		initSettings();
@@ -1371,6 +1389,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		//ListPreference
 		ListPreference text_send_type_pref = (ListPreference)findPreference(getString(R.string.pref_text_settings_send_mode_key));
 
+
+
 		//Values accepted are RTT or SIP_SIMPLE
 		text_send_type_pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
@@ -1379,12 +1399,54 @@ public class SettingsFragment extends PreferencesListFragment {
 				editor.putString(getString(R.string.pref_text_settings_send_mode_key), value.toString());
 				try {
 					preference.setSummary(getSummery(value.toString().replace("_", " ")));
-				}catch(Throwable e){
+				} catch (Throwable e) {
 
 				}
 				return true;
 			}
 		});
+
+		Set<String> available_fonts = prefs.getStringSet(getString(R.string.pref_text_settings_aviable_fonts), null);
+		String selectedFont = prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
+		ListPreference font_list = (ListPreference) findPreference(getString(R.string.pref_text_settings_font_key));
+
+
+
+		if (available_fonts !=null && available_fonts.size()>0) {
+			CharSequence[] values = new CharSequence[available_fonts.size() + 1];
+			values[0] = "Default";
+			int index = 1;
+			for (String font : available_fonts) {
+				values[index] = font;
+				index++;
+			}
+
+
+			font_list.setEntries(values);
+			font_list.setEntryValues(values);
+			font_list.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+				@Override
+				public boolean onPreferenceChange(Preference preference, Object value) {
+					try {
+						preference.setSummary(getSummery(value.toString().replace("_", " ")));
+					} catch (Throwable e) {
+
+					}
+
+					return true;
+				}
+			});
+		}
+		else
+		{
+			CharSequence[] values = new CharSequence[ 1];
+			values[0] = "Default";
+			font_list.setEntries(values);
+			font_list.setEntryValues(values);
+			font_list.setEnabled(false);
+		}
+
+		font_list.setSummary(selectedFont);
 
 		String value=text_send_type_pref.getValue();
 		try {
