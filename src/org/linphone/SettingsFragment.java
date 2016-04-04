@@ -460,7 +460,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			// For each, add menus to configure it
 			String username = mPrefs.getAccountUsername(accountId);
 			String domain = mPrefs.getAccountDomain(accountId);
-			LedPreference account = new LedPreference(getActivity());
+			LedPreference account = new LedPreference(getActivity(), accountId);
 
 			if (username == null) {
 				account.setTitle(getString(R.string.pref_sipaccount));
@@ -472,13 +472,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				account.setSummary(getSummery(R.string.default_account_flag));
 			}
 
-			account.setOnPreferenceClickListener(new OnPreferenceClickListener()
-			{
-				public boolean onPreferenceClick(Preference preference) {
-					LinphoneActivity.instance().displayAccountSettings(accountId);
-					return false;
-				}
-			});
+
 			updateAccountLed(account, username, domain, mPrefs.isAccountEnabled(i));
 			accounts.addPreference(account);
 		}
