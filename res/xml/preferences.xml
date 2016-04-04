@@ -291,9 +291,6 @@
 			    android:title="@string/pref_upnp_enable"
 				android:key="@string/pref_upnp_enable_key"/>
 
-			<CheckBoxPreference
-				android:title="@string/pref_transport_use_random_ports"
-			    android:key="@string/pref_transport_use_random_ports_key"/>
 <!--
 			<EditTextPreference
 			    android:title="@string/pref_sip_port_title"

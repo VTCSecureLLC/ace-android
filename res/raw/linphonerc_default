@@ -9,6 +9,9 @@ use_ipv6=0
 keepalive_period=30000
 dscp=24
 sip_random_port=1
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 
 [video]
 enabled=1

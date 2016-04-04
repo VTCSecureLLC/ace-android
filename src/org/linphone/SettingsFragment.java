@@ -1667,9 +1667,6 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		}
 
-		CheckBoxPreference randomPort = (CheckBoxPreference) findPreference(getString(R.string.pref_transport_use_random_ports_key));
-		randomPort.setChecked(mPrefs.isUsingRandomPort());
-
 //		// Disable sip port choice if port is random
 //		EditTextPreference sipPort = (EditTextPreference) findPreference(getString(R.string.pref_sip_port_key));
 //		sipPort.setEnabled(!randomPort.isChecked());
@@ -1726,15 +1723,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		findPreference(getString(R.string.pref_transport_use_random_ports_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				boolean randomPort = (Boolean) newValue;
-				mPrefs.useRandomPort((Boolean) newValue);
-				findPreference(getString(R.string.pref_transport_use_random_ports_key)).setEnabled(!randomPort);
-				return true;
-			}
-		});
+
 
 //		findPreference(getString(R.string.pref_sip_port_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 //			@Override
