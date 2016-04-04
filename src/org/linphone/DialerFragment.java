@@ -298,8 +298,21 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 
 		Log.d("mCamera" + mCamera);
 
-		mPreview = new CameraPreview(myContext, mCamera);
-		cameraPreview.addView(mPreview);
+		if(cameraPreview.getChildCount() == 1)
+		{
+			mPreview = (CameraPreview) cameraPreview.getChildAt(0);
+
+			mPreview.refreshCamera();
+		}
+		else if(cameraPreview.getChildCount() >1)
+		{
+			throw new RuntimeException("camera_preview should hold only camera surfaceview");
+		}
+		else
+		{
+			mPreview = new CameraPreview(myContext, mCamera);
+			cameraPreview.addView(mPreview);
+		}
 
 
 	}

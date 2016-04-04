@@ -316,4 +316,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			mCamera = null;
 		}
 	}
+
+	public void refreshCamera() {
+
+		if(mHolder != null)
+			refreshCamera(mHolder);
+	}
 }
