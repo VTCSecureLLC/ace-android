@@ -910,11 +910,15 @@ public class LinphonePreferences {
 		}
 	}
 
+	// shouldn't be used
 	public void useRandomPort(boolean enabled) {
 		useRandomPort(enabled, true);
 	}
 
+	// shouldn't be used
 	public void useRandomPort(boolean enabled, boolean apply) {
+		if(true)
+			return;
 		getConfig().setBool("app", "random_port", enabled);
 		if (apply) {
 			if (enabled) {
