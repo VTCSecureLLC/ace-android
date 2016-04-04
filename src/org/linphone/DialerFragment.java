@@ -288,7 +288,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		cameraPreview.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(dialer_content != null) {
+				if (dialer_content != null) {
 					dialer_content.setVisibility(View.VISIBLE);
 				}
 				VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
@@ -297,22 +297,26 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 
 
 		Log.d("mCamera" + mCamera);
+		try
+		{
+			if(cameraPreview.getChildCount() == 1)
+			{
+				mPreview = (CameraPreview) cameraPreview.getChildAt(0);
 
-		if(cameraPreview.getChildCount() == 1)
+				mPreview.refreshCamera();
+			}
+			else
+			{
+				mPreview = new CameraPreview(myContext, mCamera);
+				cameraPreview.addView(mPreview);
+			}
+		}
+		catch (Exception ex)
 		{
-			mPreview = (CameraPreview) cameraPreview.getChildAt(0);
+			ex.printStackTrace();
+		}
 
-			mPreview.refreshCamera();
-		}
-		else if(cameraPreview.getChildCount() >1)
-		{
-			throw new RuntimeException("camera_preview should hold only camera surfaceview");
-		}
-		else
-		{
-			mPreview = new CameraPreview(myContext, mCamera);
-			cameraPreview.addView(mPreview);
-		}
+
 
 
 	}
