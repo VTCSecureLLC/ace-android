@@ -92,11 +92,10 @@
 				android:defaultValue="Default"
 				android:summary="Default"/>
 
-		<!--<ListPreference-->
-			<!--android:title="@string/pref_text_settings_font_style_title"-->
-			<!--android:key="@string/pref_text_settings_font_style_key"-->
-
-			<!--/>-->
+		<ListPreference
+			android:title="@string/pref_text_settings_font_style_title"
+			android:key="@string/pref_text_settings_font_style_key"
+			android:summary="Default"/>
 
 	</PreferenceScreen>
 

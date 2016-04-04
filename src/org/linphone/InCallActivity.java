@@ -690,7 +690,21 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		Log.d("TEXT_MODE ", TEXT_MODE);
 
 		String font_family = prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
-		int font_style = prefs.getInt(getString(R.string.pref_text_settings_font_style_key), Typeface.NORMAL);
+
+			String style = prefs.getString(getString(R.string.pref_text_settings_font_style_key), "Default");
+
+		int font_style = Typeface.NORMAL;
+
+		if (style.equals("Default")) {
+			font_style = Typeface.NORMAL;
+		} else if (style.equals("Bold")){
+			font_style = Typeface.BOLD;
+		}else if (style.equals("Italic")){
+			font_style = Typeface.ITALIC;
+		}else if (style.equals("Bold Italic")){
+			font_style = Typeface.BOLD_ITALIC;
+		}
+
 		if(!font_family.equals("Default"))
 		{
 			rtt_typeface = Typeface.create(font_family, font_style);

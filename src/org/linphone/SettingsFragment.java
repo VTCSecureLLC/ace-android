@@ -1410,7 +1410,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		String selectedFont = prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
 		ListPreference font_list = (ListPreference) findPreference(getString(R.string.pref_text_settings_font_key));
 
-
+		initFontStyle();
 
 		if (available_fonts !=null && available_fonts.size()>0) {
 			CharSequence[] values = new CharSequence[available_fonts.size() + 1];
@@ -1420,7 +1420,6 @@ public class SettingsFragment extends PreferencesListFragment {
 				values[index] = font;
 				index++;
 			}
-
 
 			font_list.setEntries(values);
 			font_list.setEntryValues(values);
@@ -1454,6 +1453,32 @@ public class SettingsFragment extends PreferencesListFragment {
 		}catch(Throwable e) {
 			//field is still blank.
 		}
+	}
+
+	private void initFontStyle() {
+		CharSequence[] styleValues = new CharSequence[4];
+		ListPreference fontStyleList = (ListPreference) findPreference(getString(R.string.pref_text_settings_font_style_key));
+		String selectedStyle = prefs.getString(getString(R.string.pref_text_settings_font_style_key), "Default");
+
+		styleValues[0] = "Default";
+		styleValues[1] = "Bold";
+		styleValues[2] = "Italic";
+		styleValues[3] = "Bold Italic";
+		fontStyleList.setEntries(styleValues);
+		fontStyleList.setEntryValues(styleValues);
+		fontStyleList.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object value) {
+				try {
+					preference.setSummary(getSummery(value.toString()));
+				} catch (Throwable e) {
+
+				}
+
+				return true;
+			}
+		});
+		fontStyleList.setSummary(selectedStyle);
 	}
 
 	private void initVideoSettings() {

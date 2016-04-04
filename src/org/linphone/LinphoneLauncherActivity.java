@@ -31,7 +31,12 @@ import android.view.animation.AnimationUtils;
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
+import org.linphone.custom.FontListParser;
 import org.linphone.mediastream.Log;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static android.content.Intent.ACTION_MAIN;
 
@@ -58,7 +63,7 @@ public class LinphoneLauncherActivity extends Activity {
 
 
 		//setContentView(R.layout.splash_screen);
-		View view=LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
+		View view = LayoutInflater.from(this).inflate(R.layout.splash_screen, null);
 		setContentView(view);
 		view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.bounce));
 		mHandler = new Handler();
@@ -73,9 +78,7 @@ public class LinphoneLauncherActivity extends Activity {
 				mThread.start();
 			}
 
-
-
-
+		initFontSettings();
 	}
 
 	protected void onServiceReady() {
@@ -146,6 +149,29 @@ public class LinphoneLauncherActivity extends Activity {
 	private void unregisterManagers() {
 		UpdateManager.unregister();
 		// unregister other managers if necessary...
+	}
+
+	private void initFontSettings(){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);;
+
+		if(prefs.getStringSet(getString(R.string.pref_text_settings_aviable_fonts), null) == null) {
+
+			try {
+				List<FontListParser.SystemFont> fonts = FontListParser.getSystemFonts();
+				HashSet<String> fonts_collection = new HashSet<String>();
+
+				for (FontListParser.SystemFont f : fonts) {
+					Log.d("fonts avialable : " + f.name);
+					fonts_collection.add(f.name);
+				}
+				prefs.edit().putStringSet(getString(R.string.pref_text_settings_aviable_fonts), fonts_collection).commit();
+
+			} catch (Exception e) {
+				HashSet<String> avoid_next_rum = new HashSet<>();
+				prefs.edit().putStringSet(getString(R.string.pref_text_settings_aviable_fonts), avoid_next_rum).commit();
+				e.printStackTrace();
+			}
+		}
 	}
 }
 
