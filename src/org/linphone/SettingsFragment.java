@@ -47,6 +47,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -135,19 +136,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		editor = prefs.edit();
 
-		try {
-			List<FontListParser.SystemFont> fonts = FontListParser.getSystemFonts();
-			HashSet<String> fonts_collection = new HashSet<String>();
 
-			for (FontListParser.SystemFont f : fonts) {
-				Log.d("fonts avialable : " + f.name );
-				fonts_collection.add(f.name);
-			}
-			prefs.edit().putStringSet(getString(R.string.pref_text_settings_aviable_fonts), fonts_collection).commit();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		// Init the settings page interface
 		initSettings();
@@ -2043,4 +2032,5 @@ public class SettingsFragment extends PreferencesListFragment {
 			summary.setSpan(new ForegroundColorSpan(Color.WHITE), 0, summary.length(), 0);
 		return summary;
 	}
+
 }

@@ -86,7 +86,7 @@
 			android:entries="@array/pref_text_settings_send_mode_entries"
 			android:entryValues="@array/pref_text_settings_send_mode_entry_values"/>
 
-			<ListPreference
+			<org.linphone.custom.FontListPreference
 				android:title="@string/pref_text_settings_font_title"
 				android:key="@string/pref_text_settings_font_key"
 				android:defaultValue="Default"
