@@ -11,7 +11,7 @@ import java.util.HashMap;
  * This class is used to store global variables, for quick easy access, and to keep them organized
  */
 public class g {
-    public static HashMap<String, Uri> domain_image_hash=new HashMap<>();
+    public static HashMap<String, Uri> domain_image_hash=new HashMap<String, Uri>();
 
 
 }
