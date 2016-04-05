@@ -34,7 +34,7 @@ public final class FontListParser {
             throw new RuntimeException("fonts.xml does not exist on this system");
         }
         Config parser = parse(new FileInputStream(fontsXml));
-        List<SystemFont> fonts = new ArrayList<>();
+        List<SystemFont> fonts = new ArrayList<SystemFont>();
 
         for (Family family : parser.families) {
             if (family.name != null) {

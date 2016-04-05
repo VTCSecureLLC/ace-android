@@ -167,7 +167,7 @@ public class LinphoneLauncherActivity extends Activity {
 				prefs.edit().putStringSet(getString(R.string.pref_text_settings_aviable_fonts), fonts_collection).commit();
 
 			} catch (Exception e) {
-				HashSet<String> avoid_next_rum = new HashSet<>();
+				HashSet<String> avoid_next_rum = new HashSet<String>();
 				prefs.edit().putStringSet(getString(R.string.pref_text_settings_aviable_fonts), avoid_next_rum).commit();
 				e.printStackTrace();
 			}
