@@ -19,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -97,7 +98,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private Handler mHandler = new Handler();
 	private LinphoneCoreListenerBase mListener;
 
-	SharedPreferences prefs;
+	SharedPreferences non_linphone_prefs;
 	SharedPreferences.Editor editor;
 
 	private EditTextPreference mAudioDSCP;
@@ -123,13 +124,13 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 
 
-		prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		non_linphone_prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 
-		if(prefs.getBoolean("advanced_settings_enabled",false)){
+		if(non_linphone_prefs.getBoolean("advanced_settings_enabled",false)){
 			isAdvancedSettings = true;
 		}
 
-		editor = prefs.edit();
+		editor = non_linphone_prefs.edit();
 
 		// Init the settings page interface
 		initSettings();
@@ -205,24 +206,19 @@ public class SettingsFragment extends PreferencesListFragment {
 				return false;
 			}
 		});
+		findPreference(getString(R.string.dial_out_using_default_account_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				boolean value = (Boolean) newValue;
+				non_linphone_prefs.edit().putBoolean(getString(R.string.dial_out_using_default_account_key), value).commit();
+				return true;
+			}
+		});
+
 		findPreference(getString(R.string.setup_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				new AlertDialog.Builder(getActivity())
-						.setTitle(R.string.logOutMessage)
-						.setPositiveButton(R.string.yes,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog, int whichButton) {
-										deleteDefaultAccount();
-										Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
-										getActivity().startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
-									}
-								}
-						)
-						.setNegativeButton(R.string.no,
-								null
-						)
-						.create().show();
+				showNewAccountDialog(getActivity());
 				return true;
 			}
 		});
@@ -444,12 +440,15 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 	}
 	private void deleteDefaultAccount(){
-		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneManager.getInstance().getContext());
+
 		LinphonePreferences mPrefs = LinphonePreferences.instance();
 		int n= mPrefs.getDefaultAccountIndex();
 		mPrefs.deleteAccount(n);
 	}
 	private void initAccounts() {
+		boolean dial_out_using_default_account_key = non_linphone_prefs.getBoolean(getString(R.string.dial_out_using_default_account_key), true);
+		((CheckBoxPreference) findPreference(getString(R.string.dial_out_using_default_account_key))).setChecked(dial_out_using_default_account_key);
+
 		PreferenceCategory accounts = (PreferenceCategory) findPreference(getString(R.string.pref_sipaccounts_key));
 		accounts.removeAll();
 
@@ -461,7 +460,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			// For each, add menus to configure it
 			String username = mPrefs.getAccountUsername(accountId);
 			String domain = mPrefs.getAccountDomain(accountId);
-			LedPreference account = new LedPreference(getActivity());
+			LedPreference account = new LedPreference(getActivity(), accountId);
 
 			if (username == null) {
 				account.setTitle(getString(R.string.pref_sipaccount));
@@ -473,13 +472,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				account.setSummary(getSummery(R.string.default_account_flag));
 			}
 
-			account.setOnPreferenceClickListener(new OnPreferenceClickListener()
-			{
-				public boolean onPreferenceClick(Preference preference) {
-					LinphoneActivity.instance().displayAccountSettings(accountId);
-					return false;
-				}
-			});
+
 			updateAccountLed(account, username, domain, mPrefs.isAccountEnabled(i));
 			accounts.addPreference(account);
 		}
@@ -591,7 +584,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		entries.add("Custom");
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
-		String value =prefs.getString(getResources().getString(R.string.pref_theme_app_color_key), "Tech");
+		String value =non_linphone_prefs.getString(getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 
@@ -613,7 +606,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		entries.add("Custom");
 		values.add("Custom");
 		setListPreferenceValues(pref, entries, values);
-		String value =prefs.getString(getResources().getString(R.string.pref_theme_background_color_key), "Default");
+		String value =non_linphone_prefs.getString(getResources().getString(R.string.pref_theme_background_color_key), "Default");
 		pref.setSummary(getSummery(value));
 		pref.setValue(value);
 
@@ -909,20 +902,20 @@ public class SettingsFragment extends PreferencesListFragment {
 	}
 
 	private void initAudioVideoSettings(){
-		String rtcpFeedbackMode = prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Implicit");
+		String rtcpFeedbackMode = non_linphone_prefs.getString(getString(R.string.pref_av_rtcp_feedback_key), "Implicit");
 		LinphoneService.instance().set_RTCP_Feedback(rtcpFeedbackMode, 3);
 
 		((ListPreference) findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setValue(rtcpFeedbackMode);
 		(findPreference(getString(R.string.pref_av_rtcp_feedback_key))).setSummary(getSummery(rtcpFeedbackMode));
 
-		boolean isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
+		boolean isCameraMuted = non_linphone_prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_camera_mute_key))).setChecked(isCameraMuted);
 
 		// VATRP-1017 -- Add global speaker and mic mute logic
-		boolean isSpeakerMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		boolean isSpeakerMuted = non_linphone_prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
 		((CheckBoxPreference) findPreference(getString(R.string.pref_av_speaker_mute_key))).setChecked(isSpeakerMuted);
 
-		boolean isMicMuted = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
+		boolean isMicMuted = non_linphone_prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
 		((CheckBoxPreference)findPreference(getString(R.string.pref_av_mute_mic_key))).setChecked(isMicMuted);
 		//
 		CheckBoxPreference echoCancellation = (CheckBoxPreference) findPreference(getString(R.string.pref_echo_cancellation_key));
@@ -968,7 +961,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
-				prefs.edit().putBoolean(getString(R.string.pref_av_speaker_mute_key), value).commit();
+				non_linphone_prefs.edit().putBoolean(getString(R.string.pref_av_speaker_mute_key), value).commit();
 				return true;
 			}
 		});
@@ -977,7 +970,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
 				LinphoneManager.getLc().muteMic(value);
-				prefs.edit().putBoolean(getString(R.string.pref_av_mute_mic_key), value).commit();
+				non_linphone_prefs.edit().putBoolean(getString(R.string.pref_av_mute_mic_key), value).commit();
 				return true;
 			}
 		});
@@ -1271,13 +1264,13 @@ public class SettingsFragment extends PreferencesListFragment {
 		values.add(isVideoEnabled);
 
 		/**Camera Mute**/
-		String isCameraMuted = "camera_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false));
+		String isCameraMuted = "camera_mute = " + String.valueOf(non_linphone_prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false));
 		values.add(isCameraMuted);
 
 		/**Mute**/
-		String isMicMuted = "mic_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false));
+		String isMicMuted = "mic_mute = " + String.valueOf(non_linphone_prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false));
 		values.add(isMicMuted);
-		String isSpeakerMuted = "speaker_mute = " + String.valueOf(prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false));
+		String isSpeakerMuted = "speaker_mute = " + String.valueOf(non_linphone_prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false));
 		values.add(isSpeakerMuted);
 
 		//Echo cancellation
@@ -1354,9 +1347,9 @@ public class SettingsFragment extends PreferencesListFragment {
 		Log.d("RTT: initTextSettings()");
 		CheckBoxPreference enableTextCb = (CheckBoxPreference)findPreference(getString(R.string.pref_text_enable_key));
 
-		boolean isTextEnabled = prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
+		boolean isTextEnabled = non_linphone_prefs.getBoolean(getString(R.string.pref_text_enable_key), true);
 		Log.d("RTT: RTT enabled from earlier? " + isTextEnabled);
-		enableTextCb.setChecked(prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
+		enableTextCb.setChecked(non_linphone_prefs.getBoolean(getString(R.string.pref_text_enable_key), true));
 
 		enableTextCb.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
@@ -1475,7 +1468,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				boolean value = (Boolean) newValue;
-				prefs.edit().putBoolean(getString(R.string.pref_av_camera_mute_key), value).commit();
+				non_linphone_prefs.edit().putBoolean(getString(R.string.pref_av_camera_mute_key), value).commit();
 				return true;
 			}
 		});
@@ -1599,7 +1592,7 @@ public class SettingsFragment extends PreferencesListFragment {
 
 		setPreferenceDefaultValueAndSummary(R.string.pref_voice_mail_key, mPrefs.getVoiceMailUri());
 		setPreferenceDefaultValueAndSummary(R.string.pref_mail_waiting_indicator_key,
-				prefs.getString(getString(R.string.pref_mail_waiting_indicator_key), ""));
+				non_linphone_prefs.getString(getString(R.string.pref_mail_waiting_indicator_key), ""));
 	}
 
 	private void setCallPreferencesListener() {
@@ -1632,7 +1625,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				EditTextPreference mwiUri = (EditTextPreference) findPreference(getString(R.string.pref_mail_waiting_indicator_key));
 				mwiUri.setSummary(getSummery(newValue.toString()));
 				mwiUri.setText(newValue.toString());
-				prefs.edit().putString(getString(R.string.pref_mail_waiting_indicator_key), newValue.toString()).commit();
+				non_linphone_prefs.edit().putString(getString(R.string.pref_mail_waiting_indicator_key), newValue.toString()).commit();
 				return true;
 			}
 		});
@@ -1955,5 +1948,23 @@ public class SettingsFragment extends PreferencesListFragment {
 		if (isForce508)
 			summary.setSpan(new ForegroundColorSpan(Color.WHITE), 0, summary.length(), 0);
 		return summary;
+	}
+
+	public static void showNewAccountDialog(final Activity activity){
+		new AlertDialog.Builder(activity)
+				.setTitle(R.string.AddNewAccountMessage)
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								//deleteDefaultAccount();
+								Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+								activity.startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
+							}
+						}
+				)
+				.setNegativeButton(R.string.no,
+						null
+				)
+				.create().show();
 	}
 }

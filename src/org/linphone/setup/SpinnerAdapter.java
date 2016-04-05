@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import org.linphone.EditContactFragment;
 import org.linphone.R;
+import org.linphone.vtcsecure.g;
 
 import java.io.File;
 
@@ -35,13 +36,19 @@ public class SpinnerAdapter extends ArrayAdapter<String> {
 
 		String sdCard = Environment.getExternalStorageDirectory().toString()+ "/ACE/icons";
 
+
 		images = new Uri[providers.getProvidersCount()];
+
 		for (int i = 0; i < providers.getProvidersCount(); i++) {
 			File f = new File(sdCard, String.valueOf(i) + ".png");//getItemDetailimage());
 			if (f.exists()) {
 				images[i] = Uri.fromFile(f);
-			} else
+
+			} else {
 				images[i] = null;
+
+			}
+			g.domain_image_hash.put(providers.getProvider(i).getDomain(), images[i]);
 		}
 	}
 
