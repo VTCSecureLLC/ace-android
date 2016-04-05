@@ -5,6 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
@@ -40,6 +43,14 @@ public class Utils {
                 = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public static Drawable resize(Drawable image, Activity activity, int muliplication_factor) {
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+        int width=muliplication_factor*b.getWidth();
+        int height=muliplication_factor*b.getHeight();
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, width, height, false);
+        return new BitmapDrawable(activity.getResources(), bitmapResized);
     }
 
     public static boolean check_network_status(final Activity activity, final int ACTIVITY_RESULT_INT) {

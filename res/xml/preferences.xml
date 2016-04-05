@@ -112,6 +112,10 @@
         android:title="@string/pref_sipaccounts"
 	    android:key="@string/pref_sipaccounts_key"/>
 
+	<CheckBoxPreference
+		android:title="Always dial with default account"
+		android:key="dial_out_using_default_account_key"/>
+
 	<Preference
 	    android:title="@string/setup_title"
 	    android:key="@string/setup_key"/>

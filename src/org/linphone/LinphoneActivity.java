@@ -556,7 +556,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	private void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras, boolean withoutAnimation) {
-		if (newFragmentType == currentFragment && newFragmentType != FragmentsAvailable.CHAT) {
+		if (newFragmentType == currentFragment && newFragmentType != FragmentsAvailable.CHAT && newFragmentType != FragmentsAvailable.SETTINGS) {
 			return;
 		}
 		nextFragment = newFragmentType;
