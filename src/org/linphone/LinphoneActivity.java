@@ -67,6 +67,7 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.UpdateManager;
 
+import org.json.JSONObject;
 import org.linphone.LinphoneManager.AddressType;
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.CallDirection;
@@ -91,6 +92,7 @@ import org.linphone.core.PayloadType;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
+import org.linphone.setup.JsonConfig;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
@@ -2313,6 +2315,148 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			e.printStackTrace();
 		}
 		return string;
+	}
+
+	public static void display_original_JSON(final JSONObject jsonobject, final String filename){
+		try {
+
+
+			new Thread() {
+				public void run() {
+					try {
+						//print to csv
+						String sdCard = Environment.getExternalStorageDirectory().toString() + "/ACE";
+
+                        /* checks the file and if it already exist delete */
+						final String fname = filename + ".csv";
+						File file = new File(sdCard, fname);
+						if (!file.exists()) {
+							file.getParentFile().mkdirs();
+						} else {
+							file.delete();
+						}
+
+						Log.d("fname", fname);
+						Log.d("file", file.getAbsolutePath());
+
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						fw.append("Original JSON," + "\n" + jsonobject.toString(4));
+
+						fw.close();
+
+
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+			//Display to developer
+			Log.d("Original JSON," + "\n"+ jsonobject.toString(4));
+
+
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+
+	}
+	public static void display_incorporated_autoconfig_values(final JsonConfig config, final String filename){
+		try {
+
+
+			new Thread() {
+				public void run() {
+					try {
+						//print to csv
+						String sdCard = Environment.getExternalStorageDirectory().toString() + "/ACE";
+
+                        /* checks the file and if it already exist delete */
+						final String fname = filename + ".csv";
+						File file = new File(sdCard, fname);
+						if (!file.exists()) {
+							file.getParentFile().mkdirs();
+						} else {
+							file.delete();
+						}
+
+						Log.d("fname", fname);
+						Log.d("file", file.getAbsolutePath());
+
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						fw.append("Auto-Config Values"+"\n");
+						fw.append("_request_url"+config._request_url+"\n");
+						fw.append("_version"+config._version+"\n");
+						fw.append("_expiration_time"+config._expiration_time+"\n");
+						fw.append("_configuration_auth_password;"+config._configuration_auth_password+"\n");
+						fw.append("_configuration_auth_expiration"+config._configuration_auth_expiration+"\n");
+						fw.append("_sip_registration_maximum_threshold"+config._sip_registration_maximum_threshold+"\n");
+						fw.append("_sip_register_usernames"+config._sip_register_usernames+"\n");
+						fw.append("_sip_auth_username"+config._sip_auth_username+"\n");
+						fw.append("_sip_auth_password"+config._sip_auth_password+"\n");
+						fw.append("_sip_register_domain"+config._sip_register_domain+"\n");
+						fw.append("_sip_register_port"+config._sip_register_port+"\n");
+						fw.append("_sip_register_transport"+config._sip_register_transport+"\n");
+						fw.append("_enable_echo_cancellation"+config._enable_echo_cancellation+"\n");
+						fw.append("_enable_video"+config._enable_video+"\n");
+						fw.append("_enable_rtt"+config._enable_rtt+"\n");
+						fw.append("_enable_adaptive_rate"+config._enable_adaptive_rate+"\n");
+						fw.append("_enabled_codecs"+config._enabled_codecs+"\n");
+						fw.append("_bwLimit"+config._bwLimit+"\n");
+						fw.append("_upload_bandwidth"+config._upload_bandwidth+"\n");
+						fw.append("_download_bandwidth"+config._download_bandwidth+"\n");
+						fw.append("_enable_stun"+config._enable_stun+"\n");
+						fw.append("_stun_server"+config._stun_server+"\n");
+						fw.append("_enable_ice"+config._enable_ice+"\n");
+						fw.append("_logging"+config._logging+"\n");
+						fw.append("_sip_mwi_uri"+config._sip_mwi_uri+"\n");
+						fw.append("_sip_videomail_uri"+config._sip_videomail_uri+"\n");
+						fw.append("_video_resolution_maximum"+config._video_resolution_maximum+"\n");
+						fw.append("_video_preferred_frames_per_second"+config._video_preferred_frames_per_second+"\n");
+						fw.close();
+
+
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+			//Display to developer
+			Log.d("Auto-Config Values"+"\n");
+			Log.d("_request_url"+config._request_url+"\n");
+			Log.d("_version"+config._version+"\n");
+			Log.d("_expiration_time"+config._expiration_time+"\n");
+			Log.d("_configuration_auth_password;"+config._configuration_auth_password+"\n");
+			Log.d("_configuration_auth_expiration"+config._configuration_auth_expiration+"\n");
+			Log.d("_sip_registration_maximum_threshold"+config._sip_registration_maximum_threshold+"\n");
+			Log.d("_sip_register_usernames"+config._sip_register_usernames+"\n");
+			Log.d("_sip_auth_username"+config._sip_auth_username+"\n");
+			Log.d("_sip_auth_password"+config._sip_auth_password+"\n");
+			Log.d("_sip_register_domain"+config._sip_register_domain+"\n");
+			Log.d("_sip_register_port"+config._sip_register_port+"\n");
+			Log.d("_sip_register_transport"+config._sip_register_transport+"\n");
+			Log.d("_enable_echo_cancellation"+config._enable_echo_cancellation+"\n");
+			Log.d("_enable_video"+config._enable_video+"\n");
+			Log.d("_enable_rtt"+config._enable_rtt+"\n");
+			Log.d("_enable_adaptive_rate"+config._enable_adaptive_rate+"\n");
+			Log.d("_enabled_codecs"+config._enabled_codecs+"\n");
+			Log.d("_bwLimit"+config._bwLimit+"\n");
+			Log.d("_upload_bandwidth"+config._upload_bandwidth+"\n");
+			Log.d("_download_bandwidth"+config._download_bandwidth+"\n");
+			Log.d("_enable_stun"+config._enable_stun+"\n");
+			Log.d("_stun_server"+config._stun_server+"\n");
+			Log.d("_enable_ice"+config._enable_ice+"\n");
+			Log.d("_logging"+config._logging+"\n");
+			Log.d("_sip_mwi_uri"+config._sip_mwi_uri+"\n");
+			Log.d("_sip_videomail_uri"+config._sip_videomail_uri+"\n");
+			Log.d("_video_resolution_maximum"+config._video_resolution_maximum+"\n");
+			Log.d("_video_preferred_frames_per_second"+config._video_preferred_frames_per_second+"\n");
+
+
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+
 	}
 
 	private String readFromFile(String filepath) {
