@@ -111,7 +111,7 @@ public final class FontListParser {
                     "serif", "NotoSerif-Regular.ttf"
             }
             };
-            List<SystemFont> fonts = new ArrayList<>();
+            List<SystemFont> fonts = new ArrayList<SystemFont>();
             for (String[] names : defaultSystemFonts) {
                 File file = new File("/system/fonts", names[1]);
                 if (file.exists()) {
