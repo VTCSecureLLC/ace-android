@@ -276,9 +276,6 @@ public final class LinphoneService extends Service {
 	};
 		
 	public void set_RTCP_Feedback(String setting, int interval){
-		LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_xr_enabled", 0);
-		LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_xr_voip_metrics_enabled", 0);
-		LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_xr_stat_summary_enabled", 0);
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.this);
 		//Initialize RTCP feedback preference
 		//Added sanity checks

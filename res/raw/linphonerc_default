@@ -38,7 +38,16 @@ emergency_username=911
 external_domains=Sorenson.com,ZVRS.com,CAAG.com,PurpleVRS.com,GlobalVRS.com,Convo.com
 
 [rtp]
-rtcp_xr_enabled=0
+audio_rtp_port=7200-7299
+video_rtp_port=9200-9299
+audio_jitt_comp=60
+video_jitt_comp=60
+nortp_timeout=30
+rtcp_xr_enabled=1
+rtcp_xr_rcvr_rtt_mode=all
+rtcp_xr_rcvr_rtt_max_size=10000
+rtcp_xr_stat_summary_enabled=1
+rtcp_xr_voip_metrics_enabled=1
 audio_dscp=46
 video_dscp=46
 
