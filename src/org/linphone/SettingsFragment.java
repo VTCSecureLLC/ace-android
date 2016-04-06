@@ -1388,8 +1388,8 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 		});
 
-		Set<String> available_fonts = prefs.getStringSet(getString(R.string.pref_text_settings_aviable_fonts), null);
-		String selectedFont = prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
+		Set<String> available_fonts = non_linphone_prefs.getStringSet(getString(R.string.pref_text_settings_aviable_fonts), null);
+		String selectedFont = non_linphone_prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
 		ListPreference font_list = (ListPreference) findPreference(getString(R.string.pref_text_settings_font_key));
 
 		initFontStyle();
@@ -1440,7 +1440,7 @@ public class SettingsFragment extends PreferencesListFragment {
 	private void initFontStyle() {
 		CharSequence[] styleValues = new CharSequence[4];
 		ListPreference fontStyleList = (ListPreference) findPreference(getString(R.string.pref_text_settings_font_style_key));
-		String selectedStyle = prefs.getString(getString(R.string.pref_text_settings_font_style_key), "Default");
+		String selectedStyle = non_linphone_prefs.getString(getString(R.string.pref_text_settings_font_style_key), "Default");
 
 		styleValues[0] = "Default";
 		styleValues[1] = "Bold";
