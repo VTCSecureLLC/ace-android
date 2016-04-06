@@ -252,7 +252,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		linphone_core_stats_holder =  inflator.inflate(R.layout.linphone_core_stats, null);
 		linphone_core_stats_table = (TableLayout)linphone_core_stats_holder.findViewById(R.id.linphone_core_stats);
-//		show_extra_linphone_core_stats();
+		show_extra_linphone_core_stats();
 
 		paramss.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 //		mFragmentHolder.setVisibility(View.GONE);
@@ -362,11 +362,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			@Override
 			public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
 				Log.d("TAG", "callState change");
-//				try {
-//					LinphoneActivity.instance().display_all_core_values(lc, state.toString());
-//				}catch(Throwable e){
-//					e.printStackTrace();
-//				}
+				try {
+					LinphoneActivity.instance().display_all_core_values(lc, state.toString());
+				}catch(Throwable e){
+					e.printStackTrace();
+				}
 				if (lc.getCallsNb() == 0) {
 					finish();
 					stopOutgoingRingCount();

@@ -116,7 +116,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 								trying_tls_on_tcp_failure=true;
 
-								deleteAccounts();
+								//deleteAccounts();
 								//Couldn't register TCP, trying TLS(Login)
 								Toast.makeText(SetupActivity.this, "Initial Login attempt with TCP failed, trying TLS", Toast.LENGTH_SHORT).show();
 
@@ -149,7 +149,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 									//Couldn't register (Login)
 									mProgressDialog.dismiss();
 									Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-									deleteAccounts();
+									//deleteAccounts();
 								}
 
 							}
@@ -184,7 +184,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		}
 		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
 		{
-			deleteAccounts();
+			//deleteAccounts();
 		}
 		
 		super.onPause();

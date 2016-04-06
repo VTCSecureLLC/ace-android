@@ -71,16 +71,13 @@
 		android:key="@string/pref_manage_key">
        
         <CheckBoxPreference
-        	android:title="@string/pref_disable_account"
-            android:persistent="true"/>
+        	android:title="@string/pref_disable_account"/>
         
         <CheckBoxPreference
-        	android:title="@string/pref_default_account"
-            android:persistent="true"/>
+        	android:title="@string/pref_default_account"/>
         
         <Preference 
-        	android:title="@string/pref_delete_account"
-            android:persistent="true"/>
+        	android:title="@string/pref_delete_account"/>
         
     </PreferenceCategory>
     
