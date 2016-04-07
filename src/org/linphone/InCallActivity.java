@@ -48,6 +48,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -241,6 +242,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}else{
 			rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
 		}
+
+		handleNotificationMessage();
 		View statusBar = inflator.inflate(R.layout.status_holder, null);
 		RelativeLayout.LayoutParams paramss = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -549,6 +552,52 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 		checkIncomingCall();
+
+	}
+
+	private void handleNotificationMessage() {
+		if(!(  getIntent()!= null && getIntent().hasExtra("GoToChat") && getIntent().hasExtra("ChatContactSipUri") && LinphoneActivity.instance() != null ))
+			return;
+		String url = getIntent().getExtras().getString("ChatContactSipUri");
+
+		if(LinphoneManager.getLc().getCallsNb() == 0)
+			LinphoneActivity.instance().showMessageFromNotification(getIntent());
+		else if(LinphoneManager.getLc().getCallsNb() == 1 && rttHolder!= null && rttHolder.getVisibility() != View.VISIBLE){
+				showRTTinterface();
+		}
+	}
+
+	public void invalidateSelfView(SurfaceView sv) {
+
+		LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+		if(call == null)
+			return;
+
+		LinphoneCallParams params = call.getCurrentParamsCopy();
+		int sent_video_height = params.getSentVideoSize().height;
+		int sent_video_width = params.getSentVideoSize().width;
+
+		if(sent_video_height == 0 || sent_video_width == 0)
+		{
+			return;
+		}
+		float ratio = sent_video_height / (float) sent_video_width;
+		if(sv!= null)
+		{
+			ViewGroup.LayoutParams layoutParams = sv.getLayoutParams();
+			float currentratio = layoutParams.height / (float) layoutParams.width;
+			float diff = currentratio / ratio;
+			Log.d("difference in selfview = " + diff + "  send widthxheight " + sent_video_width+ "X" + sent_video_height);
+			if (diff>1.02f || diff < 0.98f)
+			{
+				layoutParams.height = (int) (ratio * layoutParams.width);
+				sv.setLayoutParams(layoutParams);
+			}
+		}
+		else
+		{
+			Log.d("difference in selfview NULLLLLL");
+		}
 
 	}
 
@@ -2766,5 +2815,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mRingCount = 0;
 		mIncomingCallCount.setVisibility(View.GONE);
 		mIncomingCallCount.setText(mRingCount + "");
+	}
+
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		handleNotificationMessage();
+
+
+		// we should not open message screen while in call
 	}
 }
