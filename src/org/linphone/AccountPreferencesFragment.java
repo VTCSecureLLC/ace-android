@@ -67,10 +67,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		} else {
 			manageAccountPreferencesFields(screen);
 		}
-		if (SettingsFragment.isAdvancedSettings)
-			screen.setEnabled(true);
-		else
-			screen.setEnabled(false);
+
 		// Force hide keyboard
 		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
@@ -288,10 +285,15 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		boolean isDefaultAccount = mPrefs.getDefaultAccountIndex() == n;
 		
     	PreferenceCategory account = (PreferenceCategory) getPreferenceScreen().findPreference(getString(R.string.pref_sipaccount_key));
+
     	EditTextPreference username = (EditTextPreference) account.getPreference(0);
     	username.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
     	username.setOnPreferenceChangeListener(usernameChangedListener);
-    	
+		if (SettingsFragment.isAdvancedSettings) {
+			account.setEnabled(true);
+		}else {
+			account.setEnabled(false);
+		}
     	EditTextPreference userid = (EditTextPreference) account.getPreference(1);
     	userid.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
     	userid.setOnPreferenceChangeListener(useridChangedListener);
@@ -337,11 +339,6 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
     	
     	PreferenceCategory manage = (PreferenceCategory) getPreferenceScreen().findPreference(getString(R.string.pref_manage_key));
     	final CheckBoxPreference disable = (CheckBoxPreference) manage.getPreference(0);
-		if (SettingsFragment.isAdvancedSettings)
-			disable.setEnabled(true);
-		else
-			disable.setEnabled(false);
-
 		disable.setOnPreferenceChangeListener(disableChangedListener);
     	
     	CheckBoxPreference mainAccount = (CheckBoxPreference) manage.getPreference(1);
@@ -359,11 +356,6 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 		});
 
     	final Preference delete = manage.getPreference(2);
-		if (SettingsFragment.isAdvancedSettings)
-			delete.setEnabled(true);
-		else
-			delete.setEnabled(false);
-
 		delete.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 	        public boolean onPreferenceClick(Preference preference) {
 	        	mPrefs.deleteAccount(n);
@@ -382,56 +374,68 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
     	username.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
     	username.setOnPreferenceChangeListener(usernameChangedListener);
     	username.setSummary(username.getText());
+		setAsAdvancedSetting(username);
     	
     	EditTextPreference userid = (EditTextPreference) account.getPreference(1);
     	userid.setText(mPrefs.getAccountUserId(n));
     	userid.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
     	userid.setOnPreferenceChangeListener(useridChangedListener);
     	userid.setSummary(userid.getText());
-    	
-    	EditTextPreference password = (EditTextPreference) account.getPreference(2);
+		setAsAdvancedSetting(userid);
+
+		EditTextPreference password = (EditTextPreference) account.getPreference(2);
         password.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     	password.setText(mPrefs.getAccountPassword(n));
         password.setOnPreferenceChangeListener(passwordChangedListener);
+		setAsAdvancedSetting(password);
     	
     	EditTextPreference domain = (EditTextPreference) account.getPreference(3);
     	domain.setText(mPrefs.getAccountDomain(n));
     	domain.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
     	domain.setOnPreferenceChangeListener(domainChangedListener);
     	domain.setSummary(domain.getText());
+		setAsAdvancedSetting(domain);
     	
     	EditTextPreference displayName = (EditTextPreference) account.getPreference(4);
     	displayName.setText(mPrefs.getAccountDisplayName(n));
     	displayName.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
     	displayName.setOnPreferenceChangeListener(displayNameChangedListener);
     	displayName.setSummary(displayName.getText());
+		setAsAdvancedSetting(displayName);
 		
     	PreferenceCategory advanced = (PreferenceCategory) getPreferenceScreen().findPreference(getString(R.string.pref_advanced_key));
     	mTransportPreference = (ListPreference) advanced.getPreference(0);
     	initializeTransportPreference(mTransportPreference);
     	mTransportPreference.setOnPreferenceChangeListener(transportChangedListener);	
     	mTransportPreference.setSummary(mPrefs.getAccountTransportString(n));
+		setAsAdvancedSetting(mTransportPreference);
     	
 		mProxyPreference = (EditTextPreference) advanced.getPreference(1);
 		mProxyPreference.setText(mPrefs.getAccountProxy(n));
 		mProxyPreference.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 		mProxyPreference.setOnPreferenceChangeListener(proxyChangedListener);
 		mProxyPreference.setSummary("".equals(mProxyPreference.getText()) || (mProxyPreference.getText() == null) ? getString(R.string.pref_help_proxy) : mProxyPreference.getText());
+		setAsAdvancedSetting(mProxyPreference);
     	
     	CheckBoxPreference outboundProxy = (CheckBoxPreference) advanced.getPreference(2);
     	outboundProxy.setChecked(mPrefs.isAccountOutboundProxySet(n));
     	outboundProxy.setOnPreferenceChangeListener(outboundProxyChangedListener);
+		setAsAdvancedSetting(outboundProxy);
     	
     	EditTextPreference expires = (EditTextPreference) advanced.getPreference(3);
     	expires.setText(mPrefs.getExpires(n));
     	expires.setOnPreferenceChangeListener(expiresChangedListener);
     	expires.setSummary(mPrefs.getExpires(n));
+		setAsAdvancedSetting(expires);
 
     	EditTextPreference prefix = (EditTextPreference) advanced.getPreference(4);
     	String prefixValue = mPrefs.getPrefix(n);
     	prefix.setSummary(prefixValue);
     	prefix.setText(prefixValue);
     	prefix.setOnPreferenceChangeListener(prefixChangedListener);
+		setAsAdvancedSetting(prefix);
+
+
 //Removed in VATRP-2301
 //		CheckBoxPreference avpf = (CheckBoxPreference) advanced.getPreference(5);
 //		avpf.setChecked(mPrefs.avpfEnabled(n));
@@ -445,6 +449,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
     	CheckBoxPreference escape = (CheckBoxPreference) advanced.getPreference(5);
 		escape.setChecked(mPrefs.getReplacePlusByZeroZero(n));
 		escape.setOnPreferenceChangeListener(escapeChangedListener);
+		setAsAdvancedSetting(escape);
     	
     	PreferenceCategory manage = (PreferenceCategory) getPreferenceScreen().findPreference(getString(R.string.pref_manage_key));
     	final CheckBoxPreference disable = (CheckBoxPreference) manage.getPreference(0);
@@ -526,6 +531,14 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 			}
 			LinphoneActivity.instance().isNewProxyConfig();
 			LinphoneManager.getLc().refreshRegisters();
+		}
+	}
+
+	public void setAsAdvancedSetting(Preference pref){
+		if (SettingsFragment.isAdvancedSettings) {
+			pref.setEnabled(true);
+		}else {
+			pref.setEnabled(false);
 		}
 	}
 }

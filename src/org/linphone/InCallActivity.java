@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -143,6 +144,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private CountDownTimer timer;
 	private boolean isVideoCallPaused = false;
 	AcceptCallUpdateDialogFragment callUpdateDialog;
+	Typeface rtt_typeface;
 
 	private LayoutInflater inflater;
 	private ViewGroup container;
@@ -211,6 +213,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		Log.d("ttt onCreate()");
 
 		try {
@@ -251,7 +254,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		linphone_core_stats_holder =  inflator.inflate(R.layout.linphone_core_stats, null);
 		linphone_core_stats_table = (TableLayout)linphone_core_stats_holder.findViewById(R.id.linphone_core_stats);
-//		show_extra_linphone_core_stats();
+		show_extra_linphone_core_stats();
 
 		paramss.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 //		mFragmentHolder.setVisibility(View.GONE);
@@ -294,6 +297,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		micro.setSelected(isMicMuted);
 
 		isAudioMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
+		if(isAudioMuted)
+		{
+			LinphoneManager.getLc().setPlaybackGain(mute_db);
+		}
 
 		//set speaker on initially. This does not mean that audio isn't muted. If audio is muted, and speaker is on, there will still be no sound! Until audio is unmutted
 		isSpeakerOn = true;
@@ -356,12 +363,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void callState(LinphoneCore lc, final LinphoneCall call, LinphoneCall.State state, String message) {
-				Log.d("callState change");
-//				try {
-//					LinphoneActivity.instance().display_all_core_values(lc, state.toString());
-//				}catch(Throwable e){
-//					e.printStackTrace();
-//				}
+				Log.d("TAG", "callState change");
+				try {
+					LinphoneActivity.instance().display_all_core_values(lc, state.toString());
+				}catch(Throwable e){
+					e.printStackTrace();
+				}
 				if (lc.getCallsNb() == 0) {
 					finish();
 					stopOutgoingRingCount();
@@ -381,7 +388,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 					return;
 				}
-				if(state==State.IncomingReceived||state == state.OutgoingInit) {
+				if(state==State.IncomingReceived||state == State.OutgoingInit) {
 					if(LinphoneManager.getLc().getCallsNb() > 2){
 						for(LinphoneCall mCall: LinphoneManager.getLc().getCalls()){
 							if(mCall.getState() == State.IncomingReceived){
@@ -389,11 +396,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 							}
 						}
 					}
+
 					LinphoneManager.getInstance().initSDP(isVideoEnabled(call));
 				}
 				if (state == State.IncomingReceived || State.CallEnd == state) {
 					//startIncomingCallActivity();
 					checkIncomingCall();
+
 					return;
 				}
 
@@ -403,6 +412,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					if(!isVideoEnabled(call)){
 						showAudioView();
 					}
+
 				}
 
 				if (state == State.Resuming) {
@@ -418,6 +428,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					if(isCameraMuted)
 						setCameraMute(isCameraMuted);
 
+					if(VideoCallFragment.mCaptureView != null)
+						invalidateSelfView(VideoCallFragment.mCaptureView);
 					if(isRTTLocallyEnabled) {
 						isRTTEnabled = call.getRemoteParams().realTimeTextEnabled();
 					}
@@ -478,7 +490,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //        				});
 //        			}
 				}
-
 				transfer.setEnabled(LinphoneManager.getLc().getCurrentCall() != null);
 			}
 
@@ -566,7 +577,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				showRTTinterface();
 		}
 	}
-
 	public void invalidateSelfView(SurfaceView sv) {
 
 		LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
@@ -616,6 +626,36 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		super.onConfigurationChanged(newConfig);
 		Log.d("onConfigChanged");
 
+		if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			if (VideoCallFragment.mCaptureView != null) {
+				ViewGroup.LayoutParams params = VideoCallFragment.mCaptureView.getLayoutParams();
+				int width = params.width;
+				int height = params.height;
+				if (params.width < params.height) {
+					params.height = width;
+					params.width = height;
+					VideoCallFragment.mCaptureView.setLayoutParams(params);
+				}
+
+			}
+		}
+		else
+		{
+			if (VideoCallFragment.mCaptureView != null) {
+				ViewGroup.LayoutParams params = VideoCallFragment.mCaptureView.getLayoutParams();
+				int width = params.width;
+				int height = params.height;
+				if (params.width > params.height) {
+					params.height = width;
+					params.width = height;
+					VideoCallFragment.mCaptureView.setLayoutParams(params);
+				}
+
+			}
+		}
+
+
+
 		boolean contralersVisible = mControlsLayout.getVisibility() == View.VISIBLE;
 //		mainLayout.removeView(mViewsHolder);
 //
@@ -661,6 +701,32 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		}
 		Log.d("TEXT_MODE ", TEXT_MODE);
+
+		String font_family = prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
+
+			String style = prefs.getString(getString(R.string.pref_text_settings_font_style_key), "Default");
+
+		int font_style = Typeface.NORMAL;
+
+		if (style.equals("Default")) {
+			font_style = Typeface.NORMAL;
+		} else if (style.equals("Bold")){
+			font_style = Typeface.BOLD;
+		}else if (style.equals("Italic")){
+			font_style = Typeface.ITALIC;
+		}else if (style.equals("Bold Italic")){
+			font_style = Typeface.BOLD_ITALIC;
+		}
+
+		if(!font_family.equals("Default"))
+		{
+			rtt_typeface = Typeface.create(font_family, font_style);
+			Log.d("RTT FONT FAMILY: " + font_family + " FONT STYLE: " + font_style);
+		}
+		else if(font_style != Typeface.NORMAL)
+		{
+			rtt_typeface = Typeface.defaultFromStyle(font_style);
+		}
 	}
 
 	public void hold_cursor_at_end_of_edit_text(final EditText et) {
@@ -724,13 +790,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				enter_pressed=false;
 
 
-
-				if (s.length()>0 && s.subSequence(s.length()-1, s.length()).toString().equalsIgnoreCase("\n")) {
-					enter_pressed=true;
-				}
+				enter_pressed = s.length() > 0 && s.subSequence(s.length() - 1, s.length()).toString().equalsIgnoreCase("\n");
 
 				char enter_button=(char) 10;
 				char back_space_button=(char) 8;
@@ -811,6 +873,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextSize(16);
 		if(!LinphonePreferences.instance().isForce508()){//use transparency if not 508
 			tv.getBackground().setAlpha(180);
+		}
+		if(rtt_typeface!=null) {
+			tv.setTypeface(rtt_typeface);
 		}
 
 	}
@@ -1384,6 +1449,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		refreshInCallActions();
 	}
 
+	public void update_call(){//This function fixes situation when on device isn't sending video. Execute it on the device that isn't sending video.
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+		if (lc != null) {
+			//lc.setDeviceRotation(90);
+			LinphoneCall currentCall = lc.getCurrentCall();
+			if (currentCall != null && currentCall.cameraEnabled() && currentCall.getCurrentParamsCopy().getVideoEnabled()) {
+				lc.updateCall(currentCall, null);
+			}
+		}
+	}
 	public void updateStatusFragment(StatusFragment statusFragment) {
 		status = statusFragment;
 	}
@@ -1628,7 +1703,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.w("Bluetooth not available, using speaker");
 			LinphoneManager.getInstance().routeAudioToSpeaker();
 //				speaker.setBackgroundResource(R.drawable.speaker_on);
-			audioMute.setSelected(false);
+			audioMute.setSelected(isAudioMuted);
 		}
 		video.setSelected(true);
 		video.setEnabled(true);
@@ -2095,7 +2170,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 			}
 		} else  {
-
+			update_call();//Adding secret refresh option, to fix when android tv (or any device doesn't refresh).
 			options.setSelected(true);
 
 			if (isAnimationDisabled)
