@@ -486,7 +486,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 					CallManager.getInstance().inviteAddress(lAddress, false, isLowBandwidthConnection);
 				}
 
-
 			} catch (LinphoneCoreException e) {
 				return;
 			}

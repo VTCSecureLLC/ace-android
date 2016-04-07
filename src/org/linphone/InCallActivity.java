@@ -154,6 +154,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private Timer outgoingRingCountTimer = null;
 
 	public Contact contact;
+	boolean isEmergencyCall;
 
 	// RTT views
 	private int TEXT_MODE;
@@ -227,11 +228,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		instance = this;
 
+
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(InCallActivity.class);
 
 		//DialerFragment.instance().mOrientationHelper.disable();
 
 		LinphoneActivity.instance().mOrientationHelper.enable();
+
+		LinphoneCore lc = LinphoneManager.getLc();
+		LinphoneCall currentCall = lc.getCurrentCall();
+		if (currentCall != null)
+			isEmergencyCall = CallManager.getInstance().isEmergencyCall(currentCall.getRemoteAddress());
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		mainLayout = new RelativeLayout(this);
@@ -293,7 +300,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
 
 		isMicMuted = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
+		if(isEmergencyCall) {
+			isMicMuted = false;
+			isCameraMuted = false;
+		}
+
 		LinphoneManager.getLc().muteMic(isMicMuted);
+
 		micro.setSelected(isMicMuted);
 
 		isAudioMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
@@ -563,6 +576,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 		checkIncomingCall();
+
+
+
 
 	}
 
@@ -1437,6 +1453,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(LinphoneManager.getLc().getCurrentCall() != null && LinphonePreferences.instance().isVideoEnabled() && !LinphoneManager.getLc().getCurrentCall().mediaInProgress()) {
 			video.setEnabled(true);
 		}
+
 		micro.setEnabled(true);
 		audioMute.setEnabled(true);
 
@@ -1606,6 +1623,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void hideRTTinterface(){
 		if(rttHolder!=null) {
 			rttHolder.setVisibility(View.GONE);
+			rttHolder.setVisibility(View.GONE);
 			isRTTMaximized=false;
 			mControlsLayout.setVisibility(View.VISIBLE);
 		}
@@ -1613,6 +1631,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 	private void setCameraMute(boolean muted)	{
+		if(isEmergencyCall)
+			muted = false;
 
 		isCameraMuted = muted;
 
@@ -1746,6 +1766,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void toggleMicro() {
 		LinphoneCore lc = LinphoneManager.getLc();
 		isMicMuted = !isMicMuted;
+		if(isEmergencyCall)
+			isMicMuted = false;
 		lc.muteMic(isMicMuted);
 		if (isMicMuted) {
 			micro.setSelected(true);
