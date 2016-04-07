@@ -914,14 +914,26 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			ChatStorage.getInstance().saveImageMessage(from.asStringUriOnly(), "", null, message.getExternalBodyUrl(), message.getTime());
 		}
 
+
 		try {
 			Contact contact = ContactsManager.getInstance().findContactWithAddress(mServiceContext.getContentResolver(), from);
 			if (!mServiceContext.getResources().getBoolean(R.bool.disable_chat__message_notification)) {
+				boolean showNotification = true;
+				if(lc.getCallsNb()>0)
+				{
+					for (LinphoneCall call : lc.getCalls())
+					{
+						if(from.asStringUriOnly().equals(call.getRemoteAddress().asStringUriOnly()) && InCallActivity.isInstanciated())
+							showNotification = false;
+					}
+				}
+				if(showNotification) {
 					if (contact != null) {
 						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
 					} else {
 						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getUserName(), textMessage);
 					}
+				}
 			}
 		} catch (Exception e) {
 			Log.e(e);
