@@ -412,9 +412,10 @@ public final class LinphoneService extends Service {
 		mNM.cancel(CUSTOM_NOTIF_ID);
 		resetIntentLaunchedOnNotificationClick();
 	}
-	
+
 	public void displayMessageNotification(String fromSipUri, String fromName, String message) {
-		Intent notifIntent = new Intent(this, LinphoneActivity.class);
+		// opening incallactivity and then openning appropriate screen will improve performance while in call
+		Intent notifIntent = new Intent(this, InCallActivity.class);
 		notifIntent.putExtra("GoToChat", true);
 		notifIntent.putExtra("ChatContactSipUri", fromSipUri);
 		
