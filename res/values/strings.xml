@@ -521,4 +521,9 @@
   <string name="title_video_dscp">Video DSCP</string>
   <string name="title_sip_dscp">Sip DSCP</string>
   <string name="pref_theme_is_fotce">pref_theme_is_fotce</string>
+  <string name="pref_text_settings_font_key">pref_text_settings_font_key</string>
+  <string name="pref_text_settings_font_title">RTT Font Family</string>
+  <string name="pref_text_settings_font_style_title">RTT font style</string>
+  <string name="pref_text_settings_font_style_key">pref_text_settings_font_style_key</string>
+  <string name="pref_text_settings_aviable_fonts">pref_text_settings_aviable_fonts</string>
 </resources>
