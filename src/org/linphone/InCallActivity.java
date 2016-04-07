@@ -214,6 +214,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		if(LinphoneManager.getLc().getCallsNb() == 0 && getIntent()!= null && getIntent().getExtras() != null && getIntent().hasExtra("GoToChat") && LinphoneActivity.instance() != null)
+		{
+			LinphoneActivity.instance().showMessageFromNotification(getIntent());
+		}
 		Log.d("ttt onCreate()");
 
 		try {
@@ -2867,5 +2871,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mRingCount = 0;
 		mIncomingCallCount.setVisibility(View.GONE);
 		mIncomingCallCount.setText(mRingCount + "");
+	}
+
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		// we should not open message screen while in call
 	}
 }
