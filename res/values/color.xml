@@ -52,7 +52,7 @@
 
     <color name="border_color">#ffffffff</color>
     <color name="text_color">#ffffffff</color>
-    <color name="background_transparent_black">#9E001111</color>
+    <color name="background_transparent_black">#CC001111</color>
 
     <drawable name="btn_white">#efefef</drawable>
     <drawable name="btn_white_selected">#D7D7D7</drawable>

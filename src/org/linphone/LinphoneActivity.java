@@ -55,6 +55,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -132,7 +133,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
 	private static final int CALL_ACTIVITY = 19;
-    private static final int CHAT_ACTIVITY = 21;
+	private static final int CHAT_ACTIVITY = 21;
 
 	private static boolean first_launch_boolean=true;
 
@@ -152,10 +153,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
 
+	private Animation slideOutLeftToRight, slideInRightToLeft;
+	private LinearLayout mAnimateLayout;
+	private TextView selfPreviewTextView;
+	private boolean isSelfViewEnabled;
+	private String selfVideoIsEnabled;
+	private int selectedTab;
+	private TextView videomallTextView;
+
 	public static boolean providerLookupOperation_executed=false;
 
 	public static View topLayout;
 	private AsyncProviderLookupOperation providerLookupOperation;
+	private SharedPreferences mPrefs;
 
 	//In Call Message State Variables
 	public static int[] message_directions;
@@ -182,7 +192,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //		LoginManager.verifyLogin(this, getIntent());
 		//SetupController setupController = SetupController.getInstance();
 		//if (!setupController.getSetupCompleted()){
-			//navigate to the Welcome (initial set up) page
+		//navigate to the Welcome (initial set up) page
 		//	startActivity(new Intent(this,HueBridgeSearchActivity.class));
 		//}
 		ctx=this;
@@ -191,23 +201,23 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		checkForUpdates();
 
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
-				new AlertDialog.Builder(this)
-		        .setTitle(getString(R.string.location_for_911_disabled_title))
-		        .setMessage(getString(R.string.location_for_911_disabled_message))
-		        .setPositiveButton(R.string.button_ok,null)
-		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
-		            }
-		         })
-		         .show();
+			new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.location_for_911_disabled_title))
+					.setMessage(getString(R.string.location_for_911_disabled_message))
+					.setPositiveButton(R.string.button_ok, null)
+					.setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
+						}
+					})
+					.show();
 		}
 
 		if (isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
-        //	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        } else if (!isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+			//	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+		} else if (!isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
 
 		if (!LinphoneManager.isInstanciated()) {
 			Log.e("No service running: avoid crash by starting the launcher", this.getClass().getName());
@@ -228,9 +238,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			//This is where the login screen is launched of first run, after accept legal release
 			//if(first_launch_boolean==true) {
-				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
-				LinphonePreferences.instance().firstLaunchSuccessful();
-				first_launch_boolean=false;
+			startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
+			LinphonePreferences.instance().firstLaunchSuccessful();
+			first_launch_boolean=false;
 			//}
 
 		}
@@ -240,10 +250,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());
 		} else {
-				ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
+			ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
 		}
 
-	 	if(!LinphonePreferences.instance().isContactsMigrationDone()){
+		if(!LinphonePreferences.instance().isContactsMigrationDone()){
 			ContactsManager.getInstance().migrateContacts();
 			LinphonePreferences.instance().contactsMigrationDone();
 		}
@@ -252,7 +262,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		topLayout=findViewById(R.id.topLayout);
 
-
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
 
@@ -294,9 +304,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
-		        if (messageListFragment != null && messageListFragment.isVisible()) {
-		            ((ChatListFragment) messageListFragment).refresh();
-		        }
+				if (messageListFragment != null && messageListFragment.isVisible()) {
+					((ChatListFragment) messageListFragment).refresh();
+				}
 			}
 
 			@Override
@@ -381,18 +391,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		int rotation = getWindowManager().getDefaultDisplay().getRotation();
 		switch (rotation) {
-		case Surface.ROTATION_0:
-			rotation = 0;
-			break;
-		case Surface.ROTATION_90:
-			rotation = 90;
-			break;
-		case Surface.ROTATION_180:
-			rotation = 180;
-			break;
-		case Surface.ROTATION_270:
-			rotation = 270;
-			break;
+			case Surface.ROTATION_0:
+				rotation = 0;
+				break;
+			case Surface.ROTATION_90:
+				rotation = 90;
+				break;
+			case Surface.ROTATION_180:
+				rotation = 180;
+				break;
+			case Surface.ROTATION_270:
+				rotation = 270;
+				break;
 		}
 
 		getLc().setDeviceRotation(rotation);
@@ -408,6 +418,156 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			providerLookupOperation = new AsyncProviderLookupOperation(null, ctx);
 			providerLookupOperation.execute();
 			providerLookupOperation_executed=true;
+		}
+
+		initMore();
+	}
+
+	View.OnClickListener moreOptionsListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+			hideAnimation();
+
+			switch (v.getId()){
+				case R.id.label_linphone_activity_settings:
+					changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
+					break;
+				case R.id.label_linphone_activity_resources:
+					changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
+					break;
+				case R.id.label_linphone_activity_videomail:
+					videoMail();
+					break;
+				case R.id.label_linphone_activity_self_preview:
+					if (isSelfViewEnabled) {
+						isSelfViewEnabled = false;
+						selfPreviewTextView.setSelected(false);
+					} else {
+						selfPreviewTextView.setSelected(true);
+						isSelfViewEnabled = true;
+					}
+					mPrefs.edit().putBoolean(selfVideoIsEnabled, isSelfViewEnabled).commit();
+					break;
+			}
+		}
+	};
+
+	private void videoMail() {
+		LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), ""), getResources().getString(R.string.main_menu_videomail));
+		LinphoneActivity.instance().resetMessageWaitingCount();
+	}
+
+	private void initMore() {
+		int videoMessageCount = LinphoneActivity.instance().getMessageWaitingCount();
+
+		mAnimateLayout = (LinearLayout)findViewById(R.id.layout_linphone_activity_more_menu);
+		slideInRightToLeft = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_to_left);
+		slideOutLeftToRight = AnimationUtils.loadAnimation(this, R.anim.slide_out_left_to_right);
+
+		TextView settingsTextView = (TextView) findViewById(R.id.label_linphone_activity_settings);
+		TextView resourcesTextView = (TextView) findViewById(R.id.label_linphone_activity_resources);
+
+		TextView videomallTextView = (TextView) findViewById(R.id.label_linphone_activity_videomail);
+		videomallTextView.setText(getResources().getString(R.string.main_menu_videomail) + " (" +String.valueOf(videoMessageCount) + ")");
+
+		selfPreviewTextView = (TextView) findViewById(R.id.label_linphone_activity_self_preview);
+
+		selfVideoIsEnabled = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
+		isSelfViewEnabled = mPrefs.getBoolean(selfVideoIsEnabled, true);
+		selfPreviewTextView.setSelected(isSelfViewEnabled);
+
+		settingsTextView.setOnClickListener(moreOptionsListener);
+		resourcesTextView.setOnClickListener(moreOptionsListener);
+		videomallTextView.setOnClickListener(moreOptionsListener);
+		selfPreviewTextView.setOnClickListener(moreOptionsListener);
+	}
+
+
+	private void showHideMoreOptions() {
+		if (isAnimationDisabled) {
+			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+				switch (selectedTab){
+					case 0:
+						dialer.setSelected(true);
+						dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 1:
+						history.setSelected(true);
+						history.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 2:
+						contacts.setSelected(true);
+						contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 3:
+						chat.setSelected(true);
+						chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+
+				}
+				hideAnimation();
+			} else {
+				settings.setSelected(true);
+				settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				showAnimation();
+			}
+
+
+		} else {
+			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+				dialer.setSelected(true);
+				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				mAnimateLayout.setVisibility(View.INVISIBLE);
+			} else {
+				settings.setSelected(true);
+				settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				mAnimateLayout.setVisibility(View.VISIBLE);
+			}
+		}
+	}
+
+	private void showAnimation (){
+		slideInRightToLeft.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				mAnimateLayout.setVisibility(View.VISIBLE);
+				slideInRightToLeft.cancel();
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+
+			}
+		});
+		mAnimateLayout.startAnimation(slideInRightToLeft);
+	}
+
+	private void hideAnimation (){
+		if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+			slideOutLeftToRight.setAnimationListener(new Animation.AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {
+
+				}
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					mAnimateLayout.setVisibility(View.INVISIBLE);
+					slideOutLeftToRight.cancel();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+
+				}
+			});
+			mAnimateLayout.startAnimation(slideOutLeftToRight);
 		}
 	}
 
@@ -517,7 +677,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		int backgroundColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.TRANSPARENT);
 		//set background color independent
 		if(topLayout!=null) {
-				topLayout.setBackgroundColor(backgroundColor);
+			topLayout.setBackgroundColor(backgroundColor);
 		}
 	}
 	public boolean isTablet() {
@@ -571,62 +731,62 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		Fragment newFragment = null;
 
 		switch (newFragmentType) {
-		case HISTORY:
-			if (getResources().getBoolean(R.bool.use_simple_history)) {
-				newFragment = new HistorySimpleFragment();
-			} else {
-				newFragment = new HistoryFragment();
-			}
-			break;
-		case HISTORY_DETAIL:
-			newFragment = new HistoryDetailFragment();
-			break;
-		case CONTACTS:
-			if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
-				Intent i = new Intent();
-			    i.setComponent(new ComponentName("com.android.contacts", "com.android.contacts.DialtactsContactsEntryActivity"));
-			    i.setAction("android.intent.action.MAIN");
-			    i.addCategory("android.intent.category.LAUNCHER");
-			    i.addCategory("android.intent.category.DEFAULT");
-			    startActivity(i);
-			} else {
-				newFragment = new ContactsFragment();
-				friendStatusListenerFragment = newFragment;
-			}
-			break;
-		case CONTACT:
-			newFragment = new ContactFragment();
-			break;
-		case EDIT_CONTACT:
-			newFragment = new EditContactFragment();
-			break;
-		case DIALER:
-			newFragment = new DialerFragment();
-			if (extras == null) {
-				newFragment.setInitialSavedState(dialerSavedState);
-			}
-			dialerFragment = newFragment;
-			break;
-		case SETTINGS:
-			newFragment = new SettingsFragment();
-			break;
-		case ACCOUNT_SETTINGS:
-			newFragment = new AccountPreferencesFragment();
-			break;
-		case ABOUT:
-		case ABOUT_INSTEAD_OF_CHAT:
-		case ABOUT_INSTEAD_OF_SETTINGS:
-			newFragment = new AboutFragment();
-			break;
-		case CHATLIST:
-			newFragment = new HelpFragment();
-			//messageListFragment = new Fragment();
-			break;
-		case CHAT:
-			newFragment = new ChatFragment();
-			break;
-		default:
-			break;
+			case HISTORY:
+				if (getResources().getBoolean(R.bool.use_simple_history)) {
+					newFragment = new HistorySimpleFragment();
+				} else {
+					newFragment = new HistoryFragment();
+				}
+				break;
+			case HISTORY_DETAIL:
+				newFragment = new HistoryDetailFragment();
+				break;
+			case CONTACTS:
+				if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
+					Intent i = new Intent();
+					i.setComponent(new ComponentName("com.android.contacts", "com.android.contacts.DialtactsContactsEntryActivity"));
+					i.setAction("android.intent.action.MAIN");
+					i.addCategory("android.intent.category.LAUNCHER");
+					i.addCategory("android.intent.category.DEFAULT");
+					startActivity(i);
+				} else {
+					newFragment = new ContactsFragment();
+					friendStatusListenerFragment = newFragment;
+				}
+				break;
+			case CONTACT:
+				newFragment = new ContactFragment();
+				break;
+			case EDIT_CONTACT:
+				newFragment = new EditContactFragment();
+				break;
+			case DIALER:
+				newFragment = new DialerFragment();
+				if (extras == null) {
+					newFragment.setInitialSavedState(dialerSavedState);
+				}
+				dialerFragment = newFragment;
+				break;
+			case SETTINGS:
+				newFragment = new SettingsFragment();
+				break;
+			case ACCOUNT_SETTINGS:
+				newFragment = new AccountPreferencesFragment();
+				break;
+			case ABOUT:
+			case ABOUT_INSTEAD_OF_CHAT:
+			case ABOUT_INSTEAD_OF_SETTINGS:
+				newFragment = new AboutFragment();
+				break;
+			case CHATLIST:
+				newFragment = new HelpFragment();
+				//messageListFragment = new Fragment();
+				break;
+			case CHAT:
+				newFragment = new ChatListFragment();
+				break;
+			default:
+				break;
 		}
 
 		if (newFragment != null) {
@@ -921,14 +1081,22 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public void onClick(View v) {
 		int id = v.getId();
 		resetSelection();
-
+		if (isAnimationDisabled) {
+			hideAnimation();
+		} else {
+			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+				mAnimateLayout.setVisibility(View.INVISIBLE);
+			}
+		}
 		if (id == R.id.history) {
+			selectedTab = 1;
 			changeCurrentFragment(FragmentsAvailable.HISTORY, null);
 			history.setSelected(true);
 			history.setBackgroundColor(Color.argb(180, 0, 155, 160));
 			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
 		} else if (id == R.id.contacts) {
+			selectedTab = 2;
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
 			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
@@ -938,32 +1106,34 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			}
 		} else if (id == R.id.dialer) {
+			selectedTab = 0;
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			if(!isTablet()) {
 				if(DialerFragment.instance() != null) {
-						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
-							DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
-							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
-						} else {
-							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
-							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
-						}
+					if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
+						DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
+						DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+					} else {
+						DialerFragment.instance().dialer_content.setVisibility(View.GONE);
+						DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
 					}
+				}
 			}
 			dialer.setSelected(true);
 			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.settings) {
-			changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
-			settings.setSelected(true);
-			settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			showHideMoreOptions();
+
 		} else if (id == R.id.about_chat) {
+			selectedTab = 5;
 			Bundle b = new Bundle();
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
 			aboutChat.setSelected(true);
 			aboutChat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.chat) {
-			changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
+			selectedTab = 3;
+			changeCurrentFragment(FragmentsAvailable.CHAT, null);
 			chat.setSelected(true);
 			chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		}
@@ -990,30 +1160,30 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		resetSelection();
 
 		switch (menuToSelect) {
-		case HISTORY:
-		case HISTORY_DETAIL:
-			history.setSelected(true);
-			break;
-		case CONTACTS:
-		case CONTACT:
-		case EDIT_CONTACT:
-			contacts.setSelected(true);
-			break;
-		case DIALER:
-			dialer.setSelected(true);
-			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
-			break;
-		case SETTINGS:
-		case ACCOUNT_SETTINGS:
-			settings.setSelected(true);
-			break;
-		case ABOUT_INSTEAD_OF_CHAT:
-			aboutChat.setSelected(true);
-			break;
-		case CHATLIST:
-		case CHAT:
-			chat.setSelected(true);
-			break;
+			case HISTORY:
+			case HISTORY_DETAIL:
+				history.setSelected(true);
+				break;
+			case CONTACTS:
+			case CONTACT:
+			case EDIT_CONTACT:
+				contacts.setSelected(true);
+				break;
+			case DIALER:
+				dialer.setSelected(true);
+				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				break;
+			case SETTINGS:
+			case ACCOUNT_SETTINGS:
+				settings.setSelected(true);
+				break;
+			case ABOUT_INSTEAD_OF_CHAT:
+				aboutChat.setSelected(true);
+				break;
+			case CHATLIST:
+			case CHAT:
+				chat.setSelected(true);
+				break;
 		}
 	}
 
@@ -1362,9 +1532,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode==WIFI_ACTIVITY_RESULT){
-				Intent refresh = new Intent(this, LinphoneActivity.class);
-				startActivity(refresh);
-				this.finish();
+			Intent refresh = new Intent(this, LinphoneActivity.class);
+			startActivity(refresh);
+			this.finish();
 		}
 
 		if (resultCode == Activity.RESULT_OK && requestCode == FIRST_LOGIN_ACTIVITY) {
@@ -1455,20 +1625,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					//startActivity(new Intent(this, IncomingCallActivity.class));
 				} else {
 
-						if (call.getCurrentParamsCopy().getVideoEnabled()) {
-							startVideoActivity(call);
-						} else {
-							startIncallActivity(call);
-						}
+					if (call.getCurrentParamsCopy().getVideoEnabled()) {
+						startVideoActivity(call);
+					} else {
+						startIncallActivity(call);
 					}
 				}
+			}
 		}
 
 		if(BuildConfig.DEBUG) {
 			//Debug
 			checkForCrashes();
 		} else{
-		 	//Release
+			//Release
 			checkForCrashes();
 		}
 	}

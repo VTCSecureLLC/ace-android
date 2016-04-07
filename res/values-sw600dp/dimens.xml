@@ -1,4 +1,11 @@
 <resources>
     <dimen name="video_surface_view_width">180dp</dimen>
     <dimen name="video_surface_view_height">216dp</dimen>
+
+    <dimen name="main_menu_height">120dp</dimen>
+    <dimen name="main_menu_padding">20dp</dimen>
+    <dimen name="main_menu_padding_bottom">40dp</dimen>
+    <dimen name="more_menu_options_width">240dp</dimen>
+    <dimen name="more_menu_options_height">55dp</dimen>
+    <dimen name="main_menu_settings_padding_left_rigth">15dp</dimen>
 </resources>
