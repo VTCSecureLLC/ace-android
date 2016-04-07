@@ -44,8 +44,6 @@ cache:
   - $HOME/.ccache
   - WORK
   - liblinphone-sdk 
-  file:
-  - Makefile
 before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
   -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
