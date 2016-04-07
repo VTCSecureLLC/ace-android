@@ -1436,6 +1436,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		refreshInCallActions();
 	}
 
+	public void update_call(){//This function fixes situation when on device isn't sending video. Execute it on the device that isn't sending video.
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+		if (lc != null) {
+			//lc.setDeviceRotation(90);
+			LinphoneCall currentCall = lc.getCurrentCall();
+			if (currentCall != null && currentCall.cameraEnabled() && currentCall.getCurrentParamsCopy().getVideoEnabled()) {
+				lc.updateCall(currentCall, null);
+			}
+		}
+	}
 	public void updateStatusFragment(StatusFragment statusFragment) {
 		status = statusFragment;
 	}
@@ -2147,7 +2157,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 			}
 		} else  {
-
+			update_call();//Adding secret refresh option, to fix when android tv (or any device doesn't refresh).
 			options.setSelected(true);
 
 			if (isAnimationDisabled)
