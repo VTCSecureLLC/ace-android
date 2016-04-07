@@ -214,10 +214,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if(LinphoneManager.getLc().getCallsNb() == 0 && getIntent()!= null && getIntent().getExtras() != null && getIntent().hasExtra("GoToChat") && LinphoneActivity.instance() != null)
-		{
-			LinphoneActivity.instance().showMessageFromNotification(getIntent());
-		}
+
 		Log.d("ttt onCreate()");
 
 		try {
@@ -249,6 +246,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}else{
 			rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
 		}
+
+		handleNotificationMessage();
 		View statusBar = inflator.inflate(R.layout.status_holder, null);
 		RelativeLayout.LayoutParams paramss = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -566,6 +565,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		checkIncomingCall();
 
+	}
+
+	private void handleNotificationMessage() {
+		if(!(  getIntent()!= null && getIntent().hasExtra("GoToChat") && getIntent().hasExtra("ChatContactSipUri") && LinphoneActivity.instance() != null ))
+			return;
+		String url = getIntent().getExtras().getString("ChatContactSipUri");
+
+		if(LinphoneManager.getLc().getCallsNb() == 0)
+			LinphoneActivity.instance().showMessageFromNotification(getIntent());
+		else if(LinphoneManager.getLc().getCallsNb() == 1 && rttHolder!= null && rttHolder.getVisibility() != View.VISIBLE){
+				showRTTinterface();
+		}
 	}
 
 	public void invalidateSelfView(SurfaceView sv) {
@@ -2877,6 +2888,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		handleNotificationMessage();
+
+
 		// we should not open message screen while in call
 	}
 }

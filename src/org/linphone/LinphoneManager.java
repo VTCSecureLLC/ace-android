@@ -923,7 +923,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				{
 					for (LinphoneCall call : lc.getCalls())
 					{
-						if(from.asStringUriOnly().equals(call.getRemoteAddress().asStringUriOnly()))
+						if(from.asStringUriOnly().equals(call.getRemoteAddress().asStringUriOnly()) && InCallActivity.isInstanciated())
 							showNotification = false;
 					}
 				}
