@@ -223,7 +223,7 @@ update-mediastreamer2-project:
 \t@cd $(TOPDIR)/submodules/linphone/mediastreamer2/java && \\
 \tandroid update project --path . --target $(ANDROID_MOST_RECENT_TARGET)
 
-generate-apk-without-sdk-build: java-clean copy-libs $(TOPDIR)/res/raw/rootca.pem update-project
+generate-apk-without-sdk-build: update-project java-clean copy-libs $(TOPDIR)/res/raw/rootca.pem update-project
 \techo "version.name=$(LINPHONE_ANDROID_VERSION)" > default.properties && \\
 \tant debug
 
