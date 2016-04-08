@@ -377,10 +377,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				Log.d("RTT", "messageReceived cr=" + message.toString());
 				if(message.toString().startsWith("!@$%#CALL_DECLINE_MESSAGE#"));
 				{
-					findViewById(R.id.label_ringing).setVisibility(View.VISIBLE);
-					findViewById(R.id.label_ringing).setBackgroundColor(Color.RED);
-					((TextView)findViewById(R.id.label_ringing)).setText(message.getText().replace("!@$%#CALL_DECLINE_MESSAGE#", ""));
+
+					TextView tvStatus = (TextView) findViewById(R.id.label_ringing);
+					TextView tvSubStatus = (TextView) findViewById(R.id.outboundRingCount);
+					tvStatus.setVisibility(View.VISIBLE);
+					tvSubStatus.setVisibility(View.VISIBLE);
+
+					tvStatus.setText("Call declined");
+					tvSubStatus.setText(message.getText().replace("!@$%#CALL_DECLINE_MESSAGE#", ""));
 					startStatusFlashingAndFinish();
+
+
 				}
 
 			}
@@ -403,6 +410,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						|| state == State.Connected
 						|| state == State.StreamsRunning){
 					findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
+					findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
 					stopOutgoingRingCount();
 				}
 
@@ -1262,6 +1270,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		inflater = LayoutInflater.from(this);
 
 		video = (ImageView) findViewById(R.id.video);
+
+
+
 
 		video.setOnClickListener(this);
 		video.setEnabled(false);
@@ -2243,7 +2254,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//finish();asd
 		if(applyDelay)
 			finishWithDelay();
-		finish();
+		else
+			finish();
 	}
 
 	private void goBackToDialerAndDisplayTransferButton() {
@@ -2389,9 +2401,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(mHandler!= null )
 		{
 			mHandler.removeCallbacks(finishRunnable);
-			mHandler.removeCallbacks(finishFlashingRunnable);
 			mHandler.removeMessages(1);
-			mHandler.removeMessages(2);
 			mHandler = null;
 		}
 		stopStatusFlashing();
@@ -2495,6 +2505,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				InCallActivity.this.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
+						if(showStatusFlashing)
+							return;
 						ringCount++;
 						outgoingRingCountTextView.setText(ringCount + "");
 					}
@@ -2507,7 +2519,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if (outgoingRingCountTimer != null) {
 			outgoingRingCountTimer.cancel();
 			outgoingRingCountTimer = null;
-			findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
+			//findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
 			//findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
 		}
 	}
@@ -2949,36 +2961,28 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 	boolean showHangupReason;
-	TextView tvStatus;
+
+	boolean showStatusFlashing;
 	Runnable finishRunnable = new Runnable() {
 		@Override
 		public void run() {
-			if (InCallActivity.isInstanciated() && !showHangupReason) {
-				finish();
-				mHandler.removeMessages(1);
-			}
-		}
-	};
-	Runnable finishFlashingRunnable = new Runnable() {
-		@Override
-		public void run() {
 			if (InCallActivity.isInstanciated()) {
-				finish();
-				mHandler.removeMessages(2);
+				if(showHangupReason)
+				{
+					showHangupReason = false;
+					mHandler.postDelayed(this, 3000);
+				}
+				else {
+					finish();
+					mHandler.removeMessages(1);
+				}
 			}
 		}
 	};
-	void finishWithAfterStatusFlashing()
-	{
-		if(!mHandler.hasMessages(2))
-		{
-			mHandler.sendEmptyMessage(2);
-			mHandler.postDelayed(finishFlashingRunnable, 10000);
-		}
-	}
+
 	void finishWithDelay()
 	{
-		if(!mHandler.hasMessages(1) && !showHangupReason) {
+		if(!mHandler.hasMessages(1)) {
 			mHandler.sendEmptyMessage(1);
 			mHandler.postDelayed(finishRunnable, 1000);
 		}
@@ -2987,10 +2991,68 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	void startStatusFlashingAndFinish()
 	{
 		showHangupReason = true;
-		finishWithAfterStatusFlashing();
+
+
+		if(showStatusFlashing)
+			return;
+		showStatusFlashing = true;
+
+		final TextView tvSubStatus = (TextView) findViewById(R.id.outboundRingCount);
+
+		final Timer flashOrangeBackgroundTimer = new Timer();
+		final float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashred_frequency", 0.3f);
+		flashOrangeBackgroundTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				InCallActivity.this.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Integer colorFrom = getResources().getColor(R.color.incoming_header_drak_bg_transparent);
+						Integer colorTo = getResources().getColor(R.color.call_reject_button_red);
+
+						AnimatorSet animatorSet = new AnimatorSet();
+						ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+						colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+							@Override
+							public void onAnimationUpdate(ValueAnimator animator) {
+								tvSubStatus.setBackgroundColor((Integer) animator.getAnimatedValue());
+							}
+						});
+
+						ValueAnimator reverseColorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorTo, colorFrom);
+						reverseColorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+							@Override
+							public void onAnimationUpdate(ValueAnimator animator) {
+								tvSubStatus.setBackgroundColor((Integer) animator.getAnimatedValue());
+							}
+						});
+						colorAnimation.setDuration((long) (flashFrequencyInSeconds * 1000));
+						reverseColorAnimation.setDuration((long) (flashFrequencyInSeconds * 1000));
+
+						if (showStatusFlashing) {
+							//Call is showing terminated on some devices even though it is not, this is preventing red screen flashing. So I'm adding and attempt flash anyway, if it can't flash then we'll execute the anticpated terminate code.
+							try {
+								animatorSet.play(colorAnimation).after(reverseColorAnimation);
+								animatorSet.start();
+							} catch (Throwable e) {
+								flashOrangeBackgroundTimer.cancel();
+								e.printStackTrace();
+								Log.d("incoming call is supposedly terminated and we tried to flash anyway, was unable to, so.. cancelling the flash timer");
+							}
+
+						} else {
+//							animatorSet.play(colorAnimation).after(reverseColorAnimation);
+//							animatorSet.start();
+							flashOrangeBackgroundTimer.cancel();
+						}
+					}
+				});
+			}
+		}, 0, (long) (flashFrequencyInSeconds * 2000));
 	}
 	void stopStatusFlashing()
 	{
+		showStatusFlashing = false;
 	}
 
 

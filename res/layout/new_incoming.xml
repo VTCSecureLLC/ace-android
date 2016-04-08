@@ -104,7 +104,7 @@
 			android:background="#52ffffff"
 			android:gravity="center"
 			android:textColor="@android:color/white"
-			android:text="Can't talk now. Call me later?"/>
+			android:text="Can't talk now. Call me later."/>
 
 		<TextView
 			android:id="@+id/label_whats_up"
@@ -112,7 +112,7 @@
 			android:layout_height="45dp"
 			android:gravity="center"
 			android:textColor="@android:color/white"
-			android:text="Can't talk now. What's up?"
+			android:text="Can't talk now. What's up."
 			android:background="#52ffffff"/>
 
 		<TextView

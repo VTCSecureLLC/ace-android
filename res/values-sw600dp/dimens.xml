@@ -1,4 +1,7 @@
 <resources>
     <dimen name="video_surface_view_width">180dp</dimen>
     <dimen name="video_surface_view_height">216dp</dimen>
+
+    <dimen name="call_main_status_font_size">50sp</dimen>
+    <dimen name="call_sub_status_font_size">50sp</dimen>
 </resources>
