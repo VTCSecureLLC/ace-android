@@ -6,6 +6,7 @@ if [ -e WORK/Makefile ]; then
 make generate-apk-without-sdk-build -j 8
 else
 make -j 8
+cp Makefile WORK/Makefile
 fi
 #ninja -C WORK/cmake
 # todo VATRP-2786
