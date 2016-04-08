@@ -142,7 +142,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private StatusFragment statusFragment;
 	private TextView missedCalls, missedChats;
 	private LinearLayout menu, mark;
-	public static RelativeLayout contacts, history, settings, dialer, chat, aboutChat;
+	public static RelativeLayout contacts, history, more, dialer, chat, aboutChat;
 	private FragmentsAvailable currentFragment, nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
@@ -304,6 +304,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
+				updateMissedChatCount();
 				if (messageListFragment != null && messageListFragment.isVisible()) {
 					((ChatListFragment) messageListFragment).refresh();
 				}
@@ -431,9 +432,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			switch (v.getId()){
 				case R.id.label_linphone_activity_settings:
+					selectedTab = 4;
 					changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
 					break;
 				case R.id.label_linphone_activity_resources:
+					selectedTab = 4;
 					changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
 					break;
 				case R.id.label_linphone_activity_videomail:
@@ -504,12 +507,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						chat.setSelected(true);
 						chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 						break;
+					case 4:
+						more.setSelected(true);
+						more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+
 
 				}
 				hideAnimation();
 			} else {
-				settings.setSelected(true);
-				settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				more.setSelected(true);
+				more.setBackgroundColor(Color.argb(180, 0, 155, 160));
 				showAnimation();
 			}
 
@@ -520,8 +528,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 				mAnimateLayout.setVisibility(View.INVISIBLE);
 			} else {
-				settings.setSelected(true);
-				settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				more.setSelected(true);
+				more.setBackgroundColor(Color.argb(180, 0, 155, 160));
 				mAnimateLayout.setVisibility(View.VISIBLE);
 			}
 		}
@@ -615,8 +623,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		contacts.setOnClickListener(this);
 		dialer = (RelativeLayout) findViewById(R.id.dialer);
 		dialer.setOnClickListener(this);
-		settings = (RelativeLayout) findViewById(R.id.settings);
-		settings.setOnClickListener(this);
+		more = (RelativeLayout) findViewById(R.id.settings);
+		more.setOnClickListener(this);
 		chat = (RelativeLayout) findViewById(R.id.chat);
 		chat.setOnClickListener(this);
 		aboutChat = (RelativeLayout) findViewById(R.id.about_chat);
@@ -629,8 +637,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			aboutChat.setOnClickListener(this);
 		}
 		if (getResources().getBoolean(R.bool.replace_settings_by_about)) {
-			settings.setVisibility(View.GONE);
-			settings.setOnClickListener(null);
+			more.setVisibility(View.GONE);
+			more.setOnClickListener(null);
 		}
 
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
@@ -643,7 +651,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		TextView contactsView = (TextView) contacts.findViewById(R.id.text);
 		TextView dialerView = (TextView) dialer.findViewById(R.id.text);
 		TextView resourcesView = (TextView) chat.findViewById(R.id.text);
-		TextView settingsView = (TextView) settings.findViewById(R.id.text);
+		TextView settingsView = (TextView) more.findViewById(R.id.text);
 
 		historyView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
 		contactsView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
@@ -668,7 +676,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		((ImageView)contacts.findViewById(R.id.image)).setColorFilter(foregroundColor);
 		((ImageView)dialer.findViewById(R.id.image)).setColorFilter(foregroundColor);
-		((ImageView)settings.findViewById(R.id.image)).setColorFilter(foregroundColor);
+		((ImageView)more.findViewById(R.id.image)).setColorFilter(foregroundColor);
 		((ImageView)chat.findViewById(R.id.image)).setColorFilter(foregroundColor);
 	}
 
@@ -992,7 +1000,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public void displayAbout() {
 		changeCurrentFragment(FragmentsAvailable.ABOUT, null);
-		settings.setSelected(true);
 	}
 
 	public boolean displayChatMessageNotification(String address){
@@ -1125,7 +1132,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			showHideMoreOptions();
 
 		} else if (id == R.id.about_chat) {
-			selectedTab = 5;
 			Bundle b = new Bundle();
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
@@ -1146,8 +1152,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		contacts.setBackgroundColor(Color.TRANSPARENT);
 		dialer.setSelected(false);
 		dialer.setBackgroundColor(Color.TRANSPARENT);
-		settings.setSelected(false);
-		settings.setBackgroundColor(Color.TRANSPARENT);
+		more.setSelected(false);
+		more.setBackgroundColor(Color.TRANSPARENT);
 		chat.setSelected(false);
 		chat.setBackgroundColor(Color.TRANSPARENT);
 		aboutChat.setSelected(false);
@@ -1175,7 +1181,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				break;
 			case SETTINGS:
 			case ACCOUNT_SETTINGS:
-				settings.setSelected(true);
+				more.setSelected(true);
 				break;
 			case ABOUT_INSTEAD_OF_CHAT:
 				aboutChat.setSelected(true);
@@ -1212,7 +1218,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public void displaySettings() {
 		changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
-		settings.setSelected(true);
+		more.setSelected(true);
 	}
 
 	public void applyConfigChangesIfNeeded() {
@@ -1225,7 +1231,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		Bundle bundle = new Bundle();
 		bundle.putInt("Account", accountNumber);
 		changeCurrentFragment(FragmentsAvailable.ACCOUNT_SETTINGS, bundle);
-		settings.setSelected(true);
+		more.setSelected(true);
 	}
 
 	public StatusFragment getStatusFragment() {
@@ -1255,7 +1261,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 	public void updateMissedChatCount() {
-		//displayMissedChats(getChatStorage().getUnreadMessageCount());
+		displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	public int onMessageSent(String to, String message) {
@@ -1292,7 +1298,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedCalls.setVisibility(View.GONE);
 		}
 	}
-/*
+
 	private void displayMissedChats(final int missedChatCount) {
 		if (missedChatCount > 0) {
 			missedChats.setText(missedChatCount + "");
@@ -1309,7 +1315,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedChats.clearAnimation();
 			missedChats.setVisibility(View.GONE);
 		}
-	}*/
+	}
 
 	public void displayCustomToast(final String message, final int duration) {
 		LayoutInflater inflater = getLayoutInflater();
@@ -1613,7 +1619,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		updateMissedChatCount();
 		LinphoneActivity.instance().reloadMwiCount();
 		displayMissedCalls(getLc().getMissedCallsCount());
-
 		LinphoneManager.getInstance().changeStatusToOnline();
 
 		if(getIntent().getIntExtra("PreviousActivity", 0) != CALL_ACTIVITY){
