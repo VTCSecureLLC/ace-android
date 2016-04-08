@@ -1100,11 +1100,13 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			}
 		}
 		try {
-			if (state == State.PausedByRemote) {
-				VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
-				VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
-			} else {
-				VideoCallFragment.cameraCover.setVisibility(View.GONE);
+			if(VideoCallFragment.cameraCover != null) {
+				if (state == State.PausedByRemote) {
+					VideoCallFragment.cameraCover.setImageResource(R.drawable.hold);
+					VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
+				} else {
+					VideoCallFragment.cameraCover.setVisibility(View.GONE);
+				}
 			}
 		}catch(Throwable e){
 			e.printStackTrace();

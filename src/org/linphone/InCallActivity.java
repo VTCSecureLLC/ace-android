@@ -193,11 +193,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private RelativeLayout mInComingCallHeader;
 	private RelativeLayout mInPassiveCallHeader;
 
+	Handler mHandler;
+
 	private PowerManager powerManager;
 	private PowerManager.WakeLock wakeLock;
 	private int field = 0x00000020;
 
 	private HeadPhoneJackIntentReceiver myReceiver;
+	private boolean finishWithoutDelay;
 
 	public static InCallActivity instance() {
 		return instance;
@@ -211,6 +214,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("ttt onCreate()");
+		mHandler = new Handler();
 
 		try {
 			// Yeah, this is hidden field.
@@ -348,6 +352,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
+				if(message.toString().startsWith("!@$%#CALL_DECLINE_MESSAGE#"));
+				{
+					findViewById(R.id.label_ringing).setVisibility(View.VISIBLE);
+					findViewById(R.id.label_ringing).setBackgroundColor(Color.RED);
+					((TextView)findViewById(R.id.label_ringing)).setText(message.getText().replace("!@$%#CALL_DECLINE_MESSAGE#", ""));
+					startStatusFlashingAndFinish();
+				}
 
 			}
 
@@ -360,7 +371,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //					e.printStackTrace();
 //				}
 				if (lc.getCallsNb() == 0) {
-					finish();
+					finishWithDelay();
 					stopOutgoingRingCount();
 					return;
 				}
@@ -368,6 +379,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				if(state == State.CallEnd || state == State.Error || state == State.CallReleased
 						|| state == State.Connected
 						|| state == State.StreamsRunning){
+					findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
 					stopOutgoingRingCount();
 				}
 
@@ -1705,6 +1717,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	private void hangUp() {
+		finishWithoutDelay = true;
 		LinphoneCore lc = LinphoneManager.getLc();
 		LinphoneCall currentCall = lc.getCurrentCall();
 
@@ -2071,10 +2084,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		transfer.setEnabled(LinphoneManager.getLc().getCurrentCall() != null);
 	}
 
-	public void goBackToDialer() {
+	public void goBackToDialer()
+	{
+		goBackToDialer(!finishWithoutDelay);
+		finishWithoutDelay = false;
+	}
+
+	public void goBackToDialer(boolean applyDelay) {
 		Intent intent = new Intent();
 		intent.putExtra("Transfer", false);
 		setResult(Activity.RESULT_FIRST_USER, intent);
+		//finish();asd
+		if(applyDelay)
+			finishWithDelay();
 		finish();
 	}
 
@@ -2217,6 +2239,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onDestroy() {
 		Log.d("onDestroy()");
+
+		if(mHandler!= null )
+		{
+			mHandler.removeCallbacks(finishRunnable);
+			mHandler.removeCallbacks(finishFlashingRunnable);
+			mHandler.removeMessages(1);
+			mHandler.removeMessages(2);
+			mHandler = null;
+		}
+		stopStatusFlashing();
+
 		if(isFlashing) {
 			isFlashing = false;
 			LinphoneTorchFlasher.instance().stopFlashTorch();
@@ -2329,7 +2362,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			outgoingRingCountTimer.cancel();
 			outgoingRingCountTimer = null;
 			findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
-			findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
+			//findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -2766,5 +2799,66 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mRingCount = 0;
 		mIncomingCallCount.setVisibility(View.GONE);
 		mIncomingCallCount.setText(mRingCount + "");
+	}
+
+
+
+	boolean showHangupReason;
+	TextView tvStatus;
+	Runnable finishRunnable = new Runnable() {
+		@Override
+		public void run() {
+			if (InCallActivity.isInstanciated() && !showHangupReason) {
+				finish();
+				mHandler.removeMessages(1);
+			}
+		}
+	};
+	Runnable finishFlashingRunnable = new Runnable() {
+		@Override
+		public void run() {
+			if (InCallActivity.isInstanciated()) {
+				finish();
+				mHandler.removeMessages(2);
+			}
+		}
+	};
+	void finishWithAfterStatusFlashing()
+	{
+		if(!mHandler.hasMessages(2))
+		{
+			mHandler.sendEmptyMessage(2);
+			mHandler.postDelayed(finishFlashingRunnable, 10000);
+		}
+	}
+	void finishWithDelay()
+	{
+		if(!mHandler.hasMessages(1) && !showHangupReason) {
+			mHandler.sendEmptyMessage(1);
+			mHandler.postDelayed(finishRunnable, 1000);
+		}
+	}
+
+	void startStatusFlashingAndFinish()
+	{
+		showHangupReason = true;
+		finishWithAfterStatusFlashing();
+	}
+	void stopStatusFlashing()
+	{
+	}
+
+
+	@Override
+	public void finish() {
+		super.finish();
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+
+
+		// we should not open message screen while in call
 	}
 }

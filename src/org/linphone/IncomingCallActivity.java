@@ -47,6 +47,7 @@ import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCallParams;
+import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
@@ -118,10 +119,17 @@ public class IncomingCallActivity extends Activity {
 				case R.id.label_call_later:
 					//TODO: End call when message already send
 					Toast.makeText(IncomingCallActivity.this, "Can't talk now. Call me later?", Toast.LENGTH_SHORT).show();
+					if(mCall !=null)
+					{
+						LinphoneAddress address = mCall.getRemoteAddress();
+						LinphoneChatRoom chatRoom = LinphoneManager.getLc().getOrCreateChatRoom(address.asStringUriOnly());
+						chatRoom.sendMessage("!@$%#CALL_DECLINE_MESSAGE#Can't talk now. Call me later?");
+					}
+
 					onCallDeclineClick();
 					break;
 				case R.id.label_whats_up:
-					//TODO: End call when message already send
+					//TODO: if when message already send
 					Toast.makeText(IncomingCallActivity.this, "Can't talk now. What's up?", Toast.LENGTH_SHORT).show();
 					onCallDeclineClick();
 					break;
