@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -143,6 +144,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private CountDownTimer timer;
 	private boolean isVideoCallPaused = false;
 	AcceptCallUpdateDialogFragment callUpdateDialog;
+	Typeface rtt_typeface;
 
 	private LayoutInflater inflater;
 	private ViewGroup container;
@@ -152,6 +154,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private Timer outgoingRingCountTimer = null;
 
 	public Contact contact;
+	boolean isEmergencyCall;
 
 	// RTT views
 	private int TEXT_MODE;
@@ -211,6 +214,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		Log.d("ttt onCreate()");
 
 		try {
@@ -224,11 +228,17 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		instance = this;
 
+
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(InCallActivity.class);
 
 		//DialerFragment.instance().mOrientationHelper.disable();
 
 		LinphoneActivity.instance().mOrientationHelper.enable();
+
+		LinphoneCore lc = LinphoneManager.getLc();
+		LinphoneCall currentCall = lc.getCurrentCall();
+		if (currentCall != null)
+			isEmergencyCall = CallManager.getInstance().isEmergencyCall(currentCall.getRemoteAddress());
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		mainLayout = new RelativeLayout(this);
@@ -242,6 +252,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}else{
 			rttHolder =  inflator.inflate(R.layout.rtt_holder, null);
 		}
+
+		handleNotificationMessage();
 		View statusBar = inflator.inflate(R.layout.status_holder, null);
 		RelativeLayout.LayoutParams paramss = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT,
@@ -288,7 +300,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		isCameraMuted = prefs.getBoolean(getString(R.string.pref_av_camera_mute_key), false);
 
 		isMicMuted = prefs.getBoolean(getString(R.string.pref_av_mute_mic_key), false);
+		if(isEmergencyCall) {
+			isMicMuted = false;
+			isCameraMuted = false;
+		}
+
 		LinphoneManager.getLc().muteMic(isMicMuted);
+
 		micro.setSelected(isMicMuted);
 
 		isAudioMuted = prefs.getBoolean(getString(R.string.pref_av_speaker_mute_key), false);
@@ -559,8 +577,22 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		checkIncomingCall();
 
+
+
+
 	}
 
+	private void handleNotificationMessage() {
+		if(!(  getIntent()!= null && getIntent().hasExtra("GoToChat") && getIntent().hasExtra("ChatContactSipUri") && LinphoneActivity.instance() != null ))
+			return;
+		String url = getIntent().getExtras().getString("ChatContactSipUri");
+
+		if(LinphoneManager.getLc().getCallsNb() == 0)
+			LinphoneActivity.instance().showMessageFromNotification(getIntent());
+		else if(LinphoneManager.getLc().getCallsNb() == 1 && rttHolder!= null && rttHolder.getVisibility() != View.VISIBLE){
+				showRTTinterface();
+		}
+	}
 	public void invalidateSelfView(SurfaceView sv) {
 
 		LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
@@ -685,6 +717,32 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		}
 		Log.d("TEXT_MODE ", TEXT_MODE);
+
+		String font_family = prefs.getString(getString(R.string.pref_text_settings_font_key), "Default");
+
+			String style = prefs.getString(getString(R.string.pref_text_settings_font_style_key), "Default");
+
+		int font_style = Typeface.NORMAL;
+
+		if (style.equals("Default")) {
+			font_style = Typeface.NORMAL;
+		} else if (style.equals("Bold")){
+			font_style = Typeface.BOLD;
+		}else if (style.equals("Italic")){
+			font_style = Typeface.ITALIC;
+		}else if (style.equals("Bold Italic")){
+			font_style = Typeface.BOLD_ITALIC;
+		}
+
+		if(!font_family.equals("Default"))
+		{
+			rtt_typeface = Typeface.create(font_family, font_style);
+			Log.d("RTT FONT FAMILY: " + font_family + " FONT STYLE: " + font_style);
+		}
+		else if(font_style != Typeface.NORMAL)
+		{
+			rtt_typeface = Typeface.defaultFromStyle(font_style);
+		}
 	}
 
 	public void hold_cursor_at_end_of_edit_text(final EditText et) {
@@ -831,6 +889,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		tv.setTextSize(16);
 		if(!LinphonePreferences.instance().isForce508()){//use transparency if not 508
 			tv.getBackground().setAlpha(180);
+		}
+		if(rtt_typeface!=null) {
+			tv.setTypeface(rtt_typeface);
 		}
 
 	}
@@ -1392,6 +1453,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		if(LinphoneManager.getLc().getCurrentCall() != null && LinphonePreferences.instance().isVideoEnabled() && !LinphoneManager.getLc().getCurrentCall().mediaInProgress()) {
 			video.setEnabled(true);
 		}
+
 		micro.setEnabled(true);
 		audioMute.setEnabled(true);
 
@@ -1404,6 +1466,16 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		refreshInCallActions();
 	}
 
+	public void update_call(){//This function fixes situation when on device isn't sending video. Execute it on the device that isn't sending video.
+		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+		if (lc != null) {
+			//lc.setDeviceRotation(90);
+			LinphoneCall currentCall = lc.getCurrentCall();
+			if (currentCall != null && currentCall.cameraEnabled() && currentCall.getCurrentParamsCopy().getVideoEnabled()) {
+				lc.updateCall(currentCall, null);
+			}
+		}
+	}
 	public void updateStatusFragment(StatusFragment statusFragment) {
 		status = statusFragment;
 	}
@@ -1551,6 +1623,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	public void hideRTTinterface(){
 		if(rttHolder!=null) {
 			rttHolder.setVisibility(View.GONE);
+			rttHolder.setVisibility(View.GONE);
 			isRTTMaximized=false;
 			mControlsLayout.setVisibility(View.VISIBLE);
 		}
@@ -1558,6 +1631,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 	private void setCameraMute(boolean muted)	{
+		if(isEmergencyCall)
+			muted = false;
 
 		isCameraMuted = muted;
 
@@ -1691,6 +1766,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	private void toggleMicro() {
 		LinphoneCore lc = LinphoneManager.getLc();
 		isMicMuted = !isMicMuted;
+		if(isEmergencyCall)
+			isMicMuted = false;
 		lc.muteMic(isMicMuted);
 		if (isMicMuted) {
 			micro.setSelected(true);
@@ -2115,7 +2192,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 			}
 		} else  {
-
+			update_call();//Adding secret refresh option, to fix when android tv (or any device doesn't refresh).
 			options.setSelected(true);
 
 			if (isAnimationDisabled)
@@ -2835,5 +2912,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		mRingCount = 0;
 		mIncomingCallCount.setVisibility(View.GONE);
 		mIncomingCallCount.setText(mRingCount + "");
+	}
+
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		handleNotificationMessage();
+
+
+		// we should not open message screen while in call
 	}
 }

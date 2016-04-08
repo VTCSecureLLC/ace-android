@@ -42,6 +42,8 @@ cache:
   ccache: true
   directories:
   - $HOME/.ccache
+  - WORK
+  - liblinphone-sdk 
 before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
   -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
@@ -79,6 +81,7 @@ before_script:
 - echo "Finished updating submodules"
 - android list target -c
 script:
+- ./Tools/copycmakelist.sh
 - ./Tools/git_version.sh
 - ./Tools/travis_script.sh
 after_failure:

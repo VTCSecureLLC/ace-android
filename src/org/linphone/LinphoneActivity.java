@@ -1679,14 +1679,25 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
+	public void showMessageFromNotification(Intent intent)
+	{
+		try {
+			Bundle extras = intent.getExtras();
+			LinphoneService.instance().removeMessageNotification();
+			String sipUri = extras.getString("ChatContactSipUri");
+			displayChat(sipUri);
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		Bundle extras = intent.getExtras();
 		if (extras != null && extras.getBoolean("GoToChat", false)) {
-			LinphoneService.instance().removeMessageNotification();
-			String sipUri = extras.getString("ChatContactSipUri");
-			displayChat(sipUri);
+			showMessageFromNotification(intent);
+
 		} else if (extras != null && extras.getBoolean("Notification", false)) {
 			if (getLc().getCallsNb() > 0) {
 				LinphoneCall call = getLc().getCalls()[0];
