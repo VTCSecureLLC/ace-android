@@ -118,30 +118,33 @@ public class IncomingCallActivity extends Activity {
 					break;
 				case R.id.label_call_later:
 					//TODO: End call when message already send
-					Toast.makeText(IncomingCallActivity.this, "Can't talk now. Call me later?", Toast.LENGTH_SHORT).show();
-					if(mCall !=null)
-					{
-						LinphoneAddress address = mCall.getRemoteAddress();
-						LinphoneChatRoom chatRoom = LinphoneManager.getLc().getOrCreateChatRoom(address.asStringUriOnly());
-						chatRoom.sendMessage("!@$%#CALL_DECLINE_MESSAGE#Can't talk now. Call me later?");
-					}
-
+					sendDeclineReason("Can't talk now. Call me later.");
 					onCallDeclineClick();
 					break;
 				case R.id.label_whats_up:
 					//TODO: if when message already send
-					Toast.makeText(IncomingCallActivity.this, "Can't talk now. What's up?", Toast.LENGTH_SHORT).show();
+					sendDeclineReason("Can't talk now. What's up.");
 					onCallDeclineClick();
 					break;
 				case R.id.label_in_meeting:
 					//TODO: End call when message already send
-					Toast.makeText(IncomingCallActivity.this, "I'm in meeting", Toast.LENGTH_SHORT).show();
+					sendDeclineReason("I'm in meeting");
 					onCallDeclineClick();
 					break;
 
 			}
 		}
 	};
+
+	void sendDeclineReason(String reason)
+	{
+		if(mCall !=null)
+		{
+			LinphoneAddress address = mCall.getRemoteAddress();
+			LinphoneChatRoom chatRoom = LinphoneManager.getLc().getOrCreateChatRoom(address.asStringUriOnly());
+			chatRoom.sendMessage("!@$%#CALL_DECLINE_MESSAGE#" + reason);
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

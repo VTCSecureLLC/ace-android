@@ -918,7 +918,10 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			Contact contact = ContactsManager.getInstance().findContactWithAddress(mServiceContext.getContentResolver(), from);
 			if (!mServiceContext.getResources().getBoolean(R.bool.disable_chat__message_notification)) {
 				boolean showNotification = true;
-				if(lc.getCallsNb()>0)
+				if(message.getText().startsWith("\"!@$%#CALL_DECLINE_MESSAGE#\"")){
+					showNotification = false;
+				}
+				else if(lc.getCallsNb()>0)
 				{
 					for (LinphoneCall call : lc.getCalls())
 					{
