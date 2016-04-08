@@ -2,6 +2,7 @@ package org.linphone.setup;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import org.json.JSONArray;
@@ -9,12 +10,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.linphone.LinphoneActivity;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.g;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.Type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by 3537 on 1/21/2016.
@@ -140,11 +143,21 @@ public class CDNProviders {
 
 	private void updateProviders(JSONArray jsonArray) {
 		providers.clear();
+		g.domain_image_hash=new HashMap<String, Uri>();
 		Provider tmp;
 		for (int i = 0; i < jsonArray.length(); i++) {
 			tmp = new Provider();
 			try {
-				tmp.domain = ((JSONObject) jsonArray.get(i)).getString("domain");
+
+				//change domains to valid domains, if not listed on the server that way
+				if(((JSONObject) jsonArray.get(i)).getString("domain").equals("zvrs.vatrp.net")){
+					tmp.domain="208.94.16.87";
+				}else if(((JSONObject) jsonArray.get(i)).getString("domain").equals("psip-lb.staging.purple.us")){
+					tmp.domain="psip-lb.test.purple.us";
+				}else {
+					tmp.domain = ((JSONObject) jsonArray.get(i)).getString("domain");
+				}
+
 				tmp.name = ((JSONObject) jsonArray.get(i)).getString("name");
 				tmp.icon = ((JSONObject) jsonArray.get(i)).getString("icon");
 				tmp.icon2x = ((JSONObject) jsonArray.get(i)).getString("icon2x");

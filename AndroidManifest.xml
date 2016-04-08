@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.linphone"
-      android:versionCode="1"
-      android:versionName="0.1.6-1-1ed3b52"
+      android:versionCode="1557"
+      android:versionName="1.0.0-1557-Dev_Build"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="22"/>
 

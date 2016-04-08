@@ -44,13 +44,13 @@ import de.timroes.axmlrpc.AuthenticationManager;
 public class JsonConfig {
 	private final static String FILE_NAME = "json_config";
 	private String _json;
-	private String _request_url;
-	private int _version;
-	private int _expiration_time;
-	private String _configuration_auth_password;//user manual
-	private String _configuration_auth_expiration;
-	private int _sip_registration_maximum_threshold;
-	private String[] _sip_register_usernames;
+	public String _request_url;
+	public int _version;
+	public int _expiration_time;
+	public String _configuration_auth_password;//user manual
+	public String _configuration_auth_expiration;
+	public int _sip_registration_maximum_threshold;
+	public String[] _sip_register_usernames;
 
 
 	public String getSipAuthUsername() {
@@ -61,27 +61,27 @@ public class JsonConfig {
 		return _sip_auth_password;
 	}
 
-	private String _sip_auth_username;
-	private String _sip_auth_password;
-	private String _sip_register_domain;
-	private int _sip_register_port;
-	private String _sip_register_transport;
-	private boolean _enable_echo_cancellation;
-	private boolean _enable_video;
-	private boolean _enable_rtt;
-	private boolean _enable_adaptive_rate;
-	private ArrayList<String> _enabled_codecs;
-	private String _bwLimit;
-	private int _upload_bandwidth;
-	private int _download_bandwidth;
-	private boolean _enable_stun;
-	private String _stun_server;
-	private boolean _enable_ice;
-	private String _logging;
-	private String _sip_mwi_uri;
-	private String _sip_videomail_uri;
-	private String _video_resolution_maximum;
-	private int _video_preferred_frames_per_second;
+	public String _sip_auth_username;
+	public String _sip_auth_password;
+	public String _sip_register_domain;
+	public int _sip_register_port;
+	public String _sip_register_transport;
+	public boolean _enable_echo_cancellation;
+	public boolean _enable_video;
+	public boolean _enable_rtt;
+	public boolean _enable_adaptive_rate;
+	public ArrayList<String> _enabled_codecs;
+	public String _bwLimit;
+	public int _upload_bandwidth;
+	public int _download_bandwidth;
+	public boolean _enable_stun;
+	public String _stun_server;
+	public boolean _enable_ice;
+	public String _logging;
+	public String _sip_mwi_uri;
+	public String _sip_videomail_uri;
+	public String _video_resolution_maximum;
+	public int _video_preferred_frames_per_second;
 
 
 	public void applySettings(LinphoneAddress.TransportType transport_type, String port) {
@@ -208,10 +208,11 @@ public class JsonConfig {
 	}
 
 
-	private static JsonConfig parseJson(String json, String _request_url) throws JSONException {
+	private static JsonConfig parseJson(String username, String json, String _request_url) throws JSONException {
 
 		JsonConfig config = new JsonConfig();
 		JSONObject ob = new JSONObject(json);
+		LinphoneActivity.display_original_JSON(ob, "("+username+") Auto-Config JSON");
 		config._json = json;
 		config._request_url = _request_url;
 		config._version = ob.getInt("version");
@@ -220,7 +221,6 @@ public class JsonConfig {
 			config._configuration_auth_password = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("configuration_auth_password"));
 		if (!ob.isNull("configuration_auth_expiration"))
 			config._configuration_auth_expiration = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("configuration_auth_expiration"));
-
 		if (!ob.isNull("sip_registration_maximum_threshold"))
 			config._sip_registration_maximum_threshold = ob.getInt("sip_registration_maximum_threshold");
 		if (!ob.isNull("sip_auth_username"))
@@ -279,6 +279,7 @@ public class JsonConfig {
 			config._enabled_codecs.add("PCMA");
 			config._enabled_codecs.add("PCMU");
 		}
+		LinphoneActivity.display_incorporated_autoconfig_values(config, "(" + username + ") Auto-Config Values");
 		return config;
 
 	}
@@ -367,7 +368,7 @@ public class JsonConfig {
 				try {
 					String reponse_str = getFromHttpURLConnection();
 					Log.d("Auto Config JSON: "+reponse_str);
-					return parseJson(reponse_str, request_url);
+					return parseJson(username, reponse_str, request_url);
 				} catch (Throwable e){
 					Log.d("Issue parsing json");
 					e.printStackTrace();
