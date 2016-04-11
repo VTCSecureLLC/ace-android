@@ -29,4 +29,7 @@
     <!-- Video.xml-->
     <dimen name="video_surface_view_width">120dp</dimen>
     <dimen name="video_surface_view_height">145dp</dimen>
+
+    <dimen name="call_main_status_font_size">45sp</dimen>
+    <dimen name="call_sub_status_font_size">45sp</dimen>
 </resources>
