@@ -71,5 +71,9 @@
 
     <color name="transparent_in_call_black_bg">#C4001111</color>
 
+    <!-- DialPad background colors-->
+    <color name="transparent_black">#4D111111</color>
+    <color name="transparent_black_selector">#D1111111</color>
+
 
 </resources>
