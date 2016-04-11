@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package org.linphone;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,15 +29,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.custom.FontListParser;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.g;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static android.content.Intent.ACTION_MAIN;
 
@@ -53,12 +58,19 @@ public class LinphoneLauncherActivity extends Activity {
 	private Handler mHandler;
 	private ServiceWaitThread mThread;
 
+	/**
+	 * The {@link Tracker} used to record screen views.
+	 */
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Used to change for the lifetime of the app the name used to tag the logs
+		g.analytics_tracker = getDefaultTracker();
+
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
-		Log.TAG = "Linphone";
+		Log.TAG = "ACE";
 		// Hack to avoid to draw twice LinphoneActivity on tablets
 
 
@@ -79,6 +91,19 @@ public class LinphoneLauncherActivity extends Activity {
 			}
 
 		initFontSettings();
+
+
+		//Screen Hit
+		Log.i(Log.TAG, "Setting screen name: LauncherScreen");
+		g.analytics_tracker.setScreenName("LauncherScreen");
+		g.analytics_tracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+		//Event
+		g.analytics_tracker.send(new HitBuilders.EventBuilder()
+				.setCategory("Action")
+				.setAction("App Launched")
+				.build());
+
 	}
 
 	protected void onServiceReady() {
@@ -172,6 +197,21 @@ public class LinphoneLauncherActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
+	}
+
+
+
+	/**
+	 * Gets the default {@link Tracker} for this {@link Application}.
+	 * @return tracker
+	 */
+	synchronized public Tracker getDefaultTracker() {
+		if (g.analytics_tracker == null) {
+			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+			// To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+			g.analytics_tracker = analytics.newTracker(R.xml.global_tracker);
+		}
+		return g.analytics_tracker;
 	}
 }
 

@@ -42,6 +42,8 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
@@ -55,6 +57,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
+import org.linphone.vtcsecure.g;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -176,6 +179,12 @@ public final class LinphoneService extends Service {
 				
 				if (state == LinphoneCall.State.IncomingReceived) {
 					onIncomingReceived();
+					//Event
+					g.analytics_tracker.send(new HitBuilders.EventBuilder()
+							.setCategory("Call")
+							.setAction("Incoming Received")
+							.setLabel(state.toString())
+							.build());
 				}
 				
 				if (state == State.CallUpdatedByRemote) {
@@ -190,6 +199,12 @@ public final class LinphoneService extends Service {
 							e.printStackTrace();
 						}
 					}
+
+					g.analytics_tracker.send(new HitBuilders.EventBuilder()
+							.setCategory("Call")
+							.setAction("Call Update by Remote")
+							.setLabel(state.toString())
+							.build());
 				}
 
 				if (state == State.StreamsRunning) {
@@ -211,6 +226,16 @@ public final class LinphoneService extends Service {
 
 			@Override
 			public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState state, String smessage) {
+				String registration_state=state.toString();
+
+				//Event
+				g.analytics_tracker.send(new HitBuilders.EventBuilder()
+						.setCategory("Registration")
+						.setAction("Registration State")
+						.setLabel(registration_state)
+						.build());
+
+
 //				if (instance == null) {
 //					Log.i("Service not ready, discarding registration state change to ",state.toString());
 //					return;

@@ -168,6 +168,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 			@Override
 			public void onClick(View v) {
 				mCall.performClick();
+				//Event
 
 			}
 		});

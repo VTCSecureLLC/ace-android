@@ -33,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.linphone.AsyncProviderLookupOperation;
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphonePreferences;
@@ -40,6 +42,7 @@ import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.mediastream.Log;
 import org.linphone.vtcsecure.Utils;
+import org.linphone.vtcsecure.g;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,6 +184,13 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			providerLookupOperation.addListener(this);
 		}
 
+		//Screen Hit
+		Log.i(Log.TAG, "Setting screen name: LoginScreen");
+		g.analytics_tracker.setScreenName("LoginScreen");
+		g.analytics_tracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+
+
 		return view;
 	}
 //	/**
@@ -261,6 +271,13 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 						port.getText().toString().replaceAll("\\s", ""));
 
 			}
+
+			//Event
+			g.analytics_tracker.send(new HitBuilders.EventBuilder()
+					.setCategory("Action")
+					.setAction("Login Button Pressed")
+					.build());
+
 		}else if (id == R.id.ab_back){
 				getActivity().onBackPressed();
 			}
