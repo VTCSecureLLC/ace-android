@@ -987,33 +987,33 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@SuppressWarnings("incomplete-switch")
 	public void selectMenu(FragmentsAvailable menuToSelect) {
 		currentFragment = menuToSelect;
-		resetSelection();
 
 		switch (menuToSelect) {
-		case HISTORY:
-		case HISTORY_DETAIL:
-			history.setSelected(true);
-			break;
-		case CONTACTS:
-		case CONTACT:
-		case EDIT_CONTACT:
-			contacts.setSelected(true);
-			break;
-		case DIALER:
-			dialer.setSelected(true);
-			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
-			break;
-		case SETTINGS:
-		case ACCOUNT_SETTINGS:
-			settings.setSelected(true);
-			break;
-		case ABOUT_INSTEAD_OF_CHAT:
-			aboutChat.setSelected(true);
-			break;
-		case CHATLIST:
-		case CHAT:
-			chat.setSelected(true);
-			break;
+			case HISTORY:
+			case HISTORY_DETAIL:
+				history.setSelected(true);
+				break;
+			case CONTACTS:
+			case CONTACT:
+			case EDIT_CONTACT:
+				contacts.setSelected(true);
+				break;
+			case DIALER:
+				resetSelection();
+				dialer.setSelected(true);
+				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				break;
+			case SETTINGS:
+			case ACCOUNT_SETTINGS:
+				settings.setSelected(true);
+				break;
+			case ABOUT_INSTEAD_OF_CHAT:
+				aboutChat.setSelected(true);
+				break;
+			case CHATLIST:
+			case CHAT:
+				chat.setSelected(true);
+				break;
 		}
 	}
 
