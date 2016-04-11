@@ -6,23 +6,26 @@
 		android:paddingTop="40dp"
 		android:background="@drawable/background">
 	<TextView
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:gravity="center"
 		android:id="@+id/outboundRingCount"
-		android:text="1"
+		android:text="Can't talk now. Call me later?"
 		android:textColor="@android:color/white"
-		android:textSize="64sp"
-		android:visibility="invisible"
+		android:textSize="@dimen/call_sub_status_font_size"
+		android:visibility="visible"
 		android:layout_gravity="center" />
 
 	<TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:id="@+id/label_ringing"
-        android:textSize="64sp"
+        android:textSize="@dimen/call_main_status_font_size"
 		android:text="Ringing..."
+		android:gravity="center"
 		android:textColor="@android:color/white"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:layout_gravity="center_horizontal|top" />
 
 </FrameLayout>

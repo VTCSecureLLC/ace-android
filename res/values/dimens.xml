@@ -35,4 +35,7 @@
     <dimen name="more_menu_options_width">150dp</dimen>
     <dimen name="more_menu_options_height">45dp</dimen>
     <dimen name="main_menu_settings_padding_left_rigth">7dp</dimen>
+
+    <dimen name="call_main_status_font_size">45sp</dimen>
+    <dimen name="call_sub_status_font_size">45sp</dimen>
 </resources>

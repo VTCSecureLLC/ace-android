@@ -9,3 +9,6 @@
     <dimen name="more_menu_options_height">55dp</dimen>
     <dimen name="main_menu_settings_padding_left_rigth">15dp</dimen>
 </resources>
+    <dimen name="call_main_status_font_size">50sp</dimen>
+    <dimen name="call_sub_status_font_size">50sp</dimen>
+</resources>
