@@ -61,6 +61,7 @@ before_install:
 - export ANDROID_MOST_RECENT_TARGET=android-22
 - which bundler || gem install bundler
 - bundle install
+- android update sdk --filter extra-google-google_play_services --no-ui --force > /dev/null
 android:
   components:
   - build-tools-22.0.1
