@@ -3,6 +3,8 @@ package org.linphone.vtcsecure;
 
 import android.net.Uri;
 
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.HashMap;
 
 /**
@@ -12,6 +14,6 @@ import java.util.HashMap;
  */
 public class g {
     public static HashMap<String, Uri> domain_image_hash=new HashMap<String, Uri>();
-
+    public static Tracker analytics_tracker;
 
 }

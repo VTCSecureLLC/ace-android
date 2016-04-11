@@ -31,6 +31,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
@@ -77,6 +79,11 @@ public class CallButton extends ImageView implements OnClickListener, AddressAwa
 			Boolean dial_out_using_default_account = non_linphone_prefs.getBoolean(getResources().getString(R.string.dial_out_using_default_account_key), true);
 			if (dial_out_using_default_account == true) {
 				performOutgoingCall();
+				g.analytics_tracker.send(new HitBuilders.EventBuilder()
+						.setCategory("Action")
+						.setAction("Call Attempt Made")
+						.setLabel("Call to provider "+mAddress.getTag()+" attempted")
+						.build());
 			} else {
 				show_account_selector_only_if_multiple_registrations_to_selected_outbound_provider();
 			}
