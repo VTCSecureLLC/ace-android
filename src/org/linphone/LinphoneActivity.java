@@ -1163,7 +1163,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@SuppressWarnings("incomplete-switch")
 	public void selectMenu(FragmentsAvailable menuToSelect) {
 		currentFragment = menuToSelect;
-		resetSelection();
 
 		switch (menuToSelect) {
 			case HISTORY:
@@ -1176,6 +1175,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				contacts.setSelected(true);
 				break;
 			case DIALER:
+				resetSelection();
 				dialer.setSelected(true);
 				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 				break;

@@ -116,9 +116,6 @@ public class Numpad extends LinearLayout implements AddressAware {
 			final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
 			String color_theme = prefs.getString(getContext().getResources().getString(R.string.pref_theme_app_color_key), "Tech");
 
-
-
-
 			if(color_theme.equals("Tech")) {
 				techify(view,R.id.Digit1,"1\n   ");
 				techify(view,R.id.Digit2,"2\nABC");
@@ -158,7 +155,7 @@ public class Numpad extends LinearLayout implements AddressAware {
 	}
 	public void techify(View view, int id, String s){
 		view.findViewById(id).setBackgroundResource(R.drawable.numpad_generic_tech);
-		view.findViewById(id).getBackground().setAlpha(127);
+//		view.findViewById(id).getBackground().setAlpha(127);
 		((Button)view.findViewById(id)).setTextSize(44);
 
 		SpannableString ss;
