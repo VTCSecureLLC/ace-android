@@ -936,11 +936,6 @@ public class SettingsFragment extends PreferencesListFragment {
 		SharedPreferences prefs = PreferenceManager.
 				getDefaultSharedPreferences(LinphoneActivity.instance());
 
-		//Todo: VATRP-1019 -- Add self view toggle
-		String selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
-		boolean isSelfViewEnabled = prefs.getBoolean(selfVideoIsEnabledKey, true);
-		((CheckBoxPreference)findPreference(getString(R.string.pref_av_show_self_view_key))).setChecked(isSelfViewEnabled);
-
 		//VATRP-1020 Add global camera preview toggle
 		String previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 		boolean isPreviewEnabled = prefs.getBoolean(previewIsEnabledKey, true);
@@ -1005,19 +1000,7 @@ public class SettingsFragment extends PreferencesListFragment {
 				return true;
 			}
 		});
-		//
-		//Todo: VATRP-1019 -- Add self view toggle
-		findPreference(getString(R.string.pref_av_show_self_view_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				boolean value = (Boolean) newValue;
-				SharedPreferences prefs = PreferenceManager.
-						getDefaultSharedPreferences(LinphoneActivity.instance());
-				String selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
-				prefs.edit().putBoolean(selfVideoIsEnabledKey, value).commit();
-				return true;
-			}
-		});
+
 		//Todo: VATRP-1020 Add global camera preview toggle
 		findPreference(getString(R.string.pref_av_show_preview_key)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			@Override
