@@ -30,7 +30,7 @@ dependencies {
     compile files('android-support-v7-appcompat.jar')
     compile files('libs/HockeySDK-3.6.0-rc.1.jar')
     compile files('libs/org.xbill.dns_2.1.7.jar')
-    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile files('libs/libGoogleAnalyticsServices.jar')
 }
 
 android {
