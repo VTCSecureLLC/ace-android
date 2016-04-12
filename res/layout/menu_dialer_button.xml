@@ -2,24 +2,31 @@
 <RelativeLayout
 	android:id="@+id/dialer"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/background_color">
-    
-    <ImageView
-        android:id="@+id/image"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:adjustViewBounds="true"
-		android:contentDescription="@string/content_description_dialer"
-		android:src="@drawable/dialer_new" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_above="@id/text">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/main_menu_padding"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_main_menu_dialpad" />
+    </LinearLayout>
     
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@id/image"
+        android:layout_alignParentBottom="true"
         android:paddingBottom="10dp"
         android:text="@string/button_dialpad"
         android:textSize="12dp" />

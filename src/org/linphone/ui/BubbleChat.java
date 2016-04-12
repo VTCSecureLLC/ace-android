@@ -175,15 +175,24 @@ public class BubbleChat implements LinphoneChatMessage.LinphoneChatMessageListen
 			}
     	} else {
 	    	TextView msgView = (TextView) view.findViewById(R.id.message);
+			View callDeclinedView = view.findViewById(R.id.call_declined);
 	    	if (msgView != null) {
 	        	Spanned text = null;
 	        	String msg = message.getText();
+				if(msg.startsWith("!@$%#CALL_DECLINE_MESSAGE#")) {
+					msg = msg.replace("!@$%#CALL_DECLINE_MESSAGE#", "");
+
+						callDeclinedView.setVisibility(View.VISIBLE);
+				}
+				else
+					callDeclinedView.setVisibility(View.GONE);
 	        	if (msg != null) {
 	    	    	if (context.getResources().getBoolean(R.bool.emoticons_in_messages)) {
 	    	    		text = getSmiledText(context, getTextWithHttpLinks(msg));
 	    	    	} else {
 	    	    		text = getTextWithHttpLinks(msg);
 	    	    	}
+
 	    	    	msgView.setText(text);
 	    	    	msgView.setMovementMethod(LinkMovementMethod.getInstance());
 	        		msgView.setVisibility(View.VISIBLE);

@@ -29,4 +29,13 @@
     <!-- Video.xml-->
     <dimen name="video_surface_view_width">120dp</dimen>
     <dimen name="video_surface_view_height">145dp</dimen>
+    <dimen name="main_menu_height">80dp</dimen>
+    <dimen name="main_menu_padding">10dp</dimen>
+    <dimen name="main_menu_padding_bottom">20dp</dimen>
+    <dimen name="more_menu_options_width">150dp</dimen>
+    <dimen name="more_menu_options_height">45dp</dimen>
+    <dimen name="main_menu_settings_padding_left_rigth">7dp</dimen>
+
+    <dimen name="call_main_status_font_size">45sp</dimen>
+    <dimen name="call_sub_status_font_size">45sp</dimen>
 </resources>

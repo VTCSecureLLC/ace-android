@@ -9,11 +9,14 @@
     <ImageView
         android:id="@+id/image"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:adjustViewBounds="true"
-		android:contentDescription="@string/content_description_history"
-		android:scaleType="fitXY"
-		android:src="@drawable/history_new" />
+		android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:paddingBottom="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_main_menu_history"
+        android:contentDescription="@string/content_description_history" />
     
     <TextView
         android:id="@+id/text"
