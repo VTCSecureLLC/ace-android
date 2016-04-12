@@ -2,6 +2,13 @@
     <dimen name="video_surface_view_width">200dp</dimen>
     <dimen name="video_surface_view_height">240dp</dimen>
 
+    <dimen name="main_menu_height">130dp</dimen>
+    <dimen name="main_menu_padding">25dp</dimen>
+    <dimen name="main_menu_padding_bottom">40dp</dimen>
+    <dimen name="more_menu_options_width">260dp</dimen>
+    <dimen name="more_menu_options_height">60dp</dimen>
+    <dimen name="main_menu_settings_padding_left_rigth">20dp</dimen>
+
     <dimen name="call_main_status_font_size">64sp</dimen>
     <dimen name="call_sub_status_font_size">64sp</dimen>
 </resources>

@@ -2,7 +2,6 @@
 <RelativeLayout
 	android:id="@+id/settings"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_weight="0.2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/background_color">
@@ -10,18 +9,19 @@
     <ImageView
         android:id="@+id/image"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:adjustViewBounds="true"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
 		android:contentDescription="@string/content_description_settings"
- 		android:scaleType="fitXY"
-		android:src="@drawable/settings_new" />
+		android:src="@drawable/ic_main_menu_more" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@id/image"
+        android:layout_alignParentBottom="true"
         android:paddingBottom="5dp"
         android:text="@string/button_settings"
         android:textSize="12dp" />

@@ -2,7 +2,6 @@
 <RelativeLayout
 	android:id="@+id/contacts"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_weight="0.2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/background_color">
@@ -10,11 +9,14 @@
     <ImageView
         android:id="@+id/image"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:paddingBottom="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
 		android:adjustViewBounds="true"
 		android:contentDescription="@string/content_description_dialer"
-		android:scaleType="fitXY"
-		android:src="@drawable/dialer_new" />
+		android:src="@drawable/ic_main_menu_dialpad" />
 
     <TextView
         android:id="@+id/text"
