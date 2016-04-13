@@ -55,6 +55,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
+import org.linphone.vtcsecure.g;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -177,7 +178,7 @@ public final class LinphoneService extends Service {
 				if (state == LinphoneCall.State.IncomingReceived) {
 					onIncomingReceived();
 					//Event
-					//g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Call","Incoming Received",state.toString(),null);
+					g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Call","Incoming Received",state.toString(),null);
 
 				}
 				
@@ -195,7 +196,7 @@ public final class LinphoneService extends Service {
 					}
 
 
-					//g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Call","Call Update by Remote",state.toString(),null);
+					g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Call","Call Update by Remote",state.toString(),null);
 				}
 
 				if (state == State.StreamsRunning) {
@@ -220,7 +221,7 @@ public final class LinphoneService extends Service {
 				String registration_state=state.toString();
 
 				//Event
-				//g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Registration","Registration State",registration_state,null);
+				g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Registration","Registration State",registration_state,null);
 
 //				if (instance == null) {
 //					Log.i("Service not ready, discarding registration state change to ",state.toString());

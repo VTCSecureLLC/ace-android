@@ -99,6 +99,7 @@ import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
 import org.linphone.vtcsecure.Utils;
+import org.linphone.vtcsecure.g;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -743,7 +744,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		case HISTORY:
 			//Screen Hit
 			//Log.i(Log.TAG, "Setting screen name: Call History Screen");
-			//g.analytics_tracker.setScreenName("Call History Screen");
+			g.analytics_tracker.setScreenName("Call History Screen");
 			if (getResources().getBoolean(R.bool.use_simple_history)) {
 				newFragment = new HistorySimpleFragment();
 			} else {
@@ -752,12 +753,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		case HISTORY_DETAIL:
 			//Log.i(Log.TAG, "Setting screen name: Call History Detail Screen");
-			//g.analytics_tracker.setScreenName("Call History Detail Screen");
+			g.analytics_tracker.setScreenName("Call History Detail Screen");
 			newFragment = new HistoryDetailFragment();
 			break;
 		case CONTACTS:
 			//Log.i(Log.TAG, "Setting screen name: Contacts Screen");
-			//g.analytics_tracker.setScreenName("Contacts Screen");
+			g.analytics_tracker.setScreenName("Contacts Screen");
 			if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
 				Intent i = new Intent();
 			    i.setComponent(new ComponentName("com.android.contacts", "com.android.contacts.DialtactsContactsEntryActivity"));
@@ -772,17 +773,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		case CONTACT:
 			//Log.i(Log.TAG, "Setting screen name: View Contact Screen");
-			//g.analytics_tracker.setScreenName("View Contact Screen");
+			g.analytics_tracker.setScreenName("View Contact Screen");
 			newFragment = new ContactFragment();
 			break;
 		case EDIT_CONTACT:
 			//Log.i(Log.TAG, "Setting screen name: Edit Contact Screen");
-			//g.analytics_tracker.setScreenName("Edit Contact Screen");
+			g.analytics_tracker.setScreenName("Edit Contact Screen");
 			newFragment = new EditContactFragment();
 			break;
 		case DIALER:
 			//Log.i(Log.TAG, "Setting screen name: Dialer Screen");
-			//g.analytics_tracker.setScreenName("Dialer Screen");
+			g.analytics_tracker.setScreenName("Dialer Screen");
 			newFragment = new DialerFragment();
 			if (extras == null) {
 				newFragment.setInitialSavedState(dialerSavedState);
@@ -791,30 +792,30 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			break;
 		case SETTINGS:
 			//Log.i(Log.TAG, "Setting screen name: Settings Screen");
-			//g.analytics_tracker.setScreenName("Settings Screen");
+			g.analytics_tracker.setScreenName("Settings Screen");
 			newFragment = new SettingsFragment();
 			break;
 		case ACCOUNT_SETTINGS:
 			//Log.i(Log.TAG, "Setting screen name: Account Settings Screen");
-			//g.analytics_tracker.setScreenName("Account Settings Screen");
+			g.analytics_tracker.setScreenName("Account Settings Screen");
 			newFragment = new AccountPreferencesFragment();
 			break;
 		case ABOUT:
 		case ABOUT_INSTEAD_OF_CHAT:
 		case ABOUT_INSTEAD_OF_SETTINGS:
 			//Log.i(Log.TAG, "Setting screen name: About Screen");
-			//g.analytics_tracker.setScreenName("About Screen");
+			g.analytics_tracker.setScreenName("About Screen");
 			newFragment = new AboutFragment();
 			break;
 		case CHATLIST:
 			//Log.i(Log.TAG, "Setting screen name: Resources Screen");
-			//g.analytics_tracker.setScreenName("Resources Screen");
+			g.analytics_tracker.setScreenName("Resources Screen");
 			newFragment = new HelpFragment();
 			//messageListFragment = new Fragment();
 			break;
 		case CHAT:
 			//Log.i(Log.TAG, "Setting screen name: Chat Screen (Not in call)");
-			//g.analytics_tracker.setScreenName("Chat Screen (Not in call)");
+			g.analytics_tracker.setScreenName("Chat Screen (Not in call)");
 			newFragment = new ChatFragment();
 			break;
 		default:

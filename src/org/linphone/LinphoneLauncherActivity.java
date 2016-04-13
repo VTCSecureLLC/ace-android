@@ -35,6 +35,8 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.custom.FontListParser;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.GAUtils;
+import org.linphone.vtcsecure.g;
 
 import java.util.HashSet;
 import java.util.List;
@@ -63,8 +65,8 @@ public class LinphoneLauncherActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Used to change for the lifetime of the app the name used to tag the logs
-		//g.analytics_tracker = new GAUtils().getInstance();
-		//g.analytics_tracker.initTracker(this);
+		g.analytics_tracker = new GAUtils(getApplicationContext()).getInstance(getApplicationContext());
+
 
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
 		Log.TAG = "ACE";
@@ -92,11 +94,11 @@ public class LinphoneLauncherActivity extends Activity {
 
 		//Screen Hit
 		//Log.i(Log.TAG, "Setting screen name: LauncherScreen");
-		//g.analytics_tracker.setScreenName("LauncherScreen");
+		g.analytics_tracker.setScreenName("LauncherScreen");
 
 
 		//Event
-		//g.analytics_tracker.send(this,"Action","App Launched",null,null);
+		g.analytics_tracker.send(this,"Action","App Launched",null,null);
 
 	}
 

@@ -40,6 +40,7 @@ import org.linphone.R;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.mediastream.Log;
 import org.linphone.vtcsecure.Utils;
+import org.linphone.vtcsecure.g;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +184,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 
 		//Screen Hit
 //		Log.i(Log.TAG, "Setting screen name: LoginScreen");
-//		g.analytics_tracker.setScreenName("LoginScreen");
+		g.analytics_tracker.setScreenName("LoginScreen");
 
 
 
@@ -270,7 +271,7 @@ public class GenericLoginFragment extends Fragment implements OnClickListener, A
 			}
 
 			//Event
-			//g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Action","Login Button Pressed",null,null);
+			g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Action","Login Button Pressed",null,null);
 
 		}else if (id == R.id.ab_back){
 				getActivity().onBackPressed();
