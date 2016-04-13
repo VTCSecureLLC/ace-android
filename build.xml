@@ -106,6 +106,10 @@
 
 	<!-- version-tag: custom -->
 	<import file="${sdk.dir}/tools/ant/build.xml" />
-
+    <javac srcdir="./src" destdir="./build/classes">
+        <classpath>
+            <pathelement path="libs/libGoogleAnalyticsServices.jar"/>
+        </classpath>
+    </javac>
 
 </project>
