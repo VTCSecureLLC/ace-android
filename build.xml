@@ -106,14 +106,6 @@
 
 	<!-- version-tag: custom -->
 	<import file="${sdk.dir}/tools/ant/build.xml" />
-    <target name="-pre-compile">
-        <path id="project.all.jars.path">
-            <path path="${toString:project.all.jars.path}"/>
-            <fileset dir="${jar.libs.dir}">
-                <include name="*.jar"/>
-            </fileset>
-        </path>
-    </target>
 
 
 </project>
