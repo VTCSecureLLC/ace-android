@@ -228,12 +228,10 @@ public final class LinphoneService extends Service {
 //					return;
 //				}
 				if (!mDisableRegistrationStatus) {
-					if ((state == RegistrationState.RegistrationFailed || state == RegistrationState.RegistrationCleared) && (LinphoneManager.getLc().getDefaultProxyConfig() == null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered())) {
+					if (state == RegistrationState.RegistrationFailed) {
 						sendNotification(IC_LEVEL_OFFLINE, R.string.notification_register_failure);
-					}
-					
-					if (state == RegistrationState.RegistrationNone) {
-						sendNotification(IC_LEVEL_OFFLINE, R.string.notification_started);
+					}else {
+						sendNotification(IC_LEVEL_OFFLINE, R.string.notification_registered);
 					}
 				}
 			}
