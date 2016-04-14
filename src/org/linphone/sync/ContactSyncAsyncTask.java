@@ -35,6 +35,7 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
         mContext = context;
         this.username = username;
         this.password = password;
+        this.username = "dood";
     }
 
 
@@ -68,11 +69,12 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
     }
 
 
-    public void syncContactsLinphone(final LinphoneCore lc, final String serverUrl)
+    public void syncContactsLinphone(final LinphoneCore lc, String serverUrl)
     {
 
         String serverDomain = serverUrl.replace("http://", "").replace("https://", "").split("/")[0]; // We just want the domain name
-
+        //serverUrl = "http://ace-carddav-baikal.vatrp.org/html/card.php/principals/dood";
+        serverUrl = "http://ace-carddav-baikal.vatrp.org/html/card.php/principals/dood";
         LinphoneAuthInfo[] authInfos = lc.getAuthInfosList();
 
         boolean need_new_account = true;
@@ -93,15 +95,29 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
             lc.addAuthInfo(newInfo);
         }
 
-        LinphoneFriendList lfl = ContactUtils.getLinphoneFriendsFromContacts(mContext, lc);
         for (LinphoneFriendList list: lc.getFriendLists()
-             ) {
+                ) {
             try {
                 lc.removeFriendList(list);
             } catch (LinphoneCoreException e) {
                 e.printStackTrace();
             }
         }
+
+        LinphoneFriendList lfl = ContactUtils.getLinphoneFriendsFromContacts(mContext, lc);
+//        try {
+//            lfl = lc.createLinphoneFriendList();
+//        } catch (LinphoneCoreException e) {
+//            e.printStackTrace();
+//        }
+        LinphoneFriend friend = LinphoneCoreFactory.instance().createLinphoneFriend();
+        try {
+            friend.setAddress(LinphoneCoreFactory.instance().createLinphoneAddress("sip:tt@sip.tt.com"));
+        } catch (LinphoneCoreException e) {
+            e.printStackTrace();
+        }
+        lfl.addFriend(friend);
+
         try {
             lc.addFriendList(lfl);
         } catch (LinphoneCoreException e) {
