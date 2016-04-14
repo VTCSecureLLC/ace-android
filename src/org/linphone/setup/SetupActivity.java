@@ -583,6 +583,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			mPrefs.setMediaEncryption(LinphoneCore.MediaEncryption.None);
 			mPrefs.setStunServer(getString(R.string.default_stun));
 			mPrefs.setIceEnabled(true);
+
 		} else {
 //			String forcedProxy = getResources().getString(R.string.setup_forced_proxy);
 //			if (!TextUtils.isEmpty(forcedProxy)) {
@@ -604,8 +605,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 
 			//mPrefs.setStunServer(getString(R.string.default_stun));
+			//Disable if not config loaded
 			mPrefs.setMediaEncryption(LinphoneCore.MediaEncryption.None);
 			mPrefs.setIceEnabled(false);
+			mPrefs.enableAdaptiveRateControl(false);
 		}
 		
 		if (getResources().getBoolean(R.bool.enable_push_id)) {
