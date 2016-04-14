@@ -240,7 +240,7 @@ public class JsonConfig {
 		config._enable_echo_cancellation = ob.getBoolean("enable_echo_cancellation");
 		config._enable_video = ob.getBoolean("enable_video");
 		config._enable_rtt = ob.getBoolean("enable_rtt");
-		config._enable_adaptive_rate = ob.getBoolean("enable_adaptive_rate");
+		config._enable_adaptive_rate = (ob.has("enable_adaptive_rate")) && ob.getBoolean("enable_adaptive_rate");
 		if (!ob.isNull("bwLimit"))// is not used
 			config._bwLimit = Utils.removeExtraQuotesFromStringIfPresent(ob.getString("bwLimit"));
 		config._upload_bandwidth = ob.getInt("upload_bandwidth");
