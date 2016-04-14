@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         //classpath 'com.google.gms:google-services:2.0.0'
-        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath 'com.android.tools.build:gradle:2.1.0-beta1'
         classpath 'net.hockeyapp.android:HockeySDK:3.5.0'
         classpath 'de.felixschulze.gradle:gradle-hockeyapp-plugin:3.2'
     }
