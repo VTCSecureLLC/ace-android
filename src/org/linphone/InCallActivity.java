@@ -89,6 +89,7 @@ import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.Numpad;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
+import org.linphone.vtcsecure.g;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -554,9 +555,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				isAudioMuted = savedInstanceState.getBoolean("AudioMuted");
 				isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
 				refreshInCallActions();
-
-
 				return;
+			} else if(g.app_killed){//This happens when app is destroyed and savedInstanceState was not run. (When the user physically exits the app, then returns.)
+				isRTTMaximized = g.isRTTMaximized;
+				isMicMuted = g.Mic;
+				isAudioMuted = g.AudioMuted;
+				isVideoCallPaused = g.VideoCallPaused;
+				refreshInCallActions();
 			}
 
 			Fragment callFragment;
@@ -1445,11 +1450,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (4)");
 		}
 
+		if(isEmergencyCall)
+			isMicMuted = false;
+		LinphoneManager.getLcIfManagerNotDestroyedOrNull().muteMic(isMicMuted);
 		if (isMicMuted) {
 			micro.setSelected(true);
 		} else {
 			micro.setSelected(false);
 		}
+
 
 		if (LinphoneManager.getLc().getCallsNb() > 1) {
 			//TODO: remove
@@ -1880,7 +1889,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			lc.terminateAllCalls();
 		}
 		delete_messages();
-
+		g.app_killed=false;
 	}
 
 	private void enterConference() {
@@ -2386,6 +2395,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneManager.stopProximitySensorForActivity(this);
 		}
 
+		g.app_killed=true;
+		g.isRTTMaximized=isRTTMaximized;
+		g.Mic= LinphoneManager.getLc().isMicMuted();
+		g.AudioMuted=LinphoneManager.getLc().getPlaybackGain() == mute_db;
+		g.VideoCallPaused=isVideoCallPaused;
 	}
 
 	@Override
