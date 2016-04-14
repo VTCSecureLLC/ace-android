@@ -52,7 +52,7 @@
 
     <color name="border_color">#ffffffff</color>
     <color name="text_color">#ffffffff</color>
-    <color name="background_transparent_black">#9E001111</color>
+    <color name="background_transparent_black">#CC001111</color>
 
     <drawable name="btn_white">#efefef</drawable>
     <drawable name="btn_white_selected">#D7D7D7</drawable>
@@ -70,6 +70,10 @@
     <drawable name="transparent_white_53_procent">#87ffffff</drawable>
 
     <color name="transparent_in_call_black_bg">#C4001111</color>
+
+    <!-- DialPad background colors-->
+    <color name="transparent_black">#4D111111</color>
+    <color name="transparent_black_selector">#D1111111</color>
 
 
 </resources>

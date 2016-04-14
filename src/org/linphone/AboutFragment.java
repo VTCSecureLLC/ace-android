@@ -149,19 +149,19 @@ public class AboutFragment extends Fragment implements OnClickListener, EnterTex
 	private static String advancedSettingsPW = "1234";
 	@Override
 	public void onPasswordSubmitted(String input) {
-		if(input.equals(advancedSettingsPW)){
-
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
-			SharedPreferences.Editor editor = prefs.edit();
-			// Enable by default
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.instance());
+		SharedPreferences.Editor editor = prefs.edit();
+		if(input.equals(advancedSettingsPW)&&!prefs.getBoolean("advanced_settings_enabled",false)){//If password entered, and Advanced is not unlocked
 			editor.putBoolean("advanced_settings_enabled", true);
 			editor.commit();
-
-			boolean auto_answer = prefs.getBoolean(getString(R.string.pref_auto_answer_key), getContext().getResources().getBoolean(R.bool.auto_answer_calls));
 			SettingsFragment.isAdvancedSettings = true;
 			Toast.makeText(getActivity(), "Advanced settings unlocked", Toast.LENGTH_SHORT).show();
-		}
-		else{
+		}else if(input.equals(advancedSettingsPW)&&prefs.getBoolean("advanced_settings_enabled", false)){//If password entered, and Advanced is already unlocked
+			editor.putBoolean("advanced_settings_enabled", false);
+			editor.commit();
+			SettingsFragment.isAdvancedSettings = false;
+			Toast.makeText(getActivity(), "Advanced settings locked", Toast.LENGTH_SHORT).show();
+		}else{//Wrong password
 			Toast.makeText(getActivity(), "Incorrect password", Toast.LENGTH_SHORT).show();
 		}
 	}

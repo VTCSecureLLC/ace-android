@@ -21,6 +21,7 @@ package org.linphone;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -34,6 +35,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -53,6 +55,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -65,6 +68,7 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.UpdateManager;
 
+import org.json.JSONObject;
 import org.linphone.LinphoneManager.AddressType;
 import org.linphone.compatibility.Compatibility;
 import org.linphone.core.CallDirection;
@@ -89,11 +93,13 @@ import org.linphone.core.PayloadType;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
+import org.linphone.setup.JsonConfig;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
 import org.linphone.vtcsecure.LinphoneLocationManager;
 import org.linphone.vtcsecure.Utils;
+import org.linphone.vtcsecure.g;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -128,7 +134,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static final int FIRST_LOGIN_ACTIVITY = 101;
 	private static final int REMOTE_PROVISIONING_LOGIN_ACTIVITY = 102;
 	private static final int CALL_ACTIVITY = 19;
-    private static final int CHAT_ACTIVITY = 21;
+	private static final int CHAT_ACTIVITY = 21;
 
 	private static boolean first_launch_boolean=true;
 
@@ -137,7 +143,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private StatusFragment statusFragment;
 	private TextView missedCalls, missedChats;
 	private LinearLayout menu, mark;
-	public static RelativeLayout contacts, history, settings, dialer, chat, aboutChat;
+	public static RelativeLayout contacts, history, more, dialer, chat, aboutChat;
 	private FragmentsAvailable currentFragment, nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
@@ -148,10 +154,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public OrientationEventListener mOrientationHelper;
 	private LinphoneCoreListenerBase mListener;
 
+	private Animation slideOutLeftToRight, slideInRightToLeft;
+	private LinearLayout mAnimateLayout;
+	private TextView selfPreviewTextView;
+	private boolean isSelfViewEnabled;
+	private String selfVideoIsEnabled;
+	private int selectedTab;
+	private TextView videomallTextView;
+
 	public static boolean providerLookupOperation_executed=false;
 
 	public static View topLayout;
 	private AsyncProviderLookupOperation providerLookupOperation;
+	private SharedPreferences mPrefs;
 
 	//In Call Message State Variables
 	public static int[] message_directions;
@@ -178,7 +193,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //		LoginManager.verifyLogin(this, getIntent());
 		//SetupController setupController = SetupController.getInstance();
 		//if (!setupController.getSetupCompleted()){
-			//navigate to the Welcome (initial set up) page
+		//navigate to the Welcome (initial set up) page
 		//	startActivity(new Intent(this,HueBridgeSearchActivity.class));
 		//}
 		ctx=this;
@@ -187,23 +202,23 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		checkForUpdates();
 
 		if (!LinphoneLocationManager.instance(this).isLocationProviderEnabled() && !getPreferences(Context.MODE_PRIVATE).getBoolean("location_for_911_disabled_message_do_not_show_again_key", false)) {
-				new AlertDialog.Builder(this)
-		        .setTitle(getString(R.string.location_for_911_disabled_title))
-		        .setMessage(getString(R.string.location_for_911_disabled_message))
-		        .setPositiveButton(R.string.button_ok,null)
-		        .setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
-		            public void onClick(DialogInterface dialog, int which) {
-		            	getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
-		            }
-		         })
-		         .show();
+			new AlertDialog.Builder(this)
+					.setTitle(getString(R.string.location_for_911_disabled_title))
+					.setMessage(getString(R.string.location_for_911_disabled_message))
+					.setPositiveButton(R.string.button_ok, null)
+					.setNegativeButton(R.string.location_for_911_disabled_message_do_not_show_again, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							getPreferences(Context.MODE_PRIVATE).edit().putBoolean("location_for_911_disabled_message_do_not_show_again_key", true).commit();
+						}
+					})
+					.show();
 		}
 
 		if (isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) {
-        //	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        } else if (!isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+			//	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+		} else if (!isTablet() && getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
 
 		if (!LinphoneManager.isInstanciated()) {
 			Log.e("No service running: avoid crash by starting the launcher", this.getClass().getName());
@@ -224,9 +239,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			//This is where the login screen is launched of first run, after accept legal release
 			//if(first_launch_boolean==true) {
-				startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
-				LinphonePreferences.instance().firstLaunchSuccessful();
-				first_launch_boolean=false;
+			startActivityForResult(new Intent().setClass(this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
+			LinphonePreferences.instance().firstLaunchSuccessful();
+			first_launch_boolean=false;
 			//}
 
 		}
@@ -234,10 +249,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (getResources().getBoolean(R.bool.use_linphone_tag)) {
 			ContactsManager.getInstance().initializeSyncAccount(getApplicationContext(), getContentResolver());
 		} else {
-				ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
+			ContactsManager.getInstance().initializeContactManager(getApplicationContext(), getContentResolver());
 		}
 
-	 	if(!LinphonePreferences.instance().isContactsMigrationDone()){
+		if(!LinphonePreferences.instance().isContactsMigrationDone()){
 			ContactsManager.getInstance().migrateContacts();
 			LinphonePreferences.instance().contactsMigrationDone();
 		}
@@ -246,7 +261,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		topLayout=findViewById(R.id.topLayout);
 
-
+		mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		fragmentsHistory = new ArrayList<FragmentsAvailable>();
 
@@ -288,13 +303,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
-				if(!displayChatMessageNotification(message.getFrom().asStringUriOnly())) {
-					cr.markAsRead();
+				updateMissedChatCount();
+				if (messageListFragment != null && messageListFragment.isVisible()) {
+					((ChatListFragment) messageListFragment).refresh();
 				}
-		        //displayMissedChats(getChatStorage().getUnreadMessageCount());
-		        if (messageListFragment != null && messageListFragment.isVisible()) {
-		            ((ChatListFragment) messageListFragment).refresh();
-		        }
 			}
 
 			@Override
@@ -379,18 +391,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		int rotation = getWindowManager().getDefaultDisplay().getRotation();
 		switch (rotation) {
-		case Surface.ROTATION_0:
-			rotation = 0;
-			break;
-		case Surface.ROTATION_90:
-			rotation = 90;
-			break;
-		case Surface.ROTATION_180:
-			rotation = 180;
-			break;
-		case Surface.ROTATION_270:
-			rotation = 270;
-			break;
+			case Surface.ROTATION_0:
+				rotation = 0;
+				break;
+			case Surface.ROTATION_90:
+				rotation = 90;
+				break;
+			case Surface.ROTATION_180:
+				rotation = 180;
+				break;
+			case Surface.ROTATION_270:
+				rotation = 270;
+				break;
 		}
 
 		getLc().setDeviceRotation(rotation);
@@ -406,6 +418,163 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			providerLookupOperation = new AsyncProviderLookupOperation(null, ctx);
 			providerLookupOperation.execute();
 			providerLookupOperation_executed=true;
+		}
+
+		initMore();
+	}
+
+	View.OnClickListener moreOptionsListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+
+			hideAnimation();
+
+			switch (v.getId()){
+				case R.id.label_linphone_activity_settings:
+					selectedTab = 4;
+					changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
+					break;
+				case R.id.label_linphone_activity_resources:
+					selectedTab = 4;
+					changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
+					break;
+				case R.id.label_linphone_activity_videomail:
+					videoMail();
+					break;
+				case R.id.label_linphone_activity_self_preview:
+					if (isSelfViewEnabled) {
+						isSelfViewEnabled = false;
+						selfPreviewTextView.setSelected(false);
+					} else {
+						selfPreviewTextView.setSelected(true);
+						isSelfViewEnabled = true;
+					}
+					mPrefs.edit().putBoolean(selfVideoIsEnabled, isSelfViewEnabled).commit();
+					break;
+			}
+		}
+	};
+
+	private void videoMail() {
+		LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), ""), getResources().getString(R.string.main_menu_videomail));
+		LinphoneActivity.instance().resetMessageWaitingCount();
+	}
+
+	private void initMore() {
+		int videoMessageCount = LinphoneActivity.instance().getMessageWaitingCount();
+
+		mAnimateLayout = (LinearLayout)findViewById(R.id.layout_linphone_activity_more_menu);
+		slideInRightToLeft = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_to_left);
+		slideOutLeftToRight = AnimationUtils.loadAnimation(this, R.anim.slide_out_left_to_right);
+
+		TextView settingsTextView = (TextView) findViewById(R.id.label_linphone_activity_settings);
+		TextView resourcesTextView = (TextView) findViewById(R.id.label_linphone_activity_resources);
+
+		TextView videomallTextView = (TextView) findViewById(R.id.label_linphone_activity_videomail);
+		videomallTextView.setText(getResources().getString(R.string.main_menu_videomail) + " (" +String.valueOf(videoMessageCount) + ")");
+
+		selfPreviewTextView = (TextView) findViewById(R.id.label_linphone_activity_self_preview);
+
+		selfVideoIsEnabled = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
+		isSelfViewEnabled = mPrefs.getBoolean(selfVideoIsEnabled, true);
+		selfPreviewTextView.setSelected(isSelfViewEnabled);
+
+		settingsTextView.setOnClickListener(moreOptionsListener);
+		resourcesTextView.setOnClickListener(moreOptionsListener);
+		videomallTextView.setOnClickListener(moreOptionsListener);
+		selfPreviewTextView.setOnClickListener(moreOptionsListener);
+	}
+
+
+	private void showHideMoreOptions() {
+		if (isAnimationDisabled) {
+			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+				switch (selectedTab){
+					case 0:
+						dialer.setSelected(true);
+						dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 1:
+						history.setSelected(true);
+						history.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 2:
+						contacts.setSelected(true);
+						contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 3:
+						chat.setSelected(true);
+						chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+					case 4:
+						more.setSelected(true);
+						more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						break;
+
+
+				}
+				hideAnimation();
+			} else {
+				more.setSelected(true);
+				more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				showAnimation();
+			}
+
+
+		} else {
+			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+				dialer.setSelected(true);
+				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				mAnimateLayout.setVisibility(View.INVISIBLE);
+			} else {
+				more.setSelected(true);
+				more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				mAnimateLayout.setVisibility(View.VISIBLE);
+			}
+		}
+	}
+
+	private void showAnimation (){
+		slideInRightToLeft.setAnimationListener(new Animation.AnimationListener() {
+			@Override
+			public void onAnimationStart(Animation animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				mAnimateLayout.setVisibility(View.VISIBLE);
+				slideInRightToLeft.cancel();
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+
+			}
+		});
+		mAnimateLayout.startAnimation(slideInRightToLeft);
+	}
+
+	private void hideAnimation (){
+		if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+			slideOutLeftToRight.setAnimationListener(new Animation.AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {
+
+				}
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					mAnimateLayout.setVisibility(View.INVISIBLE);
+					slideOutLeftToRight.cancel();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+
+				}
+			});
+			mAnimateLayout.startAnimation(slideOutLeftToRight);
 		}
 	}
 
@@ -453,8 +622,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		contacts.setOnClickListener(this);
 		dialer = (RelativeLayout) findViewById(R.id.dialer);
 		dialer.setOnClickListener(this);
-		settings = (RelativeLayout) findViewById(R.id.settings);
-		settings.setOnClickListener(this);
+		more = (RelativeLayout) findViewById(R.id.settings);
+		more.setOnClickListener(this);
 		chat = (RelativeLayout) findViewById(R.id.chat);
 		chat.setOnClickListener(this);
 		aboutChat = (RelativeLayout) findViewById(R.id.about_chat);
@@ -467,8 +636,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			aboutChat.setOnClickListener(this);
 		}
 		if (getResources().getBoolean(R.bool.replace_settings_by_about)) {
-			settings.setVisibility(View.GONE);
-			settings.setOnClickListener(null);
+			more.setVisibility(View.GONE);
+			more.setOnClickListener(null);
 		}
 
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
@@ -481,7 +650,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		TextView contactsView = (TextView) contacts.findViewById(R.id.text);
 		TextView dialerView = (TextView) dialer.findViewById(R.id.text);
 		TextView resourcesView = (TextView) chat.findViewById(R.id.text);
-		TextView settingsView = (TextView) settings.findViewById(R.id.text);
+		TextView settingsView = (TextView) more.findViewById(R.id.text);
 
 		historyView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
 		contactsView.setTextColor(getResources().getColorStateList(R.color.text_color_selector));
@@ -506,7 +675,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		((ImageView)contacts.findViewById(R.id.image)).setColorFilter(foregroundColor);
 		((ImageView)dialer.findViewById(R.id.image)).setColorFilter(foregroundColor);
-		((ImageView)settings.findViewById(R.id.image)).setColorFilter(foregroundColor);
+		((ImageView)more.findViewById(R.id.image)).setColorFilter(foregroundColor);
 		((ImageView)chat.findViewById(R.id.image)).setColorFilter(foregroundColor);
 	}
 
@@ -515,7 +684,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		int backgroundColor = prefs.getInt(getString(R.string.pref_theme_background_color_setting_key), Color.TRANSPARENT);
 		//set background color independent
 		if(topLayout!=null) {
-				topLayout.setBackgroundColor(backgroundColor);
+			topLayout.setBackgroundColor(backgroundColor);
 		}
 	}
 	public boolean isTablet() {
@@ -554,7 +723,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	private void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras, boolean withoutAnimation) {
-		if (newFragmentType == currentFragment && newFragmentType != FragmentsAvailable.CHAT) {
+		if (newFragmentType == currentFragment && newFragmentType != FragmentsAvailable.CHAT && newFragmentType != FragmentsAvailable.SETTINGS) {
 			return;
 		}
 		nextFragment = newFragmentType;
@@ -569,7 +738,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		Fragment newFragment = null;
 
 		switch (newFragmentType) {
+
 		case HISTORY:
+			//Screen Hit
+			//Log.i(Log.TAG, "Setting screen name: Call History Screen");
+			g.analytics_tracker.setScreenName("Call History Screen");
 			if (getResources().getBoolean(R.bool.use_simple_history)) {
 				newFragment = new HistorySimpleFragment();
 			} else {
@@ -577,9 +750,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 			break;
 		case HISTORY_DETAIL:
+			//Log.i(Log.TAG, "Setting screen name: Call History Detail Screen");
+			g.analytics_tracker.setScreenName("Call History Detail Screen");
 			newFragment = new HistoryDetailFragment();
 			break;
 		case CONTACTS:
+			//Log.i(Log.TAG, "Setting screen name: Contacts Screen");
+			g.analytics_tracker.setScreenName("Contacts Screen");
 			if (getResources().getBoolean(R.bool.use_android_native_contact_edit_interface)) {
 				Intent i = new Intent();
 			    i.setComponent(new ComponentName("com.android.contacts", "com.android.contacts.DialtactsContactsEntryActivity"));
@@ -593,12 +770,18 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 			break;
 		case CONTACT:
+			//Log.i(Log.TAG, "Setting screen name: View Contact Screen");
+			g.analytics_tracker.setScreenName("View Contact Screen");
 			newFragment = new ContactFragment();
 			break;
 		case EDIT_CONTACT:
+			//Log.i(Log.TAG, "Setting screen name: Edit Contact Screen");
+			g.analytics_tracker.setScreenName("Edit Contact Screen");
 			newFragment = new EditContactFragment();
 			break;
 		case DIALER:
+			//Log.i(Log.TAG, "Setting screen name: Dialer Screen");
+			g.analytics_tracker.setScreenName("Dialer Screen");
 			newFragment = new DialerFragment();
 			if (extras == null) {
 				newFragment.setInitialSavedState(dialerSavedState);
@@ -606,25 +789,36 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			dialerFragment = newFragment;
 			break;
 		case SETTINGS:
+			//Log.i(Log.TAG, "Setting screen name: Settings Screen");
+			g.analytics_tracker.setScreenName("Settings Screen");
 			newFragment = new SettingsFragment();
 			break;
 		case ACCOUNT_SETTINGS:
+			//Log.i(Log.TAG, "Setting screen name: Account Settings Screen");
+			g.analytics_tracker.setScreenName("Account Settings Screen");
 			newFragment = new AccountPreferencesFragment();
 			break;
 		case ABOUT:
 		case ABOUT_INSTEAD_OF_CHAT:
 		case ABOUT_INSTEAD_OF_SETTINGS:
+			//Log.i(Log.TAG, "Setting screen name: About Screen");
+			g.analytics_tracker.setScreenName("About Screen");
 			newFragment = new AboutFragment();
 			break;
 		case CHATLIST:
+			//Log.i(Log.TAG, "Setting screen name: Resources Screen");
+			g.analytics_tracker.setScreenName("Resources Screen");
 			newFragment = new HelpFragment();
 			//messageListFragment = new Fragment();
 			break;
 		case CHAT:
+			//Log.i(Log.TAG, "Setting screen name: Chat Screen (Not in call)");
+			g.analytics_tracker.setScreenName("Chat Screen (Not in call)");
 			newFragment = new ChatFragment();
 			break;
 		default:
 			break;
+
 		}
 
 		if (newFragment != null) {
@@ -830,7 +1024,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public void displayAbout() {
 		changeCurrentFragment(FragmentsAvailable.ABOUT, null);
-		settings.setSelected(true);
 	}
 
 	public boolean displayChatMessageNotification(String address){
@@ -919,14 +1112,22 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public void onClick(View v) {
 		int id = v.getId();
 		resetSelection();
-
+		if (isAnimationDisabled) {
+			hideAnimation();
+		} else {
+			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
+				mAnimateLayout.setVisibility(View.INVISIBLE);
+			}
+		}
 		if (id == R.id.history) {
+			selectedTab = 1;
 			changeCurrentFragment(FragmentsAvailable.HISTORY, null);
 			history.setSelected(true);
 			history.setBackgroundColor(Color.argb(180, 0, 155, 160));
 			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
 		} else if (id == R.id.contacts) {
+			selectedTab = 2;
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
 			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
@@ -936,29 +1137,24 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			}
 		} else if (id == R.id.dialer) {
+			selectedTab = 0;
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
 			if(!isTablet()) {
 				if(DialerFragment.instance() != null) {
-						if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
-
-							try {//VATRP-3163 Crash occuring here on Android TV (Zidoo) Devices, adding try catch to see if problem is resolved.
-								DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
-							}catch(Throwable e){
-								e.printStackTrace();
-							}
-							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
-						} else {
-							DialerFragment.instance().dialer_content.setVisibility(View.GONE);
-							DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
-						}
+					if (DialerFragment.instance().VIEW_INDEX == DialerFragment.instance().DIALER_INDEX) {
+						DialerFragment.instance().dialer_content.setVisibility(View.VISIBLE);
+						DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
+					} else {
+						DialerFragment.instance().dialer_content.setVisibility(View.GONE);
+						DialerFragment.instance().VIEW_INDEX = DialerFragment.instance().DIALER_INDEX;
 					}
+				}
 			}
 			dialer.setSelected(true);
 			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.settings) {
-			changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
-			settings.setSelected(true);
-			settings.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			showHideMoreOptions();
+
 		} else if (id == R.id.about_chat) {
 			Bundle b = new Bundle();
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
@@ -966,7 +1162,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			aboutChat.setSelected(true);
 			aboutChat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		} else if (id == R.id.chat) {
-			changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
+			selectedTab = 3;
+			changeCurrentFragment(FragmentsAvailable.CHAT, null);
 			chat.setSelected(true);
 			chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
 		}
@@ -979,8 +1176,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		contacts.setBackgroundColor(Color.TRANSPARENT);
 		dialer.setSelected(false);
 		dialer.setBackgroundColor(Color.TRANSPARENT);
-		settings.setSelected(false);
-		settings.setBackgroundColor(Color.TRANSPARENT);
+		more.setSelected(false);
+		more.setBackgroundColor(Color.TRANSPARENT);
 		chat.setSelected(false);
 		chat.setBackgroundColor(Color.TRANSPARENT);
 		aboutChat.setSelected(false);
@@ -990,33 +1187,33 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@SuppressWarnings("incomplete-switch")
 	public void selectMenu(FragmentsAvailable menuToSelect) {
 		currentFragment = menuToSelect;
-		resetSelection();
 
 		switch (menuToSelect) {
-		case HISTORY:
-		case HISTORY_DETAIL:
-			history.setSelected(true);
-			break;
-		case CONTACTS:
-		case CONTACT:
-		case EDIT_CONTACT:
-			contacts.setSelected(true);
-			break;
-		case DIALER:
-			dialer.setSelected(true);
-			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
-			break;
-		case SETTINGS:
-		case ACCOUNT_SETTINGS:
-			settings.setSelected(true);
-			break;
-		case ABOUT_INSTEAD_OF_CHAT:
-			aboutChat.setSelected(true);
-			break;
-		case CHATLIST:
-		case CHAT:
-			chat.setSelected(true);
-			break;
+			case HISTORY:
+			case HISTORY_DETAIL:
+				history.setSelected(true);
+				break;
+			case CONTACTS:
+			case CONTACT:
+			case EDIT_CONTACT:
+				contacts.setSelected(true);
+				break;
+			case DIALER:
+				resetSelection();
+				dialer.setSelected(true);
+				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				break;
+			case SETTINGS:
+			case ACCOUNT_SETTINGS:
+				more.setSelected(true);
+				break;
+			case ABOUT_INSTEAD_OF_CHAT:
+				aboutChat.setSelected(true);
+				break;
+			case CHATLIST:
+			case CHAT:
+				chat.setSelected(true);
+				break;
 		}
 	}
 
@@ -1045,7 +1242,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public void displaySettings() {
 		changeCurrentFragment(FragmentsAvailable.SETTINGS, null);
-		settings.setSelected(true);
+		more.setSelected(true);
 	}
 
 	public void applyConfigChangesIfNeeded() {
@@ -1058,7 +1255,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		Bundle bundle = new Bundle();
 		bundle.putInt("Account", accountNumber);
 		changeCurrentFragment(FragmentsAvailable.ACCOUNT_SETTINGS, bundle);
-		settings.setSelected(true);
+		more.setSelected(true);
 	}
 
 	public StatusFragment getStatusFragment() {
@@ -1088,7 +1285,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 	public void updateMissedChatCount() {
-		//displayMissedChats(getChatStorage().getUnreadMessageCount());
+		displayMissedChats(getChatStorage().getUnreadMessageCount());
 	}
 
 	public int onMessageSent(String to, String message) {
@@ -1125,7 +1322,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedCalls.setVisibility(View.GONE);
 		}
 	}
-/*
+
 	private void displayMissedChats(final int missedChatCount) {
 		if (missedChatCount > 0) {
 			missedChats.setText(missedChatCount + "");
@@ -1142,7 +1339,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedChats.clearAnimation();
 			missedChats.setVisibility(View.GONE);
 		}
-	}*/
+	}
 
 	public void displayCustomToast(final String message, final int duration) {
 		LayoutInflater inflater = getLayoutInflater();
@@ -1348,16 +1545,26 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	public void exit() {
-		finish();
 		stopService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion >= Build.VERSION_CODES.JELLY_BEAN){
+			exitApi16();
+		} else{
+			finish();
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void exitApi16(){
+		finishAffinity();
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode==WIFI_ACTIVITY_RESULT){
-				Intent refresh = new Intent(this, LinphoneActivity.class);
-				startActivity(refresh);
-				this.finish();
+			Intent refresh = new Intent(this, LinphoneActivity.class);
+			startActivity(refresh);
+			this.finish();
 		}
 
 		if (resultCode == Activity.RESULT_OK && requestCode == FIRST_LOGIN_ACTIVITY) {
@@ -1436,7 +1643,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		updateMissedChatCount();
 		LinphoneActivity.instance().reloadMwiCount();
 		displayMissedCalls(getLc().getMissedCallsCount());
-
 		LinphoneManager.getInstance().changeStatusToOnline();
 
 		if(getIntent().getIntExtra("PreviousActivity", 0) != CALL_ACTIVITY){
@@ -1448,20 +1654,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					//startActivity(new Intent(this, IncomingCallActivity.class));
 				} else {
 
-						if (call.getCurrentParamsCopy().getVideoEnabled()) {
-							startVideoActivity(call);
-						} else {
-							startIncallActivity(call);
-						}
+					if (call.getCurrentParamsCopy().getVideoEnabled()) {
+						startVideoActivity(call);
+					} else {
+						startIncallActivity(call);
 					}
 				}
+			}
 		}
 
 		if(BuildConfig.DEBUG) {
 			//Debug
 			checkForCrashes();
 		} else{
-		 	//Release
+			//Release
 			checkForCrashes();
 		}
 	}
@@ -1502,14 +1708,25 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
+	public void showMessageFromNotification(Intent intent)
+	{
+		try {
+			Bundle extras = intent.getExtras();
+			LinphoneService.instance().removeMessageNotification();
+			String sipUri = extras.getString("ChatContactSipUri");
+			displayChat(sipUri);
+		}
+		catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		Bundle extras = intent.getExtras();
 		if (extras != null && extras.getBoolean("GoToChat", false)) {
-			LinphoneService.instance().removeMessageNotification();
-			String sipUri = extras.getString("ChatContactSipUri");
-			displayChat(sipUri);
+			showMessageFromNotification(intent);
+
 		} else if (extras != null && extras.getBoolean("Notification", false)) {
 			if (getLc().getCallsNb() > 0) {
 				LinphoneCall call = getLc().getCalls()[0];
@@ -1826,8 +2043,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			final String tunnelGetMode = LC_Object_to_String(lc.tunnelGetMode());
 			final String tunnelGetServers = LC_Object_to_String(lc.tunnelGetServers());
 			final String tunnelSipEnabled = LC_Object_to_String(lc.tunnelSipEnabled());
-
-
+			final boolean HWAcellDecode = lc.getMSFactory().filterFromNameEnabled("MSMediaCodecH264Dec");
+			final boolean HWAcellEncode = lc.getMSFactory().filterFromNameEnabled("MSMediaCodecH264Enc");
 			final String CameraParameters = "--------Device Camera Stats---------";
 
 
@@ -1922,10 +2139,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			Log.d("tunnelGetMode,", tunnelGetMode);
 			Log.d("tunnelGetServers,", tunnelGetServers);
 			Log.d("tunnelSipEnabled,", tunnelSipEnabled);
-
+			Log.d("HWAccelDecode,", HWAcellDecode);
+			Log.d("HWAccelEncode,", HWAcellEncode);
 			Log.d("CameraParameters,", CameraParameters);
-
-
 			new Thread() {
 				public void run() {
 					try {
@@ -2036,6 +2252,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						fw.append("tunnelGetMode," + tunnelGetMode + "\n");
 						fw.append("tunnelGetServers," + tunnelGetServers + "\n");
 						fw.append("tunnelSipEnabled," + tunnelSipEnabled + "\n");
+						fw.append("HWAccelDecode," + HWAcellDecode + "\n");
+						fw.append("HWAccelEncode,"+HWAcellEncode+"\n");
 						fw.append("CameraParameters," + CameraParameters + "\n");
 						fw.close();
 
@@ -2159,6 +2377,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			stats_list.add("tunnelGetMode," + tunnelGetMode);
 			stats_list.add("tunnelGetServers," + tunnelGetServers);
 			stats_list.add("tunnelSipEnabled," + tunnelSipEnabled);
+			stats_list.add("HWAccelDecode,"+ HWAcellDecode);
+			stats_list.add("HWAccelEncode," + HWAcellEncode);
+
 			stats_list.add("CameraParameters," + CameraParameters);
 		}catch(Throwable e){
 			e.printStackTrace();
@@ -2304,6 +2525,148 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			e.printStackTrace();
 		}
 		return string;
+	}
+
+	public static void display_original_JSON(final JSONObject jsonobject, final String filename){
+		try {
+
+
+			new Thread() {
+				public void run() {
+					try {
+						//print to csv
+						String sdCard = Environment.getExternalStorageDirectory().toString() + "/ACE";
+
+                        /* checks the file and if it already exist delete */
+						final String fname = filename + ".csv";
+						File file = new File(sdCard, fname);
+						if (!file.exists()) {
+							file.getParentFile().mkdirs();
+						} else {
+							file.delete();
+						}
+
+						Log.d("fname", fname);
+						Log.d("file", file.getAbsolutePath());
+
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						fw.append("Original JSON," + "\n" + jsonobject.toString(4));
+
+						fw.close();
+
+
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+			//Display to developer
+			Log.d("Original JSON," + "\n"+ jsonobject.toString(4));
+
+
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+
+	}
+	public static void display_incorporated_autoconfig_values(final JsonConfig config, final String filename){
+		try {
+
+
+			new Thread() {
+				public void run() {
+					try {
+						//print to csv
+						String sdCard = Environment.getExternalStorageDirectory().toString() + "/ACE";
+
+                        /* checks the file and if it already exist delete */
+						final String fname = filename + ".csv";
+						File file = new File(sdCard, fname);
+						if (!file.exists()) {
+							file.getParentFile().mkdirs();
+						} else {
+							file.delete();
+						}
+
+						Log.d("fname", fname);
+						Log.d("file", file.getAbsolutePath());
+
+						FileWriter fw = new FileWriter(file.getAbsoluteFile());
+						fw.append("Auto-Config Values"+"\n");
+						fw.append("_request_url"+config._request_url+"\n");
+						fw.append("_version"+config._version+"\n");
+						fw.append("_expiration_time"+config._expiration_time+"\n");
+						fw.append("_configuration_auth_password;"+config._configuration_auth_password+"\n");
+						fw.append("_configuration_auth_expiration"+config._configuration_auth_expiration+"\n");
+						fw.append("_sip_registration_maximum_threshold"+config._sip_registration_maximum_threshold+"\n");
+						fw.append("_sip_register_usernames"+config._sip_register_usernames+"\n");
+						fw.append("_sip_auth_username"+config._sip_auth_username+"\n");
+						fw.append("_sip_auth_password"+config._sip_auth_password+"\n");
+						fw.append("_sip_register_domain"+config._sip_register_domain+"\n");
+						fw.append("_sip_register_port"+config._sip_register_port+"\n");
+						fw.append("_sip_register_transport"+config._sip_register_transport+"\n");
+						fw.append("_enable_echo_cancellation"+config._enable_echo_cancellation+"\n");
+						fw.append("_enable_video"+config._enable_video+"\n");
+						fw.append("_enable_rtt"+config._enable_rtt+"\n");
+						fw.append("_enable_adaptive_rate"+config._enable_adaptive_rate+"\n");
+						fw.append("_enabled_codecs"+config._enabled_codecs+"\n");
+						fw.append("_bwLimit"+config._bwLimit+"\n");
+						fw.append("_upload_bandwidth"+config._upload_bandwidth+"\n");
+						fw.append("_download_bandwidth"+config._download_bandwidth+"\n");
+						fw.append("_enable_stun"+config._enable_stun+"\n");
+						fw.append("_stun_server"+config._stun_server+"\n");
+						fw.append("_enable_ice"+config._enable_ice+"\n");
+						fw.append("_logging"+config._logging+"\n");
+						fw.append("_sip_mwi_uri"+config._sip_mwi_uri+"\n");
+						fw.append("_sip_videomail_uri"+config._sip_videomail_uri+"\n");
+						fw.append("_video_resolution_maximum"+config._video_resolution_maximum+"\n");
+						fw.append("_video_preferred_frames_per_second"+config._video_preferred_frames_per_second+"\n");
+						fw.close();
+
+
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+
+			//Display to developer
+			Log.d("Auto-Config Values"+"\n");
+			Log.d("_request_url"+config._request_url+"\n");
+			Log.d("_version"+config._version+"\n");
+			Log.d("_expiration_time"+config._expiration_time+"\n");
+			Log.d("_configuration_auth_password;"+config._configuration_auth_password+"\n");
+			Log.d("_configuration_auth_expiration"+config._configuration_auth_expiration+"\n");
+			Log.d("_sip_registration_maximum_threshold"+config._sip_registration_maximum_threshold+"\n");
+			Log.d("_sip_register_usernames"+config._sip_register_usernames+"\n");
+			Log.d("_sip_auth_username"+config._sip_auth_username+"\n");
+			Log.d("_sip_auth_password"+config._sip_auth_password+"\n");
+			Log.d("_sip_register_domain"+config._sip_register_domain+"\n");
+			Log.d("_sip_register_port"+config._sip_register_port+"\n");
+			Log.d("_sip_register_transport"+config._sip_register_transport+"\n");
+			Log.d("_enable_echo_cancellation"+config._enable_echo_cancellation+"\n");
+			Log.d("_enable_video"+config._enable_video+"\n");
+			Log.d("_enable_rtt"+config._enable_rtt+"\n");
+			Log.d("_enable_adaptive_rate"+config._enable_adaptive_rate+"\n");
+			Log.d("_enabled_codecs"+config._enabled_codecs+"\n");
+			Log.d("_bwLimit"+config._bwLimit+"\n");
+			Log.d("_upload_bandwidth"+config._upload_bandwidth+"\n");
+			Log.d("_download_bandwidth"+config._download_bandwidth+"\n");
+			Log.d("_enable_stun"+config._enable_stun+"\n");
+			Log.d("_stun_server"+config._stun_server+"\n");
+			Log.d("_enable_ice"+config._enable_ice+"\n");
+			Log.d("_logging"+config._logging+"\n");
+			Log.d("_sip_mwi_uri"+config._sip_mwi_uri+"\n");
+			Log.d("_sip_videomail_uri"+config._sip_videomail_uri+"\n");
+			Log.d("_video_resolution_maximum"+config._video_resolution_maximum+"\n");
+			Log.d("_video_preferred_frames_per_second"+config._video_preferred_frames_per_second+"\n");
+
+
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+
 	}
 
 	private String readFromFile(String filepath) {

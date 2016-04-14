@@ -105,7 +105,6 @@ public class HelpFragment extends PreferencesListFragment {
                 return true;
             }
         });
-
         try {
             populateJson(default_json);
         } catch (JSONException e) {

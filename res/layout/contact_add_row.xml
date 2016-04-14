@@ -18,7 +18,8 @@
    	<EditText
         android:textCursorDrawable="@null"
         android:id="@+id/numoraddr"
-        android:layout_width="wrap_content"
+		android:layout_width="0dp"
+		android:layout_weight="5"
         android:layout_height="wrap_content"
         android:textColor="@android:color/black"
         android:background="@drawable/chat_fast_address_background"

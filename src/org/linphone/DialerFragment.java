@@ -129,8 +129,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 					isCalled = true;
 					return;
 				}
-
 				CDNProviders.getInstance().setSelectedProvider(position);
+				mAddress.setTag(CDNProviders.getInstance().getSelectedProvider().getDomain());
 			}
 
 			@Override
@@ -168,6 +168,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 			@Override
 			public void onClick(View v) {
 				mCall.performClick();
+				//Event
 
 			}
 		});
@@ -288,7 +289,7 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		cameraPreview.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(dialer_content != null) {
+				if (dialer_content != null) {
 					dialer_content.setVisibility(View.VISIBLE);
 				}
 				VIEW_INDEX = DialerFragment.instance().SELF_VIEW_INDEX;
@@ -297,9 +298,26 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 
 
 		Log.d("mCamera" + mCamera);
+		try
+		{
+			if(cameraPreview.getChildCount() == 1)
+			{
+				mPreview = (CameraPreview) cameraPreview.getChildAt(0);
 
-		mPreview = new CameraPreview(myContext, mCamera);
-		cameraPreview.addView(mPreview);
+				mPreview.refreshCamera();
+			}
+			else
+			{
+				mPreview = new CameraPreview(myContext, mCamera);
+				cameraPreview.addView(mPreview);
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+
+
 
 
 	}

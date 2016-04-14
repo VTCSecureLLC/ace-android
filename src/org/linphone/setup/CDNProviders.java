@@ -2,6 +2,7 @@ package org.linphone.setup;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import org.json.JSONArray;
@@ -9,12 +10,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.linphone.LinphoneActivity;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.g;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.Type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by 3537 on 1/21/2016.
@@ -36,6 +39,7 @@ public class CDNProviders {
 	public static CDNProviders getInstance() {
 		if (instance == null) {
 			instance = new CDNProviders();
+			instance.load();
 		}
 		return instance;
 	}
@@ -53,7 +57,6 @@ public class CDNProviders {
 
 	private void load() {
 		//Load cached providers and their domains
-
 		String json = sharedPreferences.getString(PROVIDERS_KEY, "");
 		if (json.length() > 0)
 			updateProviders(json, false);
@@ -79,6 +82,24 @@ public class CDNProviders {
 		return position;
 	}
 
+	public int getProviderPossition(String domain)
+	{
+		if(providers==null || providers.size() ==0)
+			return -1;
+		int poss = -1;
+		int i = 0;
+		for (Provider pItem : providers) {
+			if (pItem.getDomain().equals(domain))
+			{
+				poss = i;
+				break;
+			}
+			i++;
+		}
+		return  poss;
+	}
+
+
 	public Provider getProvider(int poss) {
 		return providers.get(poss);
 	}
@@ -89,13 +110,11 @@ public class CDNProviders {
 				this.selectedProvider = provider1;
 				try {
 					SharedPreferences.Editor editor = sharedPreferences.edit();
-					editor.putString(SELECTED_PROVIDER_NAME, provider1.getName());
-					editor.commit();
+					editor.putString(SELECTED_PROVIDER_NAME, provider1.getName()).apply();
 				}catch(Throwable e){
-
+						e.printStackTrace();
 				}
 				break;
-
 			}
 		}
 	}
@@ -124,11 +143,21 @@ public class CDNProviders {
 
 	private void updateProviders(JSONArray jsonArray) {
 		providers.clear();
+		g.domain_image_hash=new HashMap<String, Uri>();
 		Provider tmp;
 		for (int i = 0; i < jsonArray.length(); i++) {
 			tmp = new Provider();
 			try {
-				tmp.domain = ((JSONObject) jsonArray.get(i)).getString("domain");
+
+				//change domains to valid domains, if not listed on the server that way
+				if(((JSONObject) jsonArray.get(i)).getString("domain").equals("zvrs.vatrp.net")){
+					tmp.domain="208.94.16.87";
+				}else if(((JSONObject) jsonArray.get(i)).getString("domain").equals("psip-lb.staging.purple.us")){
+					tmp.domain="psip-lb.test.purple.us";
+				}else {
+					tmp.domain = ((JSONObject) jsonArray.get(i)).getString("domain");
+				}
+
 				tmp.name = ((JSONObject) jsonArray.get(i)).getString("name");
 				tmp.icon = ((JSONObject) jsonArray.get(i)).getString("icon");
 				tmp.icon2x = ((JSONObject) jsonArray.get(i)).getString("icon2x");

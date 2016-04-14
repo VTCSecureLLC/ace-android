@@ -7,12 +7,14 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.1'
+        //classpath 'com.google.gms:google-services:2.0.0'
+        classpath 'com.android.tools.build:gradle:2.0.0'
         classpath 'net.hockeyapp.android:HockeySDK:3.5.0'
         classpath 'de.felixschulze.gradle:gradle-hockeyapp-plugin:3.2'
     }
 }
 apply plugin: 'android'
+
 apply plugin: 'de.felixschulze.gradle.hockeyapp'
 repositories {
     mavenCentral()
@@ -28,13 +30,14 @@ dependencies {
     compile files('android-support-v7-appcompat.jar')
     compile files('libs/HockeySDK-3.6.0-rc.1.jar')
     compile files('libs/org.xbill.dns_2.1.7.jar')
+    compile files('libs/libGoogleAnalyticsServices.jar')
 }
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
     defaultConfig {
-        applicationId "com.vtcsecure.ace.android"
+        applicationId "com.vtcsecure.ace"
     }
     sourceSets {
         main {
@@ -78,3 +81,4 @@ hockeyapp {
     repositoryUrl = "http://github.com/${System.env.TRAVIS_REPO_SLUG}"
     commitSha = System.env.TRAVIS_COMMIT
 }
+//apply plugin: 'com.google.gms.google-services'

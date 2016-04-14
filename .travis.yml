@@ -13,16 +13,11 @@ env:
   - secure: mqdQCsRVbJ2fwLbtGSgAofzPEYJxrBivzQgVTCEVSAdM6VD/7Zkhgl7U03tFcPzcfbZRcTu6XspQLSJ7KDD20JU3HZWIjEsLyJVkQLlgiXikZu2wJzjjb+D2FgQzagSOURii4bePp+8/XKoUWWIWHXbet6rAx3vl0wQ45pWUGV5jgBdr6/MOxv2/5Ty1GnpCNQxc7HvtCfdYsl/x2lrJOTD4OnxlF8MT7IR13P5Iw7wr9AcWgzxf+9V0ZSYoNsF2DgLSy8jMoov/gkjJHLINPgSMy48q0gG8ZLo7D5bYZmhp2Zq/3t3H/HRcbc6iTAD6MrUvNj4M72tmrwSywdpm9oLA6/nIz1tDPZXpOCXJSZSvoFj9OpUXfUYw3v1qcO5IP3HPdktfcCwUg57fvWUrSuKWy51LAIjD5ijc6xBwbDaGjGMiuudaRGW6+EQDuW8aGXkRBtLsUG5alL2Ag0+t01ORNrw6PoECoS5bAzlYVD18N1HUKyW5uhWPPqaGquSe2a5Gq9HxjrpcLo3aKs+21EWurLHb8Q3S+voMunGFlTlwSdiilX+GSAcRNFMVGPFjlB2S4ogZpXOFzqEyw4FMvC5IjVFw+jHmuR204E7lEyKXQBR8Ip0kUpPaUi657qzXdERuFXkBW5m68RJjBTNZS8S5B3+zNJXEH1Pwl8NSA90=
   - secure: p7yLO55lpR3XTPIfafqQYjVviM2s01tr3bD3POVDSyAnz+trgbIgUUquofFw5M5Apet9zbBbylHgyuVWK9F11c30EH6KsHo5yy/pXH6QUfjCftErJl7ewwK+eCM5SPUi6PA6OrPjHclacPNil0e3zCxfqp/qikguqEZ02DY0wyNRgIdt7I0qb27fVktXgSotwoJ7jdAOg1MvGd3McRmW/xbHsoQJHiB1d8HwUnJ76NnntWXFI1KCEPHBUjkYcwjEWhLGryDdRCl9toGQTcO/L+Eh3221KNyhiYPTBFpSmtNxGdyv1bjXRio7K0/qyuHvrBEuTUWe3udUsa2e+F2DW9kyHCvoB3vdFnbCrjup7WuPbxBViDHlZ1Y1CIwB7WcJzN5An4aD7a9gCZ8tHWYX1ZMVmMMo5GJAM5o904EoMj8cHgMPVsTm9bScyRGLKishoFSKaR7DAjyCai4mGLCB7H/mxZLHZJdRsUtBfytO9Tz3bn5SlEUb336NaOHabYDtICnuZW7LKWM1qVFJaOP/17OoeKjXBw4b4MH6K9xa75X5ZezVjBclISc7vFeJ8v6dRcPiiWNit23lJhDIxROiey1PPtHOALeRBkng9pbyg9o5eIvN4ddIrm+ZS+uzHCxPX7VpquDKX9HqxNLYSsDi5iUAfbrgji7S+GXKms8LWe0=
   - secure: 21h4HegHyzyBvM3faewMzhnopuiIE0iBEdA/IsEhXv5jlVGqOSNgqjnsIQgecYQYlFF79tmESBeA0I0xtA9BPrtHt0UVUhbO2dkAthw14ibSEWU1l3ZzNpvWhTYR2YYEQ0LY4mrDfKQe0yFwFK8C/uxzBeEElN+tWgxCkr71rIw62hTVnfFTwo1B+h+XKjuWukU5Uywg3LEF2ipT7EW3s+sMFV/0HF28DyT3xSNSTXDN+Ua3hxl5GQ3zdgsHjstXkRk/qKI733sZ+6oymbX1pOWqj6YJT0D9p3uTC6g7wJxk0FBrWU0KGAPZo4F4isfIfdoytqtj+cz8lC/hFHn9DTtgrytcy/na09HLWDUmErfV6Gu4dzZVhlLNYznS1G3v+8gDw8toPSGH8pLQDz66USRz+33E5KhygO0QrKVwgNcGh3mNliZnIQUKVkaIkULn8S96rih0U6sbMoHTivepBHpJG1OjUBIBk9Xcm5Lo0UAcPkgrDzGTw2UESzvOXU8OVerqrnRaQ0w/IKdEtjMAzItxe1vFe6KAvaAk/R+hWTraN+z9BXzAQTU2IXF2NkPBq/StPjijGaehEdfGooa6YHBrSrA96RzE4+1/EfU+vtaEasoP7FHQkkWMWG3qVeswu9r+jC9xfSSHPVnzufGh9maoJXnmbw8pRvKKn3esrHg=
-  matrix:
-  - ANDROID_SDKS=android-22,sysimg-22 ANDROID_TARGET=android-22 ANDROID_ABI=armeabi-v7a
-    ENABLE_GPL_THIRD_PARTIES=0 BUILD_VIDEO=1 BUILD_OPENH264=1 ENABLE_OPENH264_DECODER=1
-    BUILD_X264=0 BUILD_AMRNB=0 BUILD_AMRWB=0 BUILD_ZRTP=0 BUILD_SILK=0 BUILD_G729=0
-    BUILD_TUNNEL=0 BUILD_WEBRTC_AECM=1 USE_JAVAH=1 BUILD_FOR_X86=1 BUILD_SQLITE=1
-    BUILD_TLS=1 BUILD_WEBRTC_ISAC=0 BUILD_OPUS=1 BUILD_UPNP=0 BUILD_MATROSKA=0 BUILD_ILBC=0
-    BUILD_MPEG4=0 BUILD_H263P=0 BUILD_VCARD=1 BUILD_GSM=0 BUILD_BV16=0 BUILD_MKV=0 BUILD_SPEEX=0
 sudo: false
 addons:
   apt:
+    sources:
+    - george-edison55-precise-backports
     packages:
     - yasm
     - nasm
@@ -33,25 +28,22 @@ addons:
     - automake
     - ccache
     - libtool
+    - intltool
     - pkg-config
     - bc
     - libwww-perl
     - ruby
+    - cmake
+    - cmake-data
+    - python
 cache:
   apt: true
   bundler: true
   ccache: true
   directories:
   - $HOME/.ccache
-  - submodules/externals/build/cunit/CUnit
-  - submodules/externals/build/ffmpeg/arm
-  - submodules/externals/build/ffmpeg/x86
-  - submodules/externals/build/libvpx/arm
-  - submodules/externals/build/libvpx/x86
-  - submodules/externals/build/openh264/arm
-  - submodules/externals/build/openh264/x86
-  - obj
-  - bin
+  - WORK
+  - liblinphone-sdk 
 before_install:
 - if [ `uname -m` = x86_64 ]; then wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
   -O ndk.bin ; else wget --timeout=120 http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86.bin
@@ -89,11 +81,14 @@ before_script:
 - echo "Finished updating submodules"
 - android list target -c
 script:
+- ./Tools/copycmakelist.sh
 - ./Tools/git_version.sh
 - ./Tools/travis_script.sh
-- ccache -s 
+after_failure:
+- tail -1000 /tmp/build_script.out
 after_success:
 - ./Tools/release.sh
+- ccache -s
 notifications:
   flowdock:
     secure: eD1JpGzIf8paOU14pFK1G3VUXDLBiybGHf0WHX8spmvfSo3O5n3xFEq0qrcc6bAuXxrhSVRqt9k2fKQshRf/rfgkRjmcwXtvyLYH6gND3RxnMbicAUJCNXFMSEEPKPEGtWXUM2soDgNm7q0vc32wpRJLq+iDjZAHuBYgaJXIW6wI4Ny3HSiHzIBNF7sKpH6uVDCSwVYotfuT8zqQRUHw9C1Ed+Cs10/w7eH0F2l79RsNhepxaV2F3bQQzsMfHffAtMg+j1lzGayQlOObi0qrI0TkRHLqgp6H0F/cFq+QBFXtQqyhdO3VTYNW2Iju8dJCx55Ns9a3fzXyejvXAPmqmKEH+BHj0Yde9KaRVVHW0+os1ZPBOLyUm9jOUcpFaz13jMmQNigazszq9+AYyrvIQYewDr306W5t8ELbz6GDVRNcxVwU8djwL1Qi1OQb5emawgV3NOnsWD4x+aBI7V+QJZr5epweUwfkxnf+4IiCO0mAvlcB3bfNbO0G/M4R+l0UMc2llrbYpy94NCj3qackkghxI7E6KL6ByzOCcHBDBGW2uhGwu4mlLjv5WFutS7R5wX1yzNSD0sbJDV7UOonGgPQIXrgUeGCijEaNm/NB70VX4YRJbaxDDzkZTB29E/psigIqJf72hJB6zho/p72wPAWFzLeWlnoHLQCJqG0M+2w=

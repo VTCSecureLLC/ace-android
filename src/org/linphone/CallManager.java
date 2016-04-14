@@ -61,10 +61,11 @@ public class CallManager {
 		bm().updateWithProfileSettings(lc, params);
 		
 		String emergencyNumber = LinphonePreferences.instance().getConfig().getString("vtcsecure", "emergency_username", "911");
-		if (lAddress.getUserName().startsWith(emergencyNumber) && LinphoneActivity.isInstanciated()) {
+		String emergencyNumber_alt="+1"+emergencyNumber;
+
+		if ((lAddress.getUserName().startsWith(emergencyNumber)||lAddress.getUserName().startsWith(emergencyNumber_alt)) && LinphoneActivity.isInstanciated()) {
 			params.addCustomHeader("Geolocation", LinphoneLocationManager.instance(LinphoneActivity.instance()).userLocation());
 		}
-		
 
 		if (videoEnabled && params.getVideoEnabled()) {
 			params.setVideoEnabled(true);
@@ -155,6 +156,17 @@ public class CallManager {
 		LinphoneCallParams params = lCall.getCurrentParamsCopy();
 		bm().updateWithProfileSettings(lc, params);
 		lc.updateCall(lCall, null);
+	}
+
+	public boolean isEmergencyCall(LinphoneAddress lAddress) {
+		boolean emergencyCall = false;
+		String emergencyNumber = LinphonePreferences.instance().getConfig().getString("vtcsecure", "emergency_username", "911");
+		String emergencyNumber_alt="+1"+emergencyNumber;
+
+		if ((lAddress.getUserName().startsWith(emergencyNumber)||lAddress.getUserName().startsWith(emergencyNumber_alt)) && LinphoneActivity.isInstanciated()) {
+			emergencyCall = true;
+		}
+		return emergencyCall;
 	}
 	
 }

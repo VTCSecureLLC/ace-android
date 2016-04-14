@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <TableRow>
+        <ImageView
+            android:id="@+id/registered_led"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/led_disconnected"/>
+
+        <TextView
+            android:id="@+id/account_name"
+            android:layout_width="0dp"
+            android:layout_weight="8"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:text="username@some.domain.net"/>
+
+        <ImageView
+            android:id="@+id/provider_icon"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:layout_height="50dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/provider_logo_sorenson"/>
+
+    </TableRow>
+</TableLayout>

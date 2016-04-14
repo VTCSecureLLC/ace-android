@@ -55,6 +55,7 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
+import org.linphone.vtcsecure.g;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -176,6 +177,9 @@ public final class LinphoneService extends Service {
 				
 				if (state == LinphoneCall.State.IncomingReceived) {
 					onIncomingReceived();
+					//Event
+					g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Call","Incoming Received",state.toString(),null);
+
 				}
 				
 				if (state == State.CallUpdatedByRemote) {
@@ -190,6 +194,9 @@ public final class LinphoneService extends Service {
 							e.printStackTrace();
 						}
 					}
+
+
+					g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Call","Call Update by Remote",state.toString(),null);
 				}
 
 				if (state == State.StreamsRunning) {
@@ -211,6 +218,11 @@ public final class LinphoneService extends Service {
 
 			@Override
 			public void registrationState(LinphoneCore lc, LinphoneProxyConfig cfg, LinphoneCore.RegistrationState state, String smessage) {
+				String registration_state=state.toString();
+
+				//Event
+				g.analytics_tracker.send(LinphoneActivity.instance().getApplicationContext(),"Registration","Registration State",registration_state,null);
+
 //				if (instance == null) {
 //					Log.i("Service not ready, discarding registration state change to ",state.toString());
 //					return;
@@ -276,6 +288,9 @@ public final class LinphoneService extends Service {
 	};
 		
 	public void set_RTCP_Feedback(String setting, int interval){
+		LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_xr_enabled", 0);
+		LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_xr_voip_metrics_enabled", 0);
+		LinphoneManager.getLc().getConfig().setInt("rtp", "rtcp_xr_stat_summary_enabled", 0);
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneService.this);
 		//Initialize RTCP feedback preference
 		//Added sanity checks
@@ -409,9 +424,10 @@ public final class LinphoneService extends Service {
 		mNM.cancel(CUSTOM_NOTIF_ID);
 		resetIntentLaunchedOnNotificationClick();
 	}
-	
+
 	public void displayMessageNotification(String fromSipUri, String fromName, String message) {
-		Intent notifIntent = new Intent(this, LinphoneActivity.class);
+		// opening incallactivity and then openning appropriate screen will improve performance while in call
+		Intent notifIntent = new Intent(this, InCallActivity.class);
 		notifIntent.putExtra("GoToChat", true);
 		notifIntent.putExtra("ChatContactSipUri", fromSipUri);
 		
@@ -446,9 +462,9 @@ public final class LinphoneService extends Service {
 		} else {
 			bm = BitmapFactory.decodeResource(getResources(), R.drawable.unknown_small);
 		}
-		//mMsgNotif = Compatibility.createMessageNotification(getApplicationContext(), mMsgNotifCount, fromName, message, bm, notifContentIntent);
+	 	Notification mMsgNotif = Compatibility.createMessageNotification(getApplicationContext(), 1, fromName, message, bm, notifContentIntent);
 		
-		//notifyWrapper(MESSAGE_NOTIF_ID, mMsgNotif);
+		notifyWrapper(MESSAGE_NOTIF_ID, mMsgNotif);
 	}
 	
 	public void removeMessageNotification() {
