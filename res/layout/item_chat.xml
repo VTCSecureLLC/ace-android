@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:background="@color/background_color">
+
+    <RelativeLayout
+        android:id="@+id/layout_item_chat_user_photo"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        >
+
+    <org.linphone.ui.CircularImageView
+        android:id="@+id/image_item_chat_user_photo"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/unknown_small"
+        app:border="true"
+        app:border_color="@android:color/white"
+        app:border_width="1dp" />
+
+        <TextView
+            android:id="@+id/label_item_chat_badge"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/shape_badge"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:paddingLeft="20dp"
+        android:layout_toRightOf="@id/layout_item_chat_user_photo">
+
+
+        <TextView
+            android:id="@+id/image_item_chat_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="fffff"
+            android:textColor="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/image_item_chat_message_context"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:singleLine="true"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/draft"
+        android:visibility="gone"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toLeftOf="@+id/label_item_chat_get_message_time"
+        android:text="@string/draft"
+        android:textColor="@android:color/white"/>
+
+    <TextView
+        android:id="@id/label_item_chat_get_message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="@android:color/white"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>
