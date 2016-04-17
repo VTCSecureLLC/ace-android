@@ -21,7 +21,7 @@ public class g {
     //
     //https://sites.google.com/site/jalcomputing/home/mac-osx-android-programming-tutorial/saving-instance-state
 
-    public static boolean app_killed=false;
+    public static boolean in_call_activity_suspended=false;
     public static boolean isRTTMaximized;
     public static boolean Mic;
     public static boolean AudioMuted;

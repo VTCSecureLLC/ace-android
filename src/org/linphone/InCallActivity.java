@@ -556,7 +556,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				isVideoCallPaused = savedInstanceState.getBoolean("VideoCallPaused");
 				refreshInCallActions();
 				return;
-			} else if(g.app_killed){//This happens when app is destroyed and savedInstanceState was not run. (When the user physically exits the app, then returns.)
+			} else if(g.in_call_activity_suspended){//This happens when app is destroyed and savedInstanceState was not run. (When the user physically exits the app, then returns.)
 				isRTTMaximized = g.isRTTMaximized;
 				isMicMuted = g.Mic;
 				isAudioMuted = g.AudioMuted;
@@ -1889,7 +1889,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			lc.terminateAllCalls();
 		}
 		delete_messages();
-		g.app_killed=false;
+
 	}
 
 	private void enterConference() {
@@ -2395,11 +2395,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			LinphoneManager.stopProximitySensorForActivity(this);
 		}
 
-		g.app_killed=true;
-		g.isRTTMaximized=isRTTMaximized;
-		g.Mic= LinphoneManager.getLc().isMicMuted();
-		g.AudioMuted=LinphoneManager.getLc().getPlaybackGain() == mute_db;
-		g.VideoCallPaused=isVideoCallPaused;
+
+		LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+		if(call != null){
+			g.in_call_activity_suspended=true;
+			g.isRTTMaximized=isRTTMaximized;
+			g.Mic= LinphoneManager.getLc().isMicMuted();
+			g.AudioMuted=LinphoneManager.getLc().getPlaybackGain() == mute_db;
+			g.VideoCallPaused=isVideoCallPaused;
+		}else{
+			//call terminated either remotely or locally
+			g.in_call_activity_suspended=false;
+		}
+
 	}
 
 	@Override
