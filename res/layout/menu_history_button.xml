@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/main_menu_padding"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_main_menu_history" />
+            android:src="@drawable/ic_main_menu_history"
+            android:contentDescription="@string/content_description_history"/>
     </LinearLayout>
 
     <TextView
