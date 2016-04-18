@@ -16,7 +16,7 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
 		android:adjustViewBounds="true"
-		android:contentDescription="@string/content_description_settings"
+		android:contentDescription="@string/content_description_more"
 		android:src="@drawable/ic_main_menu_more" />
 
     <TextView

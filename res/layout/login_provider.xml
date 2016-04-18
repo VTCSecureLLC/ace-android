@@ -61,7 +61,8 @@
             android:id="@+id/sp_prv"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginBottom="27dp" />
+            android:layout_marginBottom="27dp"
+            android:contentDescription="Provider Dropdown"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -118,7 +119,8 @@
                 android:autoText="false"
                 android:paddingLeft="30dp"
                 android:singleLine="true"
-                android:imeOptions="actionNext"/>
+                android:imeOptions="actionNext"
+                android:contentDescription="Username Field"/>
         </LinearLayout>
 
         <LinearLayout
@@ -147,7 +149,8 @@
                 android:paddingLeft="30dp"
                 android:singleLine="true"
                 android:nextFocusDown="@+id/btn_prv_login"
-                android:imeOptions="actionNext"/>
+                android:imeOptions="actionNext"
+                android:contentDescription="Password Field"/>
         </LinearLayout>
 
         <LinearLayout
@@ -201,7 +204,8 @@
                 android:hint="Address:Domain"
                 android:paddingLeft="30dp"
                 android:singleLine="true"
-                android:imeOptions="actionNext"/>
+                android:imeOptions="actionNext"
+                android:contentDescription="Domain Field"/>
         </LinearLayout>
 
         <LinearLayout
@@ -227,7 +231,8 @@
                 android:textColorHint="#787878"
                 android:hint="Address:Transport"
                 android:paddingLeft="30dp"
-                android:imeOptions="actionNext"/>
+                android:imeOptions="actionNext"
+                android:contentDescription="Protocol Dropdown"/>
                 </LinearLayout>
 
             <LinearLayout
@@ -256,7 +261,8 @@
                     android:hint="Address:Port"
                     android:paddingLeft="30dp"
                     android:singleLine="true"
-                    android:imeOptions="actionNext"/>
+                    android:imeOptions="actionNext"
+                    android:contentDescription="Port Field"/>
             </LinearLayout>
 
 
@@ -284,7 +290,8 @@
                     android:hint="Address:userid"
                     android:paddingLeft="30dp"
                     android:singleLine="true"
-                    android:imeOptions="actionDone"/>
+                    android:imeOptions="actionDone"
+                    android:contentDescription="User Id Field"/>
             </LinearLayout>
         </LinearLayout>
         <!-- android:background="#00
@@ -299,7 +306,8 @@
             android:textColor="#ffffff"
             android:text="Login"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            android:contentDescription="Login Button"/>
     </LinearLayout>
     </ScrollView>
     <LinearLayout
