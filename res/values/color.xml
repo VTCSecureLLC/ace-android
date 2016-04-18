@@ -40,6 +40,7 @@
     <color name="numpad_background_top">#ffb1bdc3</color>
 
     <color name="missed_calls_background">#ff8c00</color>
+    <color name="orange_background">#FF7F00</color>
 
     <color name="transparent">#00000000</color>
 
