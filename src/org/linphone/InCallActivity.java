@@ -414,7 +414,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						|| state == State.StreamsRunning){
 
 					if(!showHangupCustomReason &&(state == State.CallEnd || state == State.Error)) {
-						String call_end_reason = Utils.getReasonText(call.getReason(), InCallActivity.this);
+						String call_end_reason = Utils.getReasonText(call.getErrorInfo().getReason(), InCallActivity.this);
 						tv_status.setText(call_end_reason);
 						tv_status.setVisibility(View.VISIBLE);
 					}
