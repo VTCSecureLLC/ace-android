@@ -1094,7 +1094,9 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		//VATRP-2742
 		if (state==State.CallEnd || state == State.CallReleased || state == State.Error){
-			g.in_call_activity_suspended=false;
+			if (mLc.getCallsNb() == 0) {
+				g.in_call_activity_suspended = false;
+			}
 		}
 
 		if (state == State.StreamsRunning) {
