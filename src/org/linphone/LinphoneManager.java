@@ -94,6 +94,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
+import org.linphone.vtcsecure.g;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -1088,6 +1089,13 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				} else {
 					Log.i("Last call ended: no incall (CPU only) wake lock were held");
 				}
+			}
+		}
+
+		//VATRP-2742
+		if (state==State.CallEnd || state == State.CallReleased || state == State.Error){
+			if (mLc.getCallsNb() == 0) {
+				g.in_call_activity_suspended = false;
 			}
 		}
 

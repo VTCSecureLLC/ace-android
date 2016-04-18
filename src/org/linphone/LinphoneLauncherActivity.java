@@ -28,15 +28,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 
+import com.google.analytics.tracking.android.Tracker;
+
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.linphone.custom.FontListParser;
 import org.linphone.mediastream.Log;
+import org.linphone.vtcsecure.GAUtils;
+import org.linphone.vtcsecure.g;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static android.content.Intent.ACTION_MAIN;
 
@@ -53,12 +56,20 @@ public class LinphoneLauncherActivity extends Activity {
 	private Handler mHandler;
 	private ServiceWaitThread mThread;
 
+	/**
+	 * The {@link Tracker} used to record screen views.
+	 */
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Used to change for the lifetime of the app the name used to tag the logs
+		g.analytics_tracker = new GAUtils(getApplicationContext()).getInstance(getApplicationContext());
+
+
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
-		Log.TAG = "Linphone";
+		Log.TAG = "ACE";
 		// Hack to avoid to draw twice LinphoneActivity on tablets
 
 
@@ -79,6 +90,16 @@ public class LinphoneLauncherActivity extends Activity {
 			}
 
 		initFontSettings();
+
+
+		//Screen Hit
+		//Log.i(Log.TAG, "Setting screen name: LauncherScreen");
+		g.analytics_tracker.setScreenName("LauncherScreen");
+
+
+		//Event
+		g.analytics_tracker.send(this,"Action","App Launched",null,null);
+
 	}
 
 	protected void onServiceReady() {
@@ -173,6 +194,7 @@ public class LinphoneLauncherActivity extends Activity {
 			}
 		}
 	}
+
 }
 
 

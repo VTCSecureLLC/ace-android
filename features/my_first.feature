@@ -1,11 +1,23 @@
 Feature: Calabash Testing
 
-  Scenario: Checking if Registration Succeeds
-    When I press the "Accept" button
-	Then I enter "patrick_1" into input field number 1
-	Then I enter "topsecret" into input field number 2
-	Then I press the "Login" button
-	Then I should see text containing "CALL"
+    Scenario: Scenario 1
+    Given I am on the Legal Screen
+
+    Scenario: Scenario 2
+    Given I am on the Legal Screen
+
+    Scenario: Scenario 3
+    Given I am on the Legal Screen
+
+    Scenario: Scenario 4
+    Given I am on the Legal Screen
+
+#  Scenario: Checking if Registration Succeeds
+#    When I press the "Accept" button
+#	Then I enter "patrick_1" into input field number 1
+#	Then I enter "topsecret" into input field number 2
+#	Then I press the "Login" button
+#	Then I should see text containing "CALL"
 
 #  Scenario: Checking if button click works
 #	When I press the "Click me" button
