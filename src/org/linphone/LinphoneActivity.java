@@ -171,6 +171,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static int[] message_directions;
 	public static String[] message_texts;
 	public static String message_call_Id;
+	String call_error_reason;
+	long call_error_time;
 
 	static final boolean isInstanciated() {
 		return instance != null;
@@ -353,6 +355,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				//InCallActivity will handle it
 				if (InCallActivity.isInstanciated())
 					return;
+
 				if (state == State.IncomingReceived) {
 					LinphoneManager.startIncomingCallActivity(LinphoneActivity.this);
 					//startActivity(new Intent(LinphoneActivity.instance(), IncomingCallActivity.class));
@@ -364,6 +367,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						startIncallActivity(call);
 					}
 				} else if (state == State.CallEnd || state == State.Error || state == State.CallReleased) {
+					if(state == State.Error ) {
+						//workaround for the case when call end state recieved before opening InCallActivity
+						call_error_reason = Utils.getReasonText(call.getReason(), LinphoneActivity.this);
+						call_error_time = System.currentTimeMillis();
+
+					}
 
 					// Convert LinphoneCore message for internalization
 					if (message != null && call.getReason() == Reason.Declined) {
@@ -1594,6 +1603,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.d("LinhponeActivity onResume");
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1646,6 +1656,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			//Release
 			checkForCrashes();
 		}
+		Log.d("LinhponeActivity onResume finished");
 	}
 
 	@Override
@@ -2379,6 +2390,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //					string=string+String[i].toString()+",";
 //				}
 			string="";
+			if(object == null)
+				return "";
 			if(object.getClass().isArray()) {//Handle Arrays
 
 
