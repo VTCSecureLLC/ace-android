@@ -232,6 +232,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 		if (id == R.id.image_add_new_conversation) {
 			String sipUri = fastNewChat.getText().toString();
 			creatSipUri(sipUri);
+			fastNewChat.setText("");
 		}
 		else if (id == R.id.ok) {
 			ok.setVisibility(View.GONE);
@@ -261,6 +262,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		String sipUri = (String) view.getTag();
+		fastNewChat.setText("");
 
 		if (LinphoneActivity.isInstanciated() && !isEditMode) {
 			LinphoneActivity.instance().displayChat(sipUri);
@@ -539,15 +541,27 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 			public void afterTextChanged(Editable s) {
 				searchUser(s.toString());
 			}
-
+			LinphoneAddress addressSearch;
 			private void searchUser(final String keyword) {
 				refresh();
 				if (!TextUtils.isEmpty(keyword)) {
 					for (int i = 0; i < mConversations.size(); i++) {
 						String user = mConversations.get(i);
 
-						String name = user.substring(user.indexOf(":") + 1, user.indexOf("@"));
-						if (name.toLowerCase().contains(keyword.toLowerCase())) {
+
+						try {
+							addressSearch = LinphoneCoreFactory.instance().createLinphoneAddress(user);
+						} catch (LinphoneCoreException e) {
+							Log.e("Chat view cannot parse address",e);
+						}
+						Contact lContact = ContactsManager.getInstance().findContactWithAddress(getActivity().getContentResolver(), addressSearch);
+						String searchBy;
+						if (lContact == null) {
+							searchBy = user.substring(user.indexOf(":") + 1, user.indexOf("@"));
+						} else {
+							searchBy = lContact.getName();
+						}
+						if (searchBy.toLowerCase().contains(keyword.toLowerCase())) {
 							findedAddresses.add(user);
 						}
 					}
@@ -579,6 +593,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 			@Override
 			public void onClick(View v) {
 				creatSipUri(keyword);
+				fastNewChat.setText("");
 			}
 		});
 	}
