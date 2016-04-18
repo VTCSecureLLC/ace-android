@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/main_menu_padding"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description_chat_button"
             android:src="@drawable/ic_main_menu_chat" />
     </LinearLayout>
 

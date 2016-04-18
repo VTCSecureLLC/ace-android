@@ -151,7 +151,8 @@
             android:padding="5dp"
             android:text="@string/main_menu_settings"
             android:textColor="@color/selector_more_option_text"
-            android:textSize="12dp"/>
+            android:textSize="12dp"
+            android:contentDescription="@string/content_description_settings"/>
 
         <TextView
             android:id="@+id/label_linphone_activity_resources"
@@ -165,7 +166,8 @@
             android:padding="5dp"
             android:text="@string/main_menu_resources"
             android:textColor="@color/selector_more_option_text"
-            android:textSize="12dp"/>
+            android:textSize="12dp"
+            android:contentDescription="@string/content_description_resource"/>
 
         <TextView
             android:id="@+id/label_linphone_activity_videomail"
@@ -179,7 +181,8 @@
             android:padding="5dp"
             android:text="@string/main_menu_videomail"
             android:textColor="@color/selector_more_option_text"
-            android:textSize="12dp" />
+            android:textSize="12dp"
+            android:contentDescription="@string/content_description_videomail"/>
 
         <TextView
             android:id="@+id/label_linphone_activity_self_preview"
@@ -193,7 +196,8 @@
             android:padding="5dp"
             android:text="@string/main_menu_self_preview"
             android:textColor="@color/selector_more_option_text"
-            android:textSize="12dp" />
+            android:textSize="12dp"
+            android:contentDescription="@string/content_description_selfpreview"/>
 
     </LinearLayout>
 

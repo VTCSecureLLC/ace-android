@@ -19,11 +19,12 @@
         android:paddingLeft="@dimen/main_menu_settings_padding_left_rigth"
         android:paddingRight="@dimen/main_menu_settings_padding_left_rigth"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/content_description_more"
         android:src="@drawable/ic_main_menu_more" />
     </LinearLayout>
 
     <TextView
-        android:contentDescription="@string/content_description_settings"
+        android:contentDescription="@string/content_description_more"
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

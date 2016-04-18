@@ -15,7 +15,7 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
 		android:adjustViewBounds="true"
-		android:contentDescription="@string/content_description_resource"
+		android:contentDescription="@string/content_description_chat_button"
         android:src="@drawable/ic_main_menu_chat"/>
 
     <include layout="@layout/mwi_badge"

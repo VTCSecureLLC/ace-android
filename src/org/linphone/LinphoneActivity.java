@@ -124,6 +124,7 @@ import static org.linphone.LinphoneManager.getLc;
  */
 public class LinphoneActivity extends FragmentActivity implements OnClickListener, ContactPicked {
 
+	private static final String UNREAD_MESSAGES = "isMessagesViewed";
 	public static ProgressDialog generic_ace_loading_dialog;
 
 	public static final String PREF_FIRST_LAUNCH = "pref_first_launch";
@@ -160,6 +161,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private boolean isSelfViewEnabled;
 	private String selfVideoIsEnabled;
 	private int selectedTab;
+	private boolean isMessagesViewed;
 	private TextView videomallTextView;
 
 	public static boolean providerLookupOperation_executed=false;
@@ -172,6 +174,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static int[] message_directions;
 	public static String[] message_texts;
 	public static String message_call_Id;
+	String call_error_reason;
+	long call_error_time;
 
 	static final boolean isInstanciated() {
 		return instance != null;
@@ -305,7 +309,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
-				updateMissedChatCount();
+				updateMissedChatCount(true);
 				if (messageListFragment != null && messageListFragment.isVisible()) {
 					((ChatListFragment) messageListFragment).refresh();
 				}
@@ -354,6 +358,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				//InCallActivity will handle it
 				if (InCallActivity.isInstanciated())
 					return;
+
 				if (state == State.IncomingReceived) {
 					LinphoneManager.startIncomingCallActivity(LinphoneActivity.this);
 					//startActivity(new Intent(LinphoneActivity.instance(), IncomingCallActivity.class));
@@ -365,6 +370,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						startIncallActivity(call);
 					}
 				} else if (state == State.CallEnd || state == State.Error || state == State.CallReleased) {
+					if(state == State.Error ) {
+						//workaround for the case when call end state recieved before opening InCallActivity
+						call_error_reason = Utils.getReasonText(call.getReason(), LinphoneActivity.this);
+						call_error_time = System.currentTimeMillis();
+
+					}
 
 					// Convert LinphoneCore message for internalization
 					if (message != null && call.getReason() == Reason.Declined) {
@@ -494,23 +505,23 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				switch (selectedTab){
 					case 0:
 						dialer.setSelected(true);
-						dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
 						break;
 					case 1:
 						history.setSelected(true);
-						history.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						history.setBackgroundColor(getResources().getColor(R.color.orange_background));
 						break;
 					case 2:
 						contacts.setSelected(true);
-						contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						contacts.setBackgroundColor(getResources().getColor(R.color.orange_background));
 						break;
 					case 3:
 						chat.setSelected(true);
-						chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
 						break;
 					case 4:
 						more.setSelected(true);
-						more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+						more.setBackgroundColor(getResources().getColor(R.color.orange_background));
 						break;
 
 
@@ -518,7 +529,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				hideAnimation();
 			} else {
 				more.setSelected(true);
-				more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				more.setBackgroundColor(getResources().getColor(R.color.orange_background));
 				showAnimation();
 			}
 
@@ -526,11 +537,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		} else {
 			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
 				dialer.setSelected(true);
-				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
 				mAnimateLayout.setVisibility(View.INVISIBLE);
 			} else {
 				more.setSelected(true);
-				more.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				more.setBackgroundColor(getResources().getColor(R.color.orange_background));
 				mAnimateLayout.setVisibility(View.VISIBLE);
 			}
 		}
@@ -644,6 +655,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
 		missedChats = (TextView) findViewById(R.id.missedChats);
+
+		isMessagesViewed = mPrefs.getBoolean(UNREAD_MESSAGES, false);
+		if (isMessagesViewed) {
+			missedChats.setVisibility(View.GONE);
+		} else {
+			missedChats.setVisibility(View.VISIBLE);
+			missedChats.setText("!");
+		}
 
 		setColorTheme(this);
 		setBackgroundColorTheme(this);
@@ -1125,14 +1144,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			selectedTab = 1;
 			changeCurrentFragment(FragmentsAvailable.HISTORY, null);
 			history.setSelected(true);
-			history.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			history.setBackgroundColor(getResources().getColor(R.color.orange_background));
 			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
 		} else if (id == R.id.contacts) {
 			selectedTab = 2;
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
 			contacts.setSelected(true);
-			contacts.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			contacts.setBackgroundColor(getResources().getColor(R.color.orange_background));
 			if(!ApplicationPermissionManager.isPermissionGranted(this, Manifest.permission.WRITE_CONTACTS))
 			{
 				ApplicationPermissionManager.askPermission(this, Manifest.permission.WRITE_CONTACTS, REQUEST_CONTACTS_PERMISSION);
@@ -1153,7 +1172,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				}
 			}
 			dialer.setSelected(true);
-			dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
 		} else if (id == R.id.settings) {
 			showHideMoreOptions();
 
@@ -1162,12 +1181,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			b.putSerializable("About", FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT);
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
 			aboutChat.setSelected(true);
-			aboutChat.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			aboutChat.setBackgroundColor(getResources().getColor(R.color.orange_background));
 		} else if (id == R.id.chat) {
 			selectedTab = 3;
 			changeCurrentFragment(FragmentsAvailable.CHAT, null);
 			chat.setSelected(true);
-			chat.setBackgroundColor(Color.argb(180, 0, 155, 160));
+			chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
+			isMessagesViewed = true;
+			missedChats.setVisibility(View.GONE);
+			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
 		}
 	}
 
@@ -1203,7 +1225,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			case DIALER:
 				resetSelection();
 				dialer.setSelected(true);
-				dialer.setBackgroundColor(Color.argb(180, 0, 155, 160));
+				dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
 				break;
 			case SETTINGS:
 			case ACCOUNT_SETTINGS:
@@ -1286,8 +1308,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 
 
-	public void updateMissedChatCount() {
-		displayMissedChats(getChatStorage().getUnreadMessageCount());
+	public void updateMissedChatCount(boolean isNewMessage) {
+		displayMissedChats(getChatStorage().getUnreadMessageCount(), isNewMessage);
 	}
 
 	public int onMessageSent(String to, String message) {
@@ -1325,21 +1347,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
-	private void displayMissedChats(final int missedChatCount) {
-		if (missedChatCount > 0) {
-			missedChats.setText(missedChatCount + "");
-			if (missedChatCount > 99) {
-				missedChats.setTextSize(12);
+	private void displayMissedChats(final int missedChatCount, final boolean isNewMessage) {
+
+		if (isNewMessage) {
+			isMessagesViewed = false;
+			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+			if (missedChatCount > 0) {
+				missedChats.setText("!");
+				missedChats.setVisibility(View.VISIBLE);
+				if (!isAnimationDisabled) {
+					missedChats.startAnimation(AnimationUtils.loadAnimation(LinphoneActivity.this, R.anim.bounce));
+				}
 			} else {
-				missedChats.setTextSize(20);
+				missedChats.clearAnimation();
+				missedChats.setVisibility(View.GONE);
 			}
-			missedChats.setVisibility(View.VISIBLE);
-			if (!isAnimationDisabled) {
-				missedChats.startAnimation(AnimationUtils.loadAnimation(LinphoneActivity.this, R.anim.bounce));
-			}
-		} else {
-			missedChats.clearAnimation();
-			missedChats.setVisibility(View.GONE);
 		}
 	}
 
@@ -1620,6 +1642,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.d("LinhponeActivity onResume");
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1642,7 +1665,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		ContactsManager.getInstance().prepareContactsInBackground();
 
-		updateMissedChatCount();
+		updateMissedChatCount(false);
 		LinphoneActivity.instance().reloadMwiCount();
 		displayMissedCalls(getLc().getMissedCallsCount());
 		LinphoneManager.getInstance().changeStatusToOnline();
@@ -1672,6 +1695,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			//Release
 			checkForCrashes();
 		}
+		Log.d("LinhponeActivity onResume finished");
 	}
 
 	@Override
@@ -2405,6 +2429,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 //					string=string+String[i].toString()+",";
 //				}
 			string="";
+			if(object == null)
+				return "";
 			if(object.getClass().isArray()) {//Handle Arrays
 
 
