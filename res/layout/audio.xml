@@ -22,7 +22,7 @@
 
         android:id="@+id/label_ringing"
         android:textSize="@dimen/call_main_status_font_size"
-		android:text="Ringing..."
+		android:text="Connecting"
 		android:gravity="center"
 		android:textColor="@android:color/white"
         android:visibility="visible"

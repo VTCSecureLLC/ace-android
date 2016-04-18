@@ -20,7 +20,7 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/label_ringing"
 		android:textSize="64sp"
-		android:text="Ringing..."
+		android:text="Connecting"
 		android:textColor="@android:color/white"
 		android:visibility="invisible"
 		android:layout_gravity="center_horizontal|top" />
