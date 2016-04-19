@@ -158,8 +158,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private Animation slideOutLeftToRight, slideInRightToLeft;
 	private LinearLayout mAnimateLayout;
 	private TextView selfPreviewTextView;
-	private boolean isSelfViewEnabled;
-	private String selfVideoIsEnabled;
+
+	String previewIsEnabledKey;
+	boolean isPreviewEnabled;
+
+	String selfVideoIsEnabledKey;
+	boolean isSelfViewEnabled;
+
 	private int selectedTab;
 	private boolean isMessagesViewed;
 	private TextView videomallTextView;
@@ -455,14 +460,30 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					videoMail();
 					break;
 				case R.id.label_linphone_activity_self_preview:
-					if (isSelfViewEnabled) {
-						isSelfViewEnabled = false;
+					//Check both preview and selfview settings. I am assuming that when selecting this option, we want to toggle them both.
+					previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+					isPreviewEnabled = mPrefs.getBoolean(previewIsEnabledKey, true);
+
+					selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
+					isSelfViewEnabled = mPrefs.getBoolean(selfVideoIsEnabledKey, true);
+
+					if (isPreviewEnabled) {
+						mPrefs.edit().putBoolean(previewIsEnabledKey, false).commit();
+						mPrefs.edit().putBoolean(selfVideoIsEnabledKey, false).commit();
 						selfPreviewTextView.setSelected(false);
 					} else {
+						mPrefs.edit().putBoolean(previewIsEnabledKey, true).commit();
+						mPrefs.edit().putBoolean(selfVideoIsEnabledKey, true).commit();
 						selfPreviewTextView.setSelected(true);
-						isSelfViewEnabled = true;
+
 					}
-					mPrefs.edit().putBoolean(selfVideoIsEnabled, isSelfViewEnabled).commit();
+
+					isPreviewEnabled = mPrefs.getBoolean(previewIsEnabledKey, true);
+					//update dialerfragment view if visible
+					if(DialerFragment.instance().isVisible()){
+						DialerFragment.instance().initialize_camera();
+					}
+
 					break;
 			}
 		}
@@ -488,9 +509,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		selfPreviewTextView = (TextView) findViewById(R.id.label_linphone_activity_self_preview);
 
-		selfVideoIsEnabled = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
-		isSelfViewEnabled = mPrefs.getBoolean(selfVideoIsEnabled, true);
-		selfPreviewTextView.setSelected(isSelfViewEnabled);
+		//Check both preview and selfview settings. I am assuming that when selecting this option, we want to toggle them both.
+		previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
+		isPreviewEnabled = mPrefs.getBoolean(previewIsEnabledKey, true);
+
+		selfVideoIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_self_view_key);
+		isSelfViewEnabled = mPrefs.getBoolean(selfVideoIsEnabledKey, true);
+
+		//I'm setting this setting based on preview, since it is on the dialer
+		selfPreviewTextView.setSelected(isPreviewEnabled);
 
 		settingsTextView.setOnClickListener(moreOptionsListener);
 		resourcesTextView.setOnClickListener(moreOptionsListener);
@@ -1262,6 +1289,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	public void updateStatusFragment(StatusFragment fragment) {
 		statusFragment = fragment;
+	}
+
+	public void refreshFragment(FragmentsAvailable fragment, RelativeLayout tab_to_show_selected){
+		changeCurrentFragment(fragment, null);
+		tab_to_show_selected.setSelected(true);
 	}
 
 	public void displaySettings() {
