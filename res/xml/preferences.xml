@@ -17,10 +17,16 @@
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
 
+
+
 		<Preference
 			android:key="@string/pref_reset_key"
 			android:title="@string/reset"
 			></Preference>
+
+		<CheckBoxPreference
+			android:title="@string/pref_theme_force_508"
+			android:key="@string/pref_theme_force_508_key"/>
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -68,9 +74,7 @@
 			android:title="@string/pref_theme_background_color_setting"
 			android:key="@string/pref_theme_background_color_setting_key"
 			android:layout="@layout/hidden"/>
-		<CheckBoxPreference
-			android:title="@string/pref_theme_force_508"
-			android:key="@string/pref_theme_force_508_key"/>
+
 	</PreferenceScreen>
 
 	<PreferenceScreen
