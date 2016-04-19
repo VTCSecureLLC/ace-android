@@ -18,6 +18,11 @@
 		android:key="@string/pref_wifi_only_key"/>
 
 
+		<CheckBoxPreference
+			android:title="@string/pref_animation_enable_title"
+			android:key="@string/pref_animation_enable_key"
+			android:defaultValue="false"/>
+
 
 		<Preference
 			android:key="@string/pref_reset_key"
@@ -391,10 +396,7 @@
 				android:title="@string/pref_background_mode"
 			    android:key="@string/pref_background_mode_key"/>
 
-			<CheckBoxPreference
-				android:title="@string/pref_animation_enable_title"
-				android:key="@string/pref_animation_enable_key"
-				android:defaultValue="false"/>
+
 
 			<CheckBoxPreference
 			    android:title="@string/pref_autostart"
