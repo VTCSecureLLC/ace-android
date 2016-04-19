@@ -65,7 +65,8 @@
 	<PreferenceScreen
 		android:title="@string/pref_theme_settings"
 		android:key="@string/pref_theme_settings_key"
-		android:shouldDisableView="true">
+		android:shouldDisableView="true"
+		android:layout="@layout/hidden">
 		<Preference
 			android:title="@string/pref_theme_foreground_color_setting"
 			android:key="@string/pref_theme_foreground_color_setting_key"
