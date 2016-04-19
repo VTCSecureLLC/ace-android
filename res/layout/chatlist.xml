@@ -33,18 +33,19 @@
 		android:paddingTop="5dp"
 		android:paddingBottom="5dp"
 		android:paddingLeft="5dp">
-	    
-	    <ImageView 
-	        android:contentDescription="@string/content_description_cancel"
-	        android:id="@+id/image_add_new_conversation"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:adjustViewBounds="true"
-	        android:src="@drawable/list_delete"
-	        android:layout_centerVertical="true"
-	        android:layout_alignParentRight="true"
-	        android:paddingLeft="5dp"
-	        android:paddingRight="5dp"/>
+
+		<ImageView
+			android:contentDescription="@string/content_description_cancel"
+			android:id="@+id/image_add_new_conversation"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:adjustViewBounds="true"
+			android:src="@drawable/ic_plus"
+			android:tint="@android:color/white"
+			android:layout_centerVertical="true"
+			android:layout_alignParentRight="true"
+			android:paddingLeft="5dp"
+			android:paddingRight="5dp"/>
         
 	    <EditText
             android:textCursorDrawable="@null"
