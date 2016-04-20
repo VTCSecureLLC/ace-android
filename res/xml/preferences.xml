@@ -173,14 +173,14 @@
 		    android:title="@string/pref_audio"
 			android:key="@string/pref_audio">
 
-		    <CheckBoxPreference
-				android:title="@string/pref_echo_cancellation"
-			    android:key="@string/pref_echo_cancellation_key"
-				android:summary="@string/pref_echo_cancellation_summary"/>
+		    <!--<CheckBoxPreference-->
+				<!--android:title="@string/pref_echo_cancellation"-->
+			    <!--android:key="@string/pref_echo_cancellation_key"-->
+				<!--android:summary="@string/pref_echo_cancellation_summary"/>-->
 
-			<Preference
-				android:title="@string/pref_echo_canceller_calibration"
-			    android:key="@string/pref_echo_canceller_calibration_key"/>
+			<!--<Preference-->
+				<!--android:title="@string/pref_echo_canceller_calibration"-->
+			    <!--android:key="@string/pref_echo_canceller_calibration_key"/>-->
 
 			<CheckBoxPreference
 				android:title="@string/pref_adaptive_rate_control"
