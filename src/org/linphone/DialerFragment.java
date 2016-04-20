@@ -278,6 +278,8 @@ public class DialerFragment extends Fragment implements AsyncProviderLookupOpera
 		try {
 			if(ApplicationPermissionManager.isPermissionGranted(getActivity(), Manifest.permission.CAMERA)&&isPreviewEnabled){
 				initialize_camera(dialer_view);
+			}else{
+				cameraPreview.removeAllViews();
 			}
 		}catch(Throwable e){
 			e.printStackTrace();
