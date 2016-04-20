@@ -30,7 +30,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -48,7 +47,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -67,7 +65,6 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
-import org.linphone.custom.FontListParser;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
@@ -79,7 +76,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -187,6 +183,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			initAdvancedSettings();
 		}
 		// Add action on About button
+		findPreference(getString(R.string.menu_iot_key)).setSummary("Link ACE with external devices");
 		findPreference(getString(R.string.menu_iot_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
