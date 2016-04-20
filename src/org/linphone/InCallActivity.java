@@ -360,19 +360,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				}
 			}
 
-			@Override
-			public void infoReceived(LinphoneCore lc, LinphoneCall call,
-									 LinphoneInfoMessage info) {
-				Log.d("info received"+info.getHeader("action"));
-				if(info.getHeader("action").equals("camera_mute_off")){
-					VideoCallFragment.cameraCover.setImageResource(R.drawable.camera_mute);
-					VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
-
-				}else if(info.getHeader("action").equals("camera_mute_on")){
-					VideoCallFragment.cameraCover.setVisibility(View.GONE);
-
-				}
-			}
+//			@Override
+//			public void infoReceived(LinphoneCore lc, LinphoneCall call,
+//									 LinphoneInfoMessage info) {
+//				Log.d("info received"+info.getHeader("action"));
+//				if(info.getHeader("action").equals("camera_mute_off")){
+//					VideoCallFragment.cameraCover.setImageResource(R.drawable.camera_mute);
+//					VideoCallFragment.cameraCover.setVisibility(View.VISIBLE);
+//
+//				}else if(info.getHeader("action").equals("camera_mute_on")){
+//					VideoCallFragment.cameraCover.setVisibility(View.GONE);
+//
+//				}
+//			}
 
 			@Override
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
@@ -1696,15 +1696,19 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 
 		if (!muted) {
-			message.addHeader("action", "camera_mute_on");
-			if(VideoCallFragment.mCaptureView!=null)
-				VideoCallFragment.mCaptureView.setVisibility(View.VISIBLE);
-			LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
+//			message.addHeader("action", "camera_mute_on");
+//			if(VideoCallFragment.mCaptureView!=null)
+//				VideoCallFragment.mCaptureView.setVisibility(View.VISIBLE);
+//			LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
+//			LinphoneManager.getLc().setStaticPicture("/camera_disabled.jpg");
+			LinphoneManager.getInstance().sendStaticImage(false);
 		} else {
-			message.addHeader("action", "camera_mute_off");
-			if(VideoCallFragment.mCaptureView!=null)
-				VideoCallFragment.mCaptureView.setVisibility(View.INVISIBLE);
-			LinphoneManager.getLc().setPreviewWindow(null);
+//			message.addHeader("action", "camera_mute_off");
+//			if(VideoCallFragment.mCaptureView!=null)
+//				VideoCallFragment.mCaptureView.setVisibility(View.INVISIBLE);
+//			LinphoneManager.getLc().setPreviewWindow(null);
+//			LinphoneManager.getLc().setStaticPicture("/camera_disabled.jpg");
+			LinphoneManager.getInstance().sendStaticImage(true);
 		}
 
 
