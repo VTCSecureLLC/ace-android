@@ -417,16 +417,32 @@
 		        android:layout_height="match_parent"
 		        android:scaleType="fitXY"
 		        android:src="@drawable/statebar_background"/>
-		    
-		    <ImageView 
+
+			<ImageView
+				android:contentDescription="@string/content_description_encryption"
+				android:id="@+id/encryption"
+				android:paddingRight="5dp"
+				android:paddingLeft="5dp"
+				android:paddingTop="5dp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerVertical="true"
+				android:src="@drawable/security_pending"
+				android:adjustViewBounds="true"
+				android:visibility="gone"
+				android:layout_alignParentTop="true"
+				android:layout_alignParentLeft="true"/>
+
+		    <ImageView
 		        android:contentDescription="@string/content_description_led"
 		        android:id="@+id/statusLed"
 		        android:paddingLeft="5dp"
 		        android:src="@drawable/led_disconnected"
+				android:layout_toRightOf="@id/encryption"
             	android:layout_centerVertical="true"
 		        android:layout_width="wrap_content"
 		        android:layout_height="match_parent" />
-		    
+
 		    <TextView 
 		        android:id="@+id/statusText" 
 		        android:text="@string/status_not_connected"
@@ -486,26 +502,10 @@
 		</RelativeLayout>
 		
 	</org.linphone.ui.SlidingDrawer>
-
-    <ImageView
-        android:contentDescription="@string/content_description_encryption"
-        android:id="@+id/encryption"
-        android:paddingRight="5dp"
-        android:paddingLeft="5dp"
-        android:paddingTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:src="@drawable/security_pending" 
-        android:adjustViewBounds="true"
-        android:visibility="gone"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true" />
-
+	
 	<View
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:id="@+id/callQuality2"
-		android:visibility="gone"
-		></View>
+		android:visibility="gone"/>
 </RelativeLayout>
