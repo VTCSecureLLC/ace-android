@@ -1696,18 +1696,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 
 		if (!muted) {
-//			message.addHeader("action", "camera_mute_on");
-//			if(VideoCallFragment.mCaptureView!=null)
-//				VideoCallFragment.mCaptureView.setVisibility(View.VISIBLE);
-//			LinphoneManager.getLc().setPreviewWindow(VideoCallFragment.mCaptureView);
-//			LinphoneManager.getLc().setStaticPicture("/camera_disabled.jpg");
 			LinphoneManager.getInstance().sendStaticImage(false);
 		} else {
-//			message.addHeader("action", "camera_mute_off");
-//			if(VideoCallFragment.mCaptureView!=null)
-//				VideoCallFragment.mCaptureView.setVisibility(View.INVISIBLE);
-//			LinphoneManager.getLc().setPreviewWindow(null);
-//			LinphoneManager.getLc().setStaticPicture("/camera_disabled.jpg");
 			LinphoneManager.getInstance().sendStaticImage(true);
 		}
 
