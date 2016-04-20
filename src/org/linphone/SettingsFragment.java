@@ -464,7 +464,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			// For each, add menus to configure it
 			String username = mPrefs.getAccountUsername(accountId);
 			String domain = mPrefs.getAccountDomain(accountId);
-			LedPreference account = new LedPreference(getActivity(), accountId);
+			LedPreference account = new LedPreference(accountId, getActivity());
 
 			if (username == null) {
 				account.setTitle(getString(R.string.pref_sipaccount));
