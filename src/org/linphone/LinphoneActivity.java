@@ -835,7 +835,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		case CHAT:
 			//Log.i(Log.TAG, "Setting screen name: Chat Screen (Not in call)");
 			g.analytics_tracker.setScreenName("Chat Screen (Not in call)");
-			newFragment = new ChatListFragment();
+			newFragment = new ChatFragment();
 			break;
 		default:
 			break;
