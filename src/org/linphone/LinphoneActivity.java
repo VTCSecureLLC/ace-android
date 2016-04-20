@@ -375,22 +375,26 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						startIncallActivity(call);
 					}
 				} else if (state == State.CallEnd || state == State.Error || state == State.CallReleased) {
-					if(state == State.Error ) {
-						//workaround for the case when call end state recieved before opening InCallActivity
-						call_error_reason = Utils.getReasonText(call.getReason(), LinphoneActivity.this);
+					if(state == State.Error){
+						if(call.getErrorInfo() != null){
+							//workaround for the case when call end state recieved before opening InCallActivity
+							call_error_reason = Utils.getReasonText(call.getErrorInfo().getReason(), LinphoneActivity.this);
+						}
 						call_error_time = System.currentTimeMillis();
 
 					}
 
 					// Convert LinphoneCore message for internalization
-					if (message != null && call.getReason() == Reason.Declined) {
-						displayCustomToast(getString(R.string.error_call_declined), Toast.LENGTH_LONG);
-					} else if (message != null && call.getReason() == Reason.NotFound) {
-						displayCustomToast(getString(R.string.error_user_not_found), Toast.LENGTH_LONG);
-					} else if (message != null && call.getReason() == Reason.Media) {
-						displayCustomToast(getString(R.string.error_incompatible_media), Toast.LENGTH_LONG);
-					} else if (message != null && state == State.Error) {
-						displayCustomToast(getString(R.string.error_unknown) + " - " + message, Toast.LENGTH_LONG);
+					if (call.getErrorInfo() != null) {
+						if (message != null && call.getErrorInfo().getReason() == Reason.Declined) {
+							displayCustomToast(getString(R.string.error_call_declined), Toast.LENGTH_LONG);
+						} else if (message != null && call.getErrorInfo().getReason() == Reason.NotFound) {
+							displayCustomToast(getString(R.string.error_user_not_found), Toast.LENGTH_LONG);
+						} else if (message != null && call.getErrorInfo().getReason() == Reason.Media) {
+							displayCustomToast(getString(R.string.error_incompatible_media), Toast.LENGTH_LONG);
+						} else if (message != null && state == State.Error) {
+							displayCustomToast(getString(R.string.error_unknown) + " - " + message, Toast.LENGTH_LONG);
+						}
 					}
 					resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
 				}
