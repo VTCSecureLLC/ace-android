@@ -17,15 +17,21 @@
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
 
+
 		<CheckBoxPreference
 			android:title="@string/pref_animation_enable_title"
 			android:key="@string/pref_animation_enable_key"
 			android:defaultValue="false"/>
 
+
 		<Preference
 			android:key="@string/pref_reset_key"
 			android:title="@string/reset"
 			></Preference>
+
+		<CheckBoxPreference
+			android:title="@string/pref_theme_force_508"
+			android:key="@string/pref_theme_force_508_key"/>
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -64,7 +70,8 @@
 	<PreferenceScreen
 		android:title="@string/pref_theme_settings"
 		android:key="@string/pref_theme_settings_key"
-		android:shouldDisableView="true">
+		android:shouldDisableView="true"
+		android:layout="@layout/hidden">
 		<Preference
 			android:title="@string/pref_theme_foreground_color_setting"
 			android:key="@string/pref_theme_foreground_color_setting_key"
@@ -73,9 +80,7 @@
 			android:title="@string/pref_theme_background_color_setting"
 			android:key="@string/pref_theme_background_color_setting_key"
 			android:layout="@layout/hidden"/>
-		<CheckBoxPreference
-			android:title="@string/pref_theme_force_508"
-			android:key="@string/pref_theme_force_508_key"/>
+
 	</PreferenceScreen>
 
 	<PreferenceScreen
