@@ -370,9 +370,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 						startIncallActivity(call);
 					}
 				} else if (state == State.CallEnd || state == State.Error || state == State.CallReleased) {
-					if(state == State.Error ) {
-						//workaround for the case when call end state recieved before opening InCallActivity
-						call_error_reason = Utils.getReasonText(call.getErrorInfo().getReason(), LinphoneActivity.this);
+					if(state == State.Error){
+						if(call.getErrorInfo() != null){
+							//workaround for the case when call end state recieved before opening InCallActivity
+							call_error_reason = Utils.getReasonText(call.getErrorInfo().getReason(), LinphoneActivity.this);
+						}
 						call_error_time = System.currentTimeMillis();
 
 					}
