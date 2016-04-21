@@ -868,9 +868,17 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				|| newFragmentType != FragmentsAvailable.HISTORY) {
 			transaction.addToBackStack(newFragmentType.toString());
 		}
-		transaction.replace(R.id.fragmentContainer, newFragment, newFragmentType.toString());
-		transaction.commitAllowingStateLoss();
-		getSupportFragmentManager().executePendingTransactions();
+		try
+		{
+			transaction.replace(R.id.fragmentContainer, newFragment, newFragmentType.toString());
+			transaction.commitAllowingStateLoss();
+			getSupportFragmentManager().executePendingTransactions();
+		}
+		catch (Exception ex)
+		{
+			ex.toString();
+		}
+
 
 		currentFragment = newFragmentType;
 	}

@@ -144,6 +144,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		setListeners();
 		hideSettings();
 
+		initCardDav();
+
 		mListener = new LinphoneCoreListenerBase(){
 			@Override
 			public void ecCalibrationStatus(LinphoneCore lc, final EcCalibratorStatus status, final int delayMs, Object data) {
@@ -167,6 +169,30 @@ public class SettingsFragment extends PreferencesListFragment {
 				}
 			}
 		};
+	}
+
+	private void initCardDav() {
+		final EditTextPreference path = (EditTextPreference)findPreference(getString(R.string.preference_settings_sync_path));
+		path.setSummary(path.getText());
+		path.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				path.setSummary(newValue.toString());
+				return true;
+			}
+		});
+
+		final EditTextPreference realm = (EditTextPreference)findPreference(getString(R.string.preference_settings_sync_realm));
+		realm.setSummary(realm.getText());
+		realm.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				realm.setSummary(newValue.toString());
+				return true;
+			}
+		});
 	}
 
 	// Inits the values or the listener on some settings

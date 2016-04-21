@@ -534,4 +534,9 @@
   <string name="main_menu_resources">Resources</string>
   <string name="main_menu_videomail">Videomail</string>
   <string name="main_menu_self_preview">Self-Preview</string>
+  <string name="card_dav_sinc_account">card_dav_sinc_account</string>
+  <string name="preference_settings_sync_path">preference_settings_sync_path</string>
+  <string name="preference_settings_sync_realm">preference_settings_sync_realm</string>
+  <string name="card_dav_password">card_dav_password_key</string>
+  <string name="card_dav_username">card_dav_username_key</string>
 </resources>
