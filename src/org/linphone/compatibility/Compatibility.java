@@ -71,7 +71,19 @@ public class Compatibility {
 			return ApiFivePlus.prepareEditContactIntent(id);	
 		}
 	}
-	
+
+	public static void updateExistingContact(int contactId, int rawContactID, String name,  String[] phoneNumbers, String[] sipAddresses, ArrayList<ContentProviderOperation> ops, Context context) {
+		ApiNinePlus.updateExistingContact(contactId, rawContactID,name , phoneNumbers, sipAddresses, ops, context);
+	}
+
+
+	public static void createContact(String name,  String[] phoneNumbers, String[] sipAddresses, ArrayList<ContentProviderOperation> ops, Context context) {
+
+		ApiNinePlus.createContact(name, phoneNumbers, sipAddresses, ops, context);
+	}
+	public static void removeContact(String contactID, ArrayList<ContentProviderOperation> ops){
+		ApiNinePlus.deleteContact(contactID, ops);
+	}
 	public static List<String> extractContactNumbersAndAddresses(String id, ContentResolver cr) {
 		if (Version.sdkAboveOrEqual(Version.API09_GINGERBREAD_23)) {
 			return ApiNinePlus.extractContactNumbersAndAddresses(id, cr);

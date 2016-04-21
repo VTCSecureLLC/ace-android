@@ -1,9 +1,14 @@
 package org.linphone.sync;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 
+import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
+import org.linphone.R;
 import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
@@ -30,99 +35,140 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
     private Context mContext;
     private String username;
     private String password;
+    private String serverUrl;
+    private String realm;
 
-    public ContactSyncAsyncTask(Context context, String username, String password) {
+    public ContactSyncAsyncTask(Context context) {
         mContext = context;
-        this.username = username;
-        this.password = password;
-        this.username = "dood";
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.username = prefs.getString(context.getString(R.string.card_dav_username), "");
+        this.password = prefs.getString(context.getString(R.string.card_dav_password), "");
+        this.realm = prefs.getString(context.getString(R.string.preference_settings_sync_realm), "BaikalDAV");
+        this.serverUrl = prefs.getString(context.getString(R.string.preference_settings_sync_path), "http://dav.linphone.org/card.php/addressbooks/vtcsecure/default");
+
+
     }
 
 
     @Override
     protected Void doInBackground(Void[] params) {
 
-        if(isRunning)
-        {
-            return null;
-        }
+//        if(isRunning)
+//        {
+//            return null;
+//        }
         isRunning = true;
 
         LinphoneCore lc = LinphoneManager.getLc();;
 
         String domain = null;
-        try {
-            String dnsLookUp = "_carddav._tcp.mi-st.vatrp.org";
-            Lookup lookup = new Lookup(dnsLookUp, Type.SRV);
-            Record[] records = lookup.run();
+//        try {
+//            String dnsLookUp = "_carddav._tcp.mi-st.vatrp.org";
+//            Lookup lookup = new Lookup(dnsLookUp, Type.SRV);
+//            Record[] records = lookup.run();
+//
+//            domain = "http://" + ((SRVRecord) records[0]).getTarget().toString().replaceFirst("\\.$", "");
+//
+//        } catch (TextParseException e) {
+//            e.printStackTrace();
+//        }
 
-            domain = "http://" + ((SRVRecord) records[0]).getTarget().toString().replaceFirst("\\.$", "");
-
-        } catch (TextParseException e) {
-            e.printStackTrace();
-        }
 
 
-
-        syncContactsLinphone(lc, domain);
+        syncContactsLinphone(lc);
         return null;
     }
 
 
-    public void syncContactsLinphone(final LinphoneCore lc, String serverUrl)
+    public void syncContactsLinphone(final LinphoneCore lc)
     {
 
+        //http://dav.linphone.org/card.php/addressbooks/vtcsecure/default
+       // serverUrl = "http://dav.linphone.org/card.php/addressbooks/vtcsecure/default";
+
+      //  serverUrl = "http://ace-carddav-sabredav.vatrp.org";
         String serverDomain = serverUrl.replace("http://", "").replace("https://", "").split("/")[0]; // We just want the domain name
         //serverUrl = "http://ace-carddav-baikal.vatrp.org/html/card.php/principals/dood";
-        serverUrl = "http://ace-carddav-baikal.vatrp.org/html/card.php/principals/dood";
+
+
         LinphoneAuthInfo[] authInfos = lc.getAuthInfosList();
 
         boolean need_new_account = true;
-        for (int i = 0; i < authInfos.length; i++) {
-            if (authInfos[i].getDomain().equals(serverDomain)){
-                if (!authInfos[i].getUsername().equals(username) || !authInfos[i].getPassword().equals(password)) {
-                    lc.removeAuthInfo(authInfos[i]);
-                }
-                else
-                {
-                    need_new_account = false;
+        if(authInfos!= null) {
+            for (int i = 0; i < authInfos.length; i++) {
+                if (authInfos[i].getDomain().equals(serverDomain)) {
+                    if (!authInfos[i].getUsername().equals(username) || authInfos[i].getPassword() == null || !authInfos[i].getPassword().equals(password)) {
+                        lc.removeAuthInfo(authInfos[i]);
+                    } else {
+                        need_new_account = false;
+                    }
                 }
             }
         }
         if (need_new_account)
         {
-            LinphoneAuthInfo newInfo = LinphoneCoreFactory.instance().createAuthInfo(username, password, null, serverDomain);
+            LinphoneAuthInfo newInfo = LinphoneCoreFactory.instance().createAuthInfo(username, password, "BaikalDAV", serverDomain);
             lc.addAuthInfo(newInfo);
         }
 
-        for (LinphoneFriendList list: lc.getFriendLists()
-                ) {
+
+
+
+        LinphoneFriendList lfl = null;
+
+        if(lc.getFriendLists() == null || lc.getFriendLists().length == 0)
+        {
+
+
+            LinphoneFriendList[] lists = lc.getFriendLists();
+            if(lists != null)
+            {
+                for (LinphoneFriendList list: lists ) {
+                    try {
+                        lc.removeFriendList(list);
+                    } catch (LinphoneCoreException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             try {
-                lc.removeFriendList(list);
+                lfl = lc.createLinphoneFriendList();
+                lc.addFriendList(lfl);
             } catch (LinphoneCoreException e) {
                 e.printStackTrace();
             }
-        }
 
-        LinphoneFriendList lfl = ContactUtils.getLinphoneFriendsFromContacts(mContext, lc);
-//        try {
-//            lfl = lc.createLinphoneFriendList();
-//        } catch (LinphoneCoreException e) {
-//            e.printStackTrace();
-//        }
-        LinphoneFriend friend = LinphoneCoreFactory.instance().createLinphoneFriend();
-        try {
-            friend.setAddress(LinphoneCoreFactory.instance().createLinphoneAddress("sip:tt@sip.tt.com"));
-        } catch (LinphoneCoreException e) {
-            e.printStackTrace();
+
         }
-        lfl.addFriend(friend);
+        else
+            lfl = lc.getFriendLists()[0];
 
         try {
             lc.addFriendList(lfl);
         } catch (LinphoneCoreException e) {
             e.printStackTrace();
         }
+
+        lfl.setUri(serverUrl);
+
+        lfl.setListener(this);
+
+
+        ContactUtils.updateFriendsFromContacts(lfl, mContext.getContentResolver());
+//        try {
+//            lfl = lc.createLinphoneFriendList();
+//        } catch (LinphoneCoreException e) {
+//            e.printStackTrace();
+//        }
+//        LinphoneFriend friend = LinphoneCoreFactory.instance().createLinphoneFriend();
+//        try {
+//            friend.setAddress(LinphoneCoreFactory.instance().createLinphoneAddress("sip:tt@sip.tt.com"));
+//        } catch (LinphoneCoreException e) {
+//            e.printStackTrace();
+//        }
+//        lfl.addFriend(friend);
+
+
         if(lfl==null)
         {
             Log.w("Error occurred during sync");
@@ -133,30 +179,44 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
             Log.w("No contacts found");
             isRunning = false;
         }
-        lfl.setUri(serverUrl);
-        lfl.setListener(this);
+
+
+        isRunning = false;
         lfl.synchronizeFriendsFromServer();
     }
 
 
     @Override
     public void onLinphoneFriendCreated(LinphoneFriendList list, LinphoneFriend lf) {
+        Log.d("vcard_sync onLinphoneFriendCreated");
+        if(lf.getRefKey() != null)
+        {
+        }
+        else
+        {
+            ContactUtils.addContact(LinphoneActivity.instance(), lf);
+
+        }
 
     }
 
     @Override
     public void onLinphoneFriendUpdated(LinphoneFriendList list, LinphoneFriend newFriend, LinphoneFriend oldFriend) {
-
+        Log.d("vcard_sync onLinphoneFriendUpdated");
+        ContactUtils.updateContact(LinphoneActivity.instance(), newFriend, oldFriend);
     }
 
     @Override
     public void onLinphoneFriendDeleted(LinphoneFriendList list, LinphoneFriend lf) {
-
+        Log.d("vcard_sync onLinphoneFriendDeleted");
+        if(lf.getRefKey() != null)
+            ContactUtils.deleteContact(LinphoneActivity.instance(), lf);
     }
 
     @Override
     public void onLinphoneFriendSyncStatusChanged(LinphoneFriendList list, LinphoneFriendList.State status, String message) {
         if (status == LinphoneFriendList.State.SyncStarted){
+
 
         }
         else if (status == LinphoneFriendList.State.SyncFailure){
@@ -164,7 +224,27 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
         }
         else if (status == LinphoneFriendList.State.SyncSuccessful){
             isRunning = false;
-            ContactUtils.exportFriendListToContacts(mContext, list);
+          //  removeAllCotnacts(list);
+            //ContactUtils.exportFriendListToContacts(mContext, list);
         }
+    }
+
+    void removeAllCotnacts(final LinphoneFriendList ls)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                LinphoneFriend[] fs = ls.getFriendList();
+                for (LinphoneFriend f:
+                     fs) {
+                    LinphoneManager.getLc().removeFriend(f);
+                }
+            }
+        }).start();
     }
 }

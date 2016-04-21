@@ -100,7 +100,7 @@ public class HelpFragment extends PreferencesListFragment {
         syncContacts.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                ContactSyncAsyncTask syncAsyncTask = new ContactSyncAsyncTask(getContext(), "admin", "topsecret");
+                ContactSyncAsyncTask syncAsyncTask = new ContactSyncAsyncTask(getContext());
                 syncAsyncTask.execute();
                 return true;
             }

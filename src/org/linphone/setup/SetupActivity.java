@@ -22,7 +22,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -517,6 +519,11 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	public void saveCreatedAccount(String username, String password, String domain, String userId, TransportType transport_type, String port) {
 		if (accountCreated)
 			return;
+
+		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+		editor.putString(getString(R.string.card_dav_username), username);
+		editor.putString(getString(R.string.card_dav_password), password);
+		editor.commit();
 
 		if(username.startsWith("sip:")) {
 			username = username.substring(4);

@@ -1,5 +1,6 @@
 package org.linphone.compatibility;
 
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -301,4 +302,140 @@ public class ApiNinePlus {
 			}
 		}
 	}
+
+	public static void updateExistingContact(int contactId, int rawContactID, String name,  String[] phoneNumbers, String[] sipAddresses, ArrayList<ContentProviderOperation> ops, Context context) {
+
+		// remove numbers
+
+		String select = ContactsContract.Data.CONTACT_ID + "=? AND ( "
+				+ ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE +  "' OR "
+				+ ContactsContract.Data.MIMETYPE  + "=" + Phone.CONTENT_ITEM_TYPE + ")";
+		String[] args = new String[] { String.valueOf(contactId) };
+
+		ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+				.withSelection(select, args)
+				.build()
+		);
+
+
+		ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+				.withSelection(select, args)
+				.build()
+		);
+
+
+		// change name
+		ops.add( ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+				//.withSelection(Data.RAW_CONTACT_ID,  new String[]{String.valueOf(rawContactID)})
+				.withSelection(ContactsContract.Data.CONTACT_ID + "=?" + " AND " + ContactsContract.Data.MIMETYPE + "=?", new String[]{String.valueOf(contactId), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE})
+				.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+				.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+				.build());
+
+		// add sipAddress
+		for(String sipAddress : sipAddresses) {
+
+			ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+					.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactID)
+					.withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE)
+					.withValue(ContactsContract.CommonDataKinds.SipAddress.DATA, sipAddress)
+					.withValue(CommonDataKinds.SipAddress.TYPE, CommonDataKinds.SipAddress.TYPE_CUSTOM)
+					.withValue(CommonDataKinds.SipAddress.LABEL, context.getString(R.string.addressbook_label))
+					.build()
+			);
+		}
+
+		// add phone Numbers
+		for(String phoneNumber : phoneNumbers) {
+
+			ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+					.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactID)
+					.withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+
+					.withValue(ContactsContract.CommonDataKinds.Phone.DATA, phoneNumber)
+					.withValue(CommonDataKinds.Phone.TYPE, Phone.TYPE_WORK)
+					.build()
+			);
+		}
+
+	}
+
+	public static void createContact(String name,  String[] phoneNumbers, String[] sipAddresses, ArrayList<ContentProviderOperation> ops, Context context) {
+
+		int rawContactInsertIndex = 0;
+
+		ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+				.withValue(ContactsContract.RawContacts.AGGREGATION_MODE, ContactsContract.RawContacts.AGGREGATION_MODE_DEFAULT)
+			.withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+			.withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+			.build());
+
+		// Name
+		ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+		.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+		.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+		.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+		.build());
+
+
+		for(String sipAddress : sipAddresses) {
+
+			addSipAddressToContact(context, ops, sipAddress);
+//			ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+//					.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+//					.withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE)
+//					.withValue(ContactsContract.CommonDataKinds.SipAddress.DATA, sipAddress)
+//					.withValue(CommonDataKinds.SipAddress.TYPE, CommonDataKinds.SipAddress.TYPE_CUSTOM)
+//					.withValue(CommonDataKinds.SipAddress.LABEL, context.getString(R.string.addressbook_label))
+//					.build()
+//			);
+		}
+
+		// add phone Numbers
+		for(String phoneNumber : phoneNumbers) {
+
+			ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+							.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+							.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+							.withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber)
+							.withValue(ContactsContract.CommonDataKinds.Phone.TYPE,  ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM)
+							.withValue(ContactsContract.CommonDataKinds.Phone.LABEL, context.getString(R.string.addressbook_label))
+							.build()
+
+//			ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+//					.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+//					.withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+//					.withValue(ContactsContract.CommonDataKinds.Phone.DATA, phoneNumber)
+//					.withValue(CommonDataKinds.Phone.TYPE, Phone.TYPE_WORK)
+//					.build()
+			);
+		}
+
+
+	}
+
+	public static void deleteContact(String contactId, ArrayList<ContentProviderOperation> ops)
+	{
+//		Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?", new String[]{contactId}, null);
+//		while (pCur.moveToNext())
+//		{
+//			String lookupKey = pCur.getString(pCur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
+//			Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
+//			cr.delete(uri, null, null);
+//		}
+//		pCur.close();
+
+
+		String select = ContactsContract.Data.CONTACT_ID + " = ?";
+		String[] args = new String[] { contactId };
+
+		ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
+				.withSelection(select, args)
+				.build()
+		);
+
+
+
+	}
+
 }

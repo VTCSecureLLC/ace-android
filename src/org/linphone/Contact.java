@@ -116,15 +116,17 @@ public class Contact implements Serializable {
 	
 	public void refresh(ContentResolver cr) {
 		this.numbersOrAddresses = Compatibility.extractContactNumbersAndAddresses(id, cr);
-		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
-		if(lc != null && lc.getFriendList() != null) {
-			for (LinphoneFriend friend :lc.getFriendList()){
-				if (id.equals(friend.getRefKey())) {
-					hasFriends = true;
-					this.numbersOrAddresses.add(friend.getAddress().asStringUriOnly());
-				}
-			}
-		}
+		// We don't show linphone friend data
+//		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
+//		if(lc != null && lc.getFriendList() != null) {
+//			for (LinphoneFriend friend :lc.getFriendList()){
+//				if (id.equals(friend.getRefKey())) {
+//					hasFriends = true;
+//					this.numbersOrAddresses.add(friend.getAddress().asStringUriOnly());
+//				}
+//			}
+//		}
 		this.name = Compatibility.refreshContactName(cr, id);
 	}
+
 }
