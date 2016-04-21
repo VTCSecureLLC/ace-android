@@ -17,10 +17,21 @@
 		android:title="@string/pref_wifi_only"
 		android:key="@string/pref_wifi_only_key"/>
 
+
+		<CheckBoxPreference
+			android:title="@string/pref_animation_enable_title"
+			android:key="@string/pref_animation_enable_key"
+			android:defaultValue="false"/>
+
+
 		<Preference
 			android:key="@string/pref_reset_key"
 			android:title="@string/reset"
 			></Preference>
+
+		<CheckBoxPreference
+			android:title="@string/pref_theme_force_508"
+			android:key="@string/pref_theme_force_508_key"/>
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -59,7 +70,8 @@
 	<PreferenceScreen
 		android:title="@string/pref_theme_settings"
 		android:key="@string/pref_theme_settings_key"
-		android:shouldDisableView="true">
+		android:shouldDisableView="true"
+		android:layout="@layout/hidden">
 		<Preference
 			android:title="@string/pref_theme_foreground_color_setting"
 			android:key="@string/pref_theme_foreground_color_setting_key"
@@ -68,9 +80,7 @@
 			android:title="@string/pref_theme_background_color_setting"
 			android:key="@string/pref_theme_background_color_setting_key"
 			android:layout="@layout/hidden"/>
-		<CheckBoxPreference
-			android:title="@string/pref_theme_force_508"
-			android:key="@string/pref_theme_force_508_key"/>
+
 	</PreferenceScreen>
 
 	<PreferenceScreen
@@ -186,14 +196,14 @@
 		    android:title="@string/pref_audio"
 			android:key="@string/pref_audio">
 
-		    <CheckBoxPreference
-				android:title="@string/pref_echo_cancellation"
-			    android:key="@string/pref_echo_cancellation_key"
-				android:summary="@string/pref_echo_cancellation_summary"/>
+		    <!--<CheckBoxPreference-->
+				<!--android:title="@string/pref_echo_cancellation"-->
+			    <!--android:key="@string/pref_echo_cancellation_key"-->
+				<!--android:summary="@string/pref_echo_cancellation_summary"/>-->
 
-			<Preference
-				android:title="@string/pref_echo_canceller_calibration"
-			    android:key="@string/pref_echo_canceller_calibration_key"/>
+			<!--<Preference-->
+				<!--android:title="@string/pref_echo_canceller_calibration"-->
+			    <!--android:key="@string/pref_echo_canceller_calibration_key"/>-->
 
 			<CheckBoxPreference
 				android:title="@string/pref_adaptive_rate_control"
@@ -404,10 +414,7 @@
 				android:title="@string/pref_background_mode"
 			    android:key="@string/pref_background_mode_key"/>
 
-			<CheckBoxPreference
-				android:title="@string/pref_animation_enable_title"
-				android:key="@string/pref_animation_enable_key"
-				android:defaultValue="false"/>
+
 
 			<CheckBoxPreference
 			    android:title="@string/pref_autostart"

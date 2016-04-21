@@ -94,6 +94,7 @@ import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration.
 import org.linphone.mediastream.video.capture.hwconf.Hacks;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.vtcsecure.LinphoneTorchFlasher;
+import org.linphone.vtcsecure.g;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -174,6 +175,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		mLinphoneRootCaFile = basePath + "/rootca.pem";
 		mRingSoundFile = basePath + "/oldphone_mono.wav";
 		mRingbackSoundFile = basePath + "/ringback.wav";
+		mCameraMuteFile = basePath + "/camera_disabled.jpg";
 		mPauseSoundFile = basePath + "/toy_mono.wav";
 		mChatDatabaseFile = basePath + "/linphone-history.db";
 		mFriendsDatabaseFile = basePath + "/linphone-friends.db";
@@ -198,6 +200,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	public final String mLinphoneConfigFile;
 	private final String mRingSoundFile;
 	private final String mRingbackSoundFile;
+	private final String mCameraMuteFile;
 	private final String mPauseSoundFile;
 	private final String mChatDatabaseFile;
 	private final String mFriendsDatabaseFile;
@@ -718,6 +721,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 			mLc.setRing(null); //We'll use the android media player api to play the ringtone
 		}
 		mLc.setRingback(mRingbackSoundFile);
+		mLc.setStaticPicture(mCameraMuteFile);
 		mLc.setRootCA(mLinphoneRootCaFile);
 		mLc.setPlayFile(mPauseSoundFile);
 		mLc.setChatDatabasePath(mChatDatabaseFile);
@@ -753,6 +757,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private void copyAssetsFromPackage() throws IOException {
 		copyIfNotExist(R.raw.oldphone_mono, mRingSoundFile);
 		copyIfNotExist(R.raw.ringback, mRingbackSoundFile);
+		copyIfNotExist(R.raw.camera_disabled, mCameraMuteFile);
 		copyIfNotExist(R.raw.toy_mono, mPauseSoundFile);
 		copyIfNotExist(R.raw.incoming_chat, mErrorToneFile);
 		copyIfNotExist(R.raw.linphonerc_default, mLinphoneConfigFile);
@@ -1088,6 +1093,13 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 				} else {
 					Log.i("Last call ended: no incall (CPU only) wake lock were held");
 				}
+			}
+		}
+
+		//VATRP-2742
+		if (state==State.CallEnd || state == State.CallReleased || state == State.Error){
+			if (mLc.getCallsNb() == 0) {
+				g.in_call_activity_suspended = false;
 			}
 		}
 

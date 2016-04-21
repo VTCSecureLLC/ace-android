@@ -12,10 +12,67 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
 
+import org.linphone.R;
+import org.linphone.core.Reason;
+
 /**
  * Created by Patrick on 3/2/16.
  */
 public class Utils {
+
+    public static String getReasonText(Reason reason, Context context) {
+        String res = "";
+        if (reason == Reason.None) {
+            res =  context.getString(R.string.Reason_None);
+        } else if (reason == Reason.NoResponse) {
+            res =  context.getString(R.string.Reason_NoResponse);
+        } else if (reason == Reason.BadCredentials) {
+            res =  context.getString(R.string.Reason_BadCredentials);
+        } else if (reason == Reason.Declined) {
+            res =  context.getString(R.string.Reason_Declined);
+        } else if (reason == Reason.NotFound) {
+            res =  context.getString(R.string.Reason_NotFound);
+        } else if (reason == Reason.NotAnswered) {
+            res =  context.getString(R.string.Reason_NotAnswered);
+        } else if (reason == Reason.Busy) {
+            //The number/address you are trying to reach is busy
+            res =  context.getString(R.string.Reason_Busy);
+        } else if (reason == Reason.Media) {
+            res =  context.getString(R.string.Reason_Media);
+        } else if (reason == Reason.IOError) {
+            res =  context.getString(R.string.Reason_IOError);
+        } else if (reason == Reason.DoNotDisturb) {
+            res =  context.getString(R.string.Reason_DoNotDisturb);
+        } else if (reason == Reason.Unauthorized) {
+            res =  context.getString(R.string.Reason_Unauthorized);
+        } else if (reason == Reason.NotAcceptable) {
+            res =  context.getString(R.string.Reason_NotAcceptable);
+        } else if (reason == Reason.NoMatch) {
+            //400 and others ?
+            res =  context.getString(R.string.Reason_NoMatch);
+        } else if (reason == Reason.MovedPermanently) {
+            res =  context.getString(R.string.Reason_MovedPermanently);
+        } else if (reason == Reason.Gone) {
+            //The number/address you are trying to reach is no longer available.
+            res =  context.getString(R.string.Reason_Gone);
+        } else if (reason == Reason.TemporarilyUnavailable) {
+            res =  context.getString(R.string.Reason_TemporarilyUnavailable);
+        } else if (reason == Reason.AddressIncomplete) {
+            res =  context.getString(R.string.Reason_AddressIncomplete);
+        } else if (reason == Reason.NotImplemented) {
+            res =  context.getString(R.string.Reason_NotImplemented);
+        } else if (reason == Reason.BadGateway) {
+            res =  context.getString(R.string.Reason_BadGateway);
+        } else if (reason == Reason.ServerTimeout) {
+            res =  context.getString(R.string.Reason_ServerTimeout);
+        } else if (reason == Reason.Unknown) {
+            res =  context.getString(R.string.Reason_Unknown);
+        }
+        else
+            res = context.getString(R.string.Reason_other);
+
+        return res;
+    }
 
     public static String removeExtraQuotesFromStringIfPresent(String inputStr){
         String result = inputStr;

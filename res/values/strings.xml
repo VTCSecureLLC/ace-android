@@ -160,7 +160,7 @@
   <string name="about_reading_logs">Reading logs, may takes time…</string>
   <string name="about_mailer_chooser_text">Send bug report with…</string>
   <string name="menu_about">About</string>
-  <string name="menu_IOT">Setup IOT</string>
+  <string name="menu_IOT">Setup Flash Notifications</string>
   <string name="menu_send_log">Send log</string>
   <string name="menu_reset_log">Reset log</string>
   <string name="pref_audio">Audio</string>
@@ -284,12 +284,15 @@
   <string name="content_description_pause">Pause</string>
   <string name="content_description_hang_up">Hang up</string>
   <string name="content_description_numpad">Numpad</string>
-  <string name="content_description_settings">Settings button</string>
-  <string name="content_description_dialer">Dialer button</string>
-  <string name="content_description_history">History button</string>
-  <string name="content_description_resource">Resource button</string>
-  <string name="content_description_chat_button">Chat button</string>
-  <string name="content_description_contacts">Contacts button</string>
+  <string name="content_description_settings">Settings Button</string>
+  <string name="content_description_more">More Button</string>
+  <string name="content_description_dialer">Dialer Button</string>
+  <string name="content_description_history">History Button</string>
+  <string name="content_description_resource">Resource Button</string>
+  <string name="content_description_chat_button">Chat Button</string>
+  <string name="content_description_contacts">Contacts Button</string>
+  <string name="content_description_videomail">Videomail Button</string>
+  <string name="content_description_selfpreview">Self Preview Button</string>
   <string name="content_description_led"></string>
   <string name="content_description_call_quality">Call quality</string>
   <string name="content_description_encryption">Encryption</string>
@@ -466,7 +469,7 @@
   <string name="pref_theme_background_color_setting_key">pref_theme_background_color_setting_key</string>
   <string name="pref_theme_background_color_setting">Background Color</string>
   <string name="pref_theme_force_508_key">pref_theme_force_508_key</string>
-  <string name="pref_theme_force_508">Force 508</string>
+  <string name="pref_theme_force_508">High Contrast Mode</string>
 
   <string name="pref_text_settings_key">pref_text_settings_key</string>
   <string name="pref_text_settings">Text</string>

@@ -15,3 +15,7 @@ Then(/^"(.*?)" radio button should not be selected$/) do |arg1|
   	fail("The radio button with text #{arg1} should not be selected")
   end
 end
+
+Given /^I am on the Legal Screen$/ do
+    element_exists("* contentDescription:'Accept Button'")
+end

@@ -75,6 +75,7 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
+import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.BubbleChat;
@@ -195,6 +196,13 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 				}
 			});
 		}
+
+		view.findViewById(R.id.label_chat_call).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				LinphoneManager.getInstance().newOutgoingCall(sipUri, displayName);
+			}
+		});
 
 		cancelUpload = (ImageView) view.findViewById(R.id.cancelUpload);
 		cancelUpload.setOnClickListener(new View.OnClickListener() {
