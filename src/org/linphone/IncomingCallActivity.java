@@ -142,7 +142,7 @@ public class IncomingCallActivity extends Activity {
 		{
 			LinphoneAddress address = mCall.getRemoteAddress();
 			LinphoneChatRoom chatRoom = LinphoneManager.getLc().getOrCreateChatRoom(address.asStringUriOnly());
-			chatRoom.sendMessage("!@$%#CALL_DECLINE_MESSAGE#" + reason);
+			chatRoom.sendMessage("@@info@@ " + reason);
 		}
 	}
 

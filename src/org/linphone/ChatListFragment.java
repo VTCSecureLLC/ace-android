@@ -413,7 +413,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 						time = Long.valueOf(lastMessage.getTimestamp());
 					}
 					message = (lastMessage == null || lastMessage.getMessage() == null) ? "" : lastMessage.getMessage();
-					if (message.contains("!@$%#CALL_DECLINE_MESSAGE#")) {
+					if (message.contains("@@info@@ ")) {
 						message = message.substring(26);
 					}
 				}

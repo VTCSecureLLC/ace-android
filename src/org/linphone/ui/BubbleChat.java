@@ -179,8 +179,8 @@ public class BubbleChat implements LinphoneChatMessage.LinphoneChatMessageListen
 	    	if (msgView != null) {
 	        	Spanned text = null;
 	        	String msg = message.getText();
-				if(msg.startsWith("!@$%#CALL_DECLINE_MESSAGE#")) {
-					msg = msg.replace("!@$%#CALL_DECLINE_MESSAGE#", "");
+				if(msg.startsWith("@@info@@ ")) {
+					msg = msg.replace("@@info@@ ", "");
 
 						callDeclinedView.setVisibility(View.VISIBLE);
 				}
