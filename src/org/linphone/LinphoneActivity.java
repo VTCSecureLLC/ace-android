@@ -1678,7 +1678,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.d("LinhponeActivity onResume");
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1699,7 +1698,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}
 
-		ContactsManager.getInstance().prepareContactsInBackground();
+//		ContactsManager.getInstance().prepareContactsInBackground();
 
 		updateMissedChatCount(false);
 		LinphoneActivity.instance().reloadMwiCount();
@@ -1731,7 +1730,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			//Release
 			checkForCrashes();
 		}
-		Log.d("LinhponeActivity onResume finished");
 	}
 
 	@Override
@@ -1753,9 +1751,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
-
-
-
 	}
 
 	private void unbindDrawables(View view) {
