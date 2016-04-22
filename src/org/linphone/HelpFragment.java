@@ -61,6 +61,17 @@ public class HelpFragment extends PreferencesListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        findPreference("emailace").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (LinphoneActivity.isInstanciated()) {
+                    showFeedbackActivity();
+                    return true;
+                }
+                return false;
+            }
+        });
         findPreference("instantfeedbackace").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
