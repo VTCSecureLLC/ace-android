@@ -378,7 +378,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
-				if(message.toString().startsWith("!@$%#CALL_DECLINE_MESSAGE#"));
+				if(message.toString().startsWith("@@info@@ "));
 				{
 
 					TextView tvStatus = (TextView) findViewById(R.id.label_ringing);
@@ -386,7 +386,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					tv_status.setVisibility(View.VISIBLE);
 
 					tvStatus.setText("Call declined");
-					tv_status.setText(message.getText().replace("!@$%#CALL_DECLINE_MESSAGE#", ""));
+					tv_status.setText(message.getText().replace("@@info@@ ", ""));
 					startStatusFlashingAndFinish();
 
 
