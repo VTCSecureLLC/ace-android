@@ -81,7 +81,6 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphonePlayer;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
@@ -1692,17 +1691,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		isCameraMuted = muted;
 
-		final LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
-		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 
 		if (!muted) {
 			LinphoneManager.getInstance().sendStaticImage(false);
 		} else {
 			LinphoneManager.getInstance().sendStaticImage(true);
 		}
-
-
-		call.sendInfoMessage(message);
 
 		//This line remains for other platforms. To force the video to unfreeze.
 
