@@ -132,6 +132,24 @@
         android:title="@string/pref_sipaccounts"
 	    android:key="@string/pref_sipaccounts_key"/>
 
+	<PreferenceScreen
+		android:title="CardDav Configs"
+		android:key="@string/card_dav_sinc_account">
+
+		<EditTextPreference
+			android:title="Path"
+			android:key="@string/preference_settings_sync_path"
+			android:summary="http://dav.linphone.org/card.php/addressbooks/vtcsecure/default"
+			android:defaultValue="http://dav.linphone.org/card.php/addressbooks/vtcsecure/default"/>
+
+		<EditTextPreference
+			android:title="Realm"
+			android:key="@string/preference_settings_sync_realm"
+			android:summary="BaikalDAV"
+			android:defaultValue="BaikalDAV"/>
+
+	</PreferenceScreen>
+
 	<CheckBoxPreference
 		android:title="Always dial with default account"
 		android:key="dial_out_using_default_account_key"/>

@@ -568,9 +568,9 @@ public class ContactsManager {
 				Contact contact = Compatibility.getContact(contentResolver, oldContacts, i);
 				for (String address : Compatibility.extractContactImAddresses(contact.getID(), contentResolver)) {
 					if (LinphoneUtils.isSipAddress(address)) {
-						if (address.startsWith("sip:")) {
-							address = address.substring(4);
-						}
+							if (address.startsWith("sip:")) {
+								address = address.substring(4);
+							}
 
 						//Add new sip address
 						Compatibility.addSipAddressToContact(context, ops, address, findRawContactID(contentResolver, contact.getID()));
