@@ -524,6 +524,10 @@
   <string name="title_video_dscp">Video DSCP</string>
   <string name="title_sip_dscp">Sip DSCP</string>
   <string name="pref_theme_is_fotce">pref_theme_is_fotce</string>
+  <string name="syncServiceMsg">Syncing VCards</string>
+  <string name="resources_sync_contacts_key">sync_contacts</string>
+  <string name="resources_sync_contacts_value">Sync Contacts</string>
+
   <string name="pref_text_settings_font_key">pref_text_settings_font_key</string>
   <string name="pref_text_settings_font_title">RTT Font Family</string>
   <string name="pref_text_settings_font_style_title">RTT font style</string>
@@ -533,4 +537,9 @@
   <string name="main_menu_resources">Resources</string>
   <string name="main_menu_videomail">Videomail</string>
   <string name="main_menu_self_preview">Self-Preview</string>
+  <string name="card_dav_sinc_account">card_dav_sinc_account</string>
+  <string name="preference_settings_sync_path">preference_settings_sync_path</string>
+  <string name="preference_settings_sync_realm">preference_settings_sync_realm</string>
+  <string name="card_dav_password">card_dav_password_key</string>
+  <string name="card_dav_username">card_dav_username_key</string>
 </resources>

@@ -273,6 +273,8 @@ public class ContactsFragment extends Fragment implements OnClickListener, OnIte
 	public void onResume() {
 		instance = this;
 		super.onResume();
+		// carddav sync doesn't provide finished callback so workaround untill the callback will be providedgir
+		ContactsManager.getInstance().prepareContactsInBackground();
 		
 		if (editConsumed) {
 			editOnClick = false;

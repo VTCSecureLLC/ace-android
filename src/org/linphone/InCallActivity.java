@@ -82,7 +82,6 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphonePlayer;
 import org.linphone.core.Reason;
 import org.linphone.mediastream.Log;
@@ -380,7 +379,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
-				if(message.toString().startsWith("!@$%#CALL_DECLINE_MESSAGE#"));
+				if(message.toString().startsWith("@@info@@ "));
 				{
 
 					TextView tvStatus = (TextView) findViewById(R.id.label_ringing);
@@ -388,7 +387,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					tv_status.setVisibility(View.VISIBLE);
 
 					tvStatus.setText("Call declined");
-					tv_status.setText(message.getText().replace("!@$%#CALL_DECLINE_MESSAGE#", ""));
+					tv_status.setText(message.getText().replace("@@info@@ ", ""));
 					startStatusFlashingAndFinish();
 				}
 
@@ -1707,17 +1706,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		isCameraMuted = muted;
 
-		final LinphoneInfoMessage message = LinphoneManager.getLc().createInfoMessage();
-		final LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 
 		if (!muted) {
 			LinphoneManager.getInstance().sendStaticImage(false);
 		} else {
 			LinphoneManager.getInstance().sendStaticImage(true);
 		}
-
-
-		call.sendInfoMessage(message);
 
 		//This line remains for other platforms. To force the video to unfreeze.
 

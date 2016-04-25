@@ -8,5 +8,7 @@
 					</PreferenceScreen>
 					<Preference android:key="emailace" android:title="Tech Support"/>
 					<Preference android:key="instantfeedbackace" android:title="Instant Feedback"/>
+					<Preference android:key="@string/resources_sync_contacts_key" android:title="@string/resources_sync_contacts_value"/>
+
 				</PreferenceCategory>
 </PreferenceScreen>

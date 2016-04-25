@@ -177,7 +177,8 @@ public class ContactFragment extends Fragment implements OnClickListener {
 			}
 		});
 
-		
+
+
 		TableLayout controls = (TableLayout) view.findViewById(R.id.controls);
 		controls.removeAllViews();
 		for (String numberOrAddress : contact.getNumbersOrAddresses()) {
@@ -285,7 +286,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 			alertDialog.setPositiveButton(getString(R.string.button_ok),new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 				deleteExistingContact();
-				ContactsManager.getInstance().removeContactFromLists(getActivity().getContentResolver(),contact);
+//				ContactsManager.getInstance().removeContactFromLists(getActivity().getContentResolver(),contact);
 				LinphoneActivity.instance().displayContacts(false);
 				}
 			});
@@ -306,7 +307,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
         
         try {
             getActivity().getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
-			ContactsManager.getInstance().removeAllFriends(contact);
+			//ContactsManager.getInstance().removeAllFriends(contact);
         } catch (Exception e) {
         	Log.w(e.getMessage() + ":" + e.getStackTrace());
         }
