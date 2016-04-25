@@ -35,6 +35,37 @@
     android:contentDescription="@string/content_description_numpad"
     android:visibility="invisible" />
 
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/audioContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="40dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/outboundRingCount"
+            android:text="Can't talk now. Call me later?"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/call_sub_status_font_size"
+            android:visibility="visible"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/label_ringing"
+            android:textSize="@dimen/call_main_status_font_size"
+            android:text="Connecting"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:visibility="visible"
+            android:layout_gravity="center_horizontal|top" />
+
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="match_parent"

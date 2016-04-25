@@ -44,7 +44,7 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
         this.username = prefs.getString(context.getString(R.string.card_dav_username), "");
         this.password = prefs.getString(context.getString(R.string.card_dav_password), "");
         this.realm = prefs.getString(context.getString(R.string.preference_settings_sync_realm), "BaikalDAV");
-        this.serverUrl = prefs.getString(context.getString(R.string.preference_settings_sync_path), "http://dav.linphone.org/card.php/addressbooks/vtcsecure/default");
+        this.serverUrl = prefs.getString(context.getString(R.string.preference_settings_sync_path), "");
 
 
     }

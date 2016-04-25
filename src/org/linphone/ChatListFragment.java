@@ -555,13 +555,12 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 							Log.e("Chat view cannot parse address",e);
 						}
 						Contact lContact = ContactsManager.getInstance().findContactWithAddress(getActivity().getContentResolver(), addressSearch);
-						String searchBy;
-						if (lContact == null) {
-							searchBy = user.substring(user.indexOf(":") + 1, user.indexOf("@"));
-						} else {
+						String searchBy = "";
+						String searchedUser = user.substring(user.indexOf(":") + 1, user.indexOf("@"));
+						if (lContact != null) {
 							searchBy = lContact.getName();
 						}
-						if (searchBy.toLowerCase().contains(keyword.toLowerCase())) {
+						if (searchBy.toLowerCase().contains(keyword.toLowerCase()) || searchedUser.toLowerCase().contains(keyword.toLowerCase())) {
 							findedAddresses.add(user);
 						}
 					}

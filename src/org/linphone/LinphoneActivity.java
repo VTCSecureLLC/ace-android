@@ -685,7 +685,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
 		missedChats = (TextView) findViewById(R.id.missedChats);
 
-		isMessagesViewed = mPrefs.getBoolean(UNREAD_MESSAGES, false);
+		isMessagesViewed = mPrefs.getBoolean(UNREAD_MESSAGES, true);
 		if (isMessagesViewed) {
 			missedChats.setVisibility(View.GONE);
 		} else {
@@ -1684,7 +1684,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.d("LinhponeActivity onResume");
 //		if (LinphonePreferences.instance().getAccountCount() == 0) {
 //			startActivityForResult(new Intent().setClass(LinphoneActivity.this, SetupActivity.class), FIRST_LOGIN_ACTIVITY);
 //		}
@@ -1737,7 +1736,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			//Release
 			checkForCrashes();
 		}
-		Log.d("LinhponeActivity onResume finished");
 	}
 
 	@Override
@@ -1759,9 +1757,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 		unbindDrawables(findViewById(R.id.topLayout));
 		System.gc();
-
-
-
 	}
 
 	private void unbindDrawables(View view) {

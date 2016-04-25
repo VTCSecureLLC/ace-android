@@ -4,13 +4,14 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="90dp"
+    android:paddingLeft="10dp"
     android:background="@color/background_color">
 
     <RelativeLayout
         android:id="@+id/layout_item_chat_user_photo"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        >
+        android:layout_centerVertical="true">
 
     <org.linphone.ui.CircularImageView
         android:id="@+id/image_item_chat_user_photo"
