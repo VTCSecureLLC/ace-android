@@ -128,10 +128,6 @@
 	    android:title="@string/menu_about"
 	    android:key="@string/menu_about_key"/>
 
-    <PreferenceCategory
-        android:title="@string/pref_sipaccounts"
-	    android:key="@string/pref_sipaccounts_key"/>
-
 	<PreferenceScreen
 		android:title="CardDav Configs"
 		android:key="@string/card_dav_sinc_account">
@@ -149,6 +145,12 @@
 			android:defaultValue="BaikalDAV"/>
 
 	</PreferenceScreen>
+
+    <PreferenceCategory
+        android:title="@string/pref_sipaccounts"
+	    android:key="@string/pref_sipaccounts_key"/>
+
+
 
 	<CheckBoxPreference
 		android:title="Always dial with default account"
