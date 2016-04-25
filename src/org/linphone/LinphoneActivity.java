@@ -687,7 +687,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		missedCalls = (TextView) findViewById(R.id.missedCalls);
 		missedChats = (TextView) findViewById(R.id.missedChats);
 
-		isMessagesViewed = mPrefs.getBoolean(UNREAD_MESSAGES, false);
+		isMessagesViewed = mPrefs.getBoolean(UNREAD_MESSAGES, true);
 		if (isMessagesViewed) {
 			missedChats.setVisibility(View.GONE);
 		} else {
@@ -1698,7 +1698,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			startService(new Intent(ACTION_MAIN).setClass(this, LinphoneService.class));
 		}
 
-//		ContactsManager.getInstance().prepareContactsInBackground();
+		ContactsManager.getInstance().prepareContactsInBackground();
 
 		updateMissedChatCount(false);
 		LinphoneActivity.instance().reloadMwiCount();

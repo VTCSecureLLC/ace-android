@@ -71,6 +71,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.linphone.core.CallDirection;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
@@ -588,24 +589,23 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 
 			Fragment callFragment = null;
+			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 			if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
 				callFragment = new VideoCallFragment();
 				videoCallFragment = (VideoCallFragment) callFragment;
-
-			} else {
+			} else if(call != null && call.getDirection() == CallDirection.Outgoing){
 				startOutgoingRingCount();
 			}
 
 			if(BluetoothManager.getInstance().isBluetoothHeadsetAvailable()){
 				BluetoothManager.getInstance().routeAudioToBluetooth();
 			}
+
 			if (callFragment != null) {
 				callFragment.setArguments(getIntent().getExtras());
 				getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, callFragment).commitAllowingStateLoss();
 			}
 
-
-			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
 			if(call != null) {
 				LinphoneCallParams params = call.getCurrentParamsCopy();
 				initRTT();
@@ -1778,6 +1778,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 	private void showVideoView() {
 
+		audioContainer.setVisibility(View.GONE);
+
 		if (!BluetoothManager.getInstance().isBluetoothHeadsetAvailable()) {
 			Log.w("Bluetooth not available, using speaker");
 			LinphoneManager.getInstance().routeAudioToSpeaker();
@@ -1791,25 +1793,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //			videoProgress.setVisibility(View.INVISIBLE);
 
 		LinphoneManager.stopProximitySensorForActivity(InCallActivity.this);
-		replaceFragmentAudioByVideo();
+		//replaceFragmentAudioByVideo();
 		displayVideoCallControlsIfHidden(SECONDS_BEFORE_HIDING_CONTROLS);
 
 	}
 
-	private void replaceFragmentAudioByVideo() {
-//		Hiding controls to let displayVideoCallControlsIfHidden add them plus the callback
-		mControlsLayout.setVisibility(View.INVISIBLE);
-		switchCamera.setVisibility(View.INVISIBLE);
 
-		videoCallFragment = new VideoCallFragment();
-
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragmentContainer, videoCallFragment);
-		try {
-			transaction.commitAllowingStateLoss();
-		} catch (Exception e) {
-		}
-	}
 
 	private void toggleMicro() {
 		LinphoneCore lc = LinphoneManager.getLc();
@@ -2552,6 +2541,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	private void stopOutgoingRingCount() {
+
+
+
 		if (outgoingRingCountTimer != null) {
 			outgoingRingCountTimer.cancel();
 			outgoingRingCountTimer = null;
