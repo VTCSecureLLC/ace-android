@@ -248,7 +248,8 @@ public class SettingsFragment extends PreferencesListFragment {
 		findPreference(getString(R.string.setup_key)).setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				showNewAccountDialog(getActivity());
+				showLogOutDialog(getActivity());
+				//showNewAccountDialog(getActivity());
 				return true;
 			}
 		});
@@ -469,7 +470,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			LinphonePreferences.instance().deleteAccount(i);
 		}
 	}
-	private void deleteDefaultAccount(){
+	public static void deleteDefaultAccount(){
 
 		LinphonePreferences mPrefs = LinphonePreferences.instance();
 		int n= mPrefs.getDefaultAccountIndex();
@@ -2031,6 +2032,24 @@ public class SettingsFragment extends PreferencesListFragment {
 			summary.setSpan(new ForegroundColorSpan(Color.WHITE), 0, summary.length(), 0);
 		return summary;
 	}
+	public static void showLogOutDialog(final Activity activity){
+		new AlertDialog.Builder(activity)
+				.setTitle("Logout?")
+				.setPositiveButton(R.string.yes,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int whichButton) {
+								deleteDefaultAccount();
+								Intent intent = new Intent(LinphoneService.instance(), SetupActivity.class);
+								activity.startActivityForResult(intent, LinphoneActivity.FIRST_LOGIN_ACTIVITY);
+							}
+						}
+				)
+				.setNegativeButton(R.string.no,
+						null
+				)
+				.create().show();
+	}
+
 	public static void showNewAccountDialog(final Activity activity){
 		new AlertDialog.Builder(activity)
 				.setTitle(R.string.AddNewAccountMessage)

@@ -31,8 +31,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-
-
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;

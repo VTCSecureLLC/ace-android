@@ -152,10 +152,11 @@
 
 	<CheckBoxPreference
 		android:title="Always dial with default account"
-		android:key="dial_out_using_default_account_key"/>
+		android:key="dial_out_using_default_account_key"
+		android:layout="@layout/hidden"/>
 
 	<Preference
-	    android:title="@string/setup_title"
+	    android:title="Logout"
 	    android:key="@string/setup_key"/>
 
 	<Preference
