@@ -15,14 +15,14 @@ public class GAUtils {
 
 
     private Tracker mGaTracker;
-    private GoogleAnalytics mGaInstance;
+
     public GAUtils(Context context){
         // Get the GoogleAnalytics singleton. Note that the SDK uses
         // the application context to avoid leaking the current context.
-        mGaInstance = GoogleAnalytics.getInstance(context);
+        g.mGaInstance = GoogleAnalytics.getInstance(context);
 
         // Use the GoogleAnalytics singleton to get a Tracker.
-        mGaTracker = mGaInstance.getTracker("UA-76139509-1"); // Placeholder tracking ID.
+        mGaTracker = g.mGaInstance.getTracker("UA-76139509-1"); // Placeholder tracking ID.
 
     }
 
