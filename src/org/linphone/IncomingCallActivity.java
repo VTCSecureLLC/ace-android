@@ -111,9 +111,8 @@ public class IncomingCallActivity extends Activity {
 			switch (v.getId()) {
 				case R.id.label_in_calling_call_later:
 					if (mCallLaterLayout.getVisibility() == View.VISIBLE) {
-						mCallLaterLayout.setVisibility(View.GONE);
-						v.setSelected(false);
-						mRinging.setVisibility(View.VISIBLE);
+						sendDeclineReason("I'll call you back.");
+						onCallDeclineClick();
 					} else {
 						mCallLaterLayout.setVisibility(View.VISIBLE);
 						v.setSelected(true);
