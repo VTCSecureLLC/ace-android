@@ -595,7 +595,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			callFragment = new VideoCallFragment();
 			videoCallFragment = (VideoCallFragment) callFragment;
 
-			if(call != null && call.getDirection() == CallDirection.Outgoing){
+			if(call != null && call.getDirection() == CallDirection.Outgoing && isConnecting(call.getState())){
+				if(call.getState() == State.OutgoingRinging)
+				{
+					labelRingingView.setText("Ringing...");
+				}
 				startOutgoingRingCount();
 			}
 
@@ -629,6 +633,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 
+	}
+
+	private boolean isConnecting(State state)
+	{
+		Log.d("isConnecting() state:" + state);
+		boolean res = false;
+		if(state == State.OutgoingEarlyMedia || state == State.OutgoingInit || state == State.OutgoingProgress  || state == State.OutgoingRinging)
+			res = true;
+		return res;
 	}
 
 	private void handleNotificationMessage() {
@@ -2934,7 +2947,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					}
 				});
 			}
-		}, 0, (long) (flashFrequencyInSeconds * 5000));
+		}, 0, (long) (flashFrequencyInSeconds * 2000));
 	}
 
 	private void flashTorch() {
