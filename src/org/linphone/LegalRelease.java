@@ -2,6 +2,8 @@ package org.linphone;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -12,6 +14,10 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import org.linphone.vtcsecure.g;
+
+import java.util.ArrayList;
 
 public class LegalRelease extends Activity {
 
@@ -141,6 +147,35 @@ public class LegalRelease extends Activity {
                 }
             }
         });
+        final CharSequence[] items = {"Allow ACE to gather anonymous statistics to help improve performance, video quality, and the overall user experience"};
+        final boolean[] selected={true};
+
+        // arraylist to keep the selected items
+        final ArrayList seletedItems=new ArrayList();
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Improve User Experience")
+                .setMultiChoiceItems(items, selected, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                        if (isChecked) {
+                            // If the user checked the item, add it to the selected items
+                            g.analytics_tracker.send(getBaseContext(),"Action","Opted Out (DO NOT TRACK)",null,null);
+                            g.mGaInstance.setAppOptOut(false);
+                        } else if (seletedItems.contains(indexSelected)) {
+                            // Else, if the item is already in the array, remove it
+                            g.analytics_tracker.send(getBaseContext(),"Action","Opted In (AGREED TO TRACK)",null,null);
+                            g.mGaInstance.setAppOptOut(true);
+                        }
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                }).create();
+        dialog.show();
+
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
