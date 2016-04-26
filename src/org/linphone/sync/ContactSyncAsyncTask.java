@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import org.linphone.LinphoneActivity;
 import org.linphone.LinphoneManager;
@@ -75,7 +76,13 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
 
 
 
-        syncContactsLinphone(lc);
+        try {
+            syncContactsLinphone(lc);
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         return null;
     }
 
@@ -87,8 +94,13 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
        // serverUrl = "http://dav.linphone.org/card.php/addressbooks/vtcsecure/default";
 
       //  serverUrl = "http://ace-carddav-sabredav.vatrp.org";
-        String serverDomain = serverUrl.replace("http://", "").replace("https://", "").split("/")[0]; // We just want the domain name
+        String[] splited_server_domain = serverUrl.replace("http://", "").replace("https://", "").split("/");
+        if(splited_server_domain.length == 0)
+            return;;
+        String serverDomain = splited_server_domain[0]; // We just want the domain name
         //serverUrl = "http://ace-carddav-baikal.vatrp.org/html/card.php/principals/dood";
+        if(serverDomain == null)
+            return;
 
 
         LinphoneAuthInfo[] authInfos = lc.getAuthInfosList();
@@ -107,7 +119,7 @@ public class ContactSyncAsyncTask extends AsyncTask<Void, Void, Void> implements
         }
         if (need_new_account)
         {
-            LinphoneAuthInfo newInfo = LinphoneCoreFactory.instance().createAuthInfo(username, password, "BaikalDAV", serverDomain);
+            LinphoneAuthInfo newInfo = LinphoneCoreFactory.instance().createAuthInfo(username, password, realm, serverDomain);
             lc.addAuthInfo(newInfo);
         }
 
