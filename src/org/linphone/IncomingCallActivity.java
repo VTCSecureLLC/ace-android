@@ -27,11 +27,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.view.KeyEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -53,7 +53,6 @@ import org.linphone.core.LinphoneCoreListenerBase;
 import org.linphone.mediastream.Log;
 import org.linphone.setup.ApplicationPermissionManager;
 import org.linphone.ui.RoundedImageView;
-import org.linphone.vtcsecure.LinphoneTorchFlasher;
 
 import java.util.List;
 import java.util.Timer;
@@ -70,6 +69,11 @@ import joanbempong.android.HueSharedPreferences;
  */
 public class IncomingCallActivity extends Activity {
 
+
+	public CameraPreviewTorch cpt;
+	public Timer Torch_Timer;
+	SurfaceView preview;
+
 	private static IncomingCallActivity instance;
 
 	private TextView mNameView;
@@ -83,13 +87,14 @@ public class IncomingCallActivity extends Activity {
 	private LinphoneCoreListenerBase mListener;
 	private RelativeLayout topLayout; 
 	private Boolean backgroundIsRed = false;
-	private Boolean torhcIsOn = false;
+	private Boolean torchIsOn = false;
 	private Timer flashOrangeBackgroundTimer;
 	private Timer vibrateTimer;
 	private boolean terminated = false;
     private int ringCount = 0;
 	private LinearLayout mCallLaterLayout;
 	private TextView mOutgoingRingCountTextView;
+
 
 	public static IncomingCallActivity instance() {
 		return instance;
@@ -150,6 +155,18 @@ public class IncomingCallActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.new_incoming);
+		super.onCreate(savedInstanceState);
+
+	}
+
+	@Override
+	protected void onResume() {
+        super.onResume();
+		instance = this;
+		preview = (SurfaceView) findViewById(R.id.PREVIEW);
+		cpt=new CameraPreviewTorch(this,preview);
+
+
 
 		mNameView = (TextView) findViewById(R.id.incoming_caller_name);
 //		mNumberView = (TextView) findViewById(R.id.incoming_caller_number);
@@ -198,14 +215,6 @@ public class IncomingCallActivity extends Activity {
 			}
 		};
 
-		super.onCreate(savedInstanceState);
-		instance = this;
-	}
-
-	@Override
-	protected void onResume() {
-        super.onResume();
-		instance = this;
 		// Try to automatically connect to the last known bridge.  For first time use this will be empty so a bridge search is automatically started.
 		HueSharedPreferences prefs = HueSharedPreferences.getInstance(getApplicationContext());
 		String lastIpAddress   = prefs.getLastConnectedIPAddress();
@@ -275,12 +284,12 @@ public class IncomingCallActivity extends Activity {
 		} else {
 			mNameView.setText(contact.getName());
 		}
+
 	}
 
 	@Override
 	protected void onPause() {
 		terminated = true;
-		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.removeListener(mListener);
@@ -288,12 +297,15 @@ public class IncomingCallActivity extends Activity {
         stopRingCount();
 		super.onPause();
 		HueController.getInstance().stopFlashing();
+		Torch_Timer.cancel();
+		cpt.surfaceDestroyed(null);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		instance = null;
+		//cpt.surfaceDestroyed(null);
 	}
 
 	@Override
@@ -382,20 +394,30 @@ public class IncomingCallActivity extends Activity {
 	}
 
 	private void flashTorch() {
-		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
-		LinphoneTorchFlasher.instance().startFlashTorch();
+		float flashFrequencyInSeconds = LinphonePreferences.instance().getConfig().getFloat("vtcsecure", "incoming_flashlight_frequency", 0.3f);
+		Torch_Timer = new Timer();
+		Torch_Timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if(torchIsOn){
+					cpt.torchOff();
+				}else{
+					cpt.torchOn();
+				}
+				torchIsOn = !torchIsOn;
+				System.out.println("torchIsOn"+torchIsOn);
+			}
+		}, 0, (long)(flashFrequencyInSeconds*1000));
 	}
 
 	
 	private void decline() {
-		LinphoneTorchFlasher.instance().stopFlashTorch();
 		LinphoneManager.getLc().terminateCall(mCall);
 	}
 
 	private void answer() {
 		LinphoneCallParams params = LinphoneManager.getLc().createCallParams(mCall);
 
-		LinphoneTorchFlasher.instance().stopFlashTorch();
 
         boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(this);
 		if (isLowBandwidthConnection) {
