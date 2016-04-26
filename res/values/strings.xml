@@ -542,4 +542,5 @@
   <string name="preference_settings_sync_realm">preference_settings_sync_realm</string>
   <string name="card_dav_password">card_dav_password_key</string>
   <string name="card_dav_username">card_dav_username_key</string>
+  <string name="call_declined_with_the_message">Call declined with the message</string>
 </resources>
