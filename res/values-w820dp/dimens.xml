@@ -7,6 +7,6 @@
     -->
     <dimen name="activity_horizontal_margin">64dp</dimen>
 
-    <dimen name="call_main_status_font_size">64sp</dimen>
+    <dimen name="call_main_status_font_size">48sp</dimen>
     <dimen name="call_sub_status_font_size">64sp</dimen>
 </resources>
