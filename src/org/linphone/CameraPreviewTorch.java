@@ -43,35 +43,47 @@ public class CameraPreviewTorch extends SurfaceView implements SurfaceHolder.Cal
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		//torchOff();
-		Log.w("Camera surface destroy", "destroyed");
-		if (mCamera != null) {
+		try {
 			Log.w("Camera surface destroy", "destroyed");
-			mCamera.stopPreview();
-			mCamera.release();
-			mCamera = null;
+			if (mCamera != null) {
+				Log.w("Camera surface destroy", "destroyed");
+				mCamera.stopPreview();
+				mCamera.release();
+				mCamera = null;
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 	}
 
 
 	public void torchOn(){
 		// Turn on LED
-		if(mCamera!=null) {
-			Camera.Parameters params = mCamera.getParameters();
-			params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-			mCamera.setParameters(params);
-			mCamera.startPreview();
+		try {
+			if (mCamera != null) {
+				Camera.Parameters params = mCamera.getParameters();
+				params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+				mCamera.setParameters(params);
+				mCamera.startPreview();
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 	}
 
 	public void torchOff(){
 		// Turn off LED
-		if(mCamera!=null) {
-            Camera.Parameters params = mCamera.getParameters();
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            mCamera.setParameters(params);
-            //mCamera.stopPreview();
-            //mCamera.release();
-        }
+		try{
+			if(mCamera!=null) {
+				Camera.Parameters params = mCamera.getParameters();
+				params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+				mCamera.setParameters(params);
+				//mCamera.stopPreview();
+				//mCamera.release();
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
 	}
 
 }
