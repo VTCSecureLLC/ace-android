@@ -589,9 +589,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			Fragment callFragment = null;
 			LinphoneCall call = LinphoneManager.getLc().getCurrentCall();
+			callFragment = new VideoCallFragment();
+			videoCallFragment = (VideoCallFragment) callFragment;
 			if (isVideoEnabled(LinphoneManager.getLc().getCurrentCall())) {
-				callFragment = new VideoCallFragment();
-				videoCallFragment = (VideoCallFragment) callFragment;
+
 			} else if(call != null && call.getDirection() == CallDirection.Outgoing){
 				startOutgoingRingCount();
 			}
