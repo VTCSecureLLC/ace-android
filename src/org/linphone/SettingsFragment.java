@@ -926,6 +926,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				mPrefs.setWifiOnlyEnabled((Boolean) newValue);
+				LinphoneManager.getInstance().updateNetworkReachability();
 				return true;
 			}
 		});
