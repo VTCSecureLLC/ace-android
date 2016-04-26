@@ -379,7 +379,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 				super.messageReceived(lc, cr, message);
 				Log.d("RTT", "messageReceived cr=" + message.toString());
-				if(message.toString().startsWith("@@info@@ "));
+				if(message.toString().startsWith("@@info@@ "))
 				{
 
 					TextView tvStatus = (TextView) findViewById(R.id.label_ringing);
