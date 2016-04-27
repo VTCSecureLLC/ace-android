@@ -3,6 +3,8 @@ package org.linphone.vtcsecure;
 
 import android.net.Uri;
 
+import com.google.analytics.tracking.android.GoogleAnalytics;
+
 import java.util.HashMap;
 
 /**
@@ -13,7 +15,7 @@ import java.util.HashMap;
 public class g {
     public static HashMap<String, Uri> domain_image_hash=new HashMap<String, Uri>();
     public static GAUtils analytics_tracker;
-
+    public static GoogleAnalytics mGaInstance;
 
     //Variables used for incall, when app is paused or destroyed
     //This would be handled by onSavedInstanceState, but doesn't work when the user chooses to exit
