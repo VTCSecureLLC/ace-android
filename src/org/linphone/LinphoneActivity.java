@@ -492,8 +492,13 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	};
 
 	private void videoMail() {
-		LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), ""), getResources().getString(R.string.main_menu_videomail));
-		LinphoneActivity.instance().resetMessageWaitingCount();
+		try {
+			LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), LinphoneManager.getLc().getDefaultProxyConfig().getAddress().asStringUriOnly()), getResources().getString(R.string.main_menu_videomail));
+			LinphoneActivity.instance().resetMessageWaitingCount();
+		}
+		catch(Throwable e){
+			e.printStackTrace();
+		}
 	}
 
 	private void initMore() {
