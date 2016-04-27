@@ -65,7 +65,7 @@ public class LedPreference extends Preference
             public boolean onLongClick(View v) {
 
 
-                final String enabled_status=LinphonePreferences.instance().isAccountEnabled(accountId)?"Disable":"Enable";
+                final String enabled_status=LinphonePreferences.instance().isAccountRegistered(accountId)?"Disable":"Enable";
                 final String[] single_account_options = {"Logout"};
                 String[] multi_account_options = {"Use as default", enabled_status, "Delete this account"};
                 final String[] options;
@@ -92,7 +92,7 @@ public class LedPreference extends Preference
                                         LinphonePreferences.instance().setDefaultAccount(accountId);
                                     }
                                 }else if(which==1){//disable
-                                    LinphonePreferences.instance().setAccountEnabled(accountId, !LinphonePreferences.instance().isAccountEnabled(accountId));
+                                    LinphonePreferences.instance().setAccountEnabled(accountId, !LinphonePreferences.instance().isAccountRegistered(accountId));
                                 }else if(which==2){//delete
                                     LinphonePreferences.instance().deleteAccount(accountId);
                                 }

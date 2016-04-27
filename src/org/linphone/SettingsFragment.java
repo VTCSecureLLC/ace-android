@@ -504,7 +504,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 
 
-			updateAccountLed(account, username, domain, mPrefs.isAccountEnabled(i));
+			updateAccountLed(account, username, domain, mPrefs.isAccountRegistered(i));
 			accounts.addPreference(account);
 		}
 	}

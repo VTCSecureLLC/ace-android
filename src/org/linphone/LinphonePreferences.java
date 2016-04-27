@@ -703,12 +703,17 @@ public class LinphonePreferences {
 		}
 	}
 
-	public boolean isAccountEnabled(int n) {
+	public boolean isAccountRegistered(int n){
 		LinphoneProxyConfig cfg = getProxyConfig(n);
 		if(cfg == null) return false;
 		if(getLc() == null) return false;
-		
+
 		return cfg.getState() == LinphoneCore.RegistrationState.RegistrationOk;
+	}
+
+	public boolean isAccountEnabled(int n) {
+		if(getProxyConfig(n) == null) return false;
+		return getProxyConfig(n).registerEnabled();
 	}
 
 	public void resetDefaultProxyConfig(){
