@@ -599,6 +599,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					labelRingingView.setLines(4);
 					labelRingingView.setText(ringingText);
 				}
+				else{
+					String connectingText = labelRingingView.getText() + "\n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setText(connectingText);
+				}
 				startOutgoingRingCount();
 			}
 
