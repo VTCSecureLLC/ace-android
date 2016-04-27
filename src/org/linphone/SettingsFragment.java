@@ -1160,6 +1160,13 @@ public class SettingsFragment extends PreferencesListFragment {
 				return true;
 			}
 		});
+		((Preference)findPreference(getString(R.string.pref_summary_send_tss_key))).setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				sendTSS();
+				return true;
+			}
+		});
 	}
 
 	private void createAndDisplayTSS(){
@@ -1209,6 +1216,50 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 	}
 
+	private void sendTSS(){
+		String version;
+		try {
+			PackageManager manager = getActivity().getPackageManager();
+			PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
+			version  = String.valueOf(info.versionName);
+		}
+
+		catch(PackageManager.NameNotFoundException e){
+			version = "Beta";
+		}
+
+
+		String tssContents = "\n\n DEVICE INFO:\n\n" + Constants.PHONE_MANUFACTURER
+				+ " " + Constants.PHONE_MODEL + "\nAndroid:" + Constants.ANDROID_VERSION + " " + "\nACE v" + version + "\n\n" +
+				"CONFIG: \n\n" + getConfigSettingsAsString();
+		File feedback = null;
+		try
+		{
+			File root = new File(Environment.getExternalStorageDirectory(), "ACE");
+			if (!root.exists()) {
+				root.mkdirs();
+			}
+			feedback = new File(root, "tss.txt");
+			FileWriter writer = new FileWriter(feedback);
+			writer.append(tssContents);
+			writer.flush();
+			writer.close();
+			Toast.makeText(LinphoneActivity.ctx, "Saved", Toast.LENGTH_SHORT).show();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		if(feedback != null) {
+			Intent pickerActivity = new Intent(Intent.ACTION_SEND);
+
+			pickerActivity.setType("message/rfc822");
+			Uri uri = Uri.fromFile(feedback);
+			pickerActivity.putExtra(Intent.EXTRA_STREAM, uri);
+			startActivity(Intent.createChooser(pickerActivity, "Send Technical Support Sheet with..."));
+		}
+	}
 	private String getConfigSettingsAsString(){
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if(lc == null) return "LinphoneCore = null";
