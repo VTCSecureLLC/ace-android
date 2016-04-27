@@ -454,12 +454,15 @@
 		        android:layout_height="match_parent"
 		        android:gravity="center_vertical"
 		        android:layout_toRightOf="@id/statusLed" />
-			<TextView
+
+			<org.linphone.ui.AutoResizeTextView
 				android:id="@+id/userNameText"
 				android:text=""
 				android:textColor="@android:color/white"
 				android:textSize="18sp"
-				android:paddingLeft="5dp"
+				android:paddingLeft="15dp"
+				android:paddingRight="15dp"
+				android:maxLines="1"
 				android:layout_centerVertical="true"
 				android:layout_width="wrap_content"
 				android:layout_height="match_parent"
