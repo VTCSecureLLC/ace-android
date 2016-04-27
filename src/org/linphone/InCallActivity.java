@@ -846,28 +846,60 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		rttTextWatcher = new TextWatcher() {
 			boolean enter_pressed;
+			boolean sendBubbleAtNextChar;
+			String beforeTextChanged;
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				beforeTextChanged = outgoingEditText.getText().toString();
 
 			}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-
 				enter_pressed = s.length() > 0 && s.subSequence(s.length() - 1, s.length()).toString().equalsIgnoreCase("\n");
 
 				char enter_button=(char) 10;
 				char back_space_button=(char) 8;
 
-				if(TEXT_MODE==RTT){
+
+				//skip when entered is pressed and no text, backspace is pressed and sendBubbleAtNextChar is true
+				if(enter_pressed && (sendBubbleAtNextChar || count == 0 || s.toString().replace("\n", "").length()==0)) {
+					previousoutgoingEditText=outgoingEditText;
+					return;
+				}
+
+				if(outgoingEditText.getText().length() == 0)
+				{
+					outgoingEditText.setBackgroundResource(0);
+				}
+				else if(outgoingEditText.getText().length() == 1)
+				{
+					if (LinphonePreferences.instance().isForce508()) {
+						outgoingEditText.setBackgroundResource(R.drawable.chat_bubble_outgoing_508);
+					} else {
+						outgoingEditText.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+					}
+					standardize_bubble_view(outgoingEditText);
+					outgoingEditText.setSelection(outgoingEditText.length());
+				}
+
+
+
+					if(TEXT_MODE==RTT){
 					if(enter_pressed){
 						previousoutgoingEditText=outgoingEditText;
 						sendRttCharacter(enter_button);
-						create_new_outgoing_bubble(outgoingEditText, /*true*/ true);
+						//create_new_outgoing_bubble(outgoingEditText, /*true*/ true);
 					}else if(count > before){
 
 						CharSequence last_letter_of_sequence = s.subSequence(start + before, start + count);
+						if(sendBubbleAtNextChar) {
+							sendBubbleAtNextChar = false;
+							create_new_outgoing_bubble( /*true*/ true, last_letter_of_sequence.toString());
+						}
+
 						Log.d("last_letter_of_sequence="+last_letter_of_sequence);
 
 						int numeric_value=Character.getNumericValue(last_letter_of_sequence.charAt(0));
@@ -886,7 +918,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						}else{
 							sendRttCharacterSequence(String.valueOf(s.subSequence(0,s.length()-1)));
 						}
-						create_new_outgoing_bubble(outgoingEditText, true);
+
+						//create_new_outgoing_bubble(outgoingEditText, true);
+					}
+					else if(count > before){
+						CharSequence last_letter_of_sequence = s.subSequence(start + before, start + count);
+						if(sendBubbleAtNextChar) {
+							sendBubbleAtNextChar = false;
+							create_new_outgoing_bubble( /*true*/ true, last_letter_of_sequence.toString());
+						}
 					}
 				}
 
@@ -895,19 +935,34 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			@Override
 			public void afterTextChanged(Editable s) {
 				//REMOVE EXTRA LINE FROM ENTER PRESS
+
 				if(enter_pressed) {
 					previousoutgoingEditText.removeTextChangedListener(rttTextWatcher);
-					previousoutgoingEditText.setText(previousoutgoingEditText.getText().toString().subSequence(0,previousoutgoingEditText.getText().toString().length()-1));
+						previousoutgoingEditText.setText(previousoutgoingEditText.getText().toString().subSequence(0, previousoutgoingEditText.getText().toString().length() - 1));
+						previousoutgoingEditText.setSelection(previousoutgoingEditText.getText().length());
+
+					previousoutgoingEditText.addTextChangedListener(rttTextWatcher);
+					if(outgoingEditText.getText().length()>0)
+						sendBubbleAtNextChar = true;
 				}
+				else if(sendBubbleAtNextChar)
+				{
+					previousoutgoingEditText.removeTextChangedListener(rttTextWatcher);
+					previousoutgoingEditText.setText(beforeTextChanged);
+					previousoutgoingEditText.setSelection(previousoutgoingEditText.getText().length());
+					previousoutgoingEditText.addTextChangedListener(rttTextWatcher);
+				}
+
+
 			}
 		};
 
 		outgoingEditText = (EditText) findViewById(R.id.et_outgoing_bubble);
+		outgoingEditText.setSingleLine(false);
 		outgoingEditText.addTextChangedListener(rttTextWatcher);
-		standardize_bubble_view(outgoingEditText);
 		hold_cursor_at_end_of_edit_text(outgoingEditText);
 		outgoingEditText.setMovementMethod(null);
-
+		outgoingEditText.setBackgroundResource(0);
 
 		try {
 			populate_messages();
@@ -942,18 +997,24 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 	}
-	public TextView create_new_outgoing_bubble(EditText old_bubble, boolean is_current_editable_bubble){
+
+	TextView create_new_outgoing_bubble(boolean is_current_editable_bubble)
+	{
+		return create_new_outgoing_bubble(is_current_editable_bubble, "");
+	}
+	public TextView create_new_outgoing_bubble(boolean is_current_editable_bubble, String prefix){
 		/*if(old_bubble!=null){
 			disable_bubble_editing(old_bubble);
 		}*/
-		LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
+
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(to_dp(300), LinearLayout.LayoutParams.WRAP_CONTENT);
 		lp.setMargins(to_dp(10), 0, 0, 0);
 
-		TextView et=new TextView(this);
+		TextView et = new TextView(this);
 		et.setLayoutParams(lp);
-		if(LinphonePreferences.instance().isForce508()){
+		if (LinphonePreferences.instance().isForce508()) {
 			et.setBackgroundResource(R.drawable.chat_bubble_outgoing_508);
-		}else{
+		} else {
 			et.setBackgroundResource(R.drawable.chat_bubble_outgoing);
 		}
 		et.setTag(true);
@@ -968,39 +1029,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		});
 		standardize_bubble_view(et);
 
-		//if(TEXT_MODE==RTT) {
-//		if(is_current_editable_bubble) {
-//			et.addTextChangedListener(rttTextWatcher);
-//		}
-		//}
-
-//		et.setOnKeyListener(new View.OnKeyListener() { //FIXME: not triggered for software keyboards
-//			@Override
-//			public boolean onKey(View v, int keyCode, KeyEvent event) {
-//				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-//					if (keyCode == KeyEvent.KEYCODE_ENTER) {
-//						Log.d("ENTER BUTTON PRESSED");
-//						if(TEXT_MODE==RTT){
-//							sendRttCharacter((char) 10);
-//							create_new_outgoing_bubble((EditText) v);
-//						}else if(TEXT_MODE==SIP_SIMPLE){
-//							String current_message=((EditText) v).getText().toString();
-//							sendRttCharacterSequence(current_message+(char) 10);
-//							create_new_outgoing_bubble((EditText) v);
-//						}
-//
-//
-//					}
-//				}
-//				return false;
-//			}
-//		});
-		//hold_cursor_at_end_of_edit_text(et);
-		//outgoingEditText=et;
-		if(((LinearLayout) rttContainerView).getChildCount()==0 || !isIncomingBubbleCreated || !is_current_editable_bubble)
+		if (((LinearLayout) rttContainerView).getChildCount() == 0 || !isIncomingBubbleCreated || !is_current_editable_bubble)
 			((LinearLayout) rttContainerView).addView(et);
 		else
-			((LinearLayout) rttContainerView).addView(et,((LinearLayout) rttContainerView).getChildCount()-1 );
+			((LinearLayout) rttContainerView).addView(et, ((LinearLayout) rttContainerView).getChildCount() - 1);
 
 //		et.requestFocus();
 //		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1013,8 +1045,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			}
 		});
 		rttOutgoingBubbleCount++;
-		et.setText(outgoingEditText.getText().toString().replace("\n", ""));
-		outgoingEditText.setText("");
+		String text = outgoingEditText.getText().toString().replace("\n", "");
+		et.setText(text.substring(0, text.length() - 1));
+		outgoingEditText.removeTextChangedListener(rttTextWatcher);
+		outgoingEditText.setText(prefix);
+		outgoingEditText.setSelection(outgoingEditText.getText().length());
+		outgoingEditText.addTextChangedListener(rttTextWatcher);
+
 		rtt_scrollview.post(new Runnable() {
 			@Override
 			public void run() {
@@ -1039,9 +1076,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 				if (incomingTextView == null) return;
 
-				if(!incomingTextView.isShown()){
-					incomingTextView=create_new_incoming_bubble();
-				}
+//				if(!incomingTextView.isShown()){
+//					incomingTextView=create_new_incoming_bubble();
+//				}
 
 				String currentText = incomingTextView.getText().toString();
 				if (character == 8) {// backspace
@@ -1058,8 +1095,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						Log.d("There was no incoming bubble to send text to, so now we must make one.");
 						incomingTextView=create_new_incoming_bubble();
 					}
+
 					incomingTextView.setText(currentText + (char)character);
 				}
+				if(incomingTextView.length() == 0)
+					incomingTextView.setVisibility(View.GONE);
+				else if(incomingTextView.getVisibility() == View.GONE)
+					incomingTextView.setVisibility(View.VISIBLE);
+
 				rtt_scrollview.post(new Runnable() {
 					@Override
 					public void run() {
@@ -1272,7 +1315,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 			if(direction[i]==OUTGOING){
 				Log.d("OUTGOING: "+messages[i]);
-				create_new_outgoing_bubble(null, false).setText(messages[i]);
+				create_new_outgoing_bubble(false).setText(messages[i]);
 			}else{
 				Log.d("INCOMING: "+messages[i]);
 				create_new_incoming_bubble();
@@ -1282,6 +1325,15 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 		outgoingEditText.setText(messages[messages.length - 1]);
 
+		if(outgoingEditText.getText().length()>0)
+		{
+			if (LinphonePreferences.instance().isForce508()) {
+				outgoingEditText.setBackgroundResource(R.drawable.chat_bubble_outgoing_508);
+			} else {
+				outgoingEditText.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+			}
+			standardize_bubble_view(outgoingEditText);
+		}
 	}
 
 	public void delete_messages(){
