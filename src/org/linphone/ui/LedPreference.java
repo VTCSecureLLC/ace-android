@@ -65,7 +65,7 @@ public class LedPreference extends Preference
             public boolean onLongClick(View v) {
 
 
-                final String enabled_status=LinphonePreferences.instance().isAccountRegistered(accountId)?"Disable":"Enable";
+                final String enabled_status=LinphonePreferences.instance().isAccountEnabled(accountId)?"Disable":"Enable";
                 final String[] single_account_options = {"Logout"};
                 String[] multi_account_options = {"Use as default", enabled_status, "Delete this account"};
                 final String[] options;
