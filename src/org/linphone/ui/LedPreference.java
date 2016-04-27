@@ -92,7 +92,7 @@ public class LedPreference extends Preference
                                         LinphonePreferences.instance().setDefaultAccount(accountId);
                                     }
                                 }else if(which==1){//disable
-                                    LinphonePreferences.instance().setAccountEnabled(accountId, !LinphonePreferences.instance().isAccountRegistered(accountId));
+                                    LinphonePreferences.instance().setAccountEnabled(accountId, !LinphonePreferences.instance().isAccountEnabled(accountId));
                                 }else if(which==2){//delete
                                     LinphonePreferences.instance().deleteAccount(accountId);
                                 }
