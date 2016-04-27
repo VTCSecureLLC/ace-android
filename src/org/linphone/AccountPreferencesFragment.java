@@ -454,7 +454,7 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
     	PreferenceCategory manage = (PreferenceCategory) getPreferenceScreen().findPreference(getString(R.string.pref_manage_key));
     	final CheckBoxPreference disable = (CheckBoxPreference) manage.getPreference(0);
     	disable.setEnabled(true);
-    	disable.setChecked(!mPrefs.isAccountRegistered(n));
+    	disable.setChecked(!mPrefs.isAccountEnabled(n));
     	disable.setOnPreferenceChangeListener(disableChangedListener);
     	
     	CheckBoxPreference mainAccount = (CheckBoxPreference) manage.getPreference(1);
