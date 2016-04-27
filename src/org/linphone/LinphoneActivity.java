@@ -1115,30 +1115,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			thumbnailUri = contact.getThumbnailUri().toString();
 		}
 
-		if (isTablet()){
-			if (currentFragment == FragmentsAvailable.CHATLIST || currentFragment == FragmentsAvailable.CHAT){
-				Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
-				if (fragment2 != null && fragment2.isVisible() && currentFragment == FragmentsAvailable.CHAT) {
-					ChatFragment chatFragment = (ChatFragment) fragment2;
-					chatFragment.changeDisplayedChat(sipUri, displayName, pictureUri);
-				} else {
-					Bundle extras = new Bundle();
-					extras.putString("SipUri", sipUri);
-					if (contact != null) {
-						extras.putString("DisplayName", displayName);
-						extras.putString("PictureUri", pictureUri);
-						extras.putString("ThumbnailUri", thumbnailUri);
-					}
-					changeCurrentFragment(FragmentsAvailable.CHAT, extras);
-				}
-			} else {
-				changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
-				displayChat(sipUri);
-			}
-			if (messageListFragment != null && messageListFragment.isVisible()) {
-				((ChatListFragment) messageListFragment).refresh();
-			}
-		} else {
 			Intent intent = new Intent(this, ChatActivity.class);
 			intent.putExtra("SipUri", sipUri);
 			if (contact != null) {
@@ -1147,9 +1123,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				intent.putExtra("ThumbnailUri", thumbnailUri);
 			}
 			//
-			// startOrientationSensor();
+			startOrientationSensor();
 			startActivityForResult(intent, CHAT_ACTIVITY);
-		}
+
 
 		//LinphoneService.instance().resetMessageNotifCount();
 		//LinphoneService.instance().removeMessageNotification();
