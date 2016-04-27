@@ -633,6 +633,10 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
+
+		editor.remove(LinphoneActivity.UNREAD_VIDEO_MAIL_MESSAGES).commit();
+		editor.remove("mwi_count").commit();
+
 	}
 
 	public void displayWizardConfirm(String username) {

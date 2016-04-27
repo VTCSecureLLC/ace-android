@@ -10,4 +10,5 @@
     <dimen name="more_menu_options_width">150dp</dimen>
     <dimen name="more_menu_options_height">45dp</dimen>
     <dimen name="main_menu_settings_padding_left_rigth">7dp</dimen>
+    <dimen name="main_video_mail_badge_width_heigth">25dp</dimen>
 </resources>

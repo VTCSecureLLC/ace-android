@@ -11,4 +11,5 @@
 
     <dimen name="call_main_status_font_size">64sp</dimen>
     <dimen name="call_sub_status_font_size">64sp</dimen>
+    <dimen name="main_video_mail_badge_width_heigth">32dp</dimen>
 </resources>

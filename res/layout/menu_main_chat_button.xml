@@ -23,11 +23,6 @@
             android:src="@drawable/ic_main_menu_chat" />
     </LinearLayout>
 
-    <include layout="@layout/mwi_badge"
-        android:id="@+id/mwi_badge"
-        android:layout_width="40dp"
-        android:layout_height="40dp"   />
-
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
