@@ -322,7 +322,7 @@ public class StatusFragment extends Fragment {
 							String addrText = addr.asString();
 							if(addrText != null) {
 								userNameText.setVisibility(View.VISIBLE);
-								userNameText.setText(addrText);
+								userNameText.setText(addrText.replace("sip:",""));
 								callQuality.setVisibility(View.INVISIBLE);
 							}
 						}
