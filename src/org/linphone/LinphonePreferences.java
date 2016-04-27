@@ -449,8 +449,19 @@ public class LinphonePreferences {
 	}
 
 	public String getAccountUsername(int n) {
-		LinphoneAuthInfo authInfo = getAuthInfo(n);
-		return authInfo == null ? null : authInfo.getUsername();
+		try {
+			LinphoneProxyConfig prxCfg = LinphoneManager.getLc().getDefaultProxyConfig();
+			if (prxCfg == null) return null;
+
+			LinphoneAddress addr = prxCfg.getAddress();
+			if (addr == null) return null;
+
+			return addr.asString();
+		}
+		catch(Throwable e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void setAccountDisplayName(int n, String displayName) {
@@ -692,7 +703,16 @@ public class LinphonePreferences {
 		}
 	}
 
+	public boolean isAccountRegistered(int n){
+		LinphoneProxyConfig cfg = getProxyConfig(n);
+		if(cfg == null) return false;
+		if(getLc() == null) return false;
+
+		return cfg.getState() == LinphoneCore.RegistrationState.RegistrationOk;
+	}
+
 	public boolean isAccountEnabled(int n) {
+		if(getProxyConfig(n) == null) return false;
 		return getProxyConfig(n).registerEnabled();
 	}
 

@@ -758,7 +758,7 @@ public class StatusFragment extends Fragment {
 			}
 			
 			// Force led if account is disabled
-			if (!LinphonePreferences.instance().isAccountEnabled(accountIndex)) {
+			if (!LinphonePreferences.instance().isAccountRegistered(accountIndex)) {
 				status.setImageResource(getStatusIconResource(RegistrationState.RegistrationNone, false));
 			} else {
 				if (LinphonePreferences.instance().getDefaultAccountIndex() == accountIndex) {
