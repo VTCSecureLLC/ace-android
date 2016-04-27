@@ -399,11 +399,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					e.printStackTrace();
 				}
 
-				if(state == State.OutgoingRinging)
-				{
-					labelRingingView.setText("Ringing...");
+				if(state == State.OutgoingRinging) {
+					String ringingText = "Ringing... \n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setLines(4);
+					labelRingingView.setText(ringingText);
 				}
-
 
 				if(state == State.CallEnd || state == State.Error || state == State.CallReleased
 						|| state == State.Connected
@@ -594,9 +594,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			videoCallFragment = (VideoCallFragment) callFragment;
 
 			if(call != null && call.getDirection() == CallDirection.Outgoing && isConnecting(call.getState())){
-				if(call.getState() == State.OutgoingRinging)
-				{
-					labelRingingView.setText("Ringing...");
+				if(call.getState() == State.OutgoingRinging) {
+					String ringingText = "Ringing... \n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setLines(4);
+					labelRingingView.setText(ringingText);
+				}
+				else{
+					String connectingText = labelRingingView.getText() + "\n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setText(connectingText);
 				}
 				startOutgoingRingCount();
 			}
