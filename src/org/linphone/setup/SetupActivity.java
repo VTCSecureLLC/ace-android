@@ -75,8 +75,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	static int WIFI_ACTIVITY_RESULT=0;
 
-	public static boolean tried_tls_on_tcp_failure =false;
-	public static boolean trying_tls_on_tcp_failure=false;
+	public boolean tried_tls_on_tcp_failure =false;
+	public boolean trying_tls_on_tcp_failure=false;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,7 +111,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 							//Only cancel login dialog if registration was successful, or failed. Dont cancel in try_tls_on_tcp_failure
 							mProgressDialog.dismiss();
 						}
-						else if(state == RegistrationState.RegistrationNone){
+						else if (state == RegistrationState.RegistrationNone)
+						{
 
 						}
 						else if (state != RegistrationState.RegistrationProgress) {
@@ -137,11 +138,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								tried_tls_on_tcp_failure =true;
 
 
+
 							}else{
-
-
 								if(trying_tls_on_tcp_failure){
-									//reset spinner and port in case of failure
 									GenericLoginFragment.instance().transport.setSelection(tcp_position);
 									try {
 										GenericLoginFragment.instance().port.setText(GenericLoginFragment.instance().port.getText().toString().replace("5061", "5060"));
@@ -149,17 +148,18 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 										e.printStackTrace();
 									}
 									trying_tls_on_tcp_failure=false;
+
 									//tried_tls_on_tcp_failure=false;
 
 
-								}else{
-									//Couldn't register (Login)
-									mProgressDialog.dismiss();
-									Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-									//deleteAccounts();
-									trying_tls_on_tcp_failure=false;
-									tried_tls_on_tcp_failure=false;
 								}
+
+							mProgressDialog.dismiss();
+							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
+							//deleteAccounts();
+							trying_tls_on_tcp_failure=false;
+							tried_tls_on_tcp_failure=false;
+							deleteCreatedAccount();
 
 							}
 
@@ -191,7 +191,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		if (lc != null) {
 			lc.removeListener(mListener);
 		}
-		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
+		if(createdAccountIndex>= 0 && accountCreated && (LinphoneManager.getLc().getProxyConfigList()[createdAccountIndex]==null || !LinphoneManager.getLc().getProxyConfigList()[createdAccountIndex].isRegistered()) )
 		{
 			deleteCreatedAccount();
 		}
