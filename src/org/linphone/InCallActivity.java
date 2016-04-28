@@ -1117,7 +1117,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 					incomingTextView.setText(currentText + (char)character);
 				}
-				if(incomingTextView.length() == 0)
+				if(incomingTextView.getText().toString().trim().length() == 0)
 					incomingTextView.setVisibility(View.GONE);
 				else if(incomingTextView.getVisibility() == View.GONE)
 					incomingTextView.setVisibility(View.VISIBLE);
