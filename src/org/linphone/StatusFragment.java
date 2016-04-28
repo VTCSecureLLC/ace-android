@@ -319,11 +319,13 @@ public class StatusFragment extends Fragment {
 					if(cfg != null){
 						LinphoneAddress addr = cfg.getAddress();
 						if(addr != null && LinphoneManager.getLc().getCallsNb() == 0){
-							String addrText = addr.asString();
-							if(addrText != null) {
-								userNameText.setVisibility(View.INVISIBLE);
-								userNameText.setText(addrText.replace("sip:",""));
-								callQuality.setVisibility(View.INVISIBLE);
+							if(addr.getUserName() != null) {
+								String addrText = addr.getUserName().split("@")[0];
+								if (addrText != null) {
+									userNameText.setVisibility(View.VISIBLE);
+									userNameText.setText(addrText.replace("sip:", ""));
+									callQuality.setVisibility(View.INVISIBLE);
+								}
 							}
 						}
 						else{
