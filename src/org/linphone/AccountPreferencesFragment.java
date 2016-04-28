@@ -51,7 +51,9 @@ public class AccountPreferencesFragment extends PreferencesListFragment {
 	
 	public AccountPreferencesFragment() {
 		super(R.xml.account_preferences);
-		mPrefs = LinphonePreferences.instance();
+		mPrefs =
+
+				LinphonePreferences.instance();
 	}
 	
 	public void onCreate(Bundle savedInstanceState) 

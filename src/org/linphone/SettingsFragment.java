@@ -496,7 +496,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			if (username == null) {
 				account.setTitle(getString(R.string.pref_sipaccount));
 			} else {
-				account.setTitle(username + "@" + domain);
+				account.setTitle(username);
 			}
 
 			if (defaultAccountID == i) {
@@ -504,7 +504,7 @@ public class SettingsFragment extends PreferencesListFragment {
 			}
 
 
-			updateAccountLed(account, username, domain, mPrefs.isAccountEnabled(i));
+			updateAccountLed(account, username, domain, mPrefs.isAccountRegistered(i));
 			accounts.addPreference(account);
 		}
 	}
@@ -524,7 +524,7 @@ public class SettingsFragment extends PreferencesListFragment {
 					me.setLed(R.drawable.led_disconnected);
 					return;
 				}
-				if (addr.getUserName().equals(username) && addr.getDomain().equals(domain)) {
+				if(addr.asStringUriOnly().equals(lpc.getAddress().asStringUriOnly())) {
 					if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationOk) {
 						me.setLed(R.drawable.led_connected);
 					} else if (lpc.getState() == LinphoneCore.RegistrationState.RegistrationFailed) {

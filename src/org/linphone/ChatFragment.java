@@ -51,7 +51,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -75,7 +74,6 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListenerBase;
-import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.AvatarWithShadow;
 import org.linphone.ui.BubbleChat;
@@ -148,10 +146,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		contactName = (TextView) view.findViewById(R.id.contactName);
 		contactPicture = (AvatarWithShadow) view.findViewById(R.id.contactPicture);
 		messagesList = (ListView) view.findViewById(R.id.chatMessageList);
-		if(LinphonePreferences.instance().areAnimationsEnabled()) {
-			LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in_right_to_left), 0.1f); //0.5f == time between appearance of listview items.
-			messagesList.setLayoutAnimation(lac);
-		}
+
 		textLayout = (RelativeLayout) view.findViewById(R.id.messageLayout);
 		progressBar = (ProgressBar) view.findViewById(R.id.progressbar);
 		topBar = (LinearLayout) view.findViewById(R.id.topbar);

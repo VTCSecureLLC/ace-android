@@ -44,6 +44,7 @@ import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCallStats;
@@ -58,6 +59,7 @@ import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.SlidingDrawer;
 import org.linphone.ui.SlidingDrawer.OnDrawerOpenListener;
+import org.linphone.vtcsecure.g;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +73,7 @@ public class StatusFragment extends Fragment {
 	private Handler mHandler = new Handler();
 	private Handler refreshHandler = new Handler();
 	private View qualityIdentifier;
-	private TextView statusText, exit, voicemailCount;
+	private TextView statusText, exit, voicemailCount, userNameText;
 	private ImageView statusLed, callQuality, encryption, background;
 	private ListView sliderContentAccounts;
 	public TableLayout callStats;
@@ -98,7 +100,8 @@ public class StatusFragment extends Fragment {
 		background = (ImageView) view.findViewById(R.id.background);
 //		allAccountsLed = (LinearLayout) view.findViewById(R.id.moreStatusLed);
 		callStats = (TableLayout) view.findViewById(R.id.callStats);
-		
+		userNameText = (TextView)view.findViewById(R.id.userNameText);
+
 		drawer = (SlidingDrawer) view.findViewById(R.id.statusBar);
 		drawer.setOnDrawerOpenListener(new OnDrawerOpenListener() {
 			@Override
@@ -308,7 +311,27 @@ public class StatusFragment extends Fragment {
 			context = LinphoneService.instance();
 		
 		try {
+			if(userNameText != null) {
+				userNameText.setText("");
+			}
 			if (state == RegistrationState.RegistrationOk && LinphoneManager.getLcIfManagerNotDestroyedOrNull().getDefaultProxyConfig().isRegistered()) {
+				if(userNameText != null) {
+					LinphoneProxyConfig cfg = LinphoneManager.getLcIfManagerNotDestroyedOrNull().getDefaultProxyConfig();
+					if(cfg != null){
+						LinphoneAddress addr = cfg.getAddress();
+						if(addr != null && LinphoneManager.getLc().getCallsNb() == 0){
+							String addrText = addr.asString();
+							if(addrText != null) {
+								userNameText.setVisibility(View.VISIBLE);
+								userNameText.setText(addrText.replace("sip:",""));
+								callQuality.setVisibility(View.INVISIBLE);
+							}
+						}
+						else{
+							callQuality.setVisibility(View.VISIBLE);
+						}
+					}
+				}
 				return context.getString(R.string.status_connected);
 			} else if (state == RegistrationState.RegistrationProgress) {
 				return context.getString(R.string.status_in_progress);
@@ -336,7 +359,7 @@ public class StatusFragment extends Fragment {
 					mCallQualityUpdater = null;
 					return;
 				}
-				
+				userNameText.setVisibility(View.INVISIBLE);
 
 				float newQuality = mCurrentCall.getCurrentQuality();
 				if ((int) newQuality != oldQuality /*&& !mCurrentCall.mediaInProgress()*/) {
@@ -583,6 +606,9 @@ public class StatusFragment extends Fragment {
 									}
 									dl.setText(String.valueOf((int) videoStats.getDownloadBandwidth()) + " / " + (int) audioStats.getDownloadBandwidth() + " kbits/s");
 									ul.setText(String.valueOf((int) videoStats.getUploadBandwidth()) +  " / " + (int) audioStats.getUploadBandwidth() + " kbits/s");
+
+
+
 									ice.setText(videoStats.getIceState().toString());
 
 									videoResolutionLayout.setVisibility(View.VISIBLE);
@@ -600,6 +626,12 @@ public class StatusFragment extends Fragment {
 									getRoundTripDelay.setText(String.valueOf(videoStats.getRoundTripDelay()));
 									getSenderInterarrivalJitter.setText(String.valueOf(videoStats.getSenderInterarrivalJitter()));
 									getSenderLossRate.setText(String.valueOf(videoStats.getSenderLossRate()));
+
+									//Send one time call update during first status update to fix video negotiation issues.
+									if(!g.intial_call_update_sent) {
+										InCallActivity.instance().update_call();
+										g.intial_call_update_sent = true;
+									}
 
 								}
 							} else {
@@ -736,7 +768,7 @@ public class StatusFragment extends Fragment {
 			}
 			
 			// Force led if account is disabled
-			if (!LinphonePreferences.instance().isAccountEnabled(accountIndex)) {
+			if (!LinphonePreferences.instance().isAccountRegistered(accountIndex)) {
 				status.setImageResource(getStatusIconResource(RegistrationState.RegistrationNone, false));
 			} else {
 				if (LinphonePreferences.instance().getDefaultAccountIndex() == accountIndex) {
