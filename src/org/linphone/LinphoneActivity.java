@@ -97,6 +97,7 @@ import org.linphone.setup.JsonConfig;
 import org.linphone.setup.RemoteProvisioningLoginActivity;
 import org.linphone.setup.SetupActivity;
 import org.linphone.ui.AddressText;
+import org.linphone.vtcsecure.GAUtils;
 import org.linphone.vtcsecure.LinphoneLocationManager;
 import org.linphone.vtcsecure.Utils;
 import org.linphone.vtcsecure.g;
@@ -789,6 +790,10 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	private void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras, boolean withoutAnimation) {
+
+		if(g.analytics_tracker==null){
+			g.analytics_tracker=new GAUtils(getApplicationContext()).getInstance(getApplicationContext());
+		}
 		if (newFragmentType == currentFragment && newFragmentType != FragmentsAvailable.CHAT && newFragmentType != FragmentsAvailable.SETTINGS) {
 			return;
 		}
