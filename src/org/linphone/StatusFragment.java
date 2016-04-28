@@ -322,7 +322,7 @@ public class StatusFragment extends Fragment {
 						if(addr != null && LinphoneManager.getLc().getCallsNb() == 0){
 							String addrText = addr.asString();
 							if(addrText != null) {
-								userNameText.setVisibility(View.VISIBLE);
+								userNameText.setVisibility(View.INVISIBLE);
 								userNameText.setText(addrText.replace("sip:",""));
 								callQuality.setVisibility(View.INVISIBLE);
 							}
