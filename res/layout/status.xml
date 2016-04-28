@@ -459,12 +459,12 @@
 				android:text=""
 				android:textColor="@android:color/white"
 				android:textSize="18sp"
-				android:paddingLeft="5dp"
+				android:paddingRight="10dp"
 				android:layout_centerVertical="true"
 				android:layout_width="wrap_content"
 				android:layout_height="match_parent"
 				android:gravity="center_vertical"
-				android:layout_toRightOf="@id/statusText" />
+				android:layout_alignParentRight="true" />
 
 			<LinearLayout
 		        android:id="@+id/moreStatusLed"
