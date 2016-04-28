@@ -90,7 +90,10 @@ public class LinphonePreferences {
 
 		if (!LinphoneManager.isInstanciated()) {
 			Log.w("LinphoneManager not instanciated yet...");
-			return LinphoneCoreFactory.instance().createLpConfig(mContext.getFilesDir().getAbsolutePath() + "/.linphonerc");
+			if(mContext != null) {
+				return LinphoneCoreFactory.instance().createLpConfig(mContext.getFilesDir().getAbsolutePath() + "/.linphonerc");
+			}
+
 		}
 
 		return LinphoneCoreFactory.instance().createLpConfig(LinphoneManager.getInstance().mLinphoneConfigFile);
