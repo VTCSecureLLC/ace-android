@@ -59,7 +59,6 @@ import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.SlidingDrawer;
 import org.linphone.ui.SlidingDrawer.OnDrawerOpenListener;
-import org.linphone.vtcsecure.g;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -606,9 +605,6 @@ public class StatusFragment extends Fragment {
 									}
 									dl.setText(String.valueOf((int) videoStats.getDownloadBandwidth()) + " / " + (int) audioStats.getDownloadBandwidth() + " kbits/s");
 									ul.setText(String.valueOf((int) videoStats.getUploadBandwidth()) +  " / " + (int) audioStats.getUploadBandwidth() + " kbits/s");
-
-
-
 									ice.setText(videoStats.getIceState().toString());
 
 									videoResolutionLayout.setVisibility(View.VISIBLE);
@@ -626,12 +622,6 @@ public class StatusFragment extends Fragment {
 									getRoundTripDelay.setText(String.valueOf(videoStats.getRoundTripDelay()));
 									getSenderInterarrivalJitter.setText(String.valueOf(videoStats.getSenderInterarrivalJitter()));
 									getSenderLossRate.setText(String.valueOf(videoStats.getSenderLossRate()));
-
-									//Send one time call update during first status update to fix video negotiation issues.
-									if(!g.intial_call_update_sent) {
-										InCallActivity.instance().update_call();
-										g.intial_call_update_sent = true;
-									}
 
 								}
 							} else {
