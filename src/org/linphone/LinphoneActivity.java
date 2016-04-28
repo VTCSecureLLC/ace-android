@@ -294,13 +294,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			public void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content) {
 				super.notifyReceived(lc, ev, eventName, content);
 				if (content.getSubtype().equals("simple-message-summary")) {
-					SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-					int count = prefs.getInt("mwi_count", 0);
-					count++;
-					prefs.edit().putInt("mwi_count", count).commit();
+					try {
+						SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+						String key = "Messages-Waiting: ";
+						String data = new String(content.getData());
+						data = data.substring(data.indexOf(key) + key.length());
+						int number = Integer.parseInt(data.substring(0, data.indexOf("\r\n")));
 
-					if (missedVideoMails != null) {
-						reloadMwiCount(true);
+						prefs.edit().putInt("mwi_count", number).commit();
+
+						if (missedVideoMails != null) {
+							reloadMwiCount(true);
+						}
+					} catch (Throwable e) {
+						e.printStackTrace();
 					}
 				}
 			}
@@ -488,7 +495,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private void videoMail() {
 		try {
-			LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), ""), getResources().getString(R.string.main_menu_videomail));
+			LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), LinphoneManager.getLc().getDefaultProxyConfig().getAddress().asStringUriOnly()), getResources().getString(R.string.main_menu_videomail));
 			LinphoneActivity.instance().resetMessageWaitingCount();
 			videoMailTextView.setText(getResources().getString(R.string.main_menu_videomail) + " (" + String.valueOf(LinphoneActivity.instance().getMessageWaitingCount()) + ")");
 		}
