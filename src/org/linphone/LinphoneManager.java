@@ -1098,7 +1098,6 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		if (state==State.CallEnd || state == State.CallReleased || state == State.Error){
 			if (mLc.getCallsNb() == 0) {
 				g.in_call_activity_suspended = false;
-				g.intial_call_update_sent = false;
 			}
 		}
 
