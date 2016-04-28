@@ -294,7 +294,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			public void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content) {
 				super.notifyReceived(lc, ev, eventName, content);
 				if (content.getSubtype().equals("simple-message-summary")) {
-					SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LinphoneActivity.this);
+					SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
 					int count = prefs.getInt("mwi_count", 0);
 					count++;
 					prefs.edit().putInt("mwi_count", count).commit();
@@ -487,9 +487,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	};
 
 	private void videoMail() {
-		LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), ""), getResources().getString(R.string.main_menu_videomail));
-		LinphoneActivity.instance().resetMessageWaitingCount();
-		videoMailTextView.setText(getResources().getString(R.string.main_menu_videomail) + " (" + String.valueOf(LinphoneActivity.instance().getMessageWaitingCount()) + ")");
+		try {
+			LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), ""), getResources().getString(R.string.main_menu_videomail));
+			LinphoneActivity.instance().resetMessageWaitingCount();
+			videoMailTextView.setText(getResources().getString(R.string.main_menu_videomail) + " (" + String.valueOf(LinphoneActivity.instance().getMessageWaitingCount()) + ")");
+		}
+		catch (Throwable e){
+			e.printStackTrace();
+		}
 	}
 
 	private void initMore() {
@@ -1137,12 +1142,12 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	}
 
 	public int getMessageWaitingCount(){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
 		int count = prefs.getInt("mwi_count", 0);
 		return count;
 	}
 	public void resetMessageWaitingCount(){
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
 		prefs.edit().putInt("mwi_count", 0).commit();
 		reloadMwiCount(false);
 	}

@@ -634,9 +634,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			e.printStackTrace();
 		}
 
+		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
 		editor.remove(LinphoneActivity.UNREAD_VIDEO_MAIL_MESSAGES).commit();
-		editor.remove("mwi_count").commit();
-
+		prefs.edit().remove("mwi_count").commit();
 	}
 
 	public void displayWizardConfirm(String username) {
