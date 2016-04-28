@@ -430,6 +430,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 					}
 					stopOutgoingRingCount();
+
 				}
 
 				if (lc.getCallsNb() == 0) {
@@ -509,6 +510,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //						videoProgress.setVisibility(View.GONE);
 						status.refreshStatusItems(call, isVideoEnabled(call));
 					}
+					statusContainer.setVisibility(View.GONE);
 				}
 
 				refreshInCallActions();
