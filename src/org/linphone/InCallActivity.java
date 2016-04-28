@@ -2522,7 +2522,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	public void startOutgoingRingCount() {
-		statusContainer.setVisibility(View.VISIBLE);
+//		statusContainer.setVisibility(View.VISIBLE);
 		labelRingingView.setVisibility(View.VISIBLE);
 		outboundRingCountView.setVisibility(View.VISIBLE);
 
@@ -2557,7 +2557,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			//findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
 			//findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
 		}
-		statusContainer.setVisibility(View.GONE);
 	}
 
 
