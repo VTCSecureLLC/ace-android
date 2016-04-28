@@ -8,6 +8,7 @@
     <dimen name="more_menu_options_width">240dp</dimen>
     <dimen name="more_menu_options_height">55dp</dimen>
     <dimen name="main_menu_settings_padding_left_rigth">15dp</dimen>
-    <dimen name="call_main_status_font_size">50sp</dimen>
+    <dimen name="call_main_status_font_size">42sp</dimen>
     <dimen name="call_sub_status_font_size">50sp</dimen>
+    <dimen name="main_video_mail_badge_width_heigth">30dp</dimen>
 </resources>

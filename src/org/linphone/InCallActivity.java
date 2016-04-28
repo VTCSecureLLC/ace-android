@@ -399,11 +399,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					e.printStackTrace();
 				}
 
-				if(state == State.OutgoingRinging)
-				{
-					labelRingingView.setText("Ringing...");
+				if(state == State.OutgoingRinging) {
+					String ringingText = "Ringing... \n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setLines(4);
+					labelRingingView.setText(ringingText);
 				}
-
 
 				if(state == State.CallEnd || state == State.Error || state == State.CallReleased
 						|| state == State.Connected
@@ -594,9 +594,14 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			videoCallFragment = (VideoCallFragment) callFragment;
 
 			if(call != null && call.getDirection() == CallDirection.Outgoing && isConnecting(call.getState())){
-				if(call.getState() == State.OutgoingRinging)
-				{
-					labelRingingView.setText("Ringing...");
+				if(call.getState() == State.OutgoingRinging) {
+					String ringingText = "Ringing... \n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setLines(4);
+					labelRingingView.setText(ringingText);
+				}
+				else{
+					String connectingText = labelRingingView.getText() + "\n" + call.getRemoteAddress().asStringUriOnly();
+					labelRingingView.setText(connectingText);
 				}
 				startOutgoingRingCount();
 			}
@@ -870,6 +875,21 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 				enter_pressed = s.length() > 0 && s.subSequence(s.length() - 1, s.length()).toString().equalsIgnoreCase("\n");
+				int text_len = outgoingEditText.getText().toString().length();
+
+				if(text_len==0)
+				{
+					outgoingEditText.setBackgroundResource(0);
+				}
+				else if(text_len==1)
+				{
+					if(LinphonePreferences.instance().isForce508()){
+						outgoingEditText.setBackgroundResource(R.drawable.chat_bubble_outgoing_508);
+					}else{
+						outgoingEditText.setBackgroundResource(R.drawable.chat_bubble_outgoing);
+					}
+					standardize_bubble_view(outboundRingCountView);
+				}
 
 				char enter_button=(char) 10;
 				char back_space_button=(char) 8;
@@ -879,6 +899,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						previousoutgoingEditText=outgoingEditText;
 						sendRttCharacter(enter_button);
 						create_new_outgoing_bubble(outgoingEditText, /*true*/ true);
+						outgoingEditText.setBackgroundResource(0);
 					}else if(count > before){
 
 						CharSequence last_letter_of_sequence = s.subSequence(start + before, start + count);
@@ -949,7 +970,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		//Default TextSize is 32dp
 		tv.setTextSize(16);
 		if(!LinphonePreferences.instance().isForce508()){//use transparency if not 508
-			tv.getBackground().setAlpha(180);
+			if(tv.getBackground()!=null)
+				tv.getBackground().setAlpha(180);
 		}
 		if(rtt_typeface!=null) {
 			tv.setTypeface(rtt_typeface);
@@ -1053,9 +1075,9 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 				if (incomingTextView == null) return;
 
-				if(!incomingTextView.isShown()){
-					incomingTextView=create_new_incoming_bubble();
-				}
+//				if(!incomingTextView.isShown()){
+//					incomingTextView=create_new_incoming_bubble();
+//				}
 
 				String currentText = incomingTextView.getText().toString();
 				if (character == 8) {// backspace
@@ -1074,6 +1096,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					}
 					incomingTextView.setText(currentText + (char)character);
 				}
+				if(incomingTextView.getText().toString().trim().length()==0)
+					incomingTextView.setVisibility(View.GONE);
+				else if(incomingTextView.getVisibility() != View.VISIBLE)
+					incomingTextView.setVisibility(View.VISIBLE);
 				rtt_scrollview.post(new Runnable() {
 					@Override
 					public void run() {
