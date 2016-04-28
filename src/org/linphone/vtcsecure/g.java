@@ -29,4 +29,6 @@ public class g {
     public static boolean AudioMuted;
     public static boolean VideoCallPaused;
 
+    public static boolean intial_call_update_sent=false;
+
 }

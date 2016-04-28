@@ -59,6 +59,7 @@ import org.linphone.core.PayloadType;
 import org.linphone.mediastream.Log;
 import org.linphone.ui.SlidingDrawer;
 import org.linphone.ui.SlidingDrawer.OnDrawerOpenListener;
+import org.linphone.vtcsecure.g;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -624,6 +625,16 @@ public class StatusFragment extends Fragment {
 									getRoundTripDelay.setText(String.valueOf(videoStats.getRoundTripDelay()));
 									getSenderInterarrivalJitter.setText(String.valueOf(videoStats.getSenderInterarrivalJitter()));
 									getSenderLossRate.setText(String.valueOf(videoStats.getSenderLossRate()));
+
+
+									try {
+										if (!g.intial_call_update_sent) {
+											InCallActivity.instance().update_call();
+											g.intial_call_update_sent = true;
+										}
+									}catch(Throwable e){
+										e.printStackTrace();
+									}
 
 								}
 							} else {
