@@ -1384,6 +1384,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		statusContainer.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				statusContainer.setVisibility(View.GONE);
 				if(showStatusFlashing) {
 					stopStatusFlashing();
 				}
