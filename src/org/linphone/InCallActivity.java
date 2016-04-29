@@ -2390,6 +2390,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 		registerReceiver(myReceiver, filter);
+
+		try {
+			LinphoneManager.getLc().muteMic(isMicMuted);
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+		update_call();
 	}
 
 	private void handleViewIntent() {

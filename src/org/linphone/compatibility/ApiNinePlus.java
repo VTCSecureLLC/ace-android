@@ -13,6 +13,7 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.linphone.Contact;
 import org.linphone.LinphoneUtils;
@@ -309,20 +310,12 @@ public class ApiNinePlus {
 
 		String select = ContactsContract.Data.CONTACT_ID + "=? AND ( "
 				+ ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.SipAddress.CONTENT_ITEM_TYPE +  "' OR "
-				+ ContactsContract.Data.MIMETYPE  + "=" + Phone.CONTENT_ITEM_TYPE + ")";
+				+ ContactsContract.Data.MIMETYPE  + "='" + Phone.CONTENT_ITEM_TYPE + "')";
 		String[] args = new String[] { String.valueOf(contactId) };
-
 		ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
 				.withSelection(select, args)
 				.build()
 		);
-
-
-		ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-				.withSelection(select, args)
-				.build()
-		);
-
 
 		// change name
 		ops.add( ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
