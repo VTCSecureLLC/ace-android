@@ -256,7 +256,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		instance = new LinphoneManager(c);
 		instance.startLibLinphone(c);
-		instance.configH264HardwareAcell(true, false);
+		instance.configH264HardwareAcell(false, false);
 
 		TelephonyManager tm = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
 		boolean gsmIdle = tm.getCallState() == TelephonyManager.CALL_STATE_IDLE;
