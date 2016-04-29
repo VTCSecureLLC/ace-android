@@ -1224,12 +1224,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			changeCurrentFragment(FragmentsAvailable.CHAT, null);
 			chat.setSelected(true);
 			chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
-			isMessagesViewed = true;
-			missedChats.setVisibility(View.GONE);
-			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
 		}
 	}
 
+
+	public void unreadMessageBadge(){
+		isMessagesViewed = true;
+		missedChats.setVisibility(View.GONE);
+		mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+	}
 	private void resetSelection() {
 		history.setSelected(false);
 		history.setBackgroundColor(Color.TRANSPARENT);
@@ -1394,7 +1397,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		if (isNewMessage) {
 			isMessagesViewed = false;
 			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
-			if (missedChatCount > 0) {
+			if (missedChatCount > 0 && currentFragment != FragmentsAvailable.CHAT) {
 				missedChats.setText("!");
 				missedChats.setVisibility(View.VISIBLE);
 				if (!isAnimationDisabled) {

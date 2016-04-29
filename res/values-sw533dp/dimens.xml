@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="main_video_mail_badge_width_heigth">30dp</dimen>
+    <dimen name="call_sub_status_call_number_font_size">45sp</dimen>
 </resources>

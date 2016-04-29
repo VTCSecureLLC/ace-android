@@ -37,6 +37,7 @@
     <dimen name="main_menu_settings_padding_left_rigth">7dp</dimen>
 
     <dimen name="call_main_status_font_size">32sp</dimen>
-    <dimen name="call_sub_status_font_size">45sp</dimen>
+    <dimen name="call_sub_status_font_size">30sp</dimen>
     <dimen name="main_video_mail_badge_width_heigth">25dp</dimen>
+    <dimen name="call_sub_status_call_number_font_size">45sp</dimen>
 </resources>
