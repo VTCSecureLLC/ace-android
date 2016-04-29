@@ -31,29 +31,50 @@ public class LinphoneLocationManager implements LocationListener {
     }
 
     public void updateLocation() {
-    try {
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
-            userLocation = location;
-        } else {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        try {
+            Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+                userLocation = location;
+            } else {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            }
         }
-    }
-
-    catch(Exception e){
-        Log.e("E", "Trying to update location but GPS is not available on this device.");
-    }
+        catch(Exception e){
+            Log.e("E", "Trying to update location but GPS is not available on this device.");
+            try {
+                Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+                    userLocation = location;
+                } else {
+                    mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+                }
+            }
+            catch(Exception e){
+                Log.e("E", "Trying to update location but NETWORK is not available on this device.");
+                try {
+                    Location location = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+                    if (location != null && location.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
+                        userLocation = location;
+                    } else {
+                        mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
+                    }
+                }
+                catch(Exception e){
+                    Log.e("E", "Trying to update location but PASSIVE is not available on this device.");
+                }
+            }
+        }
     }
 
     public void onLocationChanged(Location location) {
         if (location != null) {
-        	userLocation = location;
+            userLocation = location;
             mLocationManager.removeUpdates(this);
         }
     }
     
     public Boolean isLocationProviderEnabled() {
-        return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) || mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return mLocationManager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER) || mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) || mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }	
     
     
