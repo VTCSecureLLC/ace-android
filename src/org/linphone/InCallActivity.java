@@ -1526,9 +1526,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (4)");
 		}
 
-		if(isEmergencyCall)
-			isMicMuted = false;
-		LinphoneManager.getLcIfManagerNotDestroyedOrNull().muteMic(isMicMuted);
+
 		if (isMicMuted) {
 			micro.setSelected(true);
 		} else {
