@@ -2383,6 +2383,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 		registerReceiver(myReceiver, filter);
+		update_call();//Adding secret refresh option, to fix when android tv (or any device doesn't refresh).
 	}
 
 	private void handleViewIntent() {
