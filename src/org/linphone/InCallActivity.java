@@ -643,6 +643,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		}
 
+		invalidateStatusContainer();
 		checkIncomingCall();
 
 
