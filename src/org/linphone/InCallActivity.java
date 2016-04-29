@@ -1527,6 +1527,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}
 
 
+		if(isEmergencyCall) {
+			isMicMuted = false;
+		}
+
+
 		if (isMicMuted) {
 			micro.setSelected(true);
 		} else {
@@ -2383,6 +2388,12 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 		registerReceiver(myReceiver, filter);
+
+		try {
+			LinphoneManager.getLc().muteMic(isMicMuted);
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
 	}
 
 	private void handleViewIntent() {
