@@ -14,11 +14,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.Contacts;
 import android.provider.ContactsContract;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.linphone.ContactsManager;
@@ -334,7 +336,13 @@ public class VCardIO extends Service {
 
 				showNotification();
 
-				LinphoneFriendList lfl = ContactUtils.getLinphoneFriendsFromContacts(VCardIO.this, lc);
+				LinphoneFriendList lfl = null;
+				try {
+					lfl = lc.createLinphoneFriendList();
+				} catch (LinphoneCoreException e) {
+					e.printStackTrace();
+				}
+				ContactUtils.updateFriendsFromContacts(lfl, getContentResolver());
 				if(lfl==null)
 				{
 					app.updateStatus("Error occurred during export");
@@ -350,6 +358,7 @@ public class VCardIO extends Service {
 				app.updateProgress(50);
 
 				lfl.exportFriendsToVCardFile(fileName);
+				Log.e("Info","friends count: " + lfl.getFriendList().length);
 				app.updateProgress(100);
 				synchronized (syncMonitor) {
 					mAction = Action.IDLE;
