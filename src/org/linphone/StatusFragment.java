@@ -320,11 +320,13 @@ public class StatusFragment extends Fragment {
 					if(cfg != null){
 						LinphoneAddress addr = cfg.getAddress();
 						if(addr != null && LinphoneManager.getLc().getCallsNb() == 0){
-							String addrText = addr.asString();
-							if(addrText != null) {
-								userNameText.setVisibility(View.VISIBLE);
-								userNameText.setText(addrText.replace("sip:",""));
-								callQuality.setVisibility(View.INVISIBLE);
+							if(addr.getUserName() != null) {
+								String addrText = addr.getUserName().split("@")[0];
+								if (addrText != null) {
+									userNameText.setVisibility(View.VISIBLE);
+									userNameText.setText(addrText.replace("sip:", ""));
+									callQuality.setVisibility(View.INVISIBLE);
+								}
 							}
 						}
 						else{
@@ -606,9 +608,6 @@ public class StatusFragment extends Fragment {
 									}
 									dl.setText(String.valueOf((int) videoStats.getDownloadBandwidth()) + " / " + (int) audioStats.getDownloadBandwidth() + " kbits/s");
 									ul.setText(String.valueOf((int) videoStats.getUploadBandwidth()) +  " / " + (int) audioStats.getUploadBandwidth() + " kbits/s");
-
-
-
 									ice.setText(videoStats.getIceState().toString());
 
 									videoResolutionLayout.setVisibility(View.VISIBLE);
@@ -627,10 +626,14 @@ public class StatusFragment extends Fragment {
 									getSenderInterarrivalJitter.setText(String.valueOf(videoStats.getSenderInterarrivalJitter()));
 									getSenderLossRate.setText(String.valueOf(videoStats.getSenderLossRate()));
 
-									//Send one time call update during first status update to fix video negotiation issues.
-									if(!g.intial_call_update_sent) {
-										InCallActivity.instance().update_call();
-										g.intial_call_update_sent = true;
+
+									try {
+										if (!g.intial_call_update_sent) {
+											InCallActivity.instance().update_call();
+											g.intial_call_update_sent = true;
+										}
+									}catch(Throwable e){
+										e.printStackTrace();
 									}
 
 								}

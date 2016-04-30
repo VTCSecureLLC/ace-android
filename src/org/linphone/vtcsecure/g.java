@@ -31,5 +31,4 @@ public class g {
 
     public static boolean intial_call_update_sent=false;
 
-
 }
