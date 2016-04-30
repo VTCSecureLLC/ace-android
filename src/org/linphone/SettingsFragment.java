@@ -1526,9 +1526,7 @@ public class SettingsFragment extends PreferencesListFragment {
 		initializeVideoPresetPreferences((ListPreference) findPreference(getString(R.string.pref_video_preset_key)));
 		initializePreferredVideoSizePreferences((ListPreference) findPreference(getString(R.string.pref_preferred_video_size_key)));
 		initializePreferredVideoFpsPreferences((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key)));
-		EditTextPreference bandwidth = (EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key));
-		bandwidth.setText(Integer.toString(mPrefs.getBandwidthLimit()));
-		bandwidth.setSummary(getSummery(bandwidth.getText()));
+
 		updateVideoPreferencesAccordingToPreset();
 
 		PreferenceCategory codecs = (PreferenceCategory) findPreference(getString(R.string.pref_video_codecs_key));
@@ -1596,6 +1594,9 @@ public class SettingsFragment extends PreferencesListFragment {
 		}
 		((ListPreference) findPreference(getString(R.string.pref_preferred_video_fps_key))).setSummary(getSummery(fpsStr));
 		((EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key))).setSummary(getSummery(Integer.toString(mPrefs.getBandwidthLimit())));
+		EditTextPreference bandwidth = (EditTextPreference) findPreference(getString(R.string.pref_bandwidth_limit_key));
+		bandwidth.setText(Integer.toString(mPrefs.getBandwidthLimit()));
+		bandwidth.setSummary(getSummery(bandwidth.getText()));
 	}
 
 	private void setVideoPreferencesListener() {
