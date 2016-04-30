@@ -49,7 +49,7 @@ public class LinphoneLocationManager implements LocationListener {
                     mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
                 }
             }
-            catch(Exception e){
+            catch(Exception g){
                 Log.e("E", "Trying to update location but NETWORK is not available on this device.");
                 try {
                     Location location = mLocationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
@@ -59,7 +59,7 @@ public class LinphoneLocationManager implements LocationListener {
                         mLocationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, this);
                     }
                 }
-                catch(Exception e){
+                catch(Exception f){
                     Log.e("E", "Trying to update location but PASSIVE is not available on this device.");
                 }
             }
@@ -79,8 +79,8 @@ public class LinphoneLocationManager implements LocationListener {
     
     
     public String userLocation() {
-    	if (!isLocationProviderEnabled()) return NULL; // locationDenied;
-    	else if (userLocation == null || (userLocation.getLatitude()==0 && userLocation.getLongitude()==0)) return NULL; // locationNotFound;
+    	if (!isLocationProviderEnabled()) return null; // locationDenied;
+    	else if (userLocation == null || (userLocation.getLatitude()==0 && userLocation.getLongitude()==0)) return null; // locationNotFound;
     	else return "geo:"+userLocation.getLatitude()+","+userLocation.getLongitude();
     }
 

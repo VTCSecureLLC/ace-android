@@ -65,7 +65,7 @@ public class CallManager {
 
 		if ((lAddress.getUserName().startsWith(emergencyNumber)||lAddress.getUserName().startsWith(emergencyNumber_alt)) && LinphoneActivity.isInstanciated()) {
 			String location = LinphoneLocationManager.instance(LinphoneActivity.instance()).userLocation();
-			if (location) {
+			if (location != null) {
 				params.addCustomHeader("Geolocation", "<"+location+">");
 			}
 		}
