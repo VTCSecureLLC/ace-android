@@ -148,6 +148,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private ConnectivityManager mConnectivityManager;
 	private Handler mHandler = new Handler();
 	private WakeLock mIncallWakeLock;
+	private LinphoneAddress mAddressToSkipNotification;
 	private static List<LinphoneChatMessage> mPendingChatFileMessage;
 	private static LinphoneChatMessage mUploadPendingFileMessage;
 
@@ -900,6 +901,12 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		Log.d("DTMF received: " + dtmf);
 	}
 
+
+	public void setAddressToSkipNotification(LinphoneAddress address)
+	{
+		mAddressToSkipNotification = address;
+	}
+
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 		if (mServiceContext.getResources().getBoolean(R.bool.disable_chat)) {
@@ -932,6 +939,9 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 							showNotification = false;
 					}
 				}
+				if(mAddressToSkipNotification != null && cr.getPeerAddress().asString().equals(mAddressToSkipNotification.asString()))
+					showNotification = false;
+
 				if(showNotification) {
 					if (contact != null) {
 						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);
