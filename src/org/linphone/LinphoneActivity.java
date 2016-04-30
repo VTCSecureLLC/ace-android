@@ -1370,11 +1370,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
+	public void unreadMessageBadge(){
+		isMessagesViewed = true;
+		missedChats.setVisibility(View.GONE);
+		mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+	}
 	private void displayMissedChats(final int missedChatCount, final boolean isNewMessage) {
 
 		if (isNewMessage) {
 			isMessagesViewed = false;
-			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
 			if (missedChatCount > 0) {
 				missedChats.setText("!");
 				missedChats.setVisibility(View.VISIBLE);
