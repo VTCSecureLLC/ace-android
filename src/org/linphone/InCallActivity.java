@@ -441,6 +441,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 					}
 					stopOutgoingRingCount();
+
 				}
 
 				if (lc.getCallsNb() == 0) {
@@ -521,6 +522,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //						videoProgress.setVisibility(View.GONE);
 						status.refreshStatusItems(call, isVideoEnabled(call));
 					}
+					statusContainer.setVisibility(View.GONE);
 				}
 
 				refreshInCallActions();
@@ -1927,6 +1929,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	private void hangUp() {
+		finishWithoutDelay = true;
 		LinphoneCore lc = LinphoneManager.getLc();
 		int call_number  = lc.getCallsNb();
 		LinphoneCall currentCall = lc.getCurrentCall();
@@ -2556,7 +2559,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	public void startOutgoingRingCount() {
-		statusContainer.setVisibility(View.VISIBLE);
+//		statusContainer.setVisibility(View.VISIBLE);
 		labelRingingView.setVisibility(View.VISIBLE);
 		outboundRingCountView.setVisibility(View.VISIBLE);
 		invalidateStatusContainer();

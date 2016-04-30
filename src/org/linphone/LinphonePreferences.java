@@ -293,11 +293,11 @@ public class LinphonePreferences {
 		 * Creates a new account
 		 * @throws LinphoneCoreException
 		 */
-		public void saveNewAccount() throws LinphoneCoreException {
+		public String saveNewAccount() throws LinphoneCoreException {
 
 			if (tempUsername == null || tempUsername.length() < 1 || tempDomain == null || tempDomain.length() < 1) {
 				Log.w("Skipping account save: username or domain not provided");
-				return;
+				return null;
 			}
 
 			String identity = "sip:" + tempUsername + "@" + tempDomain;
@@ -351,6 +351,7 @@ public class LinphonePreferences {
 
 			if (!tempNoDefault && LinphonePreferences.instance().getAccountCount() == 1)
 				lc.setDefaultProxyConfig(prxCfg);
+			return identityAddr.asString();
 		}
 	}
 
@@ -449,6 +450,17 @@ public class LinphonePreferences {
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public int getAccountIndex(String identity) {
+		LinphoneProxyConfig[] listes = getLc().getProxyConfigList();
+		for (int i = 0; i< listes.length ; i++)
+		{
+			LinphoneProxyConfig proxy = listes[i];
+			if (proxy.getIdentity() != null && proxy.getIdentity().equals(identity))
+				return i;
+		}
+		return -1;
 	}
 
 	public String getAccountUsername(int n) {

@@ -65,7 +65,7 @@ public class LinphoneLauncherActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Used to change for the lifetime of the app the name used to tag the logs
-		g.analytics_tracker = new GAUtils(getApplicationContext()).getInstance(getApplicationContext());
+
 
 
 		new Log(getResources().getString(R.string.app_name), !getResources().getBoolean(R.bool.disable_every_log));
@@ -92,13 +92,7 @@ public class LinphoneLauncherActivity extends Activity {
 		initFontSettings();
 
 
-		//Screen Hit
-		//Log.i(Log.TAG, "Setting screen name: LauncherScreen");
-		g.analytics_tracker.setScreenName("LauncherScreen");
 
-
-		//Event
-		g.analytics_tracker.send(this,"Action","App Launched",null,null);
 
 	}
 
@@ -148,6 +142,13 @@ public class LinphoneLauncherActivity extends Activity {
 		super.onResume();
 		//checkForCrashes();
 		//checkForUpdates();
+		g.analytics_tracker = new GAUtils(getApplicationContext()).getInstance(getApplicationContext());
+		//Screen Hit
+		//Log.i(Log.TAG, "Setting screen name: LauncherScreen");
+		g.analytics_tracker.setScreenName("LauncherScreen");
+
+		//Event
+		g.analytics_tracker.send(this,"Action","App Launched",null,null);
 	}
 	@Override
 	protected void onPause() {

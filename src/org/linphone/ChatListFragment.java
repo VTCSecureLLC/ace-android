@@ -414,7 +414,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 					}
 					message = (lastMessage == null || lastMessage.getMessage() == null) ? "" : lastMessage.getMessage();
 					if (message.contains("@@info@@ ")) {
-						message = message.substring(26);
+						message = message.replace("@@info@@ ", "" );
 					}
 				}
 			}

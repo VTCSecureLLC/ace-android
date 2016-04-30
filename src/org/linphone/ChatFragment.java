@@ -170,6 +170,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		}
 
 		sendImage = (TextView) view.findViewById(R.id.sendPicture);
+		sendImage.setVisibility(View.GONE);
 		if (!getResources().getBoolean(R.bool.disable_chat_send_file)) {
 			sendImage.setOnClickListener(new View.OnClickListener() {
 				@Override
