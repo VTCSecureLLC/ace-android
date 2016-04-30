@@ -875,7 +875,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 
 				enter_pressed = s.length() > 0 && s.subSequence(s.length() - 1, s.length()).toString().equalsIgnoreCase("\n");
-				int text_len = outgoingEditText.getText().toString().length();
+				int text_len = outgoingEditText.getText().toString().replace("\n", "").length();
+
 
 				if(text_len==0)
 				{
@@ -890,12 +891,18 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					}
 					standardize_bubble_view(outboundRingCountView);
 				}
+				if(text_len == 0)
+				{
+					previousoutgoingEditText=outgoingEditText;
+					return;
+				}
 
 				char enter_button=(char) 10;
 				char back_space_button=(char) 8;
 
 				if(TEXT_MODE==RTT){
 					if(enter_pressed){
+
 						previousoutgoingEditText=outgoingEditText;
 						sendRttCharacter(enter_button);
 						create_new_outgoing_bubble(outgoingEditText, /*true*/ true);
@@ -933,6 +940,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				if(enter_pressed) {
 					previousoutgoingEditText.removeTextChangedListener(rttTextWatcher);
 					previousoutgoingEditText.setText(previousoutgoingEditText.getText().toString().subSequence(0,previousoutgoingEditText.getText().toString().length()-1));
+					previousoutgoingEditText.addTextChangedListener(rttTextWatcher);
 				}
 			}
 		};
@@ -1086,7 +1094,11 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					Log.d("RTT: received Line Separator");
 					create_new_incoming_bubble();
 				} else if (character == 10) {
+					if(incomingTextView.getText().length() == 0)
+						return;
 					Log.d("RTT: received newline");
+					if(incomingTextView.getText().length() == 0)
+						return;
 					incomingTextView.append(System.getProperty("line.separator"));
 					create_new_incoming_bubble();
 				} else { // regular character
