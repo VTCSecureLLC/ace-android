@@ -56,12 +56,12 @@
 			android:layout_toLeftOf="@id/image_add_new_conversation"
 			android:textColor="@android:color/black"
 			android:background="@drawable/shape_edit_text"
-			android:drawableLeft="@android:drawable/ic_menu_search"
 			android:drawablePadding="10dp"
 	        android:paddingRight="5dp"
 	        android:paddingLeft="5dp"
 			android:layout_centerInParent="true"
-			android:hint="Search"
+			android:hint="Enter recipient"
+			android:textColorHint="@color/incoming_btn_drak_backgtound"
 			android:ems="10"
 			android:inputType="textEmailAddress"/>
 	    
