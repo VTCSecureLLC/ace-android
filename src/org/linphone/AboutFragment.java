@@ -156,11 +156,13 @@ public class AboutFragment extends Fragment implements OnClickListener, EnterTex
 			editor.commit();
 			SettingsFragment.isAdvancedSettings = true;
 			Toast.makeText(getActivity(), "Advanced settings unlocked", Toast.LENGTH_SHORT).show();
+			LinphoneActivity.instance().displaySettings();
 		}else if(input.equals(advancedSettingsPW)&&prefs.getBoolean("advanced_settings_enabled", false)){//If password entered, and Advanced is already unlocked
 			editor.putBoolean("advanced_settings_enabled", false);
 			editor.commit();
 			SettingsFragment.isAdvancedSettings = false;
 			Toast.makeText(getActivity(), "Advanced settings locked", Toast.LENGTH_SHORT).show();
+			LinphoneActivity.instance().displaySettings();
 		}else{//Wrong password
 			Toast.makeText(getActivity(), "Incorrect password", Toast.LENGTH_SHORT).show();
 		}
