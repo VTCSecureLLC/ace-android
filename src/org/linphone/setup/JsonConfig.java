@@ -195,8 +195,11 @@ public class JsonConfig {
 				lc.setUploadBandwidth(_upload_bandwidth);
 			if (_download_bandwidth > 0)
 				lc.setDownloadBandwidth(_download_bandwidth);
-			if (_bwLimit != null)
+			if (_bwLimit == null) {
+				_bwLimit = "high-fps";
+			}
 				lc.setVideoPreset(_bwLimit);
+
 		}
 
 		//VATRP-3143 set ipv6 enabled by default.
