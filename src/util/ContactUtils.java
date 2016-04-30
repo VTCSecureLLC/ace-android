@@ -20,11 +20,9 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneFriendList;
-import org.linphone.mediastream.*;
 import org.linphone.mediastream.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -124,28 +122,52 @@ public class ContactUtils {
         ArrayList<ContentProviderOperation> ops;
         for (LinphoneFriend friend: lfl.getFriendList()
                 ) {
-            ops = new ArrayList<ContentProviderOperation>();
-
-            String [] projection = new String[]  {ContactsContract.Data.CONTACT_ID};
-            String selection = new StringBuilder()
-                    .append(ContactsContract.CommonDataKinds.SipAddress.SIP_ADDRESS)
-                    .append(" = ?").toString();
-
             org.linphone.Contact contact_to_udate = ContactsManager.getInstance().findContactWithAddress(cr, friend.getAddress());
-
+            ops = new ArrayList<ContentProviderOperation>();
 
             if(contact_to_udate!=null)
             {
-                ContactsManager.getInstance().updateExistingContact(ops, contact_to_udate.getID(), friend.getName());
+                int rawContactid = Integer.parseInt(ContactsManager.getInstance().findRawContactID(context.getContentResolver(), contact_to_udate.getID()));
+
+                LinphoneAddress[] addresses = friend.getAddresses();
+
+                ArrayList<String> phoneNumbers = new ArrayList<String>();
+                ArrayList<String> sipNumbers = new ArrayList<String>();
+
+                for (LinphoneAddress address : addresses) {
+                    String sipaddress = address.asStringUriOnly();
+                    if (sipaddress.startsWith("sip:")) {
+                        sipaddress = sipaddress.substring(4);
+                    }
+                    sipNumbers.add(sipaddress);
+
+                }
+
+
+
+                String[] friendNumbers = friend.getPhoneNumbers();
+                if(friendNumbers != null) {
+                    for (String friendNumber : friendNumbers) {
+                        if (LinphoneUtils.isSipAddress(friendNumber)) {
+
+                            if (friendNumber.startsWith("sip:")) {
+                                friendNumber = friendNumber.substring(4);
+                            }//vcard_sync
+                            sipNumbers.add(friendNumber);
+
+                        } else {
+                            phoneNumbers.add(friendNumber);
+                        }
+                    }
+                }
+
+                Compatibility.updateExistingContact(Integer.parseInt(contact_to_udate.getID()), rawContactid, friend.getName(), phoneNumbers.toArray(new String[0]), sipNumbers.toArray(new String[0])
+                        , ops , context);
 
             } else
             {
                 //insert
-                String uri = friend.getAddress().asStringUriOnly();
-                if(uri.startsWith("sip:"))
-                    uri = uri.substring(4);
-                ContactsManager.getInstance().createNewContact(ops,friend.getName() );
-                Compatibility.addSipAddressToContact(context, ops, uri);
+                addContact(context, friend);
             }
             if(ops.size()>0)
                 try {
@@ -212,6 +234,7 @@ public class ContactUtils {
             }
             else// we need to update if the contact is changed
             {
+
                     friend.edit();
                     friend.setName(contact.getName());
 

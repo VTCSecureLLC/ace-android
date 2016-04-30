@@ -430,6 +430,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 					}
 					stopOutgoingRingCount();
+
 				}
 
 				if (lc.getCallsNb() == 0) {
@@ -509,6 +510,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //						videoProgress.setVisibility(View.GONE);
 						status.refreshStatusItems(call, isVideoEnabled(call));
 					}
+					statusContainer.setVisibility(View.GONE);
 				}
 
 				refreshInCallActions();
@@ -1394,6 +1396,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		statusContainer.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				statusContainer.setVisibility(View.GONE);
 				if(showStatusFlashing) {
 					stopStatusFlashing();
 				}
@@ -1536,9 +1539,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			Log.e("Bluetooth: Audio routes menu disabled on tablets for now (4)");
 		}
 
-		if(isEmergencyCall)
-			isMicMuted = false;
-		LinphoneManager.getLcIfManagerNotDestroyedOrNull().muteMic(isMicMuted);
+
 		if (isMicMuted) {
 			micro.setSelected(true);
 		} else {
@@ -2395,6 +2396,13 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
 		registerReceiver(myReceiver, filter);
+
+		try {
+			LinphoneManager.getLc().muteMic(isMicMuted);
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
+		update_call();
 	}
 
 	private void handleViewIntent() {
@@ -2555,7 +2563,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 	}
 
 	public void startOutgoingRingCount() {
-		statusContainer.setVisibility(View.VISIBLE);
+//		statusContainer.setVisibility(View.VISIBLE);
 		labelRingingView.setVisibility(View.VISIBLE);
 		outboundRingCountView.setVisibility(View.VISIBLE);
 
@@ -2590,7 +2598,6 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			//findViewById(R.id.outboundRingCount).setVisibility(View.GONE);
 			//findViewById(R.id.label_ringing).setVisibility(View.INVISIBLE);
 		}
-		statusContainer.setVisibility(View.GONE);
 	}
 
 

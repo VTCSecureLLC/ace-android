@@ -62,6 +62,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	private Fragment fragment;
 	private LinphonePreferences mPrefs;
 	private boolean accountCreated = false;
+	private int createdAccountIndex;
 	private boolean isJsonConfigSucceed = false;
 	private LinphoneCoreListenerBase mListener;
 	private LinphoneAddress address;
@@ -74,8 +75,8 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 
 	static int WIFI_ACTIVITY_RESULT=0;
 
-	public static boolean tried_tls_on_tcp_failure =false;
-	public static boolean trying_tls_on_tcp_failure=false;
+	public boolean tried_tls_on_tcp_failure =false;
+	public boolean trying_tls_on_tcp_failure=false;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -109,7 +110,12 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 							}
 							//Only cancel login dialog if registration was successful, or failed. Dont cancel in try_tls_on_tcp_failure
 							mProgressDialog.dismiss();
-						} else if (state != RegistrationState.RegistrationProgress) {
+						}
+						else if (state == RegistrationState.RegistrationNone)
+						{
+
+						}
+						else if (state != RegistrationState.RegistrationProgress) {
 							int tcp_position=0;
 							int tls_position=1;
 
@@ -132,11 +138,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 								tried_tls_on_tcp_failure =true;
 
 
+
 							}else{
-
-
 								if(trying_tls_on_tcp_failure){
-									//reset spinner and port in case of failure
 									GenericLoginFragment.instance().transport.setSelection(tcp_position);
 									try {
 										GenericLoginFragment.instance().port.setText(GenericLoginFragment.instance().port.getText().toString().replace("5061", "5060"));
@@ -144,15 +148,18 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 										e.printStackTrace();
 									}
 									trying_tls_on_tcp_failure=false;
-									tried_tls_on_tcp_failure=false;
+
+									//tried_tls_on_tcp_failure=false;
 
 
-								}else{
-									//Couldn't register (Login)
-									mProgressDialog.dismiss();
-									Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
-									//deleteAccounts();
 								}
+
+							mProgressDialog.dismiss();
+							Toast.makeText(SetupActivity.this, getString(R.string.first_launch_bad_login_password), Toast.LENGTH_LONG).show();
+							//deleteAccounts();
+							trying_tls_on_tcp_failure=false;
+							tried_tls_on_tcp_failure=false;
+							deleteCreatedAccount();
 
 							}
 
@@ -184,9 +191,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		if (lc != null) {
 			lc.removeListener(mListener);
 		}
-		if(accountCreated && (LinphoneManager.getLc().getDefaultProxyConfig()==null || !LinphoneManager.getLc().getDefaultProxyConfig().isRegistered()) )
+		if(createdAccountIndex>= 0 && accountCreated && (LinphoneManager.getLc().getProxyConfigList()[createdAccountIndex]==null || !LinphoneManager.getLc().getProxyConfigList()[createdAccountIndex].isRegistered()) )
 		{
-			//deleteAccounts();
+			deleteCreatedAccount();
 		}
 		
 		super.onPause();
@@ -221,7 +228,16 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			LinphonePreferences.instance().deleteAccount(i);
 		}
 	}
-	
+
+	void deleteCreatedAccount()
+	{
+		if(accountCreated) {
+			LinphonePreferences.instance().deleteAccount(createdAccountIndex);
+			accountCreated = false;
+			createdAccountIndex = -1;
+		}
+	}
+
 	private void changeFragment(Fragment newFragment) {
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		
@@ -517,8 +533,9 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 	}
 	
 	public void saveCreatedAccount(String username, String password, String domain, String userId, TransportType transport_type, String port) {
-		if (accountCreated)
-			return;
+		if (accountCreated) {
+			deleteCreatedAccount();
+		}
 
 		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putString(getString(R.string.card_dav_username), username);
@@ -628,11 +645,17 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 		}
 		
 		try {
-			builder.saveNewAccount();
+
+			String account_identity = builder.saveNewAccount();
+			createdAccountIndex = mPrefs.getAccountIndex(account_identity);
 			accountCreated = true;
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();
 		}
+
+		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+		editor.remove(LinphoneActivity.UNREAD_VIDEO_MAIL_MESSAGES).commit();
+		prefs.edit().remove("mwi_count").commit();
 	}
 
 	public void displayWizardConfirm(String username) {
