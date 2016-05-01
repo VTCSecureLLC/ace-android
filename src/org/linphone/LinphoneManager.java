@@ -230,7 +230,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	public String getUserAgent() throws NameNotFoundException {
 		StringBuilder userAgent = new StringBuilder();
-		userAgent.append("LinphoneAndroid/" + mServiceContext.getPackageManager().getPackageInfo(mServiceContext.getPackageName(),0).versionCode);
+		userAgent.append("ACE-APP/" + mServiceContext.getPackageManager().getPackageInfo(mServiceContext.getPackageName(),0).versionCode);
 		userAgent.append(" (");
 		userAgent.append("Linphone/" + LinphoneManager.getLc().getVersion() + "; ");
 		userAgent.append(Build.DEVICE + " " + Build.MODEL +  " Android/" + Build.VERSION.SDK_INT);
