@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -x
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/..
 
@@ -24,8 +24,10 @@ MUTED_PID=$!
 
 echo "Running make for dependencies"
 
-$DIR/build.sh >> $LOGFILE 2>&1
+$DIR/prepare.sh >> $LOGFILE 2>&1
+MAKE_RESULT=$?
 
+$DIR/compile.sh >> $LOGFILE 2>&1
 MAKE_RESULT=$?
 
 tail -1000 $LOGFILE
