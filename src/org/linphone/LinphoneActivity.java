@@ -147,7 +147,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	private TextView missedCalls, missedChats, missedVideoMails;
 	private LinearLayout menu, mark;
 	public static RelativeLayout contacts, history, more, dialer, chat, aboutChat;
-	private FragmentsAvailable currentFragment, nextFragment;
+	private FragmentsAvailable currentFragment;
+	private FragmentsAvailable nextFragment;
 	private List<FragmentsAvailable> fragmentsHistory;
 	private Fragment dialerFragment, messageListFragment, friendStatusListenerFragment;
 	private ChatFragment chatFragment;
@@ -184,6 +185,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public static String message_call_Id;
 	String call_error_reason;
 	long call_error_time;
+	private Fragment newFragment;
 
 	static final boolean isInstanciated() {
 		return instance != null;
@@ -198,6 +200,40 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			return instance;
 		throw new RuntimeException("LinphoneActivity not instantiated yet");
 	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("fragment", currentFragment.toString());
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		String ccc = savedInstanceState.getString("fragment");
+
+		if (ccc != null) {
+			if (ccc.equals(FragmentsAvailable.CHAT.toString()) || ccc.equals(FragmentsAvailable.CHATLIST.toString())) {
+				currentFragment = FragmentsAvailable.CHATLIST;
+				newFragment = new ChatListFragment();
+			} else if (ccc.equals(FragmentsAvailable.CONTACT.toString()) ||ccc.equals(FragmentsAvailable.CONTACTS.toString())) {
+				currentFragment = FragmentsAvailable.CONTACT;
+				newFragment = new ContactsFragment();
+			} else if (ccc.equals(FragmentsAvailable.HISTORY_DETAIL.toString()) || ccc.equals(FragmentsAvailable.HISTORY.toString())) {
+				currentFragment = FragmentsAvailable.HISTORY;
+				if (getResources().getBoolean(R.bool.use_simple_history)) {
+					newFragment = new HistorySimpleFragment();
+				} else {
+					newFragment = new HistoryFragment();
+				}
+			}
+		}
+
+		if (currentFragment != null && newFragment != null) {
+			changeFragmentForTablets(newFragment, currentFragment, false);
+		}
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -805,8 +841,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			} catch (Exception e) {
 			}
 		}
-
-		Fragment newFragment = null;
 
 		switch (newFragmentType) {
 
@@ -1503,8 +1537,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				return;
 			}
 
-
-
 			int degrees = 270;
 			degrees = lastDeviceAngle;
 
@@ -1992,11 +2024,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public final static int REQUEST_CONTACTS_PERMISSION = 2;
 	public final static int REQUEST_STORAGE_PERMISSION = 3;
 	public final static int REQUEST_MIC_PERMISSION = 4;
-
-
-
-
-
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
