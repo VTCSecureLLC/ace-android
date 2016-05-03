@@ -46,8 +46,8 @@ video_dscp=46
 mime=H264
 rate=90000
 enabled=1
-send_fmtp=profile-level-id=42801F; packetization-mode=1
-recv_fmtp=profile-level-id=42801F; packetization-mode=1
+send_fmtp=profile-level-id=42801F;packetization-mode=1
+recv_fmtp=profile-level-id=42801F;packetization-mode=1
 
 
 [video_codec_1]
