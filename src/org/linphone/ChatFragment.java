@@ -188,7 +188,7 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 			back.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					getActivity().finish();
+					LinphoneActivity.instance().onBackPressed();
 				}
 			});
 		}

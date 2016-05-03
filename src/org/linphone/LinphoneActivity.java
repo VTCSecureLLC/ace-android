@@ -885,7 +885,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		case CHAT:
 			//Log.i(Log.TAG, "Setting screen name: Chat Screen (Not in call)");
 			g.analytics_tracker.setScreenName("Chat Screen (Not in call)");
-			newFragment = new ChatListFragment();
+			if (extras != null) {
+				newFragment = new ChatFragment();
+				newFragment.setArguments(extras);
+			} else
+				newFragment = new ChatListFragment();
 			break;
 		default:
 			break;
@@ -1137,16 +1141,20 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 
 
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra("SipUri", sipUri);
-			if (contact != null) {
-				intent.putExtra("DisplayName", contact.getName());
-				intent.putExtra("PictureUri", pictureUri);
-				intent.putExtra("ThumbnailUri", thumbnailUri);
+			Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+			if (fragment2 != null && fragment2.isVisible() && currentFragment == FragmentsAvailable.CHAT) {
+				ChatFragment chatFragment = (ChatFragment) fragment2;
+				chatFragment.changeDisplayedChat(sipUri, displayName, pictureUri);
+			} else {
+				Bundle extras = new Bundle();
+				extras.putString("SipUri", sipUri);
+				if (contact != null) {
+					extras.putString("DisplayName", displayName);
+					extras.putString("PictureUri", pictureUri);
+					extras.putString("ThumbnailUri", thumbnailUri);
+				}
+				changeCurrentFragment(FragmentsAvailable.CHAT, extras);
 			}
-			//
-			startOrientationSensor();
-			startActivityForResult(intent, CHAT_ACTIVITY);
 
 		//LinphoneService.instance().resetMessageNotifCount();
 		//LinphoneService.instance().removeMessageNotification();

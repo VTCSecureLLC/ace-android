@@ -92,8 +92,8 @@ public enum FragmentsAvailable {
 			return fragment == CONTACT || fragment == CONTACTS;
 			
 		case CHAT:
-			return fragment == CHATLIST;
-			
+			return fragment == CHATLIST || fragment == CHAT;
+
 		default:
 			return false;
 		}
