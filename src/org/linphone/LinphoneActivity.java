@@ -1231,7 +1231,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			selectedTab = 3;
 			chat.setSelected(true);
 			chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
-			if (currentFragment != FragmentsAvailable.CHAT) {
+			if (currentFragment != FragmentsAvailable.CHAT && currentFragment != FragmentsAvailable.CHATLIST) {
 				changeCurrentFragment(FragmentsAvailable.CHAT, null);
 				isMessagesViewed = true;
 				missedChats.setVisibility(View.GONE);
