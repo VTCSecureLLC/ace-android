@@ -152,7 +152,18 @@
                 android:imeOptions="actionNext"
                 android:contentDescription="Password Field"/>
         </LinearLayout>
+        <Button
+            android:id="@+id/btn_prv_login"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/btn_login_provider"
 
+            android:textColor="#ffffff"
+            android:text="Login"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="Login Button"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -296,18 +307,7 @@
         </LinearLayout>
         <!-- android:background="#00
         android:textColor="#ffffff" -->
-        <Button
-            android:id="@+id/btn_prv_login"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/btn_login_provider"
-            
-            android:textColor="#ffffff"
-            android:text="Login"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_marginBottom="10dp"
-            android:contentDescription="Login Button"/>
+
     </LinearLayout>
     </ScrollView>
     <LinearLayout

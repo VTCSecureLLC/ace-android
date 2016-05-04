@@ -64,7 +64,10 @@ public class CallManager {
 		String emergencyNumber_alt="+1"+emergencyNumber;
 
 		if ((lAddress.getUserName().startsWith(emergencyNumber)||lAddress.getUserName().startsWith(emergencyNumber_alt)) && LinphoneActivity.isInstanciated()) {
-			params.addCustomHeader("Geolocation", LinphoneLocationManager.instance(LinphoneActivity.instance()).userLocation());
+			String location = LinphoneLocationManager.instance(LinphoneActivity.instance()).userLocation();
+			if (location != null) {
+				params.addCustomHeader("Geolocation", "<"+location+">");
+			}
 		}
 
 		if (videoEnabled && params.getVideoEnabled()) {
