@@ -72,7 +72,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="@string/main_menu_settings"
-            android:textColor="@android:color/white"
+            android:textColor="@color/selector_more_option_text"
             android:textSize="12dp"/>
 
         <TextView
@@ -86,7 +86,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="@string/main_menu_resources"
-            android:textColor="@android:color/white"
+            android:textColor="@color/selector_more_option_text"
             android:textSize="12dp"/>
 
         <TextView
@@ -100,7 +100,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="@string/main_menu_videomail"
-            android:textColor="@android:color/white"
+            android:textColor="@color/selector_more_option_text"
             android:textSize="12dp" />
 
         <TextView
@@ -114,7 +114,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="@string/main_menu_self_preview"
-            android:textColor="@android:color/white"
+            android:textColor="@color/selector_more_option_text"
             android:textSize="12dp"/>
 
     </LinearLayout>

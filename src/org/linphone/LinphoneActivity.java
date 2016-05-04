@@ -465,6 +465,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					videoMail();
 					break;
 				case R.id.label_linphone_activity_self_preview:
+
 					//Check both preview and selfview settings. I am assuming that when selecting this option, we want to toggle them both.
 					previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 					isPreviewEnabled = mPrefs.getBoolean(previewIsEnabledKey, true);
@@ -488,6 +489,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					if(DialerFragment.instance().isVisible()){
 						DialerFragment.instance().initialize_camera();
 					}
+					showHideMoreOptions();
+					more.setSelected(false);
+					more.setBackgroundColor(Color.TRANSPARENT);
 
 					break;
 			}
