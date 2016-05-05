@@ -69,7 +69,7 @@ public class PhoneStateChangedReceiver extends BroadcastReceiver {
 				{
 					lc.resumeCall(currentCall);
 				}
-				else
+				else if(lc.getCurrentCall() == null)
 					lc.resumeCall(lc.getCalls()[0]);
 			}
 			currentCall = null;
