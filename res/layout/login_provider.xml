@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#003858"
+    android:background="#383B3F"
     android:orientation="vertical" >
 
     
@@ -55,14 +55,16 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:layout_marginTop="23dp"
-            android:text="SELECT PROVIDER" />
+            android:text="SELECT PROVIDER"
+            android:textColor="@android:color/white"/>
 
         <Spinner
             android:id="@+id/sp_prv"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginBottom="27dp"
-            android:contentDescription="Provider Dropdown"/>
+            android:contentDescription="Provider Dropdown"
+            android:background="@drawable/rounded_corner_rect"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,7 +82,8 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
-                android:text="AND" />
+                android:text="AND"
+                android:textColor="@android:color/white"/>
 
             <View
                 android:layout_width="50dp"
@@ -93,29 +96,31 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:layout_marginTop="5dp"
-            android:text="ENTER ACCOUNT" />
+            android:text="ENTER ACCOUNT"
+            android:textColor="@android:color/white"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_corner_rect">
 
             <ImageView
                 android:layout_width="45dp"
-                android:src="@drawable/icon_person"
+                android:src="@drawable/person_icon"
                 android:scaleType="center"
                 android:layout_height="match_parent"
-                android:background="#a0b5c1" />
+                android:background="@android:color/transparent" />
 
             <EditText
                 android:id="@+id/et_prv_user"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#809cac"
+                android:background="@android:color/transparent"
                 android:hint="Username"
                 android:inputType="textNoSuggestions"
-                android:textColorHint="#787878"
+                android:textColorHint="#FFFF"
                 android:autoText="false"
                 android:paddingLeft="30dp"
                 android:singleLine="true"
@@ -127,22 +132,23 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_corner_rect">
 
             <ImageView
-                android:src="@drawable/icon_lock"
+                android:src="@drawable/key_icon"
                 android:layout_width="45dp"
                 android:scaleType="center"
                 android:layout_height="match_parent"
-                android:background="#a0b5c1" />
+                android:background="@android:color/transparent" />
 
             <EditText
                 android:id="@+id/et_prv_pass"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#809cac"
-                android:textColorHint="#787878"
+                android:background="@android:color/transparent"
+                android:textColorHint="#FFFF"
                 android:hint="Password"
                 android:password="true"
                 android:autoText="false"
@@ -178,7 +184,7 @@
                 android:layout_gravity="center"
                 android:text="+"
                 android:id="@+id/toggleAdvancedLoginPanel"
-                android:background="@android:color/background_dark"
+                android:background="@drawable/rounded_corner_rect"
                 android:textColor="@android:color/white"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
@@ -193,13 +199,14 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_corner_rect">
 
             <ImageView
                 android:layout_width="45dp"
                 android:scaleType="center"
                 android:layout_height="match_parent"
-                android:background="#a0b5c1" />
+                android:background="@android:color/transparent" />
 
 
             <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
@@ -207,8 +214,8 @@
                 android:id="@+id/et_prv_domain"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#809cac"
-                android:textColorHint="#787878"
+                android:background="@android:color/transparent"
+                android:textColorHint="@android:color/white"
                 android:autoText="false"
                 android:inputType="textNoSuggestions"
                 android:text="bc1.vatrp.net"
@@ -223,14 +230,15 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_marginBottom="5dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_corner_rect">
 
             <ImageView
                 android:layout_width="45dp"
                 android:paddingBottom="5dp"
                 android:scaleType="center"
                 android:layout_height="match_parent"
-                android:background="#a0b5c1" />
+                android:background="@android:color/transparent" />
 
 
             <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
@@ -238,8 +246,8 @@
                 android:id="@+id/spin_prv_transport"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#809cac"
-                android:textColorHint="#787878"
+                android:background="@android:color/transparent"
+                android:textColorHint="@android:color/white"
                 android:hint="Address:Transport"
                 android:paddingLeft="30dp"
                 android:imeOptions="actionNext"
@@ -250,13 +258,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:orientation="horizontal"
-                android:layout_marginBottom="5dp">
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/rounded_corner_rect">
 
                 <ImageView
                     android:layout_width="45dp"
                     android:scaleType="center"
                     android:layout_height="match_parent"
-                    android:background="#a0b5c1" />
+                    android:background="@android:color/transparent" />
 
 
                 <!--Auto populate registrations to our server for alpha bc1.vatrp.net-->
@@ -264,8 +273,8 @@
                     android:id="@+id/et_prv_port"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#809cac"
-                    android:textColorHint="#787878"
+                    android:background="@android:color/transparent"
+                    android:textColorHint="@android:color/white"
                     android:inputType="textNoSuggestions"
                     android:autoText="false"
                     android:text="5060"
@@ -281,20 +290,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:orientation="horizontal"
-                android:layout_marginBottom="5dp">
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/rounded_corner_rect">
 
                 <ImageView
                     android:layout_width="45dp"
                     android:scaleType="center"
                     android:layout_height="match_parent"
-                    android:background="#a0b5c1" />
+                    android:background="@android:color/transparent" />
 
                 <EditText
                     android:id="@+id/et_prv_userid"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#809cac"
-                    android:textColorHint="#787878"
+                    android:background="@android:color/transparent"
+                    android:textColorHint="@android:color/white"
                     android:text=""
                     android:inputType="textNoSuggestions"
                     android:autoText="false"
