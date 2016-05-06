@@ -467,7 +467,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					break;
 				case R.id.label_linphone_activity_resources:
 					selectedTab = 4;
-					changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
+					changeCurrentFragment(FragmentsAvailable.RESOURCES, null);
 					break;
 				case R.id.label_linphone_activity_videomail:
 					videoMail();
@@ -886,7 +886,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			g.analytics_tracker.setScreenName("About Screen");
 			newFragment = new AboutFragment();
 			break;
-		case CHATLIST:
+		case RESOURCES:
 			//Log.i(Log.TAG, "Setting screen name: Resources Screen");
 			g.analytics_tracker.setScreenName("Resources Screen");
 			newFragment = new HelpFragment();
@@ -1150,12 +1150,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			thumbnailUri = contact.getThumbnailUri().toString();
 		}
 
-
-			Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
-			if (fragment2 != null && fragment2.isVisible() && currentFragment == FragmentsAvailable.CHAT) {
-				ChatFragment chatFragment = (ChatFragment) fragment2;
-				chatFragment.changeDisplayedChat(sipUri, displayName, pictureUri);
-			} else {
 				Bundle extras = new Bundle();
 				extras.putString("SipUri", sipUri);
 				if (contact != null) {
@@ -1164,7 +1158,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					extras.putString("ThumbnailUri", thumbnailUri);
 				}
 				changeCurrentFragment(FragmentsAvailable.CHAT, extras);
-			}
 
 		//LinphoneService.instance().resetMessageNotifCount();
 		//LinphoneService.instance().removeMessageNotification();

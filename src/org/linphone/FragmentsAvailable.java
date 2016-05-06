@@ -33,6 +33,7 @@ public enum FragmentsAvailable {
 	ABOUT_INSTEAD_OF_CHAT,
 	ACCOUNT_SETTINGS,
 	SETTINGS,
+	RESOURCES,
 	CHATLIST,
 	CHAT;
 
