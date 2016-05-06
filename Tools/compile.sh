@@ -2,10 +2,16 @@
 set -xe
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/..
-if [ -e WORK/Makefile ]; then
+
+
+
+SUBMODULE_HASH=$(md5sum current.txt | awk '{print $1}')
+
+if [ -e WORK/${SUBMODULE_HASH} ]; then
 make generate-apk-without-sdk-build -j 8
 else
 make -j 8
+touch WORK/${SUBMODULE_HASH}
 cp Makefile WORK/Makefile
 fi
 #ninja -C WORK/cmake

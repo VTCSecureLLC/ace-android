@@ -148,6 +148,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 	private ConnectivityManager mConnectivityManager;
 	private Handler mHandler = new Handler();
 	private WakeLock mIncallWakeLock;
+	private LinphoneAddress mAddressToSkipNotification;
 	private static List<LinphoneChatMessage> mPendingChatFileMessage;
 	private static LinphoneChatMessage mUploadPendingFileMessage;
 
@@ -230,7 +231,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 	public String getUserAgent() throws NameNotFoundException {
 		StringBuilder userAgent = new StringBuilder();
-		userAgent.append("LinphoneAndroid/" + mServiceContext.getPackageManager().getPackageInfo(mServiceContext.getPackageName(),0).versionCode);
+		userAgent.append("ACE-APP/" + mServiceContext.getPackageManager().getPackageInfo(mServiceContext.getPackageName(),0).versionCode);
 		userAgent.append(" (");
 		userAgent.append("Linphone/" + LinphoneManager.getLc().getVersion() + "; ");
 		userAgent.append(Build.DEVICE + " " + Build.MODEL +  " Android/" + Build.VERSION.SDK_INT);
@@ -256,7 +257,7 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 
 		instance = new LinphoneManager(c);
 		instance.startLibLinphone(c);
-		instance.configH264HardwareAcell(true, false);
+		instance.configH264HardwareAcell(false, false);
 
 		TelephonyManager tm = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
 		boolean gsmIdle = tm.getCallState() == TelephonyManager.CALL_STATE_IDLE;
@@ -900,6 +901,12 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 		Log.d("DTMF received: " + dtmf);
 	}
 
+
+	public void setAddressToSkipNotification(LinphoneAddress address)
+	{
+		mAddressToSkipNotification = address;
+	}
+
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
 		if (mServiceContext.getResources().getBoolean(R.bool.disable_chat)) {
@@ -932,6 +939,9 @@ public class LinphoneManager implements LinphoneCoreListener, LinphoneChatMessag
 							showNotification = false;
 					}
 				}
+				if(mAddressToSkipNotification != null && cr.getPeerAddress().asString().equals(mAddressToSkipNotification.asString()))
+					showNotification = false;
+
 				if(showNotification) {
 					if (contact != null) {
 						LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), contact.getName(), textMessage);

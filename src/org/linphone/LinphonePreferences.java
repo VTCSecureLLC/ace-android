@@ -814,13 +814,18 @@ public class LinphonePreferences {
 
 	public String getVideoPreset() {
 		String preset = getLc().getVideoPreset();
-		if (preset == null) preset = "default";
+		if (preset == null) {
+			preset = "high-fps";
+			setVideoPreset(preset);
+		}
 		return preset;
 	}
 
 	public void setVideoPreset(String preset) {
 		if (preset.equals("default")) preset = null;
+
 		getLc().setVideoPreset(preset);
+
 		preset = getVideoPreset();
 		if (!preset.equals("custom")) {
 			getLc().setPreferredFramerate(0);
@@ -841,9 +846,9 @@ public class LinphonePreferences {
 			if (preferredVideoSize.equals("720p")) {
 				bandwidth = 1024 + 128;
 			} else if (preferredVideoSize.equals("vga")) {
-				bandwidth = 660;
+				bandwidth = 1000;
 			} else if (preferredVideoSize.equals("cif")) {
-				bandwidth = 460;
+				bandwidth = 660;
 			} else if (preferredVideoSize.equals("qvga")) {
 				bandwidth = 410;
 			} else if (preferredVideoSize.equals("qcif")) {

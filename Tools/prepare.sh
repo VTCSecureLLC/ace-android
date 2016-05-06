@@ -3,7 +3,9 @@ set -xe
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR/..
 
-if [ -e WORK/Makefile ]; then
+git submodule | cut -d'(' -f1 | awk '{print substr($0, 2, length($0))}'  | sort > current.txt
+SUBMODULE_HASH=$(md5sum current.txt | awk '{print $1}')
+if [ -e WORK/${SUBMODULE_HASH} ]; then
 echo "Already cached"
 cp WORK/Makefile Makefile
 else
