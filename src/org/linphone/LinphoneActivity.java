@@ -171,6 +171,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	boolean isSelfViewEnabled;
 
 	private int selectedTab;
+	private boolean isMoreButtonClicked;
+	private int moreMenuVisibility = View.GONE;
 	private boolean isMessagesViewed;
 	private TextView videoMailTextView;
 
@@ -206,12 +208,31 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putString("fragment", currentFragment.toString());
+		outState.putInt("selected.tab", selectedTab);
+		outState.putInt("more_menu_visibility", moreMenuVisibility);
+		outState.putBoolean("isMoreButtonClicked", isMoreButtonClicked);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		String ccc = savedInstanceState.getString("fragment");
+		selectedTab = savedInstanceState.getInt("selected.tab");
+		moreMenuVisibility = savedInstanceState.getInt("more_menu_visibility");
+		isMoreButtonClicked = savedInstanceState.getBoolean("isMoreButtonClicked");
+
+		if (isMoreButtonClicked) {
+
+			if (moreMenuVisibility == View.VISIBLE)
+				moreMenuVisibility = View.GONE;
+			else moreMenuVisibility = View.VISIBLE;
+
+			showHideMoreOptions();
+
+		} else {
+			moreMenuVisibility = View.GONE;
+			getSelectedTab();
+		}
 
 		if (ccc != null) {
 			if (ccc.equals(FragmentsAvailable.CHAT.toString()) || ccc.equals(FragmentsAvailable.CHATLIST.toString())) {
@@ -506,7 +527,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
 					break;
 				case R.id.label_linphone_activity_videomail:
+					getSelectedTab();
 					videoMail();
+					isMoreButtonClicked = false;
 					break;
 				case R.id.label_linphone_activity_self_preview:
 
@@ -536,7 +559,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					showHideMoreOptions();
 					more.setSelected(false);
 					more.setBackgroundColor(Color.TRANSPARENT);
-
+					isMoreButtonClicked = false;
 					break;
 			}
 		}
@@ -586,38 +609,16 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private void showHideMoreOptions() {
 		if (isAnimationDisabled) {
-			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
-				switch (selectedTab){
-					case 0:
-						dialer.setSelected(true);
-						dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
-						break;
-					case 1:
-						history.setSelected(true);
-						history.setBackgroundColor(getResources().getColor(R.color.orange_background));
-						break;
-					case 2:
-						contacts.setSelected(true);
-						contacts.setBackgroundColor(getResources().getColor(R.color.orange_background));
-						break;
-					case 3:
-						chat.setSelected(true);
-						chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
-						break;
-					case 4:
-						more.setSelected(true);
-						more.setBackgroundColor(getResources().getColor(R.color.orange_background));
-						break;
-
-
-				}
+			if (moreMenuVisibility == View.VISIBLE) {
+				getSelectedTab();
 				hideAnimation();
+				moreMenuVisibility = View.GONE;
 			} else {
 				more.setSelected(true);
 				more.setBackgroundColor(getResources().getColor(R.color.orange_background));
 				showAnimation();
+				moreMenuVisibility = View.VISIBLE;
 			}
-
 
 		} else {
 			if (mAnimateLayout.getVisibility() == View.VISIBLE) {
@@ -629,6 +630,31 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				more.setBackgroundColor(getResources().getColor(R.color.orange_background));
 				mAnimateLayout.setVisibility(View.VISIBLE);
 			}
+		}
+	}
+
+	private void getSelectedTab() {
+		switch (selectedTab) {
+			case 0:
+				dialer.setSelected(true);
+				dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				break;
+			case 1:
+				history.setSelected(true);
+				history.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				break;
+			case 2:
+				contacts.setSelected(true);
+				contacts.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				break;
+			case 3:
+				chat.setSelected(true);
+				chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				break;
+			case 4:
+				more.setSelected(true);
+				more.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				break;
 		}
 	}
 
@@ -1226,6 +1252,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			history.setBackgroundColor(getResources().getColor(R.color.orange_background));
 			getLc().resetMissedCallsCount();
 			displayMissedCalls(0);
+			isMoreButtonClicked = false;
 		} else if (id == R.id.contacts) {
 			selectedTab = 2;
 			changeCurrentFragment(FragmentsAvailable.CONTACTS, null);
@@ -1236,6 +1263,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				ApplicationPermissionManager.askPermission(this, Manifest.permission.WRITE_CONTACTS, REQUEST_CONTACTS_PERMISSION);
 
 			}
+			isMoreButtonClicked = false;
 		} else if (id == R.id.dialer) {
 			selectedTab = 0;
 			changeCurrentFragment(FragmentsAvailable.DIALER, null);
@@ -1252,8 +1280,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			}
 			dialer.setSelected(true);
 			dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
+			isMoreButtonClicked = false;
 		} else if (id == R.id.settings) {
 			showHideMoreOptions();
+
+			if (isMoreButtonClicked)
+				isMoreButtonClicked = false;
+			else isMoreButtonClicked = true;
+
 			missedVideoMails.setVisibility(View.GONE);
 			if(!isVideoMailMessagesViewed())
 				mPrefs.edit().putBoolean(UNREAD_VIDEO_MAIL_MESSAGES, true).commit();
@@ -1264,6 +1298,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			changeCurrentFragment(FragmentsAvailable.ABOUT_INSTEAD_OF_CHAT, b);
 			aboutChat.setSelected(true);
 			aboutChat.setBackgroundColor(getResources().getColor(R.color.orange_background));
+			isMoreButtonClicked = false;
 		} else if (id == R.id.chat) {
 			selectedTab = 3;
 			changeCurrentFragment(FragmentsAvailable.CHAT, null);
@@ -1272,6 +1307,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			isMessagesViewed = true;
 			missedChats.setVisibility(View.GONE);
 			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+			isMoreButtonClicked = false;
 		}
 	}
 
@@ -1305,9 +1341,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 				contacts.setSelected(true);
 				break;
 			case DIALER:
-				resetSelection();
-				dialer.setSelected(true);
-				dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				if (!isMoreButtonClicked) {
+					resetSelection();
+					dialer.setSelected(true);
+					dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
+				}
 				break;
 			case SETTINGS:
 			case ACCOUNT_SETTINGS:
