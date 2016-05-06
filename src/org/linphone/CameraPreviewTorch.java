@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.io.IOException;
+
 public class CameraPreviewTorch extends SurfaceView implements SurfaceHolder.Callback {
 	private SurfaceHolder mHolder;
 	private Camera mCamera;
@@ -16,10 +18,10 @@ public class CameraPreviewTorch extends SurfaceView implements SurfaceHolder.Cal
 
 		SurfaceHolder mHolder = preview.getHolder();
 		mHolder.addCallback(this);
+		mCamera = Camera.open();
 		try {
-			mCamera = Camera.open();
 			mCamera.setPreviewDisplay(mHolder);
-		} catch (Throwable e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
