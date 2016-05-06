@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -42,6 +43,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -85,6 +87,7 @@ import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.Numpad;
+import org.linphone.vtcsecure.LinphoneTorchFlasher;
 import org.linphone.vtcsecure.Utils;
 import org.linphone.vtcsecure.g;
 
@@ -2498,6 +2501,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		if(isFlashing) {
 			isFlashing = false;
+			LinphoneTorchFlasher.instance().stopFlashTorch();
 			HueController.getInstance().stopFlashing();
 		}
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(LinphoneActivity.class);
@@ -2854,7 +2858,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					HueController.getInstance().startFlashing(null);
 					vibrate();
 					flashOrangeBackground();
-					//flashTorch();
+					flashTorch();
 				}
 				mInComingCallHeader.setVisibility(View.VISIBLE);
 				mInPassiveCallHeader.setVisibility(View.INVISIBLE);
@@ -2907,6 +2911,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				if (isFlashing) {
 					System.out.println("++++++++++++++++++++++" + isFlashing);
 					isFlashing = false;
+					LinphoneTorchFlasher.instance().stopFlashTorch();
 					HueController.getInstance().stopFlashing();
 
 				}
@@ -2940,6 +2945,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (isFlashing) {
 				System.out.println("++++++++++++++++++++++" + isFlashing);
 				isFlashing = false;
+				LinphoneTorchFlasher.instance().stopFlashTorch();
 				HueController.getInstance().stopFlashing();
 			}
 			mInComingCallHeader.setVisibility(View.INVISIBLE);
@@ -3001,10 +3007,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}, 0, (long) (flashFrequencyInSeconds * 2000));
 	}
 
-//	private void flashTorch() {
-//		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
-//		LinphoneTorchFlasher.instance().startFlashTorch();
-//	}
+	private void flashTorch() {
+		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
+		LinphoneTorchFlasher.instance().startFlashTorch();
+	}
 
 
 	private void vibrate() {
