@@ -493,6 +493,8 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 		message.removeTextChangedListener(textWatcher);
 		removeVirtualKeyboardVisiblityListener();
 
+		LinphoneManager.getInstance().setAddressToSkipNotification(null);
+
 
 		LinphoneService.instance().removeMessageNotification();
 
@@ -524,7 +526,8 @@ public class ChatFragment extends Fragment implements OnClickListener, LinphoneC
 	public void onResume() {
 		message.addTextChangedListener(textWatcher);
 		addVirtualKeyboardVisiblityListener();
-
+		if(chatRoom != null)
+			LinphoneManager.getInstance().setAddressToSkipNotification(chatRoom.getPeerAddress());
 		LinphoneCore lc = LinphoneManager.getLcIfManagerNotDestroyedOrNull();
 		if (lc != null) {
 			lc.addListener(mListener);

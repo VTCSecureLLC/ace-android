@@ -198,6 +198,7 @@ public class ChatListFragment extends Fragment implements OnClickListener, OnIte
 			if (getResources().getBoolean(R.bool.show_statusbar_only_on_dialer)) {
 				LinphoneActivity.instance().hideStatusBar();
 			}
+			LinphoneActivity.instance().unreadMessageBadge();
 		}
 
 		refresh();

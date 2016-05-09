@@ -66,6 +66,7 @@ import android.widget.Toast;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
+import net.hockeyapp.android.StringListener;
 import net.hockeyapp.android.UpdateManager;
 
 import org.json.JSONObject;
@@ -116,6 +117,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static android.content.Intent.ACTION_MAIN;
 import static org.linphone.LinphoneManager.getLc;
@@ -169,7 +171,6 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private int selectedTab;
 	private boolean isMessagesViewed;
-	private boolean isVideoMailMessagesViewed;
 	private TextView videoMailTextView;
 
 	public static boolean providerLookupOperation_executed=false;
@@ -295,17 +296,24 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			public void notifyReceived(LinphoneCore lc, LinphoneEvent ev, String eventName, LinphoneContent content) {
 				super.notifyReceived(lc, ev, eventName, content);
 				if (content.getSubtype().equals("simple-message-summary")) {
-					try {
+					try {//ng: yes
 						SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-						String key = "Messages-Waiting: ";
+						String count_key = "Voicemail: ";
 						String data = new String(content.getData());
-						data = data.substring(data.indexOf(key) + key.length());
-						int number = Integer.parseInt(data.substring(0, data.indexOf("\r\n")));
+
+						String count_string = data.substring(data.indexOf(count_key) + count_key.length());
+						int number = Integer.parseInt(count_string.substring(0, count_string.indexOf("/")));
 
 						prefs.edit().putInt("mwi_count", number).commit();
 
+						String budgeKey = "Messages-Waiting: ";
+						String budgedata = data.substring(data.indexOf(budgeKey) + budgeKey.length());
+						budgedata = budgedata.substring(0, budgedata.indexOf("\r\n"));
+
+						mPrefs.edit().putBoolean(UNREAD_VIDEO_MAIL_MESSAGES, !budgedata.contains("yes")).commit();
+
 						if (missedVideoMails != null) {
-							reloadMwiCount(true);
+							reloadMwiCount();
 						}
 					} catch (Throwable e) {
 						e.printStackTrace();
@@ -434,7 +442,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		updateAnimationsState();
 		startOrientationSensor();
 
-		reloadMwiCount(false);
+		reloadMwiCount();
 
 		if(!AsyncProviderLookupOperation.isAsyncTaskRuning&&!providerLookupOperation_executed){
 			Log.e("ttt LinphoneActivity AsyncProviderLookupOperation..");
@@ -465,6 +473,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					videoMail();
 					break;
 				case R.id.label_linphone_activity_self_preview:
+
 					//Check both preview and selfview settings. I am assuming that when selecting this option, we want to toggle them both.
 					previewIsEnabledKey = LinphoneManager.getInstance().getContext().getString(R.string.pref_av_show_preview_key);
 					isPreviewEnabled = mPrefs.getBoolean(previewIsEnabledKey, true);
@@ -488,6 +497,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					if(DialerFragment.instance().isVisible()){
 						DialerFragment.instance().initialize_camera();
 					}
+					showHideMoreOptions();
+					more.setSelected(false);
+					more.setBackgroundColor(Color.TRANSPARENT);
 
 					break;
 			}
@@ -496,6 +508,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 
 	private void videoMail() {
 		try {
+
 			LinphoneManager.getInstance().newOutgoingCall(mPrefs.getString(getString(R.string.pref_voice_mail_key), LinphoneManager.getLc().getDefaultProxyConfig().getAddress().asStringUriOnly()), getResources().getString(R.string.main_menu_videomail));
 			LinphoneActivity.instance().resetMessageWaitingCount();
 			videoMailTextView.setText(getResources().getString(R.string.main_menu_videomail) + " (" + String.valueOf(LinphoneActivity.instance().getMessageWaitingCount()) + ")");
@@ -627,21 +640,19 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
-	public void reloadMwiCount(boolean isNewVideoMail){
+	public boolean isVideoMailMessagesViewed()
+	{
+		boolean res = true;
+		if(mPrefs!= null)
+			res = mPrefs.getBoolean(UNREAD_VIDEO_MAIL_MESSAGES, true);
+		return res;
+	}
+	public void reloadMwiCount(){
 
-		if (isNewVideoMail){
-			if (getMessageWaitingCount() > 0) {
-				missedVideoMails.setVisibility(View.VISIBLE);
-				isVideoMailMessagesViewed = false;
-				mPrefs.edit().putBoolean(UNREAD_VIDEO_MAIL_MESSAGES, isVideoMailMessagesViewed).commit();
-			}
+		if (isVideoMailMessagesViewed()) {
+			missedVideoMails.setVisibility(View.GONE);
 		} else {
-			isVideoMailMessagesViewed = mPrefs.getBoolean(UNREAD_VIDEO_MAIL_MESSAGES, true);
-			if (isVideoMailMessagesViewed) {
-				missedVideoMails.setVisibility(View.GONE);
-			} else {
-				missedVideoMails.setVisibility(View.VISIBLE);
-			}
+			missedVideoMails.setVisibility(View.VISIBLE);
 		}
 
 		if (videoMailTextView != null)
@@ -703,8 +714,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			missedChats.setText("!");
 		}
 
-		isVideoMailMessagesViewed = mPrefs.getBoolean(UNREAD_VIDEO_MAIL_MESSAGES, true);
-		if (isVideoMailMessagesViewed) {
+		if (isVideoMailMessagesViewed()) {
 			missedVideoMails.setVisibility(View.GONE);
 		} else {
 			missedVideoMails.setVisibility(View.VISIBLE);
@@ -1161,7 +1171,8 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 	public void resetMessageWaitingCount(){
 		SharedPreferences prefs = getSharedPreferences(getPackageName(), MODE_PRIVATE);
 		prefs.edit().putInt("mwi_count", 0).commit();
-		reloadMwiCount(false);
+		mPrefs.edit().putBoolean(UNREAD_VIDEO_MAIL_MESSAGES, true).commit();
+		reloadMwiCount();
 	}
 	@Override
 	public void onClick(View v) {
@@ -1209,9 +1220,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			dialer.setBackgroundColor(getResources().getColor(R.color.orange_background));
 		} else if (id == R.id.settings) {
 			showHideMoreOptions();
-			isVideoMailMessagesViewed = true;
 			missedVideoMails.setVisibility(View.GONE);
-			mPrefs.edit().putBoolean(UNREAD_VIDEO_MAIL_MESSAGES, isVideoMailMessagesViewed).commit();
+			if(!isVideoMailMessagesViewed())
+				mPrefs.edit().putBoolean(UNREAD_VIDEO_MAIL_MESSAGES, true).commit();
 
 		} else if (id == R.id.about_chat) {
 			Bundle b = new Bundle();
@@ -1389,11 +1400,15 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		}
 	}
 
+	public void unreadMessageBadge(){
+		isMessagesViewed = true;
+		missedChats.setVisibility(View.GONE);
+		mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+	}
 	private void displayMissedChats(final int missedChatCount, final boolean isNewMessage) {
 
 		if (isNewMessage) {
 			isMessagesViewed = false;
-			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
 			if (missedChatCount > 0) {
 				missedChats.setText("!");
 				missedChats.setVisibility(View.VISIBLE);
@@ -1707,7 +1722,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		ContactsManager.getInstance().prepareContactsInBackground();
 
 		updateMissedChatCount(false);
-		LinphoneActivity.instance().reloadMwiCount(false);
+		LinphoneActivity.instance().reloadMwiCount();
 		displayMissedCalls(getLc().getMissedCallsCount());
 		LinphoneManager.getInstance().changeStatusToOnline();
 
