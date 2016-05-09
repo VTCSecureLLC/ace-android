@@ -394,17 +394,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					}
 
 					// Convert LinphoneCore message for internalization
-					if (call.getErrorInfo() != null) {
-						if (message != null && call.getErrorInfo().getReason() == Reason.Declined) {
-							displayCustomToast(getString(R.string.error_call_declined), Toast.LENGTH_LONG);
-						} else if (message != null && call.getErrorInfo().getReason() == Reason.NotFound) {
-							displayCustomToast(getString(R.string.error_user_not_found), Toast.LENGTH_LONG);
-						} else if (message != null && call.getErrorInfo().getReason() == Reason.Media) {
-							displayCustomToast(getString(R.string.error_incompatible_media), Toast.LENGTH_LONG);
-						} else if (message != null && state == State.Error) {
-							displayCustomToast(getString(R.string.error_unknown) + " - " + message, Toast.LENGTH_LONG);
-						}
-					}
+
 					resetClassicMenuLayoutAndGoBackToCallIfStillRunning();
 				}
 
