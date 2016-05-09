@@ -18,6 +18,7 @@ import org.xbill.DNS.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Created by 3537 on 1/21/2016.
@@ -140,62 +141,72 @@ public class CDNProviders {
 
 
 	}
-
+	private static final Object locker = new Object();
 	private void updateProviders(JSONArray jsonArray) {
-		providers.clear();
-		g.domain_image_hash=new HashMap<String, Uri>();
-		Provider tmp;
-		for (int i = 0; i < jsonArray.length(); i++) {
-			tmp = new Provider();
-			try {
+		synchronized (locker) {
+			providers.clear();
+			g.domain_image_hash = new HashMap<String, Uri>();
+			Provider tmp;
+			for (int i = 0; i < jsonArray.length(); i++) {
+				tmp = new Provider();
+				try {
 
-				//change domains to valid domains, if not listed on the server that way
-				if(((JSONObject) jsonArray.get(i)).getString("domain").equals("zvrs.vatrp.net")){
-					tmp.domain="208.94.16.87";
-				}else if(((JSONObject) jsonArray.get(i)).getString("domain").equals("psip-lb.staging.purple.us")){
-					tmp.domain="psip-lb.test.purple.us";
-				}else {
-					tmp.domain = ((JSONObject) jsonArray.get(i)).getString("domain");
+					//change domains to valid domains, if not listed on the server that way
+					if (((JSONObject) jsonArray.get(i)).getString("domain").equals("zvrs.vatrp.net")) {
+						tmp.domain = "208.94.16.87";
+					} else if (((JSONObject) jsonArray.get(i)).getString("domain").equals("psip-lb.staging.purple.us")) {
+						tmp.domain = "psip-lb.test.purple.us";
+					} else {
+						tmp.domain = ((JSONObject) jsonArray.get(i)).getString("domain");
+					}
+
+					tmp.name = ((JSONObject) jsonArray.get(i)).getString("name");
+					tmp.icon = ((JSONObject) jsonArray.get(i)).getString("icon");
+					tmp.icon2x = ((JSONObject) jsonArray.get(i)).getString("icon2x");
+					//tmp.port=srvLookup
+
+					providers.add(tmp);
+
+
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 
-				tmp.name = ((JSONObject) jsonArray.get(i)).getString("name");
-				tmp.icon = ((JSONObject) jsonArray.get(i)).getString("icon");
-				tmp.icon2x = ((JSONObject) jsonArray.get(i)).getString("icon2x");
-				//tmp.port=srvLookup
 
-				providers.add(tmp);
-
-
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
 
+			updateProvidersDefaultPorts();
 		}
 
 		//Add default ports from srvLookup after all providers are popluated to prevent cross threading
-		for (int i = 0; i < jsonArray.length(); i++) {
-			updateProvidersDefaultPorts(i);
-		}
+//		for (int i = 0; i < jsonArray.length(); i++) {
+//			Log.d("cdnprovidersss : " + providers.size() + "  of json   " + jsonArray.length());
+//			updateProvidersDefaultPorts();
+//		}
 
 	}
 
-	public void updateProvidersDefaultPorts(final int position){
+	public void updateProvidersDefaultPorts(){
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
-					providers.get(position);
-					String recordName = "_sip._tcp."+providers.get(position).domain;
-					Lookup lookup = null;
-					try {
-						lookup = new Lookup(recordName, Type.SRV);
-						Record recs[] = lookup.run();
-						providers.get(position).port = ((SRVRecord) recs[0]).getPort();
-						Log.d("Setting Provider Port " + providers.get(position).domain + " port to " + providers.get(position).port);
-					} catch (Throwable e) {
-						providers.get(position).port=5060;
-						Log.d("No port found for provider " + providers.get(position).domain + " setting default port to " + providers.get(position).port);
-						//e.printStackTrace();
+				synchronized (locker) {
+					for (int position = 0; position < providers.size(); position++) {
+						providers.get(position);
+						String recordName = "_sip._tcp." + providers.get(position).domain;
+						Lookup lookup = null;
+						try {
+							lookup = new Lookup(recordName, Type.SRV);
+							Record recs[] = lookup.run();
+							providers.get(position).port = ((SRVRecord) recs[0]).getPort();
+							Log.d("Setting Provider Port " + providers.get(position).domain + " port to " + providers.get(position).port);
+						} catch (Throwable e) {
+							providers.get(position).port = 5060;
+							Log.d("No port found for provider " + providers.get(position).domain + " setting default port to " + providers.get(position).port);
+							//e.printStackTrace();
 
+						}
 					}
+				}
 			}
 		});
 		thread.start();

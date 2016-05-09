@@ -49,6 +49,7 @@
         android:paddingRight="10dp"
 	    android:gravity="center"
 	    android:orientation="horizontal">
+
 			<ImageView
 					android:id="@+id/contactStarred"
 					android:src="@drawable/unselected_star"
