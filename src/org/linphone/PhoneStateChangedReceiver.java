@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.Log;
 
 import android.content.BroadcastReceiver;
@@ -33,25 +35,60 @@ import android.telephony.TelephonyManager;
  */
 public class PhoneStateChangedReceiver extends BroadcastReceiver {
 
+
+	static LinphoneCall currentCall;
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		if(!LinphoneManager.isInstanciated())
+			return;
+		LinphoneCore lc = LinphoneManager.getLc();
+		int callCount = lc.getCallsNb();
 
 
 		final String extraState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
 
-		if (TelephonyManager.EXTRA_STATE_RINGING.equals(extraState) || TelephonyManager.EXTRA_STATE_OFFHOOK.equals(extraState)) {
+		if (/*TelephonyManager.EXTRA_STATE_RINGING.equals(extraState) ||*/ TelephonyManager.EXTRA_STATE_OFFHOOK.equals(extraState)) {
 			LinphoneManager.setGsmIdle(false);
 			if (!LinphoneManager.isInstanciated()) {
 				Log.i("GSM call state changed but manager not instantiated");
 				return;
 			}
-			LinphoneManager.getLc().pauseAllCalls();
+			if(callCount>1 && currentCall == null)
+			{
+				currentCall = lc.getCurrentCall();
+			}
+
+			lc.pauseAllCalls();
         } else if (TelephonyManager.EXTRA_STATE_IDLE.equals(extraState)) {
         	LinphoneManager.setGsmIdle(true);
+			if (callCount == 1)
+				lc.resumeCall(lc.getCalls()[0]);
+			else if(callCount> 0)
+			{
+				if(callExist(lc.getCalls()))
+				{
+					lc.resumeCall(currentCall);
+				}
+				else if(lc.getCurrentCall() == null)
+					lc.resumeCall(lc.getCalls()[0]);
+			}
+			currentCall = null;
+
         }
-		
-		 
-		// do nothing
+
+	}
+
+	boolean callExist(LinphoneCall[] calls)
+	{
+		boolean res = false;
+		if(currentCall == null)
+			return false;
+		for (LinphoneCall call :
+				calls) {
+			if(call.equals(currentCall))
+				res = true;
+		}
+		return res;
 	}
 
 }
