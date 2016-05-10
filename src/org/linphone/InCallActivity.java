@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -42,6 +43,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -85,6 +87,7 @@ import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 import org.linphone.ui.Numpad;
+import org.linphone.vtcsecure.LinphoneTorchFlasher;
 import org.linphone.vtcsecure.Utils;
 import org.linphone.vtcsecure.g;
 
@@ -276,6 +279,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT);
 
+
+
 		linphone_core_stats_holder =  inflator.inflate(R.layout.linphone_core_stats, null);
 		linphone_core_stats_table = (TableLayout)linphone_core_stats_holder.findViewById(R.id.linphone_core_stats);
 		show_extra_linphone_core_stats();
@@ -289,6 +294,8 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 //		linphone_core_stats_table.setVisibility(View.GONE);
 		mainLayout.addView(mViewsHolder);
 		mainLayout.addView(rttHolder, paramss);
+		//
+		inflator.inflate(R.layout.incoming_call_controllers_container, mainLayout, true );
 		mainLayout.addView(statusBar);
 		mainLayout.addView(linphone_core_stats_holder, paramss);
 
@@ -423,7 +430,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 						|| state == State.StreamsRunning){
 
 					if((state == State.CallEnd || state == State.Error)) {
-						if (call.getErrorInfo() != null) {
+						if (call.getErrorInfo() != null && call.getDirection() == CallDirection.Outgoing) {
 							String call_end_reason = Utils.getReasonText(call.getErrorInfo().getReason(), InCallActivity.this);
 							tv_sub_status.setText(call_end_reason);
 							tv_sub_status.setVisibility(View.VISIBLE);
@@ -2494,6 +2501,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 
 		if(isFlashing) {
 			isFlashing = false;
+			LinphoneTorchFlasher.instance().stopFlashTorch();
 			HueController.getInstance().stopFlashing();
 		}
 		LinphoneService.instance().setActivityToLaunchOnIncomingReceived(LinphoneActivity.class);
@@ -2850,7 +2858,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 					HueController.getInstance().startFlashing(null);
 					vibrate();
 					flashOrangeBackground();
-					//flashTorch();
+					flashTorch();
 				}
 				mInComingCallHeader.setVisibility(View.VISIBLE);
 				mInPassiveCallHeader.setVisibility(View.INVISIBLE);
@@ -2903,6 +2911,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 				if (isFlashing) {
 					System.out.println("++++++++++++++++++++++" + isFlashing);
 					isFlashing = false;
+					LinphoneTorchFlasher.instance().stopFlashTorch();
 					HueController.getInstance().stopFlashing();
 
 				}
@@ -2936,6 +2945,7 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 			if (isFlashing) {
 				System.out.println("++++++++++++++++++++++" + isFlashing);
 				isFlashing = false;
+				LinphoneTorchFlasher.instance().stopFlashTorch();
 				HueController.getInstance().stopFlashing();
 			}
 			mInComingCallHeader.setVisibility(View.INVISIBLE);
@@ -2997,10 +3007,10 @@ public class InCallActivity extends FragmentActivity implements OnClickListener 
 		}, 0, (long) (flashFrequencyInSeconds * 2000));
 	}
 
-//	private void flashTorch() {
-//		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
-//		LinphoneTorchFlasher.instance().startFlashTorch();
-//	}
+	private void flashTorch() {
+		if (!getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) return;
+		LinphoneTorchFlasher.instance().startFlashTorch();
+	}
 
 
 	private void vibrate() {

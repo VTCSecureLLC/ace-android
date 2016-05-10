@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/item_in_call_second_flashing" />
+
+    <LinearLayout
+        android:id="@+id/second_incoming_call_controllers"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
+
+            <ImageView
+                android:id="@+id/call_later_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_message_later"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@color/transparent_in_call_black_bg"/>
+
+            <ImageView
+                android:id="@+id/decline_call_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/ic_decline_call"
+                android:background="@color/transparent_in_call_black_bg"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/accept_call_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@color/main_app_color">
+
+            <ImageView
+                android:layout_width="55dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_accept_call"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:text="accept"
+                android:textSize="18sp"
+                android:textColor="@android:color/white"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</merge>
