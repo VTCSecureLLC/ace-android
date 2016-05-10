@@ -795,7 +795,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		newProxyConfig = true;
 	}
 
-	private void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras) {
+	public void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras) {
 		changeCurrentFragment(newFragmentType, extras, false);
 	}
 
@@ -987,6 +987,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			ll.setVisibility(View.VISIBLE);
 
 			transaction.addToBackStack(newFragmentType.toString());
+			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+			if(fragment != null)
+				getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 			transaction.replace(R.id.fragmentContainer2, newFragment);
 		} else {
 			if (newFragmentType == FragmentsAvailable.DIALER
@@ -1149,15 +1152,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			pictureUri = contact.getPhotoUri().toString();
 			thumbnailUri = contact.getThumbnailUri().toString();
 		}
+		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+		if (fragment2 != null && fragment2.isVisible() && currentFragment == FragmentsAvailable.CHAT && !(fragment2 instanceof ContactFragment)) {
+			ChatFragment chatFragment = (ChatFragment) fragment2;
+			chatFragment.changeDisplayedChat(sipUri, displayName, pictureUri);
+		} else {
 
-				Bundle extras = new Bundle();
-				extras.putString("SipUri", sipUri);
-				if (contact != null) {
-					extras.putString("DisplayName", displayName);
-					extras.putString("PictureUri", pictureUri);
-					extras.putString("ThumbnailUri", thumbnailUri);
-				}
-				changeCurrentFragment(FragmentsAvailable.CHAT, extras);
+			Bundle extras = new Bundle();
+			extras.putString("SipUri", sipUri);
+			if (contact != null) {
+				extras.putString("DisplayName", displayName);
+				extras.putString("PictureUri", pictureUri);
+				extras.putString("ThumbnailUri", thumbnailUri);
+			}
+			changeCurrentFragment(FragmentsAvailable.CHAT, extras);
+		}
 
 		//LinphoneService.instance().resetMessageNotifCount();
 		//LinphoneService.instance().removeMessageNotification();

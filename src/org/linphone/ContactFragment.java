@@ -81,6 +81,7 @@ public class ContactFragment extends Fragment implements OnClickListener {
 		@Override
 		public void onClick(View v) {
 			if (LinphoneActivity.isInstanciated()) {
+				LinphoneActivity.instance().changeCurrentFragment(FragmentsAvailable.CHAT, null);;
 				LinphoneActivity.instance().displayChat(v.getTag().toString());
 			}
 		}
