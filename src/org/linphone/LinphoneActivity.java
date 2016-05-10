@@ -467,7 +467,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 					break;
 				case R.id.label_linphone_activity_resources:
 					selectedTab = 4;
-					changeCurrentFragment(FragmentsAvailable.CHATLIST, null);
+					changeCurrentFragment(FragmentsAvailable.RESOURCES, null);
 					break;
 				case R.id.label_linphone_activity_videomail:
 					videoMail();
@@ -795,7 +795,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		newProxyConfig = true;
 	}
 
-	private void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras) {
+	public void changeCurrentFragment(FragmentsAvailable newFragmentType, Bundle extras) {
 		changeCurrentFragment(newFragmentType, extras, false);
 	}
 
@@ -886,7 +886,7 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			g.analytics_tracker.setScreenName("About Screen");
 			newFragment = new AboutFragment();
 			break;
-		case CHATLIST:
+		case RESOURCES:
 			//Log.i(Log.TAG, "Setting screen name: Resources Screen");
 			g.analytics_tracker.setScreenName("Resources Screen");
 			newFragment = new HelpFragment();
@@ -895,7 +895,11 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 		case CHAT:
 			//Log.i(Log.TAG, "Setting screen name: Chat Screen (Not in call)");
 			g.analytics_tracker.setScreenName("Chat Screen (Not in call)");
-			newFragment = new ChatListFragment();
+			if (extras != null) {
+				newFragment = new ChatFragment();
+				newFragment.setArguments(extras);
+			} else
+				newFragment = new ChatListFragment();
 			break;
 		default:
 			break;
@@ -983,6 +987,9 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			ll.setVisibility(View.VISIBLE);
 
 			transaction.addToBackStack(newFragmentType.toString());
+			Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+			if(fragment != null)
+				getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 			transaction.replace(R.id.fragmentContainer2, newFragment);
 		} else {
 			if (newFragmentType == FragmentsAvailable.DIALER
@@ -1145,18 +1152,21 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			pictureUri = contact.getPhotoUri().toString();
 			thumbnailUri = contact.getThumbnailUri().toString();
 		}
+		Fragment fragment2 = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer2);
+		if (fragment2 != null && fragment2.isVisible() && currentFragment == FragmentsAvailable.CHAT && !(fragment2 instanceof ContactFragment)) {
+			ChatFragment chatFragment = (ChatFragment) fragment2;
+			chatFragment.changeDisplayedChat(sipUri, displayName, pictureUri);
+		} else {
 
-
-			Intent intent = new Intent(this, ChatActivity.class);
-			intent.putExtra("SipUri", sipUri);
+			Bundle extras = new Bundle();
+			extras.putString("SipUri", sipUri);
 			if (contact != null) {
-				intent.putExtra("DisplayName", contact.getName());
-				intent.putExtra("PictureUri", pictureUri);
-				intent.putExtra("ThumbnailUri", thumbnailUri);
+				extras.putString("DisplayName", displayName);
+				extras.putString("PictureUri", pictureUri);
+				extras.putString("ThumbnailUri", thumbnailUri);
 			}
-			//
-			startOrientationSensor();
-			startActivityForResult(intent, CHAT_ACTIVITY);
+			changeCurrentFragment(FragmentsAvailable.CHAT, extras);
+		}
 
 		//LinphoneService.instance().resetMessageNotifCount();
 		//LinphoneService.instance().removeMessageNotification();
@@ -1232,12 +1242,14 @@ public class LinphoneActivity extends FragmentActivity implements OnClickListene
 			aboutChat.setBackgroundColor(getResources().getColor(R.color.orange_background));
 		} else if (id == R.id.chat) {
 			selectedTab = 3;
-			changeCurrentFragment(FragmentsAvailable.CHAT, null);
 			chat.setSelected(true);
 			chat.setBackgroundColor(getResources().getColor(R.color.orange_background));
-			isMessagesViewed = true;
-			missedChats.setVisibility(View.GONE);
-			mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+			if (currentFragment != FragmentsAvailable.CHAT && currentFragment != FragmentsAvailable.CHATLIST) {
+				changeCurrentFragment(FragmentsAvailable.CHAT, null);
+				isMessagesViewed = true;
+				missedChats.setVisibility(View.GONE);
+				mPrefs.edit().putBoolean(UNREAD_MESSAGES, isMessagesViewed).commit();
+			}
 		}
 	}
 

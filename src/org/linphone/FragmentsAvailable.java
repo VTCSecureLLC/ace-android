@@ -33,6 +33,7 @@ public enum FragmentsAvailable {
 	ABOUT_INSTEAD_OF_CHAT,
 	ACCOUNT_SETTINGS,
 	SETTINGS,
+	RESOURCES,
 	CHATLIST,
 	CHAT;
 
@@ -92,8 +93,8 @@ public enum FragmentsAvailable {
 			return fragment == CONTACT || fragment == CONTACTS;
 			
 		case CHAT:
-			return fragment == CHATLIST;
-			
+			return fragment == CHATLIST || fragment == CHAT;
+
 		default:
 			return false;
 		}
