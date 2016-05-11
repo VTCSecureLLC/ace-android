@@ -2,7 +2,7 @@
 
 ############################################################################
 # prepare.py
-# Copyright (C) 2016  Belledonne Communications, Grenoble France
+# Developed pursuant to contract FCC15C0008 as open source software under GNU General Public License version 2.
 #
 ############################################################################
 #

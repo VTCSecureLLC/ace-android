@@ -2,7 +2,7 @@ package org.linphone.sync;
 
 /*
 AuthenticationService.java
-Copyright (C) 2015  Belledonne Communications, Grenoble, France
+Developed pursuant to contract FCC15C0008 as open source software under GNU General Public License version 2.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
