@@ -171,6 +171,7 @@
 		<activity android:name="org.linphone.LinphoneActivity"
 		    android:theme="@style/NoTitle"
             android:screenOrientation="behind"
+            android:windowSoftInputMode="stateHidden"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
