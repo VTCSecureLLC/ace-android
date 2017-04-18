@@ -366,6 +366,14 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 		}
 
+
+		Boolean SKIP_AUTO_CONFIG=true;
+		if(SKIP_AUTO_CONFIG){
+			saveCreatedAccount(username, password, domain, userId, transport_type, port);
+		}else{
+			//Do auto-config
+
+
 		mProgressDialog.show();
 		//Create rue config lookup url from domain and attempt to retrieve config
 		String configURL = autoConfigSRVLookupFormat.replace("%domain%", domain.toString().replaceAll("\\s", ""));
@@ -402,7 +410,7 @@ public class SetupActivity extends FragmentActivity implements OnClickListener {
 			}
 		});
 
-
+		}
 
 	}
 
